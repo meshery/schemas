@@ -63,6 +63,15 @@ type DesignEventIdentity struct {
 	ViewLink *string `json:"viewLink,omitempty" yaml:"viewLink,omitempty"`
 }
 
+// DesignEventOperationError Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response.
+type DesignEventOperationError struct {
+	// Code The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know.
+	Code string `json:"code" yaml:"code"`
+
+	// Message One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents.
+	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
+}
+
 // DesignSavedEventDesign The ID and name of the design a saved event is about - only those two fields, never the design file or any of its contents.
 type DesignSavedEventDesign struct {
 	// ID ID of the saved design.
@@ -90,7 +99,7 @@ type DesignValidationEventError struct {
 	ComponentID *string `json:"componentId,omitempty" yaml:"componentId,omitempty"`
 }
 
-// DesignValidationEventMetadata Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
+// DesignValidationEventMetadata Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. When the operation did not complete (`status` `error`), there is no verdict: `errors` is empty or omitted, `errorCount` and `truncated` are omitted, the identity fields are kept, `error` names why the operation failed, and the event is recorded with severity `error` under its usual category `pattern` and action (`validate` for a design validation). Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
 type DesignValidationEventMetadata struct {
 	// DesignID ID of the design the event is about.
 	DesignID uuid.UUID `json:"designId" yaml:"designId"`
@@ -104,16 +113,19 @@ type DesignValidationEventMetadata struct {
 	// DesignVersion Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.
 	DesignVersion *string `json:"designVersion,omitempty" yaml:"designVersion,omitempty"`
 
-	// ErrorCount Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20.
+	// Error Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response.
+	Error *DesignEventOperationError `json:"error,omitempty" yaml:"error,omitempty"`
+
+	// ErrorCount Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20. Omitted when `status` is `error`, because an operation that did not complete found nothing.
 	ErrorCount *int `json:"errorCount,omitempty" yaml:"errorCount,omitempty"`
 
-	// Errors Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed.
+	// Errors Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed. Empty or omitted when `status` is `error`.
 	Errors *[]DesignValidationEventError `json:"errors,omitempty" yaml:"errors,omitempty"`
 
-	// Status Outcome of the operation as the producer reports it, for example `failed`; consumers must tolerate values they do not know.
+	// Status Outcome of the operation as the producer reports it: `success` (the operation ran and found no errors), `partial` (the operation ran and part of it succeeded), `failed` (the operation ran and found errors, listed in `errors`) or `error` (the operation did not complete, so there is no verdict; `error` says why). It is an open string, not an enum: consumers must tolerate values they do not know.
 	Status *string `json:"status,omitempty" yaml:"status,omitempty"`
 
-	// Truncated True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete.
+	// Truncated True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete. Omitted when `status` is `error`.
 	Truncated *bool `json:"truncated,omitempty" yaml:"truncated,omitempty"`
 
 	// ViewLink Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
@@ -144,7 +156,7 @@ type Event struct {
 	Description string  `db:"description" json:"description" yaml:"description"`
 	ID          core.Id `db:"id" json:"id" yaml:"id"`
 
-	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
 	Metadata    core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
 	OperationID core.Id  `db:"operation_id" json:"operationId" yaml:"operationId"`
 
