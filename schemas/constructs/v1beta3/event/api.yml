@@ -267,35 +267,34 @@ paths:
           $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
-  /api/public/events:
+  /api/events/feed:
     get:
       x-internal:
       - cloud
       tags:
       - events
-      operationId: getPublicEvents
-      summary: Get public events
+      operationId: getEventFeed
+      summary: Get event feed
       description: |
-        Public projection of events: recent completed scheduled runs, served
-        without authentication as social proof on public sites. The server
-        only serves events with category `schedule` and action `completed`;
-        the `category` and `action` filters accept only those values. Rate
-        limited per client IP; a client over the limit receives 429.
-        Responses carry `Cache-Control: public, max-age=30` (never more than
-        30 seconds). See docs/public-events-contract.md.
+        Generic, unauthenticated feed of events whose visibility is `public`
+        and whose owner's `shareActivityPublicly` preference is on at read
+        time. Results are ordered newest first by `createdAt` and can be
+        filtered by category and action. Rate limited per client IP; an
+        over-limit client receives 429 with `Retry-After`. Responses carry
+        `Cache-Control: public, max-age=N` where N is at most 30 seconds.
+        See docs/event-feed-contract.md.
       security: []
       parameters:
       - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/publicPagesize'
-      - $ref: '#/components/parameters/order'
-      - $ref: '#/components/parameters/publicCategory'
-      - $ref: '#/components/parameters/publicAction'
+      - $ref: '#/components/parameters/feedPagesize'
+      - $ref: '#/components/parameters/feedCategory'
+      - $ref: '#/components/parameters/feedAction'
       responses:
         '200':
-          description: Public events page
+          description: Event feed page
           headers:
             Cache-Control:
-              description: "`public, max-age=N` with N from 0 to 30; max-age never exceeds 30."
+              description: "`public, max-age=N` with N from 0 to 30; max-age never exceeds 30 seconds."
               required: true
               schema:
                 type: string
@@ -303,7 +302,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PublicEventPage'
+                $ref: '#/components/schemas/EventFeedPage'
         '400':
           $ref: '#/components/responses/400'
         '429':
@@ -411,34 +410,32 @@ components:
       deprecated: true
       schema:
         type: integer
-    publicPagesize:
+    feedPagesize:
       name: pagesize
       in: query
       required: false
-      description: Number of items per page. The server never returns more than 50.
+      description: Number of feed items per page.
       schema:
         type: integer
         minimum: 1
         maximum: 50
         default: 20
-    publicCategory:
+    feedCategory:
       name: category
       in: query
       required: false
-      description: Event category filter. The public projection only serves `schedule`.
+      description: Optional event category filter.
       schema:
         type: string
-        enum:
-          - schedule
-    publicAction:
+        maxLength: 500
+    feedAction:
       name: action
       in: query
       required: false
-      description: Event action filter. The public projection only serves `completed`.
+      description: Optional event action filter.
       schema:
         type: string
-        enum:
-          - completed
+        maxLength: 500
     search:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/search
     order:
@@ -477,7 +474,9 @@ components:
   schemas:
     EventPayload:
       type: object
-      description: Payload for creating a new event.
+      description: >-
+        Payload for creating a new event. If visibility is absent, the event
+        is private.
       additionalProperties: true
       properties:
         owner:
@@ -495,6 +494,13 @@ components:
           type: string
           description: The category of the event.
           maxLength: 500
+        visibility:
+          $ref: '#/components/schemas/EventVisibility'
+          description: >-
+            Who can see the event. `private` is the default; clients may set
+            `public` for events eligible for the unauthenticated feed.
+          x-oapi-codegen-extra-tags:
+            json: "visibility,omitempty"
         action:
           type: string
           description: The action of the event.
@@ -620,6 +626,7 @@ components:
         - organizationId
         - createdAt
         - updatedAt
+        - visibility
       properties:
         id:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Id
@@ -664,7 +671,8 @@ components:
             DesignValidationEventMetadata (category `pattern`, actions
             `validate`, `deploy`, `undeploy`, `dry-run`) and
             DesignSavedEventMetadata (category `pattern`, actions `create`,
-            `update`); DesignEventIdentity names the design. Never put design
+            `update`); ScheduleCompletedEventMetadata (category `schedule`,
+            action `completed`); DesignEventIdentity names the design. Never put design
             contents into event metadata - no `designFile`, `patternFile`,
             `components`, `relationships`, `trace`, `evaluationResponse`, the
             raw `summary` or `validationResult`. Meshery Server applies a 16 KB
@@ -763,6 +771,13 @@ components:
           x-oapi-codegen-extra-tags:
             db: updated_at
           x-order: 15
+        visibility:
+          $ref: '#/components/schemas/EventVisibility'
+          description: Who can see the event. Defaults to `private`.
+          x-oapi-codegen-extra-tags:
+            db: visibility
+            json: visibility
+          x-order: 16
         deletedAt:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/NullTime
           description: Timestamp when the event was soft-deleted; omitted when it was not.
@@ -793,121 +808,140 @@ components:
           items:
             $ref: '#/components/schemas/EventResult'
           description: The events returned on the current page.
-    PublicEvent:
+    EventVisibility:
+      type: string
+      description: >-
+        Who can see the event. `private` (the default, set by Layer5 Cloud)
+        means visible only inside the event's organization. `public` means the
+        event may appear on the unauthenticated event feed, subject to the
+        owner's `shareActivityPublicly` preference at read time. Clients such
+        as Blowhorn decide whether to mark their own events public.
+      enum:
+        - private
+        - public
+      default: private
+      x-go-name: EventVisibility
+    EventFeedItem:
       type: object
       additionalProperties: false
       description: |
-        Public projection of an Event (see EventResult) for a completed
-        scheduled run: category `schedule`, action `completed`. `owner` is the
-        event's owner, which the server sets to the authenticated caller who
-        recorded it, never taken from event metadata. `platform`, `role`,
-        `roleResult` and `networks` are lifted from the event's free-form
-        metadata; the raw metadata is never served. `displayName`,
-        `avatarUrl`, `publicProfileUrl` and `organizationName` are resolved
-        at read time. Never includes email, real names, raw metadata or
-        description. A stored event whose metadata lacks a valid `platform`,
-        `role` or `roleResult` is skipped.
+        An event projected into the public feed. It never includes email,
+        firstName, lastName, description, provider or raw metadata.
+        `platform`, `role`, `line` and `networks` are projected from
+        ScheduleCompletedEventMetadata; events without valid required
+        metadata are skipped. Public profile fields are resolved by Cloud at
+        read time and are included only when the user's profile is public.
       required:
         - id
+        - userId
         - category
         - action
-        - owner
         - createdAt
+        - visibility
         - platform
         - role
-        - roleResult
+        - line
       properties:
         id:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Id
           description: Event ID.
           x-go-name: ID
           x-order: 1
+        userId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: Cloud user ID of the event owner.
+          x-order: 2
         category:
           type: string
-          description: The category of the event. Always `schedule` on this projection.
-          maxLength: 500
-          x-order: 2
-        action:
-          type: string
-          description: The action of the event. Always `completed` on this projection.
+          description: Event category.
           maxLength: 500
           x-order: 3
-        owner:
-          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
-          description: The event's owner, the authenticated caller who recorded it.
-          x-go-type-skip-optional-pointer: true
+        action:
+          type: string
+          description: Event action.
+          maxLength: 500
           x-order: 4
         createdAt:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
-          description: Timestamp when the event was recorded. Orders the feed, newest first.
+          description: Event creation time; the feed is ordered newest first.
           x-order: 5
+        visibility:
+          $ref: '#/components/schemas/EventVisibility'
+          description: Always `public` in the feed.
+          x-order: 6
         platform:
           type: string
-          description: Platform the run acted on, for example `x` or `linkedin`, from the event metadata.
-          minLength: 1
-          maxLength: 64
-          x-order: 6
+          description: Platform from ScheduleCompletedEventMetadata.
+          enum:
+            - linkedin
+            - x
+            - reddit
+            - hacker-news
+            - slack
+            - bluesky
+            - github
+          x-order: 7
         role:
           type: string
-          description: Short label of the role the run acted in, for example `Launch`, from the event metadata.
-          minLength: 1
-          maxLength: 64
-          x-order: 7
-        roleResult:
-          type: string
-          description: One-line outcome of the run in that role, from the event metadata.
-          minLength: 1
-          maxLength: 255
+          description: Role from ScheduleCompletedEventMetadata.
+          minLength: 3
+          maxLength: 40
           x-order: 8
+        line:
+          type: string
+          description: One-line result from ScheduleCompletedEventMetadata.
+          minLength: 10
+          maxLength: 120
+          x-order: 9
         networks:
           type: array
-          description: Names of the networks or communities the run reached. Omitted when none.
+          description: Networks from ScheduleCompletedEventMetadata, when present.
+          minItems: 1
+          maxItems: 20
           items:
             type: string
             minLength: 1
             maxLength: 255
-          maxItems: 20
           x-oapi-codegen-extra-tags:
             json: "networks,omitempty"
-          x-order: 9
+          x-order: 10
         displayName:
           type: string
-          description: The user's public username, never a real name.
-          maxLength: 255
+          description: Public username, never a real name; present only for a public profile.
+          maxLength: 80
           x-oapi-codegen-extra-tags:
             json: "displayName,omitempty"
-          x-order: 10
+          x-order: 11
         avatarUrl:
           type: string
           format: uri
           maxLength: 500
-          description: URL to the avatar image of the event owner. Omitted when unavailable.
+          description: Public avatar URL; present only for a public profile.
           x-go-name: AvatarURL
           x-oapi-codegen-extra-tags:
             json: "avatarUrl,omitempty"
-          x-order: 11
+          x-order: 12
         organizationName:
           type: string
-          description: Name of the event's acting organization. Omitted when none or unresolved.
+          description: Public organization name; present only for a public profile.
           maxLength: 255
           x-oapi-codegen-extra-tags:
             json: "organizationName,omitempty"
-          x-order: 12
+          x-order: 13
         publicProfileUrl:
           type: string
           format: uri
-          description: URL of the user's public profile. Omitted when unavailable.
+          description: HTTPS URL of the user's public profile.
+          pattern: '^https://'
           maxLength: 2048
           x-go-name: PublicProfileURL
           x-oapi-codegen-extra-tags:
             json: "publicProfileUrl,omitempty"
-          x-order: 13
-    PublicEventPage:
+          x-order: 14
+    EventFeedPage:
       type: object
       additionalProperties: false
-      description: >-
-        One page of public events, newest first, in the same
-        page/pageSize/totalCount/data shape as PublicUsersPage.
+      description: One page of event feed items, newest first.
       required:
         - page
         - pageSize
@@ -920,20 +954,19 @@ components:
           minimum: 0
         pageSize:
           type: integer
-          description: Number of items per page, at most 50.
+          description: Number of items per page.
           minimum: 1
           maximum: 50
         totalCount:
           type: integer
-          description: Total number of public events available.
+          description: Total number of matching feed events.
           minimum: 0
         data:
           type: array
           maxItems: 50
           items:
-            $ref: '#/components/schemas/PublicEvent'
-            x-go-type: PublicEvent
-          description: Public events for the requested page, newest first.
+            $ref: '#/components/schemas/EventFeedItem'
+          description: Events for the requested page, newest first.
     EventsAggregate:
       type: object
       description: Aggregated event counts across categories.
@@ -1341,3 +1374,49 @@ components:
           description: Name of the saved design.
           maxLength: 255
           x-go-name: Name
+    ScheduleCompletedEventMetadata:
+      type: object
+      description: >-
+        Metadata for a completed scheduled run (category `schedule`, action
+        `completed`). This typed shape keeps client-specific display data out
+        of the core Event fields and is projected into EventFeedItem.
+      additionalProperties: false
+      required:
+        - platform
+        - role
+        - line
+      properties:
+        platform:
+          type: string
+          description: Platform the completed run acted on.
+          enum:
+            - linkedin
+            - x
+            - reddit
+            - hacker-news
+            - slack
+            - bluesky
+            - github
+          x-go-name: Platform
+        role:
+          type: string
+          description: Role the completed run acted in.
+          minLength: 3
+          maxLength: 40
+          x-go-name: Role
+        line:
+          type: string
+          description: One-line result of the run.
+          minLength: 10
+          maxLength: 120
+          x-go-name: Line
+        networks:
+          type: array
+          description: Networks or communities where the run acted.
+          minItems: 1
+          maxItems: 20
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+          x-go-name: Networks
