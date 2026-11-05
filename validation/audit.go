@@ -367,9 +367,13 @@ func auditRule48(opts AuditOptions, baseline map[string]bool, result *AuditResul
 // constructDirsWithAPISpec returns every construct directory that holds an
 // api.yml, in the versions shouldValidateVersion accepts, sorted by version
 // and then by construct (os.ReadDir returns entries sorted by name). It reads
-// the directories like walkValidatedConstructSpecs does, rather than using
-// filepath.Glob, so a root path with characters such as "[" is taken
-// literally. A directory that cannot be read is skipped, as in the walker.
+// the directories rather than using filepath.Glob, so a root path with
+// characters such as "[" is taken literally. A directory that cannot be read
+// is skipped, as in walkValidatedConstructSpecs.
+//
+// Unlike the walker, it follows symlinked version and construct directories:
+// bundle discovery (discoverSchemaPackages in build/lib/config.js) checks
+// entries with fs.statSync, which follows links, so the bundler bundles them.
 func constructDirsWithAPISpec(rootDir string) []string {
 	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
 	versionEntries, err := os.ReadDir(constructsDir)
@@ -379,25 +383,32 @@ func constructDirsWithAPISpec(rootDir string) []string {
 
 	var dirs []string
 	for _, vEntry := range versionEntries {
-		if !vEntry.IsDir() || !shouldValidateVersion(vEntry.Name()) {
+		versionDir := filepath.Join(constructsDir, vEntry.Name())
+		if !shouldValidateVersion(vEntry.Name()) || !isDirFollowingLinks(versionDir) {
 			continue
 		}
-		versionDir := filepath.Join(constructsDir, vEntry.Name())
 		constructEntries, err := os.ReadDir(versionDir)
 		if err != nil {
 			continue
 		}
 		for _, cEntry := range constructEntries {
-			if !cEntry.IsDir() {
+			constructDir := filepath.Join(versionDir, cEntry.Name())
+			if !isDirFollowingLinks(constructDir) {
 				continue
 			}
-			constructDir := filepath.Join(versionDir, cEntry.Name())
 			if _, err := os.Stat(filepath.Join(constructDir, "api.yml")); err == nil {
 				dirs = append(dirs, constructDir)
 			}
 		}
 	}
 	return dirs
+}
+
+// isDirFollowingLinks reports whether path is a directory, or a symlink that
+// resolves to one. A dangling symlink is not a directory.
+func isDirFollowingLinks(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.IsDir()
 }
 
 // isDeprecatedRawDoc checks if a raw api.yml has x-deprecated: true in info,

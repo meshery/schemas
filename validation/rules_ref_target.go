@@ -139,10 +139,12 @@ func walkRefs(node any, pointer string, visit func(pointer, ref string)) {
 	}
 }
 
-// jsonPointerEscaper escapes a mapping key for use as a JSON pointer token
-// (RFC 6901), so path keys such as `/api/registry/relationships` stay readable.
+// jsonPointerEscaper is built once and used by escapeJSONPointerToken.
 var jsonPointerEscaper = strings.NewReplacer("~", "~0", "/", "~1")
 
+// escapeJSONPointerToken escapes a mapping key for use as a JSON pointer token
+// (RFC 6901): "~" becomes "~0" and "/" becomes "~1", so a path key such as
+// `/api/registry/relationships` stays readable in a violation message.
 func escapeJSONPointerToken(key string) string {
 	return jsonPointerEscaper.Replace(key)
 }

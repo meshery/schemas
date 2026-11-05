@@ -68,6 +68,8 @@ func rule48Doc(t *testing.T, src string) map[string]any {
 	return doc
 }
 
+// TestCheckRule48 runs checkRule48 on one document per case and checks the
+// JSON pointers it reports and the text of each message.
 func TestCheckRule48(t *testing.T) {
 	callerPath := rule48Fixture(t)
 
@@ -284,12 +286,14 @@ components:
 	}
 }
 
+// TestCheckRule48_NilDoc checks that a nil document yields no violations.
 func TestCheckRule48_NilDoc(t *testing.T) {
 	if vs := checkRule48("api.yml", "api.yml", nil); len(vs) != 0 {
 		t.Errorf("expected no violations for a nil document, got %+v", vs)
 	}
 }
 
+// TestEscapeJSONPointerToken checks the RFC 6901 escaping of "~" and "/".
 func TestEscapeJSONPointerToken(t *testing.T) {
 	cases := map[string]string{
 		"plain":                       "plain",
@@ -304,6 +308,9 @@ func TestEscapeJSONPointerToken(t *testing.T) {
 	}
 }
 
+// TestIsRemoteWholeFileRef checks that a remote ref (https:// or //host/)
+// counts as whole-file when its fragment is missing or empty, and that local
+// and fragment refs do not.
 func TestIsRemoteWholeFileRef(t *testing.T) {
 	cases := map[string]bool{
 		"https://example.com/doc.yaml":                           true,
@@ -323,6 +330,9 @@ func TestIsRemoteWholeFileRef(t *testing.T) {
 	}
 }
 
+// TestOpenAPIVersionOf checks the version read from a target file: the value
+// of its openapi key, "unknown" when that value is null or blank, and no
+// OpenAPI document for a plain schema, invalid YAML or a missing file.
 func TestOpenAPIVersionOf(t *testing.T) {
 	dir := t.TempDir()
 	tests := []struct {
@@ -382,6 +392,8 @@ func TestAuditRule48(t *testing.T) {
 	}
 }
 
+// testAuditRule48 builds the TestAuditRule48 tree under root, runs Audit and
+// checks that exactly the expected files get one blocking Rule 48 violation.
 func testAuditRule48(t *testing.T, root string) {
 	write := func(rel, content string) {
 		t.Helper()
@@ -535,5 +547,89 @@ components:
 	}
 	for file, n := range got {
 		t.Errorf("%s: got %d unexpected blocking Rule 48 violations", file, n)
+	}
+}
+
+// TestAuditRule48_SymlinkedDirectories checks that Rule 48 follows a
+// symlinked version directory and a symlinked construct directory, because
+// bundle discovery follows them too. A dangling symlink and a symlink to a
+// file are skipped without error.
+func TestAuditRule48_SymlinkedDirectories(t *testing.T) {
+	root := t.TempDir()
+	write := func(rel, content string) {
+		t.Helper()
+		p := filepath.Join(root, filepath.FromSlash(rel))
+		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(p, []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	link := func(target, rel string) {
+		t.Helper()
+		p := filepath.Join(root, filepath.FromSlash(rel))
+		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Symlink(filepath.Join(root, filepath.FromSlash(target)), p); err != nil {
+			t.Skipf("symlinks not supported here: %v", err)
+		}
+	}
+
+	write("schemas/constructs/v1alpha1/target/api.yml", `openapi: 3.0.0
+info:
+  title: Target
+  version: v1alpha1
+paths: {}
+`)
+	const wholeRefAPI = `openapi: 3.0.0
+info:
+  title: Linked
+  version: v1
+paths: {}
+components:
+  schemas:
+    Linked:
+      $ref: "../../v1alpha1/target/api.yml"
+`
+	const wholeRefEntity = `type: object
+properties:
+  thing:
+    $ref: "../../v1alpha1/target/api.yml"
+`
+
+	// The real files live outside schemas/constructs, so Rule 48 only sees
+	// them through the links.
+	write("outside/v1beta2/gadget/api.yml", wholeRefAPI)
+	write("outside/v1beta2/gadget/gadget.yaml", wholeRefEntity)
+	write("outside/gizmo/api.yml", wholeRefAPI)
+	write("outside/file.yml", wholeRefAPI)
+
+	link("outside/v1beta2", "schemas/constructs/v1beta2")
+	link("outside/gizmo", "schemas/constructs/v1alpha1/gizmo")
+	link("outside/missing", "schemas/constructs/v1beta3")
+	link("outside/file.yml", "schemas/constructs/v1alpha1/notadir")
+
+	result := Audit(AuditOptions{RootDir: root})
+
+	got := map[string]int{}
+	for _, v := range append(result.Blocking, result.Advisory...) {
+		if v.RuleNumber == 48 {
+			got[v.File]++
+		}
+	}
+	for _, file := range []string{
+		"schemas/constructs/v1alpha1/gizmo/api.yml",
+		"schemas/constructs/v1beta2/gadget/api.yml",
+		"schemas/constructs/v1beta2/gadget/gadget.yaml",
+	} {
+		if got[file] != 1 {
+			t.Errorf("%s: got %d Rule 48 violations, want 1", file, got[file])
+		}
+		delete(got, file)
+	}
+	for file, n := range got {
+		t.Errorf("%s: got %d unexpected Rule 48 violations", file, n)
 	}
 }

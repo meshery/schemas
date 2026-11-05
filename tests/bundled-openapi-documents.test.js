@@ -23,6 +23,7 @@ const REPO_ROOT = path.join(__dirname, "..");
 
 const RTK_SPECS = [config.paths.mesheryOpenapi, config.paths.cloudOpenapi];
 
+// True for a JSON object, false for null, arrays and scalars.
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
@@ -39,6 +40,7 @@ function isOpenAPIDocument(node) {
   );
 }
 
+// Escapes a key for use as a JSON pointer token (RFC 6901).
 function escapePointerToken(key) {
   return String(key).replace(/~/g, "~0").replace(/\//g, "~1");
 }
@@ -64,6 +66,8 @@ function findEmbeddedOpenAPIDocuments(spec) {
   return found;
 }
 
+// Reads a bundled spec (JSON or YAML) by its repo-relative path. Fails with a
+// hint when the bundle has not been built yet.
 function loadBundle(relPath) {
   const absolute = path.join(REPO_ROOT, relPath);
   assert.ok(
@@ -106,6 +110,8 @@ const REGISTRY_RELATIONSHIP_ROUTES = [
 ];
 const RELATIONSHIP_DEFINITION_REQUIRED = ["id", "schemaVersion", "version", "model", "kind", "type", "subType"];
 
+// Returns the items schema of the `relationships` property of a
+// RegistryRelationshipsPage schema, which sits in one of its allOf branches.
 function relationshipItems(pageSchema) {
   for (const branch of pageSchema?.allOf ?? []) {
     const relationships = branch?.properties?.relationships;
@@ -116,6 +122,8 @@ function relationshipItems(pageSchema) {
   return undefined;
 }
 
+// Fails unless items is the RelationshipDefinition object schema: not a whole
+// OpenAPI document, and every required field present and required.
 function assertRelationshipDefinition(items, where) {
   assert.ok(isPlainObject(items), `${where}: relationships has no items schema`);
   assert.ok(!isOpenAPIDocument(items), `${where}: relationships items is a whole OpenAPI document`);
