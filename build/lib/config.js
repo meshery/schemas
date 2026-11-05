@@ -24,6 +24,7 @@ const paths = {
   buildDir: "_openapi_build",
   modelsDir: "models",
   typescriptDir: "typescript/generated",
+  pythonDir: "python/generated",
 
   // Build config files
   openapiConfig: "build/openapi.config.yml",
@@ -44,6 +45,37 @@ const paths = {
  * Merged construct filename (must be JSON for RTK query generation)
  */
 const mergedConstructFilename = "merged-openapi.json";
+
+/**
+ * Python client generation settings (issue #1240).
+ *
+ * The generator and its ruff post-processor are pinned to exact versions
+ * so committed output reproduces byte-for-byte (cf. #1194 for the
+ * oapi-codegen pin lesson). The single source of truth for the pins is
+ * this object: both build/generate-python.js and the CI install steps
+ * read it.
+ */
+const python = {
+  generatorPackage: "openapi-python-client",
+  generatorVersion: "0.29.1",
+  // ruff runs the generator's post-processing (fix + format), so its
+  // version shapes the emitted code; verified paired with 0.29.1.
+  ruffVersion: "0.17.0",
+  // Phase 1 pilot scope, as "version/dirName" keys. v1beta2/key is the
+  // current canonical-casing key construct; v1beta1/key is x-deprecated
+  // (excluded from the merged bundles) so it is not piloted.
+  // Phase 2 expands generation to the full cloud/meshery bundles.
+  pilotPackages: ["v1beta2/key"],
+  // Distribution identity for python/generated/pyproject.toml.
+  distName: "meshery-schemas",
+  packageName: "meshery_schemas",
+  // Generator warnings that are explicitly accepted. Empty during the
+  // pilot: the key construct generates warning-free. Entries are
+  // normalized warning lines (see normalizePythonWarning in
+  // build/generate-python.js); generation fails on any warning that is
+  // not listed here.
+  warningAllowlist: [],
+};
 
 /**
  * Package name overrides
@@ -258,6 +290,33 @@ function getGoOutputPath(pkg) {
 }
 
 /**
+ * Output keys ("version/packageName") for every construct directory that
+ * still has an api.yml, INCLUDING packages in excludePackages. A generated
+ * output directory whose key is absent belongs to a construct that has been
+ * removed. Excluded packages keep their output (it is published and may be
+ * consumed), so they must not count as removed.
+ *
+ * @param {string} [projectRoot] - Root to scan (defaults to this checkout)
+ * @returns {Set<string>}
+ */
+function getConstructOutputKeys(projectRoot = getProjectRoot()) {
+  const schemasRoot = path.join(projectRoot, paths.schemasDir);
+  const keys = new Set();
+  if (!fs.existsSync(schemasRoot)) return keys;
+
+  for (const version of fs.readdirSync(schemasRoot)) {
+    const versionPath = path.join(schemasRoot, version);
+    if (!fs.statSync(versionPath).isDirectory()) continue;
+    for (const dirName of fs.readdirSync(versionPath)) {
+      if (!fs.existsSync(path.join(versionPath, dirName, "api.yml"))) continue;
+      const packageKey = `${version}/${dirName}`;
+      keys.add(`${version}/${packageNameOverrides[packageKey] || dirName}`);
+    }
+  }
+  return keys;
+}
+
+/**
  * Clear the cached packages (useful for testing)
  */
 function clearCache() {
@@ -280,6 +339,7 @@ function printDiscoveredPackages() {
 module.exports = {
   paths,
   mergedConstructFilename,
+  python,
   packageNameOverrides,
   excludePackages,
   excludeFromMerge,
@@ -291,6 +351,7 @@ module.exports = {
   getInputSchemaPath,
   getBundledOutputPath,
   getGoOutputPath,
+  getConstructOutputKeys,
   clearCache,
   printDiscoveredPackages,
 };

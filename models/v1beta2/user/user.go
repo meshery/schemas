@@ -229,6 +229,36 @@ type Preference struct {
 	UsersExtensionPreferences map[string]interface{} `json:"usersExtensionPreferences" yaml:"usersExtensionPreferences"`
 }
 
+// PreferencePayload The client-settable fields of Preference for updateUserPreferences. Every field is optional: the server merges the ones present onto the stored preferences and keeps the rest. updatedAt is server-recorded and is not settable.
+type PreferencePayload struct {
+	// AnonymousPerfResults The anonymous perf results of the preference.
+	AnonymousPerfResults *bool `json:"anonymousPerfResults,omitempty" yaml:"anonymousPerfResults,omitempty"`
+
+	// AnonymousUsageStats The anonymous usage stats of the preference.
+	AnonymousUsageStats *bool `json:"anonymousUsageStats,omitempty" yaml:"anonymousUsageStats,omitempty"`
+
+	// DashboardPreferences The dashboard preferences of the preference.
+	DashboardPreferences *map[string]interface{} `json:"dashboardPreferences,omitempty" yaml:"dashboardPreferences,omitempty"`
+	Grafana              *Grafana                `json:"grafana,omitempty" yaml:"grafana,omitempty"`
+	LoadTestPrefs        *LoadTestPreferences    `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
+
+	// MeshAdapters The mesh adapters of the preference.
+	MeshAdapters *[]Adapter  `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
+	Prometheus   *Prometheus `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
+
+	// RemoteProviderPreferences The remote provider preferences of the preference.
+	RemoteProviderPreferences *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
+
+	// SelectedOrganizationId ID of the organization to make the session's selected organization.
+	SelectedOrganizationId *uuid.UUID `json:"selectedOrganizationId,omitempty" yaml:"selectedOrganizationId,omitempty"`
+
+	// SelectedWorkspaceForOrganizations The selected workspace for organizations of the preference.
+	SelectedWorkspaceForOrganizations *map[string]string `json:"selectedWorkspaceForOrganizations,omitempty" yaml:"selectedWorkspaceForOrganizations,omitempty"`
+
+	// UsersExtensionPreferences The users extension preferences of the preference.
+	UsersExtensionPreferences *map[string]interface{} `json:"usersExtensionPreferences,omitempty" yaml:"usersExtensionPreferences,omitempty"`
+}
+
 // ProfileOverview Aggregate counts shown on the current user's profile overview.
 type ProfileOverview struct {
 	// KubernetesContexts Number of Kubernetes contexts owned by the user.
@@ -342,10 +372,10 @@ type User struct {
 
 	// Organizations Organizations the user belongs to with role information
 	Organizations *struct {
-		// OrganizationsWithRoles Organization memberships for the user with their assigned roles.
+		// OrganizationsWithRoles Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.
 		OrganizationsWithRoles *[]OrganizationWithRoles `db:"organizations_with_roles" json:"organizationsWithRoles" yaml:"organizationsWithRoles"`
 
-		// TotalCount Total number of organization memberships returned for the user.
+		// TotalCount Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"organizations" json:"organizations" yaml:"organizations"`
 	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences,omitempty"`
@@ -367,10 +397,10 @@ type User struct {
 
 	// Teams Teams the user belongs to with role information
 	Teams *struct {
-		// TeamsWithRoles Team memberships for the user with their assigned roles.
+		// TeamsWithRoles Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.
 		TeamsWithRoles *[]TeamWithRoles `db:"teams_with_roles" json:"teamsWithRoles" yaml:"teamsWithRoles"`
 
-		// TotalCount Total number of team memberships returned for the user.
+		// TotalCount Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"teams" json:"teams" yaml:"teams"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`

@@ -271,16 +271,16 @@ const EnvironmentSchema: Record<string, unknown> = {
             }
           },
           "created_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
             "x-order": 7,
             "description": "Timestamp when the resource was created.",
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
           "metadata": {
@@ -295,16 +295,16 @@ const EnvironmentSchema: Record<string, unknown> = {
             "type": "object"
           },
           "updated_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
             "x-order": 9,
             "description": "Timestamp when the resource was updated.",
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
@@ -423,31 +423,6 @@ const EnvironmentSchema: Record<string, unknown> = {
           "name",
           "organization_id"
         ]
-      },
-      "EnvironmentUpdatePayload": {
-        "description": "Partial update for an environment. Every property is optional; an omitted property retains its stored value. organization_id is accepted for symmetry with the create payload but is not actually mutable - see its own description - so omitting it is the normal case.",
-        "properties": {
-          "name": {
-            "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
-            "type": "string",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "description": {
-            "description": "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments).",
-            "type": "string",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "organization_id": {
-            "type": "string",
-            "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
-            "x-go-name": "OrgId",
-            "x-oapi-codegen-extra-tags": {
-              "json": "organization_id,omitempty"
-            },
-            "maxLength": 500,
-            "format": "uuid"
-          }
-        }
       },
       "EnvironmentPage": {
         "properties": {
@@ -581,16 +556,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                   }
                 },
                 "created_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
                   "x-order": 7,
                   "description": "Timestamp when the resource was created.",
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "CreatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "yaml": "created_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "metadata": {
@@ -605,16 +580,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "type": "object"
                 },
                 "updated_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at"
+                  },
                   "x-order": 9,
                   "description": "Timestamp when the resource was updated.",
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "UpdatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "yaml": "updated_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "deleted_at": {
@@ -672,7 +647,7 @@ const EnvironmentSchema: Record<string, unknown> = {
     },
     "requestBodies": {
       "environmentPayload": {
-        "description": "Body for creating an environment",
+        "description": "Body for creating environment",
         "required": true,
         "content": {
           "application/json": {
@@ -707,39 +682,6 @@ const EnvironmentSchema: Record<string, unknown> = {
             }
           }
         }
-      },
-      "environmentUpdatePayload": {
-        "description": "Body for partially updating an environment. Omitted properties retain their stored value.",
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "description": "Partial update for an environment. Every property is optional; an omitted property retains its stored value. organization_id is accepted for symmetry with the create payload but is not actually mutable - see its own description - so omitting it is the normal case.",
-              "properties": {
-                "name": {
-                  "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
-                  "type": "string",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "description": {
-                  "description": "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments).",
-                  "type": "string",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "organization_id": {
-                  "type": "string",
-                  "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
-                  "x-go-name": "OrgId",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "organization_id,omitempty"
-                  },
-                  "maxLength": 500,
-                  "format": "uuid"
-                }
-              }
-            }
-          }
-        }
       }
     }
   },
@@ -757,7 +699,7 @@ const EnvironmentSchema: Record<string, unknown> = {
         "summary": "Create an environment",
         "description": "Creates a new environment",
         "requestBody": {
-          "description": "Body for creating an environment",
+          "description": "Body for creating environment",
           "required": true,
           "content": {
             "application/json": {
@@ -912,16 +854,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                       }
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-order": 7,
                       "description": "Timestamp when the resource was created.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "metadata": {
@@ -936,16 +878,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                       "type": "object"
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-order": 9,
                       "description": "Timestamp when the resource was updated.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
@@ -1194,16 +1136,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                             }
                           },
                           "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
                             "x-order": 7,
                             "description": "Timestamp when the resource was created.",
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
                           "metadata": {
@@ -1218,16 +1160,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "type": "object"
                           },
                           "updated_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
                             "x-order": 9,
                             "description": "Timestamp when the resource was updated.",
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
@@ -1454,16 +1396,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                             }
                           },
                           "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
                             "x-order": 7,
                             "description": "Timestamp when the resource was created.",
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
                           "metadata": {
@@ -1478,16 +1420,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "type": "object"
                           },
                           "updated_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
                             "x-order": 9,
                             "description": "Timestamp when the resource was updated.",
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
@@ -1587,12 +1529,11 @@ const EnvironmentSchema: Record<string, unknown> = {
           }
         ],
         "requestBody": {
-          "description": "Body for partially updating an environment. Omitted properties retain their stored value.",
+          "description": "Body for creating environment",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "description": "Partial update for an environment. Every property is optional; an omitted property retains its stored value. organization_id is accepted for symmetry with the create payload but is not actually mutable - see its own description - so omitting it is the normal case.",
                 "properties": {
                   "name": {
                     "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
@@ -1606,15 +1547,20 @@ const EnvironmentSchema: Record<string, unknown> = {
                   },
                   "organization_id": {
                     "type": "string",
-                    "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
+                    "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
+                    "x-go-type-skip-optional-pointer": true,
                     "x-go-name": "OrgId",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "organization_id,omitempty"
+                      "json": "organization_id"
                     },
                     "maxLength": 500,
                     "format": "uuid"
                   }
-                }
+                },
+                "required": [
+                  "name",
+                  "organization_id"
+                ]
               }
             }
           }
@@ -1756,16 +1702,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                             }
                           },
                           "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
                             "x-order": 7,
                             "description": "Timestamp when the resource was created.",
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
                           "metadata": {
@@ -1780,16 +1726,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "type": "object"
                           },
                           "updated_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
                             "x-order": 9,
                             "description": "Timestamp when the resource was updated.",
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {

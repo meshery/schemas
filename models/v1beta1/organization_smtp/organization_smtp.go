@@ -33,16 +33,17 @@ const (
 
 // Defines values for OrganizationSmtpConfigurationLastFailureReason.
 const (
-	OrganizationSmtpConfigurationLastFailureReasonAuthRejected           OrganizationSmtpConfigurationLastFailureReason = "auth_rejected"
-	OrganizationSmtpConfigurationLastFailureReasonBlockedTarget          OrganizationSmtpConfigurationLastFailureReason = "blocked_target"
-	OrganizationSmtpConfigurationLastFailureReasonConnectRefused         OrganizationSmtpConfigurationLastFailureReason = "connect_refused"
-	OrganizationSmtpConfigurationLastFailureReasonConnectTimeout         OrganizationSmtpConfigurationLastFailureReason = "connect_timeout"
-	OrganizationSmtpConfigurationLastFailureReasonCredentialUnreadable   OrganizationSmtpConfigurationLastFailureReason = "credential_unreadable"
-	OrganizationSmtpConfigurationLastFailureReasonDeliveryFailed         OrganizationSmtpConfigurationLastFailureReason = "delivery_failed"
-	OrganizationSmtpConfigurationLastFailureReasonRelayRejectedRecipient OrganizationSmtpConfigurationLastFailureReason = "relay_rejected_recipient"
-	OrganizationSmtpConfigurationLastFailureReasonRelayRejectedSender    OrganizationSmtpConfigurationLastFailureReason = "relay_rejected_sender"
-	OrganizationSmtpConfigurationLastFailureReasonStarttlsUnsupported    OrganizationSmtpConfigurationLastFailureReason = "starttls_unsupported"
-	OrganizationSmtpConfigurationLastFailureReasonTlsFailed              OrganizationSmtpConfigurationLastFailureReason = "tls_failed"
+	OrganizationSmtpConfigurationLastFailureReasonAuthMechanismUnsupported OrganizationSmtpConfigurationLastFailureReason = "auth_mechanism_unsupported"
+	OrganizationSmtpConfigurationLastFailureReasonAuthRejected             OrganizationSmtpConfigurationLastFailureReason = "auth_rejected"
+	OrganizationSmtpConfigurationLastFailureReasonBlockedTarget            OrganizationSmtpConfigurationLastFailureReason = "blocked_target"
+	OrganizationSmtpConfigurationLastFailureReasonConnectRefused           OrganizationSmtpConfigurationLastFailureReason = "connect_refused"
+	OrganizationSmtpConfigurationLastFailureReasonConnectTimeout           OrganizationSmtpConfigurationLastFailureReason = "connect_timeout"
+	OrganizationSmtpConfigurationLastFailureReasonCredentialUnreadable     OrganizationSmtpConfigurationLastFailureReason = "credential_unreadable"
+	OrganizationSmtpConfigurationLastFailureReasonDeliveryFailed           OrganizationSmtpConfigurationLastFailureReason = "delivery_failed"
+	OrganizationSmtpConfigurationLastFailureReasonRelayRejectedRecipient   OrganizationSmtpConfigurationLastFailureReason = "relay_rejected_recipient"
+	OrganizationSmtpConfigurationLastFailureReasonRelayRejectedSender      OrganizationSmtpConfigurationLastFailureReason = "relay_rejected_sender"
+	OrganizationSmtpConfigurationLastFailureReasonStarttlsUnsupported      OrganizationSmtpConfigurationLastFailureReason = "starttls_unsupported"
+	OrganizationSmtpConfigurationLastFailureReasonTlsFailed                OrganizationSmtpConfigurationLastFailureReason = "tls_failed"
 )
 
 // Defines values for OrganizationSmtpConfigurationPayloadEncryption.
@@ -89,17 +90,18 @@ const (
 
 // Defines values for OrganizationSmtpTestResultOutcome.
 const (
-	OrganizationSmtpTestResultOutcomeAuthRejected           OrganizationSmtpTestResultOutcome = "auth_rejected"
-	OrganizationSmtpTestResultOutcomeBlockedTarget          OrganizationSmtpTestResultOutcome = "blocked_target"
-	OrganizationSmtpTestResultOutcomeConnectRefused         OrganizationSmtpTestResultOutcome = "connect_refused"
-	OrganizationSmtpTestResultOutcomeConnectTimeout         OrganizationSmtpTestResultOutcome = "connect_timeout"
-	OrganizationSmtpTestResultOutcomeCredentialUnreadable   OrganizationSmtpTestResultOutcome = "credential_unreadable"
-	OrganizationSmtpTestResultOutcomeDelivered              OrganizationSmtpTestResultOutcome = "delivered"
-	OrganizationSmtpTestResultOutcomeDeliveryFailed         OrganizationSmtpTestResultOutcome = "delivery_failed"
-	OrganizationSmtpTestResultOutcomeRelayRejectedRecipient OrganizationSmtpTestResultOutcome = "relay_rejected_recipient"
-	OrganizationSmtpTestResultOutcomeRelayRejectedSender    OrganizationSmtpTestResultOutcome = "relay_rejected_sender"
-	OrganizationSmtpTestResultOutcomeStarttlsUnsupported    OrganizationSmtpTestResultOutcome = "starttls_unsupported"
-	OrganizationSmtpTestResultOutcomeTlsFailed              OrganizationSmtpTestResultOutcome = "tls_failed"
+	OrganizationSmtpTestResultOutcomeAuthMechanismUnsupported OrganizationSmtpTestResultOutcome = "auth_mechanism_unsupported"
+	OrganizationSmtpTestResultOutcomeAuthRejected             OrganizationSmtpTestResultOutcome = "auth_rejected"
+	OrganizationSmtpTestResultOutcomeBlockedTarget            OrganizationSmtpTestResultOutcome = "blocked_target"
+	OrganizationSmtpTestResultOutcomeConnectRefused           OrganizationSmtpTestResultOutcome = "connect_refused"
+	OrganizationSmtpTestResultOutcomeConnectTimeout           OrganizationSmtpTestResultOutcome = "connect_timeout"
+	OrganizationSmtpTestResultOutcomeCredentialUnreadable     OrganizationSmtpTestResultOutcome = "credential_unreadable"
+	OrganizationSmtpTestResultOutcomeDelivered                OrganizationSmtpTestResultOutcome = "delivered"
+	OrganizationSmtpTestResultOutcomeDeliveryFailed           OrganizationSmtpTestResultOutcome = "delivery_failed"
+	OrganizationSmtpTestResultOutcomeRelayRejectedRecipient   OrganizationSmtpTestResultOutcome = "relay_rejected_recipient"
+	OrganizationSmtpTestResultOutcomeRelayRejectedSender      OrganizationSmtpTestResultOutcome = "relay_rejected_sender"
+	OrganizationSmtpTestResultOutcomeStarttlsUnsupported      OrganizationSmtpTestResultOutcome = "starttls_unsupported"
+	OrganizationSmtpTestResultOutcomeTlsFailed                OrganizationSmtpTestResultOutcome = "tls_failed"
 )
 
 // OrganizationSmtpConfiguration An organization's own outbound mail server. When present and healthy, every transactional email whose reader belongs to this organization - application notifications and identity-flow mail (account verification, password recovery) alike - is delivered through this server rather than through the provider's shared relay, so the message leaves from the organization's own domain. At most one live configuration exists per organization. The SMTP password is encrypted at rest and is never returned; reads always carry the redaction sentinel instead.
@@ -142,9 +144,9 @@ type OrganizationSmtpConfiguration struct {
 	// ReplyToAddress email
 	ReplyToAddress meshcore.Email `json:"replyToAddress,omitempty" yaml:"replyToAddress,omitempty"`
 
-	// Status Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+	// Status Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
 	//
-	// The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+	// The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
 	Status OrganizationSmtpConfigurationStatus `json:"status" yaml:"status"`
 
 	// FallbackToProvider Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery.
@@ -168,7 +170,7 @@ type OrganizationSmtpConfiguration struct {
 	// LastFailureReason Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
 	LastFailureReason *OrganizationSmtpConfigurationLastFailureReason `json:"lastFailureReason,omitempty" yaml:"lastFailureReason,omitempty"`
 
-	// ConsecutiveFailures Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+	// ConsecutiveFailures Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057.
 	ConsecutiveFailures int `json:"consecutiveFailures" yaml:"consecutiveFailures"`
 
 	// CreatedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -190,9 +192,9 @@ type OrganizationSmtpConfigurationEncryption string
 // OrganizationSmtpConfigurationAuthMechanism SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password.
 type OrganizationSmtpConfigurationAuthMechanism string
 
-// OrganizationSmtpConfigurationStatus Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+// OrganizationSmtpConfigurationStatus Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
 //
-// The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+// The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
 type OrganizationSmtpConfigurationStatus string
 
 // OrganizationSmtpConfigurationLastFailureReason Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.

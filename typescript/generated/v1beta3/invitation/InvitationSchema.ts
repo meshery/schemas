@@ -214,6 +214,44 @@ const InvitationSchema: Record<string, unknown> = {
                         "description": "Team identifier the invited user is added to on acceptance."
                       }
                     },
+                    "acceptanceOutcome": {
+                      "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                      "x-go-type": "InvitationAcceptanceOutcome",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "acceptance_outcome",
+                        "json": "acceptanceOutcome"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "direct_membership",
+                        "child_organization"
+                      ],
+                      "default": "direct_membership"
+                    },
+                    "childOrganizationBranding": {
+                      "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                      "x-go-type": "InvitationChildOrganizationBranding",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_branding",
+                        "json": "childOrganizationBranding"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "parent",
+                        "provider",
+                        "none"
+                      ],
+                      "default": "parent"
+                    },
+                    "childOrganizationName": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_name",
+                        "json": "childOrganizationName"
+                      }
+                    },
                     "status": {
                       "description": "Activation status of the invitation.",
                       "x-go-type": "InvitationStatus",
@@ -404,11 +442,7 @@ const InvitationSchema: Record<string, unknown> = {
                 "description": "Payload for creating or updating an invitation.",
                 "required": [
                   "name",
-                  "description",
                   "orgId",
-                  "emails",
-                  "roles",
-                  "teams",
                   "status"
                 ],
                 "properties": {
@@ -455,7 +489,7 @@ const InvitationSchema: Record<string, unknown> = {
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation.",
+                    "description": "Description of the invitation. Optional; omitting it stores an empty description.",
                     "maxLength": 5000
                   },
                   "emails": {
@@ -470,7 +504,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "description": "Email address or pattern that is permitted to use this invitation.",
                       "x-go-type": "string"
                     },
-                    "description": "Email addresses or patterns this invitation is valid for."
+                    "description": "Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation."
                   },
                   "orgId": {
                     "type": "string",
@@ -507,7 +541,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Role identifier granted by this invitation on acceptance."
                     },
-                    "description": "Roles that the user will have when accepting the invitation."
+                    "description": "Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles."
                   },
                   "teams": {
                     "type": "array",
@@ -519,7 +553,45 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Team identifier the invited user is added to on acceptance."
                     },
-                    "description": "Teams that the user will be added to when accepting the invitation."
+                    "description": "Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams."
+                  },
+                  "acceptanceOutcome": {
+                    "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                    "x-go-type": "InvitationAcceptanceOutcome",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "acceptance_outcome",
+                      "json": "acceptanceOutcome,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "direct_membership",
+                      "child_organization"
+                    ],
+                    "default": "direct_membership"
+                  },
+                  "childOrganizationBranding": {
+                    "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                    "x-go-type": "InvitationChildOrganizationBranding",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "child_organization_branding",
+                      "json": "childOrganizationBranding,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "parent",
+                      "provider",
+                      "none"
+                    ],
+                    "default": "parent"
+                  },
+                  "childOrganizationName": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "child_organization_name",
+                      "json": "childOrganizationName,omitempty"
+                    }
                   },
                   "status": {
                     "description": "Activation status of the invitation.",
@@ -697,6 +769,44 @@ const InvitationSchema: Record<string, unknown> = {
                         "description": "Team identifier the invited user is added to on acceptance."
                       }
                     },
+                    "acceptanceOutcome": {
+                      "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                      "x-go-type": "InvitationAcceptanceOutcome",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "acceptance_outcome",
+                        "json": "acceptanceOutcome"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "direct_membership",
+                        "child_organization"
+                      ],
+                      "default": "direct_membership"
+                    },
+                    "childOrganizationBranding": {
+                      "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                      "x-go-type": "InvitationChildOrganizationBranding",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_branding",
+                        "json": "childOrganizationBranding"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "parent",
+                        "provider",
+                        "none"
+                      ],
+                      "default": "parent"
+                    },
+                    "childOrganizationName": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_name",
+                        "json": "childOrganizationName"
+                      }
+                    },
                     "status": {
                       "description": "Activation status of the invitation.",
                       "x-go-type": "InvitationStatus",
@@ -752,9 +862,50 @@ const InvitationSchema: Record<string, unknown> = {
           "400": {
             "description": "Invalid request body or request param",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -772,9 +923,50 @@ const InvitationSchema: Record<string, unknown> = {
           "403": {
             "description": "Forbidden",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -782,9 +974,50 @@ const InvitationSchema: Record<string, unknown> = {
           "404": {
             "description": "Result not found",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -792,9 +1025,50 @@ const InvitationSchema: Record<string, unknown> = {
           "500": {
             "description": "Internal server error",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1046,6 +1320,44 @@ const InvitationSchema: Record<string, unknown> = {
                               "description": "Team identifier the invited user is added to on acceptance."
                             }
                           },
+                          "acceptanceOutcome": {
+                            "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                            "x-go-type": "InvitationAcceptanceOutcome",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "acceptance_outcome",
+                              "json": "acceptanceOutcome"
+                            },
+                            "type": "string",
+                            "enum": [
+                              "direct_membership",
+                              "child_organization"
+                            ],
+                            "default": "direct_membership"
+                          },
+                          "childOrganizationBranding": {
+                            "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                            "x-go-type": "InvitationChildOrganizationBranding",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "child_organization_branding",
+                              "json": "childOrganizationBranding"
+                            },
+                            "type": "string",
+                            "enum": [
+                              "parent",
+                              "provider",
+                              "none"
+                            ],
+                            "default": "parent"
+                          },
+                          "childOrganizationName": {
+                            "type": "string",
+                            "maxLength": 255,
+                            "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "child_organization_name",
+                              "json": "childOrganizationName"
+                            }
+                          },
                           "status": {
                             "description": "Activation status of the invitation.",
                             "x-go-type": "InvitationStatus",
@@ -1155,11 +1467,7 @@ const InvitationSchema: Record<string, unknown> = {
                 "description": "Payload for creating or updating an invitation.",
                 "required": [
                   "name",
-                  "description",
                   "orgId",
-                  "emails",
-                  "roles",
-                  "teams",
                   "status"
                 ],
                 "properties": {
@@ -1206,7 +1514,7 @@ const InvitationSchema: Record<string, unknown> = {
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation.",
+                    "description": "Description of the invitation. Optional; omitting it stores an empty description.",
                     "maxLength": 5000
                   },
                   "emails": {
@@ -1221,7 +1529,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "description": "Email address or pattern that is permitted to use this invitation.",
                       "x-go-type": "string"
                     },
-                    "description": "Email addresses or patterns this invitation is valid for."
+                    "description": "Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation."
                   },
                   "orgId": {
                     "type": "string",
@@ -1258,7 +1566,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Role identifier granted by this invitation on acceptance."
                     },
-                    "description": "Roles that the user will have when accepting the invitation."
+                    "description": "Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles."
                   },
                   "teams": {
                     "type": "array",
@@ -1270,7 +1578,45 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Team identifier the invited user is added to on acceptance."
                     },
-                    "description": "Teams that the user will be added to when accepting the invitation."
+                    "description": "Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams."
+                  },
+                  "acceptanceOutcome": {
+                    "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                    "x-go-type": "InvitationAcceptanceOutcome",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "acceptance_outcome",
+                      "json": "acceptanceOutcome,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "direct_membership",
+                      "child_organization"
+                    ],
+                    "default": "direct_membership"
+                  },
+                  "childOrganizationBranding": {
+                    "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                    "x-go-type": "InvitationChildOrganizationBranding",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "child_organization_branding",
+                      "json": "childOrganizationBranding,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "parent",
+                      "provider",
+                      "none"
+                    ],
+                    "default": "parent"
+                  },
+                  "childOrganizationName": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "child_organization_name",
+                      "json": "childOrganizationName,omitempty"
+                    }
                   },
                   "status": {
                     "description": "Activation status of the invitation.",
@@ -1448,6 +1794,44 @@ const InvitationSchema: Record<string, unknown> = {
                         "description": "Team identifier the invited user is added to on acceptance."
                       }
                     },
+                    "acceptanceOutcome": {
+                      "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                      "x-go-type": "InvitationAcceptanceOutcome",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "acceptance_outcome",
+                        "json": "acceptanceOutcome"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "direct_membership",
+                        "child_organization"
+                      ],
+                      "default": "direct_membership"
+                    },
+                    "childOrganizationBranding": {
+                      "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                      "x-go-type": "InvitationChildOrganizationBranding",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_branding",
+                        "json": "childOrganizationBranding"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "parent",
+                        "provider",
+                        "none"
+                      ],
+                      "default": "parent"
+                    },
+                    "childOrganizationName": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_name",
+                        "json": "childOrganizationName"
+                      }
+                    },
                     "status": {
                       "description": "Activation status of the invitation.",
                       "x-go-type": "InvitationStatus",
@@ -1503,9 +1887,50 @@ const InvitationSchema: Record<string, unknown> = {
           "400": {
             "description": "Invalid request body or request param",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1523,9 +1948,50 @@ const InvitationSchema: Record<string, unknown> = {
           "403": {
             "description": "Forbidden",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1533,9 +1999,50 @@ const InvitationSchema: Record<string, unknown> = {
           "500": {
             "description": "Internal server error",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1726,6 +2233,44 @@ const InvitationSchema: Record<string, unknown> = {
                         "description": "Team identifier the invited user is added to on acceptance."
                       }
                     },
+                    "acceptanceOutcome": {
+                      "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                      "x-go-type": "InvitationAcceptanceOutcome",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "acceptance_outcome",
+                        "json": "acceptanceOutcome"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "direct_membership",
+                        "child_organization"
+                      ],
+                      "default": "direct_membership"
+                    },
+                    "childOrganizationBranding": {
+                      "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                      "x-go-type": "InvitationChildOrganizationBranding",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_branding",
+                        "json": "childOrganizationBranding"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "parent",
+                        "provider",
+                        "none"
+                      ],
+                      "default": "parent"
+                    },
+                    "childOrganizationName": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_name",
+                        "json": "childOrganizationName"
+                      }
+                    },
                     "status": {
                       "description": "Activation status of the invitation.",
                       "x-go-type": "InvitationStatus",
@@ -1781,9 +2326,50 @@ const InvitationSchema: Record<string, unknown> = {
           "400": {
             "description": "Invalid request body or request param",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1801,9 +2387,50 @@ const InvitationSchema: Record<string, unknown> = {
           "404": {
             "description": "Result not found",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1811,9 +2438,50 @@ const InvitationSchema: Record<string, unknown> = {
           "500": {
             "description": "Internal server error",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -2803,6 +3471,210 @@ const InvitationSchema: Record<string, unknown> = {
             }
           }
         }
+      },
+      "MeshkitError400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MeshkitError403": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MeshkitError404": {
+        "description": "Result not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MeshkitError500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -3006,6 +3878,44 @@ const InvitationSchema: Record<string, unknown> = {
                   "items": {
                     "type": "string",
                     "description": "Team identifier the invited user is added to on acceptance."
+                  }
+                },
+                "acceptanceOutcome": {
+                  "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                  "x-go-type": "InvitationAcceptanceOutcome",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "acceptance_outcome",
+                    "json": "acceptanceOutcome"
+                  },
+                  "type": "string",
+                  "enum": [
+                    "direct_membership",
+                    "child_organization"
+                  ],
+                  "default": "direct_membership"
+                },
+                "childOrganizationBranding": {
+                  "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                  "x-go-type": "InvitationChildOrganizationBranding",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "child_organization_branding",
+                    "json": "childOrganizationBranding"
+                  },
+                  "type": "string",
+                  "enum": [
+                    "parent",
+                    "provider",
+                    "none"
+                  ],
+                  "default": "parent"
+                },
+                "childOrganizationName": {
+                  "type": "string",
+                  "maxLength": 255,
+                  "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "child_organization_name",
+                    "json": "childOrganizationName"
                   }
                 },
                 "status": {
@@ -3561,11 +4471,7 @@ const InvitationSchema: Record<string, unknown> = {
         "description": "Payload for creating or updating an invitation.",
         "required": [
           "name",
-          "description",
           "orgId",
-          "emails",
-          "roles",
-          "teams",
           "status"
         ],
         "properties": {
@@ -3612,7 +4518,7 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "description": {
             "type": "string",
-            "description": "Description of the invitation.",
+            "description": "Description of the invitation. Optional; omitting it stores an empty description.",
             "maxLength": 5000
           },
           "emails": {
@@ -3627,7 +4533,7 @@ const InvitationSchema: Record<string, unknown> = {
               "description": "Email address or pattern that is permitted to use this invitation.",
               "x-go-type": "string"
             },
-            "description": "Email addresses or patterns this invitation is valid for."
+            "description": "Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation."
           },
           "orgId": {
             "type": "string",
@@ -3664,7 +4570,7 @@ const InvitationSchema: Record<string, unknown> = {
               "type": "string",
               "description": "Role identifier granted by this invitation on acceptance."
             },
-            "description": "Roles that the user will have when accepting the invitation."
+            "description": "Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles."
           },
           "teams": {
             "type": "array",
@@ -3676,7 +4582,45 @@ const InvitationSchema: Record<string, unknown> = {
               "type": "string",
               "description": "Team identifier the invited user is added to on acceptance."
             },
-            "description": "Teams that the user will be added to when accepting the invitation."
+            "description": "Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams."
+          },
+          "acceptanceOutcome": {
+            "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+            "x-go-type": "InvitationAcceptanceOutcome",
+            "x-oapi-codegen-extra-tags": {
+              "db": "acceptance_outcome",
+              "json": "acceptanceOutcome,omitempty"
+            },
+            "type": "string",
+            "enum": [
+              "direct_membership",
+              "child_organization"
+            ],
+            "default": "direct_membership"
+          },
+          "childOrganizationBranding": {
+            "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+            "x-go-type": "InvitationChildOrganizationBranding",
+            "x-oapi-codegen-extra-tags": {
+              "db": "child_organization_branding",
+              "json": "childOrganizationBranding,omitempty"
+            },
+            "type": "string",
+            "enum": [
+              "parent",
+              "provider",
+              "none"
+            ],
+            "default": "parent"
+          },
+          "childOrganizationName": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "child_organization_name",
+              "json": "childOrganizationName,omitempty"
+            }
           },
           "status": {
             "description": "Activation status of the invitation.",
@@ -3696,6 +4640,25 @@ const InvitationSchema: Record<string, unknown> = {
           "disabled"
         ],
         "description": "Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive. Disabled invitations can be re-enabled later."
+      },
+      "InvitationAcceptanceOutcome": {
+        "type": "string",
+        "enum": [
+          "direct_membership",
+          "child_organization"
+        ],
+        "default": "direct_membership",
+        "description": "Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user."
+      },
+      "InvitationChildOrganizationBranding": {
+        "type": "string",
+        "enum": [
+          "parent",
+          "provider",
+          "none"
+        ],
+        "default": "parent",
+        "description": "Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation."
       },
       "Invitation": {
         "type": "object",
@@ -3851,6 +4814,44 @@ const InvitationSchema: Record<string, unknown> = {
             "items": {
               "type": "string",
               "description": "Team identifier the invited user is added to on acceptance."
+            }
+          },
+          "acceptanceOutcome": {
+            "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+            "x-go-type": "InvitationAcceptanceOutcome",
+            "x-oapi-codegen-extra-tags": {
+              "db": "acceptance_outcome",
+              "json": "acceptanceOutcome"
+            },
+            "type": "string",
+            "enum": [
+              "direct_membership",
+              "child_organization"
+            ],
+            "default": "direct_membership"
+          },
+          "childOrganizationBranding": {
+            "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+            "x-go-type": "InvitationChildOrganizationBranding",
+            "x-oapi-codegen-extra-tags": {
+              "db": "child_organization_branding",
+              "json": "childOrganizationBranding"
+            },
+            "type": "string",
+            "enum": [
+              "parent",
+              "provider",
+              "none"
+            ],
+            "default": "parent"
+          },
+          "childOrganizationName": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "child_organization_name",
+              "json": "childOrganizationName"
             }
           },
           "status": {

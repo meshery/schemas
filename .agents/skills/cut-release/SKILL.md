@@ -68,6 +68,23 @@ gh run watch <databaseId> --exit-status
 A `conclusion` of `success` for the run whose `headSha` matches `origin/master` means the draft
 is up to date. If the latest run **failed**, stop and surface that - do not publish stale notes.
 
+Then wait for generated artifacts. `generate-artifacts-from-schemas.yml` also runs on every push to
+`master` and commits regenerated Go/TypeScript (`Generate build artifacts from schemas`) as a
+**new** commit on top of the merge. The tag must land on that commit, not the merge commit.
+
+```bash
+gh run list --workflow="generate-artifacts-from-schemas.yml" --branch master --limit 3 \
+  --json databaseId,status,conclusion,headSha,createdAt
+gh run watch <databaseId> --exit-status   # if the run for origin/master is still in progress
+git fetch origin master --quiet && git rev-parse origin/master
+```
+
+If `origin/master` moved after the run finished, the run pushed a generated-artifacts commit:
+repeat step 1 (Release Drafter, then Generate Artifacts) for the new head until `origin/master`
+stops moving. The head is settled when its Generate Artifacts run concluded `success` or
+`skipped`, or no run exists because the commit only touched `paths-ignore` files. A `failure`
+means the generated artifacts are missing - stop and surface it.
+
 ### 2. Identify and inspect the draft
 
 ```bash
@@ -85,6 +102,15 @@ publishing without it.
 
 If more than one draft is ever returned, stop and ask the user which to publish rather than
 guessing - publishing the wrong one ships an unintended version to npm.
+
+Confirm the draft will tag the settled head from step 1. Its tag is created at publish time from
+`targetCommitish`; if that is a branch name (`master`) it resolves to the head you just settled,
+but if it is a SHA other than `origin/master`, retarget it:
+
+```bash
+gh release view <draftTag> --json targetCommitish --jq .targetCommitish
+gh release edit <draftTag> --target "$(git rev-parse origin/master)"   # only if it differs
+```
 
 ### 3. Publish the draft
 
@@ -116,6 +142,11 @@ event and will publish `@meshery/schemas` to npm, notify dependents, and publish
 - **Don't publish ahead of the drafter run.** The most common failure is publishing before the
   Release Drafter workflow has folded the merged PR into the notes, shipping a release whose notes
   omit the very change being released. Step 1 exists to prevent exactly this.
+- **Don't publish ahead of Generate Artifacts.** The tag pins the Go module: tagging the merge
+  commit before the `Generate build artifacts from schemas` commit lands ships a Go module that
+  lacks the newest generated types, even though the npm package is complete (publish-schemas waits
+  for that run before building it). v1.3.60 and v1.3.63 shipped this gap and needed a corrective
+  release.
 - **The release *is* the npm publish.** There is no separate "publish to npm" button - publishing
   the draft is what pushes `@meshery/schemas` to the registry. Treat the publish as production.
 - **Never hand-author the tag or notes.** If you find yourself computing a version number or

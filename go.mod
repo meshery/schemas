@@ -7,6 +7,7 @@ require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/lib/pq v1.12.3
 	github.com/meshery/meshkit v1.0.22
+	github.com/oapi-codegen/nullable v1.1.0
 	github.com/oapi-codegen/runtime v1.7.0
 	github.com/pkg/errors v0.9.1
 	github.com/rodaine/table v1.3.1

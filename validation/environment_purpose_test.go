@@ -19,9 +19,10 @@ const (
 // and resolvers that read organization-level configuration trust environments
 // carrying that designation. The whole value of the property over the naming
 // convention it replaces is that it cannot be set by whoever can merely create
-// an environment. These tests pin the schema-side half of that: `purpose` stays
-// out of `EnvironmentPayload` and out of the create-or-edit form, and the entity
-// declares it in the shape those guarantees depend on - which deliberately
+// an environment. These tests pin the schema-side half of that: `EnvironmentPayload`
+// accepts `purpose` only as the non-privileged subset, the create-or-edit form
+// has no `purpose` field, and the entity declares it in the shape those
+// guarantees depend on - which deliberately
 // excludes `readOnly`, because that annotation breaks the generated RTK request
 // types.
 //
@@ -30,12 +31,13 @@ const (
 // the schema can do is make the loss of the guarantee a failing test rather
 // than a quiet edit, which is what these cover.
 
-// TestEnvironmentPayloadOmitsPurpose is the load-bearing one. EnvironmentPayload
-// is the schema every POST and PUT requestBody references, so a `purpose`
-// property here would generate a client-settable field in Go, TypeScript, and
-// the RTK client at once - reinstating, under a new spelling, exactly the
-// escalation the typed property exists to close.
-func TestEnvironmentPayloadOmitsPurpose(t *testing.T) {
+// TestEnvironmentPayloadPurposeIsNonPrivileged is the load-bearing one.
+// EnvironmentPayload is the schema every POST and PUT requestBody references, so
+// a `purpose` property that admits a privileged value would generate a
+// client-settable privileged field in Go, TypeScript, and the RTK client at
+// once - reinstating, under a new spelling, exactly the escalation the typed
+// property exists to close.
+func TestEnvironmentPayloadPurposeIsNonPrivileged(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), environmentAPISpec))
 
 	properties, err := lookupPath(doc, "components", "schemas", "EnvironmentPayload", "properties")
@@ -45,13 +47,26 @@ func TestEnvironmentPayloadOmitsPurpose(t *testing.T) {
 
 	got := mappingKeys(properties)
 	sort.Strings(got)
-	want := []string{"description", "name", "organizationId"}
+	want := []string{"description", "metadata", "name", "organizationId", "purpose"}
 
 	if strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("EnvironmentPayload properties = %v, want exactly %v. "+
-			"The payload is the set of fields a client may supply; purpose is "+
-			"server-owned and every other field here is server-generated.",
+			"The payload is the set of fields a client may supply; every other "+
+			"field here is server-generated.",
 			got, want)
+	}
+
+	// purpose may appear on the payload only as the non-privileged subset.
+	// Widening this enum to administrative (or any later privileged value)
+	// hands the designation to whoever can create an environment.
+	ref, _ := mappingValue(mustLookup(t, properties, "purpose"), "$ref")
+	if ref != "#/components/schemas/EnvironmentPayloadPurpose" {
+		t.Fatalf("EnvironmentPayload.purpose must reference EnvironmentPayloadPurpose, got %v", ref)
+	}
+	gotEnum := stringSliceOf(mustLookup(t, doc, "components", "schemas", "EnvironmentPayloadPurpose", "enum"))
+	if strings.Join(gotEnum, ",") != "user" {
+		t.Errorf("EnvironmentPayloadPurpose enum = %v, want exactly [user]; "+
+			"a privileged purpose must never be client-settable", gotEnum)
 	}
 }
 

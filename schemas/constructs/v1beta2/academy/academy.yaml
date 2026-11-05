@@ -31,6 +31,8 @@ properties:
       db: type
   org_id:
     $ref: './api.yml#/components/schemas/AcademyCurriculaOrgId'
+    x-oapi-codegen-extra-tags:
+      db: org_id
   visibility:
     $ref: './api.yml#/components/schemas/Visibility'
     description: Visibility of the Curricula
@@ -71,13 +73,23 @@ properties:
       json: badge_id
   invite_id:
     $ref: './api.yml#/components/schemas/AcademyCurriculaInviteId'
+    x-oapi-codegen-extra-tags:
+      db: invite_id
   workspace_id:
     $ref: './api.yml#/components/schemas/AcademyCurriculaWorkspaceId'
+    x-oapi-codegen-extra-tags:
+      db: workspace_id
   created_at:
     $ref: './api.yml#/components/schemas/AcademyCurriculaCreatedAt'
+    x-oapi-codegen-extra-tags:
+      db: created_at
   updated_at:
     $ref: './api.yml#/components/schemas/AcademyCurriculaUpdatedAt'
+    x-oapi-codegen-extra-tags:
+      db: updated_at
   deleted_at:
     $ref: './api.yml#/components/schemas/AcademyCurriculaDeletedAt'
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
   metadata:
     $ref: './api.yml#/components/schemas/AcademyCurriculaMetadata'

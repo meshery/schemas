@@ -9,7 +9,47 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	core "github.com/meshery/schemas/models/core"
+	"github.com/meshery/schemas/models/core"
+)
+
+// Defines values for EventFeedItemPlatform.
+const (
+	EventFeedItemPlatformBluesky    EventFeedItemPlatform = "bluesky"
+	EventFeedItemPlatformGithub     EventFeedItemPlatform = "github"
+	EventFeedItemPlatformHackerNews EventFeedItemPlatform = "hacker-news"
+	EventFeedItemPlatformLinkedin   EventFeedItemPlatform = "linkedin"
+	EventFeedItemPlatformReddit     EventFeedItemPlatform = "reddit"
+	EventFeedItemPlatformSlack      EventFeedItemPlatform = "slack"
+	EventFeedItemPlatformX          EventFeedItemPlatform = "x"
+)
+
+// Defines values for EventResultVisibility.
+const (
+	EventResultVisibilityPrivate EventResultVisibility = "private"
+	EventResultVisibilityPublic  EventResultVisibility = "public"
+)
+
+// Defines values for EventVisibility.
+const (
+	EventVisibilityPrivate EventVisibility = "private"
+	EventVisibilityPublic  EventVisibility = "public"
+)
+
+// Defines values for ScheduleCompletedEventMetadataPlatform.
+const (
+	ScheduleCompletedEventMetadataPlatformBluesky    ScheduleCompletedEventMetadataPlatform = "bluesky"
+	ScheduleCompletedEventMetadataPlatformGithub     ScheduleCompletedEventMetadataPlatform = "github"
+	ScheduleCompletedEventMetadataPlatformHackerNews ScheduleCompletedEventMetadataPlatform = "hacker-news"
+	ScheduleCompletedEventMetadataPlatformLinkedin   ScheduleCompletedEventMetadataPlatform = "linkedin"
+	ScheduleCompletedEventMetadataPlatformReddit     ScheduleCompletedEventMetadataPlatform = "reddit"
+	ScheduleCompletedEventMetadataPlatformSlack      ScheduleCompletedEventMetadataPlatform = "slack"
+	ScheduleCompletedEventMetadataPlatformX          ScheduleCompletedEventMetadataPlatform = "x"
+)
+
+// Defines values for EventsScope.
+const (
+	Organization EventsScope = "organization"
+	User         EventsScope = "user"
 )
 
 // BulkDeleteRequest Payload for bulk-deleting events by ID.
@@ -39,13 +79,205 @@ type BulkUpdateStatusResponse struct {
 	Updated *[]uuid.UUID `json:"updated,omitempty" yaml:"updated,omitempty"`
 }
 
+// DesignEventIdentity The fields that identify the design a design event is about. Every design event that names a design carries them, and they are what remains when Meshery Server's 16 KB guard drops oversized metadata. Event metadata names a design, it never carries one: never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to these identity fields. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys instead of `designName` and `viewLink`; readers should fall back to them.
+type DesignEventIdentity struct {
+	// DesignID ID of the design the event is about.
+	DesignID uuid.UUID `json:"designId" yaml:"designId"`
+
+	// DesignLink Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.
+	DesignLink *string `json:"designLink,omitempty" yaml:"designLink,omitempty"`
+
+	// DesignName Name of the design when the event was recorded.
+	DesignName *string `json:"designName,omitempty" yaml:"designName,omitempty"`
+
+	// DesignVersion Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.
+	DesignVersion *string `json:"designVersion,omitempty" yaml:"designVersion,omitempty"`
+
+	// ViewLink Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
+	ViewLink *string `json:"viewLink,omitempty" yaml:"viewLink,omitempty"`
+}
+
+// DesignEventOperationError Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response.
+type DesignEventOperationError struct {
+	// Code The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know.
+	Code string `json:"code" yaml:"code"`
+
+	// Message One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents.
+	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
+}
+
+// DesignSavedEventDesign The ID and name of the design a saved event is about - only those two fields, never the design file or any of its contents.
+type DesignSavedEventDesign struct {
+	// ID ID of the saved design.
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// Name Name of the saved design.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// DesignSavedEventMetadata Metadata of a design saved event (category `pattern`, action `create` or `update`): a history title and the saved design's ID and name, never its contents. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
+type DesignSavedEventMetadata struct {
+	// Design The ID and name of the design a saved event is about - only those two fields, never the design file or any of its contents.
+	Design DesignSavedEventDesign `json:"design" yaml:"design"`
+
+	// HistoryTitle One-line title of the save for the design's history, for example `Version v0.0.3 - 12 components and 9 relationships`.
+	HistoryTitle *string `json:"historyTitle,omitempty" yaml:"historyTitle,omitempty"`
+}
+
+// DesignValidationEventError One error a design validate, deploy, undeploy or dry-run operation found: a code and the component it is about, never the offending component itself.
+type DesignValidationEventError struct {
+	// Code The error's code: a JSON-schema validator keyword such as `required` or `type` when design validation rejected the design, or a MeshKit error code (for example `meshery-server-1234`) when a server-side step failed. Consumers must tolerate codes they do not know.
+	Code string `json:"code" yaml:"code"`
+
+	// ComponentID ID of the design component the error is about, as the design names it; omitted when the error is about the design as a whole. It is not checked as a UUID, because an invalid design can carry any value here and one bad value must not make the event unreadable.
+	ComponentID *string `json:"componentId,omitempty" yaml:"componentId,omitempty"`
+}
+
+// DesignValidationEventMetadata Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. When the operation did not complete (`status` `error`), there is no verdict: `errors` is empty or omitted, `errorCount` and `truncated` are omitted, the identity fields are kept, `error` names why the operation failed, and the event is recorded with severity `error` under its usual category `pattern` and action (`validate` for a design validation). Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
+type DesignValidationEventMetadata struct {
+	// DesignID ID of the design the event is about.
+	DesignID uuid.UUID `json:"designId" yaml:"designId"`
+
+	// DesignLink Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.
+	DesignLink *string `json:"designLink,omitempty" yaml:"designLink,omitempty"`
+
+	// DesignName Name of the design when the event was recorded.
+	DesignName *string `json:"designName,omitempty" yaml:"designName,omitempty"`
+
+	// DesignVersion Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.
+	DesignVersion *string `json:"designVersion,omitempty" yaml:"designVersion,omitempty"`
+
+	// Error Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response.
+	Error *DesignEventOperationError `json:"error,omitempty" yaml:"error,omitempty"`
+
+	// ErrorCount Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20. Omitted when `status` is `error`, because an operation that did not complete found nothing.
+	ErrorCount *int `json:"errorCount,omitempty" yaml:"errorCount,omitempty"`
+
+	// Errors Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed. Empty or omitted when `status` is `error`.
+	Errors *[]DesignValidationEventError `json:"errors,omitempty" yaml:"errors,omitempty"`
+
+	// Status Outcome of the operation as the producer reports it: `success` (the operation ran and found no errors), `partial` (the operation ran and part of it succeeded), `failed` (the operation ran and found errors, listed in `errors`) or `error` (the operation did not complete, so there is no verdict; `error` says why). It is an open string, not an enum: consumers must tolerate values they do not know.
+	Status *string `json:"status,omitempty" yaml:"status,omitempty"`
+
+	// Truncated True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete. Omitted when `status` is `error`.
+	Truncated *bool `json:"truncated,omitempty" yaml:"truncated,omitempty"`
+
+	// ViewLink Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
+	ViewLink *string `json:"viewLink,omitempty" yaml:"viewLink,omitempty"`
+}
+
 // ErrorResponse Generic error envelope returned for non-2xx responses.
 type ErrorResponse struct {
 	// Error Human-readable error message.
 	Error *string `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
-// EventPayload Payload for creating a new event.
+// Event One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.
+type Event struct {
+	ActedUpon core.Id `db:"acted_upon" json:"actedUpon" yaml:"actedUpon"`
+
+	// Action Action taken on the resource, for example `import`.
+	Action string `db:"action" json:"action" yaml:"action"`
+
+	// Category Resource kind the operation was invoked on, for example `pattern`.
+	Category  string    `db:"category" json:"category" yaml:"category"`
+	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
+
+	// Description Human-readable summary of what happened.
+	Description string  `db:"description" json:"description" yaml:"description"`
+	ID          core.Id `db:"id" json:"id" yaml:"id"`
+
+	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+	Metadata    core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	OperationID core.Id  `db:"operation_id" json:"operationId" yaml:"operationId"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
+
+	// Severity Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+	Severity string `db:"severity" json:"severity" yaml:"severity"`
+
+	// Status Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+	Status    string        `db:"status" json:"status" yaml:"status"`
+	SystemID  core.SystemId `db:"system_id" json:"systemId" yaml:"systemId"`
+	UpdatedAt core.Time     `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility EventVisibility `db:"visibility" json:"visibility" yaml:"visibility"`
+}
+
+// EventFeedItem An event projected into the public feed. It never includes email,
+// firstName, lastName, description, provider or raw metadata.
+// `platform`, `role`, `line` and `networks` are projected from
+// ScheduleCompletedEventMetadata; events without valid required
+// metadata are skipped. Public profile fields are resolved by Cloud at
+// read time and are included only when the user's profile is public.
+type EventFeedItem struct {
+	ID core.Id `json:"id" yaml:"id"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserId core.Uuid `json:"userId" yaml:"userId"`
+
+	// Category Event category.
+	Category string `json:"category" yaml:"category"`
+
+	// Action Event action.
+	Action    string    `json:"action" yaml:"action"`
+	CreatedAt core.Time `json:"createdAt" yaml:"createdAt"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility EventVisibility `json:"visibility" yaml:"visibility"`
+
+	// Platform Platform from ScheduleCompletedEventMetadata.
+	Platform EventFeedItemPlatform `json:"platform" yaml:"platform"`
+
+	// Role Role from ScheduleCompletedEventMetadata.
+	Role string `json:"role" yaml:"role"`
+
+	// Line One-line result from ScheduleCompletedEventMetadata.
+	Line string `json:"line" yaml:"line"`
+
+	// Networks Networks from ScheduleCompletedEventMetadata, when present.
+	Networks *[]string `json:"networks,omitempty" yaml:"networks,omitempty"`
+
+	// DisplayName Public username, never a real name; present only for a public profile.
+	DisplayName *string `json:"displayName,omitempty" yaml:"displayName,omitempty"`
+
+	// AvatarURL Public avatar URL; present only for a public profile.
+	AvatarURL *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// OrganizationName Public organization name; present only for a public profile.
+	OrganizationName *string `json:"organizationName,omitempty" yaml:"organizationName,omitempty"`
+
+	// PublicProfileURL HTTPS URL of the user's public profile.
+	PublicProfileURL *string `json:"publicProfileUrl,omitempty" yaml:"publicProfileUrl,omitempty"`
+}
+
+// EventFeedItemPlatform Platform from ScheduleCompletedEventMetadata.
+type EventFeedItemPlatform string
+
+// EventFeedPage One page of event feed items, newest first.
+type EventFeedPage struct {
+	// Data Events for the requested page, newest first.
+	Data []EventFeedItem `json:"data" yaml:"data"`
+
+	// Page Current page number of the result set.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of items per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of matching feed events.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
+// EventPayload Payload for creating a new event. If visibility is absent, the event is private.
 type EventPayload struct {
 	// Action The action of the event.
 	Action *string `json:"action,omitempty" yaml:"action,omitempty"`
@@ -56,8 +288,14 @@ type EventPayload struct {
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
+	// IdempotencyKey Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
+	IdempotencyKey *string `json:"idempotencyKey,omitempty" yaml:"idempotencyKey,omitempty"`
+
 	// Owner UUID of the user associated with the event.
-	Owner                *uuid.UUID             `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	Owner *uuid.UUID `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility      *EventVisibility       `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
@@ -65,6 +303,9 @@ type EventPayload struct {
 type EventResult struct {
 	// Action The action of the event.
 	Action string `json:"action" yaml:"action"`
+
+	// AvatarUrl URL to the avatar image of the user associated with the event.
+	AvatarUrl *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
 
 	// Category The category of the event.
 	Category string `json:"category" yaml:"category"`
@@ -84,15 +325,24 @@ type EventResult struct {
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
+	// OrganizationID The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId" yaml:"organizationId"`
+
 	// Owner UUID of the user associated with the event.
 	Owner uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
 
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
 
-	// SystemId System identifier of the event source.
+	// SystemId System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
 	SystemId string `db:"system_id" json:"systemId" yaml:"systemId"`
+
+	// Visibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+	Visibility EventResultVisibility `db:"visibility" json:"visibility" yaml:"visibility"`
 }
+
+// EventResultVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+type EventResultVisibility string
 
 // EventSummary Per-user event summary entry.
 type EventSummary map[string]interface{}
@@ -121,6 +371,9 @@ type EventType struct {
 	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
 }
 
+// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+type EventVisibility string
+
 // EventsAggregate Aggregated event counts across categories.
 type EventsAggregate struct {
 	// Audit Count of audit-category events.
@@ -136,6 +389,63 @@ type EventsPage struct {
 	PageSize   core.Number    `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
 	TotalCount core.Number    `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
+
+// RelationshipEvaluationEventMetadata Metadata of a relationship evaluation event (category `relationship`, action `evaluation`): the design's identity fields (DesignEventIdentity) plus counts of what the evaluation changed. It summarizes the evaluation; it does not carry it. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
+type RelationshipEvaluationEventMetadata struct {
+	// DesignID ID of the design the event is about.
+	DesignID uuid.UUID `json:"designId" yaml:"designId"`
+
+	// DesignLink Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.
+	DesignLink *string `json:"designLink,omitempty" yaml:"designLink,omitempty"`
+
+	// DesignName Name of the design when the event was recorded.
+	DesignName *string `json:"designName,omitempty" yaml:"designName,omitempty"`
+
+	// DesignVersion Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.
+	DesignVersion *string `json:"designVersion,omitempty" yaml:"designVersion,omitempty"`
+
+	// EvaluatedAt When the evaluation ran.
+	EvaluatedAt *time.Time `json:"evaluatedAt,omitempty" yaml:"evaluatedAt,omitempty"`
+
+	// EvaluationDurationMs How long the evaluation took, in milliseconds.
+	EvaluationDurationMs *int `json:"evaluationDurationMs,omitempty" yaml:"evaluationDurationMs,omitempty"`
+
+	// EvaluationStatus Outcome of the evaluation as the evaluator reports it, for example `completed`; consumers must tolerate values they do not know.
+	EvaluationStatus *string `json:"evaluationStatus,omitempty" yaml:"evaluationStatus,omitempty"`
+
+	// HistoryTitle One-line title of the evaluation for the design's history, for example `3 changes made at version v0.0.3`.
+	HistoryTitle *string `json:"historyTitle,omitempty" yaml:"historyTitle,omitempty"`
+
+	// RelationshipsAdded Number of relationships the evaluation added to the design.
+	RelationshipsAdded *int `json:"relationshipsAdded,omitempty" yaml:"relationshipsAdded,omitempty"`
+
+	// RelationshipsRemoved Number of relationships the evaluation removed from the design.
+	RelationshipsRemoved *int `json:"relationshipsRemoved,omitempty" yaml:"relationshipsRemoved,omitempty"`
+
+	// RelationshipsUpdated Number of existing relationships the evaluation updated.
+	RelationshipsUpdated *int `json:"relationshipsUpdated,omitempty" yaml:"relationshipsUpdated,omitempty"`
+
+	// ViewLink Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
+	ViewLink *string `json:"viewLink,omitempty" yaml:"viewLink,omitempty"`
+}
+
+// ScheduleCompletedEventMetadata Metadata for a completed scheduled run (category `schedule`, action `completed`). This typed shape keeps client-specific display data out of the core Event fields and is projected into EventFeedItem.
+type ScheduleCompletedEventMetadata struct {
+	// Line One-line result of the run.
+	Line string `json:"line" yaml:"line"`
+
+	// Networks Networks or communities where the run acted.
+	Networks *[]string `json:"networks,omitempty" yaml:"networks,omitempty"`
+
+	// Platform Platform the completed run acted on.
+	Platform ScheduleCompletedEventMetadataPlatform `json:"platform" yaml:"platform"`
+
+	// Role Role the completed run acted in.
+	Role string `json:"role" yaml:"role"`
+}
+
+// ScheduleCompletedEventMetadataPlatform Platform the completed run acted on.
+type ScheduleCompletedEventMetadataPlatform string
 
 // UpdateEventStatusRequest Payload for updating the status of a single event.
 type UpdateEventStatusRequest struct {
@@ -164,6 +474,18 @@ type EventId = uuid.UUID
 // Filter defines model for filter.
 type Filter = string
 
+// EventsScope defines model for eventsScope.
+type EventsScope string
+
+// FeedAction defines model for feedAction.
+type FeedAction = string
+
+// FeedCategory defines model for feedCategory.
+type FeedCategory = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = int
+
 // Order defines model for order.
 type Order = string
 
@@ -173,8 +495,8 @@ type Page = int
 // PageSize defines model for pageSize.
 type PageSize = int
 
-// Pagesize defines model for pagesize.
-type Pagesize = int
+// CorePagesize defines model for pagesize.
+type CorePagesize = int
 
 // PagesizeLegacy defines model for pagesizeLegacy.
 type PagesizeLegacy = int
@@ -184,6 +506,12 @@ type Search = string
 
 // WorkspaceId defines model for workspaceId.
 type WorkspaceId = core.WorkspaceId
+
+// CoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError403 = core.MeshkitError
+
+// CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError429 = core.MeshkitError
 
 // Getter for additional properties for EventPayload. Returns the specified
 // element and whether it was found
@@ -234,12 +562,28 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "description")
 	}
 
+	if raw, found := object["idempotencyKey"]; found {
+		err = json.Unmarshal(raw, &a.IdempotencyKey)
+		if err != nil {
+			return fmt.Errorf("error reading 'idempotencyKey': %w", err)
+		}
+		delete(object, "idempotencyKey")
+	}
+
 	if raw, found := object["owner"]; found {
 		err = json.Unmarshal(raw, &a.Owner)
 		if err != nil {
 			return fmt.Errorf("error reading 'owner': %w", err)
 		}
 		delete(object, "owner")
+	}
+
+	if raw, found := object["visibility"]; found {
+		err = json.Unmarshal(raw, &a.EventVisibility)
+		if err != nil {
+			return fmt.Errorf("error reading 'visibility': %w", err)
+		}
+		delete(object, "visibility")
 	}
 
 	if len(object) != 0 {
@@ -282,10 +626,24 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		}
 	}
 
+	if a.IdempotencyKey != nil {
+		object["idempotencyKey"], err = json.Marshal(a.IdempotencyKey)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'idempotencyKey': %w", err)
+		}
+	}
+
 	if a.Owner != nil {
 		object["owner"], err = json.Marshal(a.Owner)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'owner': %w", err)
+		}
+	}
+
+	if a.EventVisibility != nil {
+		object["visibility"], err = json.Marshal(a.EventVisibility)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'visibility': %w", err)
 		}
 	}
 

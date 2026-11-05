@@ -12,6 +12,19 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for InvitationAcceptanceOutcome.
+const (
+	ChildOrganization InvitationAcceptanceOutcome = "child_organization"
+	DirectMembership  InvitationAcceptanceOutcome = "direct_membership"
+)
+
+// Defines values for InvitationChildOrganizationBranding.
+const (
+	None     InvitationChildOrganizationBranding = "none"
+	Parent   InvitationChildOrganizationBranding = "parent"
+	Provider InvitationChildOrganizationBranding = "provider"
+)
+
 // Defines values for InvitationStatus.
 const (
 	Disabled InvitationStatus = "disabled"
@@ -20,8 +33,17 @@ const (
 
 // Invitation Invitation entity schema.
 type Invitation struct {
+	// AcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
+	AcceptanceOutcome *InvitationAcceptanceOutcome `db:"acceptance_outcome" json:"acceptanceOutcome" yaml:"acceptanceOutcome,omitempty"`
+
 	// AcceptedBy List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.
 	AcceptedBy pq.StringArray `db:"accepted_by" json:"acceptedBy" yaml:"acceptedBy"`
+
+	// ChildOrganizationBranding Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
+	ChildOrganizationBranding *InvitationChildOrganizationBranding `db:"child_organization_branding" json:"childOrganizationBranding" yaml:"childOrganizationBranding,omitempty"`
+
+	// ChildOrganizationName Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.
+	ChildOrganizationName *string `db:"child_organization_name" json:"childOrganizationName" yaml:"childOrganizationName"`
 
 	// CreatedAt Timestamp when the invitation was created.
 	CreatedAt time.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
@@ -69,13 +91,28 @@ type Invitation struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
+// InvitationAcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
+type InvitationAcceptanceOutcome string
+
+// InvitationChildOrganizationBranding Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
+type InvitationChildOrganizationBranding string
+
 // InvitationPayload Payload for creating or updating an invitation.
 type InvitationPayload struct {
-	// Description Description of the invitation.
-	Description string `json:"description" yaml:"description"`
+	// AcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
+	AcceptanceOutcome *InvitationAcceptanceOutcome `db:"acceptance_outcome" json:"acceptanceOutcome,omitempty" yaml:"acceptanceOutcome,omitempty"`
 
-	// Emails Email addresses or patterns this invitation is valid for.
-	Emails pq.StringArray `json:"emails" yaml:"emails"`
+	// ChildOrganizationBranding Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
+	ChildOrganizationBranding *InvitationChildOrganizationBranding `db:"child_organization_branding" json:"childOrganizationBranding,omitempty" yaml:"childOrganizationBranding,omitempty"`
+
+	// ChildOrganizationName Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.
+	ChildOrganizationName *string `db:"child_organization_name" json:"childOrganizationName,omitempty" yaml:"childOrganizationName,omitempty"`
+
+	// Description Description of the invitation. Optional; omitting it stores an empty description.
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Emails Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation.
+	Emails *pq.StringArray `json:"emails,omitempty" yaml:"emails,omitempty"`
 
 	// ExpiresAt Timestamp when the invitation expires, if applicable.
 	ExpiresAt *time.Time `db:"expires_at" json:"expiresAt,omitempty" yaml:"expiresAt,omitempty"`
@@ -98,14 +135,14 @@ type InvitationPayload struct {
 	// Quota Quota for the invitation; limits the number of users that can accept it.
 	Quota *int `json:"quota,omitempty" yaml:"quota,omitempty"`
 
-	// Roles Roles that the user will have when accepting the invitation.
-	Roles pq.StringArray `json:"roles" yaml:"roles"`
+	// Roles Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles.
+	Roles *pq.StringArray `json:"roles,omitempty" yaml:"roles,omitempty"`
 
 	// Status Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive. Disabled invitations can be re-enabled later.
 	Status InvitationStatus `json:"status" yaml:"status"`
 
-	// Teams Teams that the user will be added to when accepting the invitation.
-	Teams pq.StringArray `json:"teams" yaml:"teams"`
+	// Teams Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams.
+	Teams *pq.StringArray `json:"teams,omitempty" yaml:"teams,omitempty"`
 }
 
 // InvitationStatus Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive. Disabled invitations can be re-enabled later.
@@ -242,3 +279,15 @@ type SignupTaskId = string
 
 // SignupTaskLink defines model for signupTaskLink.
 type SignupTaskLink = string
+
+// CoreMeshkitError400 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError400 = core.MeshkitError
+
+// CoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError403 = core.MeshkitError
+
+// CoreMeshkitError404 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError404 = core.MeshkitError
+
+// CoreMeshkitError500 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError500 = core.MeshkitError

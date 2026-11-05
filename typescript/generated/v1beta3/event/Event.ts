@@ -102,7 +102,10 @@ export interface paths {
         /** Get events aggregate summary */
         get: operations["getEventsAggregate"];
         put?: never;
-        /** Create a new event */
+        /**
+         * Create a new event
+         * @description Records an event and answers 201 with it. When the payload carries an `idempotencyKey` the authenticated caller already used, nothing new is recorded and the answer is 200 with the event first recorded under that key. The server assigns the organization from the session; clients do not send it.
+         */
         post: operations["createEvent"];
         delete?: never;
         options?: never;
@@ -119,6 +122,32 @@ export interface paths {
         };
         /** Get events list */
         get: operations["getEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event feed
+         * @description Generic, unauthenticated feed of events whose visibility is `public`
+         *     and whose owner's `shareActivityPublicly` preference is on at read
+         *     time. Results are ordered newest first by `createdAt` and can be
+         *     filtered by category and action. Rate limited per client IP; an
+         *     over-limit client receives 429 with `Retry-After`. Responses carry
+         *     `Cache-Control: public, max-age=N` where N is at most 30 seconds.
+         *     See docs/event-feed-contract.md.
+         */
+        get: operations["getEventFeed"];
         put?: never;
         post?: never;
         delete?: never;
@@ -165,7 +194,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description Payload for creating a new event. */
+        /** @description Payload for creating a new event. If visibility is absent, the event is private. */
         EventPayload: {
             /**
              * Format: uuid
@@ -174,10 +203,18 @@ export interface components {
             owner?: string;
             /** @description The category of the event. */
             category?: string;
+            /**
+             * @description Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed.
+             * @default private
+             * @enum {string}
+             */
+            visibility: "private" | "public";
             /** @description The action of the event. */
             action?: string;
             /** @description Description of the event. */
             description?: string;
+            /** @description Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication. */
+            idempotencyKey?: string;
         } & {
             [key: string]: unknown;
         };
@@ -229,12 +266,23 @@ export interface components {
         /** @description EventResult entity schema. */
         EventResult: {
             /**
+             * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+             * @default private
+             * @enum {string}
+             */
+            visibility: "private" | "public";
+            /**
              * Format: uuid
              * @description UUID of the user associated with the event.
              */
             owner: string;
-            /** @description System identifier of the event source. */
+            /** @description System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked. */
             systemId?: string;
+            /**
+             * Format: uuid
+             * @description The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+             */
+            readonly organizationId?: string;
             /** @description The category of the event. */
             category: string;
             /** @description The action of the event. */
@@ -245,6 +293,11 @@ export interface components {
             firstName?: string;
             /** @description The last name of the user associated with the event. */
             lastName?: string;
+            /**
+             * Format: uri
+             * @description URL to the avatar image of the user associated with the event.
+             */
+            avatarUrl?: string;
             /**
              * Format: email
              * @description Email address of the user associated with the event.
@@ -258,6 +311,74 @@ export interface components {
              */
             createdAt?: string;
         };
+        /** @description One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields. */
+        Event: {
+            /**
+             * Format: uuid
+             * @description Event ID.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description ID of the entity on which the event was performed.
+             */
+            actedUpon: string;
+            /** @description Action taken on the resource, for example `import`. */
+            action: string;
+            /** @description Resource kind the operation was invoked on, for example `pattern`. */
+            category: string;
+            /** @description Human-readable summary of what happened. */
+            description: string;
+            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+            metadata: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Format: uuid
+             * @description ID correlating the events one operation emitted.
+             */
+            operationId: string;
+            /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+            severity: string;
+            /** @description Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values. */
+            status: string;
+            /**
+             * Format: uuid
+             * @description ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+             */
+            systemId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            owner?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            readonly organizationId: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the event was recorded.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the event was last updated.
+             */
+            updatedAt: string;
+            /**
+             * @description Who can see the event. Defaults to `private`.
+             * @default private
+             * @enum {string}
+             */
+            visibility: "private" | "public";
+            /**
+             * Format: date-time
+             * @description Timestamp when the event was soft-deleted; omitted when it was not.
+             */
+            deletedAt?: string | null;
+        };
         /** @description Paginated list of events. */
         EventsPage: {
             /** @description Zero-based page index returned in this response. */
@@ -269,12 +390,23 @@ export interface components {
             /** @description The events returned on the current page. */
             data?: {
                 /**
+                 * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+                 * @default private
+                 * @enum {string}
+                 */
+                visibility: "private" | "public";
+                /**
                  * Format: uuid
                  * @description UUID of the user associated with the event.
                  */
                 owner: string;
-                /** @description System identifier of the event source. */
+                /** @description System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked. */
                 systemId?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+                 */
+                readonly organizationId?: string;
                 /** @description The category of the event. */
                 category: string;
                 /** @description The action of the event. */
@@ -285,6 +417,11 @@ export interface components {
                 firstName?: string;
                 /** @description The last name of the user associated with the event. */
                 lastName?: string;
+                /**
+                 * Format: uri
+                 * @description URL to the avatar image of the user associated with the event.
+                 */
+                avatarUrl?: string;
                 /**
                  * Format: email
                  * @description Email address of the user associated with the event.
@@ -297,6 +434,134 @@ export interface components {
                  * @description Timestamp when the event was recorded.
                  */
                 createdAt?: string;
+            }[];
+        };
+        /**
+         * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+         * @default private
+         * @enum {string}
+         */
+        EventVisibility: "private" | "public";
+        /**
+         * @description An event projected into the public feed. It never includes email,
+         *     firstName, lastName, description, provider or raw metadata.
+         *     `platform`, `role`, `line` and `networks` are projected from
+         *     ScheduleCompletedEventMetadata; events without valid required
+         *     metadata are skipped. Public profile fields are resolved by Cloud at
+         *     read time and are included only when the user's profile is public.
+         */
+        EventFeedItem: {
+            /**
+             * Format: uuid
+             * @description Event ID.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId: string;
+            /** @description Event category. */
+            category: string;
+            /** @description Event action. */
+            action: string;
+            /**
+             * Format: date-time
+             * @description Event creation time; the feed is ordered newest first.
+             */
+            createdAt: string;
+            /**
+             * @description Always `public` in the feed.
+             * @default private
+             * @enum {string}
+             */
+            visibility: "private" | "public";
+            /**
+             * @description Platform from ScheduleCompletedEventMetadata.
+             * @enum {string}
+             */
+            platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+            /** @description Role from ScheduleCompletedEventMetadata. */
+            role: string;
+            /** @description One-line result from ScheduleCompletedEventMetadata. */
+            line: string;
+            /** @description Networks from ScheduleCompletedEventMetadata, when present. */
+            networks?: string[];
+            /** @description Public username, never a real name; present only for a public profile. */
+            displayName?: string;
+            /**
+             * Format: uri
+             * @description Public avatar URL; present only for a public profile.
+             */
+            avatarUrl?: string;
+            /** @description Public organization name; present only for a public profile. */
+            organizationName?: string;
+            /**
+             * Format: uri
+             * @description HTTPS URL of the user's public profile.
+             */
+            publicProfileUrl?: string;
+        };
+        /** @description One page of event feed items, newest first. */
+        EventFeedPage: {
+            /** @description Current page number of the result set. */
+            page: number;
+            /** @description Number of items per page. */
+            pageSize: number;
+            /** @description Total number of matching feed events. */
+            totalCount: number;
+            /** @description Events for the requested page, newest first. */
+            data: {
+                /**
+                 * Format: uuid
+                 * @description Event ID.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                userId: string;
+                /** @description Event category. */
+                category: string;
+                /** @description Event action. */
+                action: string;
+                /**
+                 * Format: date-time
+                 * @description Event creation time; the feed is ordered newest first.
+                 */
+                createdAt: string;
+                /**
+                 * @description Always `public` in the feed.
+                 * @default private
+                 * @enum {string}
+                 */
+                visibility: "private" | "public";
+                /**
+                 * @description Platform from ScheduleCompletedEventMetadata.
+                 * @enum {string}
+                 */
+                platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+                /** @description Role from ScheduleCompletedEventMetadata. */
+                role: string;
+                /** @description One-line result from ScheduleCompletedEventMetadata. */
+                line: string;
+                /** @description Networks from ScheduleCompletedEventMetadata, when present. */
+                networks?: string[];
+                /** @description Public username, never a real name; present only for a public profile. */
+                displayName?: string;
+                /**
+                 * Format: uri
+                 * @description Public avatar URL; present only for a public profile.
+                 */
+                avatarUrl?: string;
+                /** @description Public organization name; present only for a public profile. */
+                organizationName?: string;
+                /**
+                 * Format: uri
+                 * @description HTTPS URL of the user's public profile.
+                 */
+                publicProfileUrl?: string;
             }[];
         };
         /** @description Aggregated event counts across categories. */
@@ -334,6 +599,162 @@ export interface components {
         ErrorResponse: {
             /** @description Human-readable error message. */
             error?: string;
+        };
+        /** @description The fields that identify the design a design event is about. Every design event that names a design carries them, and they are what remains when Meshery Server's 16 KB guard drops oversized metadata. Event metadata names a design, it never carries one: never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to these identity fields. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys instead of `designName` and `viewLink`; readers should fall back to them. */
+        DesignEventIdentity: {
+            /**
+             * Format: uuid
+             * @description ID of the design the event is about.
+             */
+            designId: string;
+            /** @description Name of the design when the event was recorded. */
+            designName?: string;
+            /** @description Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it. */
+            designVersion?: string;
+            /**
+             * Format: uri
+             * @description Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.
+             */
+            designLink?: string;
+            /**
+             * Format: uri
+             * @description Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
+             */
+            viewLink?: string;
+        };
+        /** @description Metadata of a relationship evaluation event (category `relationship`, action `evaluation`): the design's identity fields (DesignEventIdentity) plus counts of what the evaluation changed. It summarizes the evaluation; it does not carry it. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields. */
+        RelationshipEvaluationEventMetadata: {
+            /**
+             * Format: uuid
+             * @description ID of the design the event is about.
+             */
+            designId: string;
+            /** @description Name of the design when the event was recorded. */
+            designName?: string;
+            /** @description Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it. */
+            designVersion?: string;
+            /**
+             * Format: uri
+             * @description Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.
+             */
+            designLink?: string;
+            /**
+             * Format: uri
+             * @description Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
+             */
+            viewLink?: string;
+            /** @description One-line title of the evaluation for the design's history, for example `3 changes made at version v0.0.3`. */
+            historyTitle?: string;
+            /**
+             * Format: date-time
+             * @description When the evaluation ran.
+             */
+            evaluatedAt?: string;
+            /** @description Number of relationships the evaluation added to the design. */
+            relationshipsAdded?: number;
+            /** @description Number of relationships the evaluation removed from the design. */
+            relationshipsRemoved?: number;
+            /** @description Number of existing relationships the evaluation updated. */
+            relationshipsUpdated?: number;
+            /** @description Outcome of the evaluation as the evaluator reports it, for example `completed`; consumers must tolerate values they do not know. */
+            evaluationStatus?: string;
+            /** @description How long the evaluation took, in milliseconds. */
+            evaluationDurationMs?: number;
+        };
+        /** @description Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. When the operation did not complete (`status` `error`), there is no verdict: `errors` is empty or omitted, `errorCount` and `truncated` are omitted, the identity fields are kept, `error` names why the operation failed, and the event is recorded with severity `error` under its usual category `pattern` and action (`validate` for a design validation). Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields. */
+        DesignValidationEventMetadata: {
+            /**
+             * Format: uuid
+             * @description ID of the design the event is about.
+             */
+            designId: string;
+            /** @description Name of the design when the event was recorded. */
+            designName?: string;
+            /** @description Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it. */
+            designVersion?: string;
+            /**
+             * Format: uri
+             * @description Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.
+             */
+            designLink?: string;
+            /**
+             * Format: uri
+             * @description Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
+             */
+            viewLink?: string;
+            /** @description Outcome of the operation as the producer reports it: `success` (the operation ran and found no errors), `partial` (the operation ran and part of it succeeded), `failed` (the operation ran and found errors, listed in `errors`) or `error` (the operation did not complete, so there is no verdict; `error` says why). It is an open string, not an enum: consumers must tolerate values they do not know. */
+            status?: string;
+            /** @description Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20. Omitted when `status` is `error`, because an operation that did not complete found nothing. */
+            errorCount?: number;
+            /** @description Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed. Empty or omitted when `status` is `error`. */
+            errors?: {
+                /** @description The error's code: a JSON-schema validator keyword such as `required` or `type` when design validation rejected the design, or a MeshKit error code (for example `meshery-server-1234`) when a server-side step failed. Consumers must tolerate codes they do not know. */
+                code: string;
+                /** @description ID of the design component the error is about, as the design names it; omitted when the error is about the design as a whole. It is not checked as a UUID, because an invalid design can carry any value here and one bad value must not make the event unreadable. */
+                componentId?: string;
+            }[];
+            /** @description True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete. Omitted when `status` is `error`. */
+            truncated?: boolean;
+            /** @description Why the operation did not complete. Present only when `status` is `error`; omitted for every other status, including `failed`, whose findings are in `errors`. */
+            error?: {
+                /** @description The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know. */
+                code: string;
+                /** @description One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents. */
+                message?: string;
+            };
+        };
+        /** @description One error a design validate, deploy, undeploy or dry-run operation found: a code and the component it is about, never the offending component itself. */
+        DesignValidationEventError: {
+            /** @description The error's code: a JSON-schema validator keyword such as `required` or `type` when design validation rejected the design, or a MeshKit error code (for example `meshery-server-1234`) when a server-side step failed. Consumers must tolerate codes they do not know. */
+            code: string;
+            /** @description ID of the design component the error is about, as the design names it; omitted when the error is about the design as a whole. It is not checked as a UUID, because an invalid design can carry any value here and one bad value must not make the event unreadable. */
+            componentId?: string;
+        };
+        /** @description Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response. */
+        DesignEventOperationError: {
+            /** @description The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know. */
+            code: string;
+            /** @description One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents. */
+            message?: string;
+        };
+        /** @description Metadata of a design saved event (category `pattern`, action `create` or `update`): a history title and the saved design's ID and name, never its contents. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields. */
+        DesignSavedEventMetadata: {
+            /** @description One-line title of the save for the design's history, for example `Version v0.0.3 - 12 components and 9 relationships`. */
+            historyTitle?: string;
+            /** @description The saved design's ID and name. */
+            design: {
+                /**
+                 * Format: uuid
+                 * @description ID of the saved design.
+                 */
+                id: string;
+                /** @description Name of the saved design. */
+                name?: string;
+            };
+        };
+        /** @description The ID and name of the design a saved event is about - only those two fields, never the design file or any of its contents. */
+        DesignSavedEventDesign: {
+            /**
+             * Format: uuid
+             * @description ID of the saved design.
+             */
+            id: string;
+            /** @description Name of the saved design. */
+            name?: string;
+        };
+        /** @description Metadata for a completed scheduled run (category `schedule`, action `completed`). This typed shape keeps client-specific display data out of the core Event fields and is projected into EventFeedItem. */
+        ScheduleCompletedEventMetadata: {
+            /**
+             * @description Platform the completed run acted on.
+             * @enum {string}
+             */
+            platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+            /** @description Role the completed run acted in. */
+            role: string;
+            /** @description One-line result of the run. */
+            line: string;
+            /** @description Networks or communities where the run acted. */
+            networks?: string[];
         };
     };
     responses: {
@@ -373,6 +794,54 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+        MeshkitError429: {
+            headers: {
+                /** @description Number of seconds the caller must wait before retrying. */
+                "Retry-After": number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Forbidden */
+        MeshkitError403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
     };
     parameters: {
         /** @description ID of the event. */
@@ -390,6 +859,12 @@ export interface components {
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
         pagesizeLegacy: number;
+        /** @description Number of feed items per page. */
+        feedPagesize: number;
+        /** @description Optional event category filter. */
+        feedCategory: string;
+        /** @description Optional event action filter. */
+        feedAction: string;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -400,6 +875,8 @@ export interface components {
         filter: string;
         /** @description Get filtered reponses */
         eventsFilter: string;
+        /** @description Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403. */
+        eventsScope: "user" | "organization";
     };
     requestBodies: never;
     headers: never;
@@ -451,6 +928,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -508,6 +1010,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -570,6 +1097,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -651,6 +1203,31 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -704,12 +1281,23 @@ export interface operations {
                         /** @description The events returned on the current page. */
                         data?: {
                             /**
+                             * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+                             * @default private
+                             * @enum {string}
+                             */
+                            visibility: "private" | "public";
+                            /**
                              * Format: uuid
                              * @description UUID of the user associated with the event.
                              */
                             owner: string;
-                            /** @description System identifier of the event source. */
+                            /** @description System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked. */
                             systemId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+                             */
+                            readonly organizationId?: string;
                             /** @description The category of the event. */
                             category: string;
                             /** @description The action of the event. */
@@ -720,6 +1308,11 @@ export interface operations {
                             firstName?: string;
                             /** @description The last name of the user associated with the event. */
                             lastName?: string;
+                            /**
+                             * Format: uri
+                             * @description URL to the avatar image of the user associated with the event.
+                             */
+                            avatarUrl?: string;
                             /**
                              * Format: email
                              * @description Email address of the user associated with the event.
@@ -761,6 +1354,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
             };
             /** @description Server error */
             500: {
@@ -804,12 +1422,62 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Not found */
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Not found - the caller is not a provider-wide Provider Admin */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
             };
             /** @description Server error */
             500: {
@@ -837,22 +1505,173 @@ export interface operations {
                     owner?: string;
                     /** @description The category of the event. */
                     category?: string;
+                    /**
+                     * @description Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed.
+                     * @default private
+                     * @enum {string}
+                     */
+                    visibility?: "private" | "public";
                     /** @description The action of the event. */
                     action?: string;
                     /** @description Description of the event. */
                     description?: string;
+                    /** @description Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication. */
+                    idempotencyKey?: string;
                 } & {
                     [key: string]: unknown;
                 };
             };
         };
         responses: {
+            /** @description An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Event ID.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the entity on which the event was performed.
+                         */
+                        actedUpon: string;
+                        /** @description Action taken on the resource, for example `import`. */
+                        action: string;
+                        /** @description Resource kind the operation was invoked on, for example `pattern`. */
+                        category: string;
+                        /** @description Human-readable summary of what happened. */
+                        description: string;
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+                        metadata: {
+                            [key: string]: unknown;
+                        } | null;
+                        /**
+                         * Format: uuid
+                         * @description ID correlating the events one operation emitted.
+                         */
+                        operationId: string;
+                        /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+                        severity: string;
+                        /** @description Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values. */
+                        status: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+                         */
+                        systemId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        owner?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        readonly organizationId: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was recorded.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * @description Who can see the event. Defaults to `private`.
+                         * @default private
+                         * @enum {string}
+                         */
+                        visibility: "private" | "public";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was soft-deleted; omitted when it was not.
+                         */
+                        deletedAt?: string | null;
+                    };
+                };
+            };
             /** @description Event created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Event ID.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the entity on which the event was performed.
+                         */
+                        actedUpon: string;
+                        /** @description Action taken on the resource, for example `import`. */
+                        action: string;
+                        /** @description Resource kind the operation was invoked on, for example `pattern`. */
+                        category: string;
+                        /** @description Human-readable summary of what happened. */
+                        description: string;
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+                        metadata: {
+                            [key: string]: unknown;
+                        } | null;
+                        /**
+                         * Format: uuid
+                         * @description ID correlating the events one operation emitted.
+                         */
+                        operationId: string;
+                        /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+                        severity: string;
+                        /** @description Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values. */
+                        status: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+                         */
+                        systemId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        owner?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        readonly organizationId: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was recorded.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * @description Who can see the event. Defaults to `private`.
+                         * @default private
+                         * @enum {string}
+                         */
+                        visibility: "private" | "public";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was soft-deleted; omitted when it was not.
+                         */
+                        deletedAt?: string | null;
+                    };
+                };
             };
             /** @description Invalid request body or request param */
             400: {
@@ -870,6 +1689,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -896,6 +1740,8 @@ export interface operations {
                 order?: string;
                 /** @description Get filtered reponses */
                 filter?: string;
+                /** @description Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403. */
+                scope?: "user" | "organization";
             };
             header?: never;
             path?: never;
@@ -919,12 +1765,23 @@ export interface operations {
                         /** @description The events returned on the current page. */
                         data?: {
                             /**
+                             * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+                             * @default private
+                             * @enum {string}
+                             */
+                            visibility: "private" | "public";
+                            /**
                              * Format: uuid
                              * @description UUID of the user associated with the event.
                              */
                             owner: string;
-                            /** @description System identifier of the event source. */
+                            /** @description System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked. */
                             systemId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+                             */
+                            readonly organizationId?: string;
                             /** @description The category of the event. */
                             category: string;
                             /** @description The action of the event. */
@@ -935,6 +1792,11 @@ export interface operations {
                             firstName?: string;
                             /** @description The last name of the user associated with the event. */
                             lastName?: string;
+                            /**
+                             * Format: uri
+                             * @description URL to the avatar image of the user associated with the event.
+                             */
+                            avatarUrl?: string;
                             /**
                              * Format: email
                              * @description Email address of the user associated with the event.
@@ -958,6 +1820,29 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
             /** @description Not found */
             404: {
                 headers: {
@@ -965,12 +1850,171 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
             /** @description Server error */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getEventFeed: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of feed items per page. */
+                pagesize?: number;
+                /** @description Optional event category filter. */
+                category?: string;
+                /** @description Optional event action filter. */
+                action?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Event feed page */
+            200: {
+                headers: {
+                    /** @description `public, max-age=N` with N from 0 to 30; max-age never exceeds 30 seconds. */
+                    "Cache-Control": string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page: number;
+                        /** @description Number of items per page. */
+                        pageSize: number;
+                        /** @description Total number of matching feed events. */
+                        totalCount: number;
+                        /** @description Events for the requested page, newest first. */
+                        data: {
+                            /**
+                             * Format: uuid
+                             * @description Event ID.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            userId: string;
+                            /** @description Event category. */
+                            category: string;
+                            /** @description Event action. */
+                            action: string;
+                            /**
+                             * Format: date-time
+                             * @description Event creation time; the feed is ordered newest first.
+                             */
+                            createdAt: string;
+                            /**
+                             * @description Always `public` in the feed.
+                             * @default private
+                             * @enum {string}
+                             */
+                            visibility: "private" | "public";
+                            /**
+                             * @description Platform from ScheduleCompletedEventMetadata.
+                             * @enum {string}
+                             */
+                            platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+                            /** @description Role from ScheduleCompletedEventMetadata. */
+                            role: string;
+                            /** @description One-line result from ScheduleCompletedEventMetadata. */
+                            line: string;
+                            /** @description Networks from ScheduleCompletedEventMetadata, when present. */
+                            networks?: string[];
+                            /** @description Public username, never a real name; present only for a public profile. */
+                            displayName?: string;
+                            /**
+                             * Format: uri
+                             * @description Public avatar URL; present only for a public profile.
+                             */
+                            avatarUrl?: string;
+                            /** @description Public organization name; present only for a public profile. */
+                            organizationName?: string;
+                            /**
+                             * Format: uri
+                             * @description HTTPS URL of the user's public profile.
+                             */
+                            publicProfileUrl?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
         };
     };
@@ -1028,6 +2072,31 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
             /** @description Server error */
             500: {
                 headers: {
@@ -1083,6 +2152,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
             };
             /** @description Server error */
             500: {

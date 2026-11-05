@@ -584,6 +584,11 @@ export interface components {
                          * @description SQL null Timestamp to handle null values of time.
                          */
                         deleted_at?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                         */
+                        organizationId?: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -1826,8 +1831,8 @@ export interface components {
             catalogData?: {
                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                 publishedVersion?: string;
-                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                class?: string & ("official" | "verified" | "reference architecture");
+                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                contentClass?: string & ("official" | "verified" | "community");
                 /**
                  * Model
                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -1851,7 +1856,7 @@ export interface components {
                  */
                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                snapshotURL?: string[];
+                imageURL?: string[];
             };
             /** Format: date-time */
             created_at?: string;
@@ -2047,6 +2052,11 @@ export interface components {
                              * @description SQL null Timestamp to handle null values of time.
                              */
                             deleted_at?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                             */
+                            organizationId?: string;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -3301,8 +3311,8 @@ export interface components {
                 catalogData?: {
                     /** @description Tracks the specific content version that has been made available in the Catalog. */
                     publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                    contentClass?: string & ("official" | "verified" | "community");
                     /**
                      * Model
                      * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -3326,7 +3336,7 @@ export interface components {
                      */
                     type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                     /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
+                    imageURL?: string[];
                 };
                 /** Format: date-time */
                 created_at?: string;
@@ -3522,6 +3532,11 @@ export interface components {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -4785,8 +4800,8 @@ export interface components {
                 catalogData?: {
                     /** @description Tracks the specific content version that has been made available in the Catalog. */
                     publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                    contentClass?: string & ("official" | "verified" | "community");
                     /**
                      * Model
                      * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -4810,7 +4825,7 @@ export interface components {
                      */
                     type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                     /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
+                    imageURL?: string[];
                 };
                 /** Format: date-time */
                 created_at?: string;
@@ -5006,6 +5021,11 @@ export interface components {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -6340,8 +6360,8 @@ export interface components {
                 catalogData?: {
                     /** @description Tracks the specific content version that has been made available in the Catalog. */
                     publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                    contentClass?: string & ("official" | "verified" | "community");
                     /**
                      * Model
                      * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -6365,7 +6385,7 @@ export interface components {
                      */
                     type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                     /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
+                    imageURL?: string[];
                 };
                 /** Format: date-time */
                 created_at?: string;
@@ -6561,6 +6581,11 @@ export interface components {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -8022,8 +8047,8 @@ export interface operations {
                             catalogData?: {
                                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                                 publishedVersion?: string;
-                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                                class?: string & ("official" | "verified" | "reference architecture");
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                                contentClass?: string & ("official" | "verified" | "community");
                                 /**
                                  * Model
                                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -8047,7 +8072,7 @@ export interface operations {
                                  */
                                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                                snapshotURL?: string[];
+                                imageURL?: string[];
                             };
                             /** Format: date-time */
                             created_at?: string;
@@ -8243,6 +8268,11 @@ export interface operations {
                                              * @description SQL null Timestamp to handle null values of time.
                                              */
                                             deleted_at?: string;
+                                            /**
+                                             * Format: uuid
+                                             * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                             */
+                                            organizationId?: string;
                                             /** @description Associated environments for this connection */
                                             environments?: {
                                                 /**
@@ -9529,8 +9559,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -9554,7 +9584,7 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /** Format: date-time */
                         created_at?: string;
@@ -9750,6 +9780,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -11017,8 +11052,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -11042,7 +11077,7 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /** Format: date-time */
                         created_at?: string;
@@ -11238,6 +11273,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -12777,8 +12817,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -12802,7 +12842,7 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /** Format: date-time */
                         created_at?: string;
@@ -12998,6 +13038,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -14343,8 +14388,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -14368,7 +14413,7 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /** Format: date-time */
                         created_at?: string;
@@ -14564,6 +14609,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -16006,8 +16056,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -16031,7 +16081,7 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /** Format: date-time */
                         created_at?: string;
@@ -16227,6 +16277,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -17545,8 +17600,8 @@ export interface operations {
                             catalogData?: {
                                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                                 publishedVersion?: string;
-                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                                class?: string & ("official" | "verified" | "reference architecture");
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                                contentClass?: string & ("official" | "verified" | "community");
                                 /**
                                  * Model
                                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -17570,7 +17625,7 @@ export interface operations {
                                  */
                                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                                snapshotURL?: string[];
+                                imageURL?: string[];
                             };
                             /** Format: date-time */
                             created_at?: string;
@@ -17766,6 +17821,11 @@ export interface operations {
                                              * @description SQL null Timestamp to handle null values of time.
                                              */
                                             deleted_at?: string;
+                                            /**
+                                             * Format: uuid
+                                             * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                             */
+                                            organizationId?: string;
                                             /** @description Associated environments for this connection */
                                             environments?: {
                                                 /**

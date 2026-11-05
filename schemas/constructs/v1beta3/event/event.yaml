@@ -2,6 +2,21 @@ type: object
 additionalProperties: false
 description: EventResult entity schema.
 properties:
+  visibility:
+    type: string
+    description: >-
+      Who can see the event. `private` (the default, set by Layer5 Cloud)
+      means visible only inside the event's organization. `public` means the
+      event may appear on the unauthenticated event feed, subject to the
+      owner's `shareActivityPublicly` preference at read time.
+    enum:
+    - private
+    - public
+    default: private
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: visibility
+      json: visibility
   owner:
     type: string
     format: uuid
@@ -16,12 +31,31 @@ properties:
       json: owner
   systemId:
     type: string
-    description: System identifier of the event source.
+    description: >
+      System identifier of the event source: a Meshery Server instance ID, the
+      nil UUID for an event the provider emits itself, or the connection ID of
+      the client machine that emitted it (for example a desktop client
+      recording a run). Asserted by the sender, not checked.
     maxLength: 255
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       db: system_id
       json: systemId
+  organizationId:
+    type: string
+    format: uuid
+    description: >
+      The organization the event belongs to (see Event.organizationId). Set by
+      the server; lets an organization-scope listing show each row's tenant.
+    readOnly: true
+    x-go-type: uuid.UUID
+    x-go-type-import:
+      path: github.com/gofrs/uuid
+    x-go-name: OrganizationID
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+      json: organizationId
   category:
     type: string
     description: The category of the event.
@@ -42,6 +76,11 @@ properties:
     type: string
     description: The last name of the user associated with the event.
     maxLength: 500
+  avatarUrl:
+    type: string
+    format: uri
+    maxLength: 500
+    description: URL to the avatar image of the user associated with the event.
   email:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Email
     description: Email address of the user associated with the event.

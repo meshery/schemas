@@ -43,6 +43,16 @@ dist/
 **/.idea
 yarn.lock
 
+# Python (local venvs, caches, and build outputs; python/generated/ itself is committed)
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+python/generated/build/
+python/generated/dist/
+
 # Generated files
 **/bin
 *.Identifier
