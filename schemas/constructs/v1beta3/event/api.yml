@@ -307,7 +307,7 @@ paths:
         '400':
           $ref: '#/components/responses/400'
         '429':
-          $ref: '#/components/responses/PerIpRateLimited'
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/summary:
@@ -378,22 +378,6 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
     MeshkitError429:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
-    PerIpRateLimited:
-      description: >-
-        Too many requests - the client IP exceeded this endpoint's per-IP
-        request rate. Wait the number of seconds in `Retry-After` before
-        retrying.
-      headers:
-        Retry-After:
-          description: Number of seconds the client must wait before retrying.
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-      content:
-        application/json:
-          schema:
-            $ref: ../../v1beta2/core/api.yml#/components/schemas/MeshkitError
     500:
       $ref: ../../v1beta2/core/api.yml#/components/responses/500
     MeshkitError403:
