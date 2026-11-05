@@ -1258,7 +1258,8 @@ const EventSchema: Record<string, unknown> = {
                     "systemId",
                     "organizationId",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "visibility"
                   ],
                   "properties": {
                     "id": {
@@ -1485,7 +1486,8 @@ const EventSchema: Record<string, unknown> = {
                     "systemId",
                     "organizationId",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "visibility"
                   ],
                   "properties": {
                     "id": {
@@ -3422,7 +3424,8 @@ const EventSchema: Record<string, unknown> = {
           "systemId",
           "organizationId",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
+          "visibility"
         ],
         "properties": {
           "id": {

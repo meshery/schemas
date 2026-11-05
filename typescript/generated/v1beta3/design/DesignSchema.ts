@@ -10980,7 +10980,8 @@ const DesignSchema: Record<string, unknown> = {
                           "systemId",
                           "organizationId",
                           "createdAt",
-                          "updatedAt"
+                          "updatedAt",
+                          "visibility"
                         ],
                         "properties": {
                           "id": {
@@ -25268,7 +25269,8 @@ const DesignSchema: Record<string, unknown> = {
                 "systemId",
                 "organizationId",
                 "createdAt",
-                "updatedAt"
+                "updatedAt",
+                "visibility"
               ],
               "properties": {
                 "id": {

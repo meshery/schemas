@@ -1442,6 +1442,18 @@ const injectedRtkApi = api
         }),
         providesTags: ["Events_events"],
       }),
+      getEventFeed: build.query<GetEventFeedApiResponse, GetEventFeedApiArg>({
+        query: (queryArg) => ({
+          url: `/api/events/feed`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            category: queryArg?.category,
+            action: queryArg?.action,
+          },
+        }),
+        providesTags: ["Events_events"],
+      }),
       getEventSummaryByUser: build.query<GetEventSummaryByUserApiResponse, GetEventSummaryByUserApiArg>({
         query: (queryArg) => ({
           url: `/api/events/summary`,
@@ -6687,6 +6699,8 @@ export type UpdateUserPreferencesApiArg = {
     };
     /** The anonymous usage stats of the preference. */
     anonymousUsageStats?: boolean;
+    /** Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten. */
+    shareActivityPublicly?: boolean;
     /** The anonymous perf results of the preference. */
     anonymousPerfResults?: boolean;
     /** The dashboard preferences of the preference. */
@@ -15162,7 +15176,7 @@ export type ImportGithubRepositoryApiResponse =
       category: string;
       /** Human-readable summary of what happened. */
       description: string;
-      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
        */
       metadata: {
         [key: string]: any;
@@ -15186,6 +15200,8 @@ export type ImportGithubRepositoryApiResponse =
       createdAt: string;
       /** Timestamp when the event was last updated. */
       updatedAt: string;
+      /** Who can see the event. Defaults to `private`. */
+      visibility: "private" | "public";
       /** Timestamp when the event was soft-deleted; omitted when it was not. */
       deletedAt?: string | null;
     }[];
@@ -16594,6 +16610,8 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
   totalCount?: number;
   /** The events returned on the current page. */
   data?: {
+    /** Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. */
+    visibility?: "private" | "public";
     /** UUID of the user associated with the event. */
     owner: string;
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
@@ -16659,7 +16677,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16683,6 +16701,8 @@ export type CreateEventApiResponse =
         createdAt: string;
         /** Timestamp when the event was last updated. */
         updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
         /** Timestamp when the event was soft-deleted; omitted when it was not. */
         deletedAt?: string | null;
       }
@@ -16697,7 +16717,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16721,6 +16741,8 @@ export type CreateEventApiResponse =
         createdAt: string;
         /** Timestamp when the event was last updated. */
         updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
         /** Timestamp when the event was soft-deleted; omitted when it was not. */
         deletedAt?: string | null;
       };
@@ -16730,6 +16752,8 @@ export type CreateEventApiArg = {
     owner?: string;
     /** The category of the event. */
     category?: string;
+    /** Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed. */
+    visibility?: "private" | "public";
     /** The action of the event. */
     action?: string;
     /** Description of the event. */
@@ -16749,6 +16773,8 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
   totalCount?: number;
   /** The events returned on the current page. */
   data?: {
+    /** Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. */
+    visibility?: "private" | "public";
     /** UUID of the user associated with the event. */
     owner: string;
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
@@ -16791,6 +16817,55 @@ export type GetEventsApiArg = {
   /** Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.
    */
   scope?: "user" | "organization";
+};
+export type GetEventFeedApiResponse = /** status 200 Event feed page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of matching feed events. */
+  totalCount: number;
+  /** Events for the requested page, newest first. */
+  data: {
+    /** Event ID. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** Event category. */
+    category: string;
+    /** Event action. */
+    action: string;
+    /** Event creation time; the feed is ordered newest first. */
+    createdAt: string;
+    /** Always `public` in the feed. */
+    visibility: "private" | "public";
+    /** Platform from ScheduleCompletedEventMetadata. */
+    platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+    /** Role from ScheduleCompletedEventMetadata. */
+    role: string;
+    /** One-line result from ScheduleCompletedEventMetadata. */
+    line: string;
+    /** Networks from ScheduleCompletedEventMetadata, when present. */
+    networks?: string[];
+    /** Public username, never a real name; present only for a public profile. */
+    displayName?: string;
+    /** Public avatar URL; present only for a public profile. */
+    avatarUrl?: string;
+    /** Public organization name; present only for a public profile. */
+    organizationName?: string;
+    /** HTTPS URL of the user's public profile. */
+    publicProfileUrl?: string;
+  }[];
+};
+export type GetEventFeedApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of feed items per page. */
+  pagesize?: number;
+  /** Optional event category filter. */
+  category?: string;
+  /** Optional event action filter. */
+  action?: string;
 };
 export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page */ {
   /** Current page number of the result set. */
@@ -23651,6 +23726,8 @@ export const {
   useCreateEventMutation,
   useGetEventsQuery,
   useLazyGetEventsQuery,
+  useGetEventFeedQuery,
+  useLazyGetEventFeedQuery,
   useGetEventSummaryByUserQuery,
   useLazyGetEventSummaryByUserQuery,
   useGetEventTypesQuery,
