@@ -33,8 +33,8 @@ no create operation and no create payload. The only payload is
 | --- | --- | --- |
 | `listRequests` | `GET /api/requests` | Filters `kind` and `status`. Paged with `page` and `pageSize`, newest first. |
 | `getRequest` | `GET /api/requests/{requestId}` | |
-| `approveRequest` | `POST /api/requests/{requestId}/approve` | Optional note. `409` when the request is not pending, whatever its subject (decided, or superseded by a soft delete of the subject); `404` when the request is pending and its subject is hard-deleted, or the request is unknown. |
-| `denyRequest` | `POST /api/requests/{requestId}/deny` | Optional note. `409` when the request is not pending, whatever its subject (decided, or superseded by a soft delete of the subject); `404` when the request is pending and its subject is hard-deleted, or the request is unknown. |
+| `approveRequest` | `POST /api/requests/{requestId}/approve` | Optional note. `409` when the request is not pending, whatever its subject (decided, or superseded by a content edit or a soft delete of the subject); `404` when the request is pending and its subject is hard-deleted, or the request is unknown. |
+| `denyRequest` | `POST /api/requests/{requestId}/deny` | Optional note. `409` when the request is not pending, whatever its subject (decided, or superseded by a content edit or a soft delete of the subject); `404` when the request is pending and its subject is hard-deleted, or the request is unknown. |
 
 All four are `x-internal: ["cloud"]` and carry no `x-mcp`. The schema lint
 (Rule 48) refuses `x-mcp` on `approveRequest` and `denyRequest`: deciding is a
@@ -127,7 +127,7 @@ nothing: the request stays as it was.
 | The request | The subject content item | Answer |
 | --- | --- | --- |
 | Pending | Live | `200`, decided |
-| Not pending (decided, or superseded by a soft delete of the subject) | Any | `409` |
+| Not pending (decided, or superseded by a content edit or a soft delete of the subject) | Any | `409` |
 | Pending | Hard-deleted (no row) | `404` |
 | Unknown, or in another organization | Any | `404` |
 
