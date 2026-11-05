@@ -37,7 +37,9 @@ properties:
     x-order: 1
   userId:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
-    description: The event's `owner`, which the server sets to the authenticated caller who recorded it. Never taken from event metadata.
+    description: >-
+      The event's `owner`, which the server sets to the authenticated caller
+      who recorded it. Never taken from event metadata.
     x-go-name: UserID
     x-order: 2
   platform:
@@ -68,7 +70,9 @@ properties:
     x-order: 6
   networks:
     type: array
-    description: Names of the networks or communities the run reached, from the event metadata. Omitted when the event names none.
+    description: >-
+      Names of the networks or communities the run reached, from the event
+      metadata. Omitted when the event names none.
     items:
       type: string
       minLength: 1
@@ -79,7 +83,9 @@ properties:
     x-order: 7
   displayName:
     type: string
-    description: The user's public username, the same value as PublicUser `username` on the public users directory. Never a real name.
+    description: >-
+      The user's public username, the same value as PublicUser `username`
+      on the public users directory. Never a real name.
     maxLength: 255
     x-oapi-codegen-extra-tags:
       json: "displayName,omitempty"
@@ -95,7 +101,10 @@ properties:
     x-order: 9
   organizationName:
     type: string
-    description: Name of the event's server-set acting organization. Omitted when the event has no acting organization or it no longer resolves to a named organization.
+    description: >-
+      Name of the event's server-set acting organization. Omitted when the
+      event has no acting organization or it no longer resolves to a named
+      organization.
     maxLength: 255
     x-oapi-codegen-extra-tags:
       json: "organizationName,omitempty"
