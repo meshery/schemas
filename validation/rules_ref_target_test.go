@@ -370,8 +370,19 @@ func TestOpenAPIVersionOf(t *testing.T) {
 //
 // Each widget version and legacy have an api.yml, an entity schema and a
 // helper .yml, each with a whole-document $ref.
+//
+// The tree is built under three root names. A root with "[1]" or "[x" in its
+// path must be read literally: as a glob pattern, the first matches no
+// directory and the second is a syntax error.
 func TestAuditRule48(t *testing.T) {
-	root := t.TempDir()
+	for _, name := range []string{"repo", "repo[1]", "repo[x"} {
+		t.Run(name, func(t *testing.T) {
+			testAuditRule48(t, filepath.Join(t.TempDir(), name))
+		})
+	}
+}
+
+func testAuditRule48(t *testing.T, root string) {
 	write := func(rel, content string) {
 		t.Helper()
 		p := filepath.Join(root, filepath.FromSlash(rel))

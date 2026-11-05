@@ -338,13 +338,6 @@ func entitySchemaFiles(constructDir string) []string {
 // An api.yml that is not valid YAML cannot say whether its version is
 // deprecated, so the other files of that version are still checked.
 func auditRule48(opts AuditOptions, baseline map[string]bool, result *AuditResult) {
-	pattern := filepath.Join(opts.RootDir, "schemas", "constructs", "*", "*", "api.yml")
-	apiYmlPaths, err := filepath.Glob(pattern)
-	if err != nil {
-		return
-	}
-	sort.Strings(apiYmlPaths)
-
 	check := func(path string, doc map[string]any) {
 		relPath := relativeToRoot(path, opts.RootDir)
 		for _, v := range checkRule48(relPath, path, doc) {
@@ -352,12 +345,8 @@ func auditRule48(opts AuditOptions, baseline map[string]bool, result *AuditResul
 		}
 	}
 
-	for _, apiYmlPath := range apiYmlPaths {
-		constructDir := filepath.Dir(apiYmlPath)
-		if !shouldValidateVersion(filepath.Base(filepath.Dir(constructDir))) {
-			continue
-		}
-
+	for _, constructDir := range constructDirsWithAPISpec(opts.RootDir) {
+		apiYmlPath := filepath.Join(constructDir, "api.yml")
 		if rawDoc, err := loadAPISpecRaw(apiYmlPath); err == nil {
 			if isDeprecatedRawDoc(rawDoc) {
 				continue
@@ -373,6 +362,42 @@ func auditRule48(opts AuditOptions, baseline map[string]bool, result *AuditResul
 			}
 		}
 	}
+}
+
+// constructDirsWithAPISpec returns every construct directory that holds an
+// api.yml, in the versions shouldValidateVersion accepts, sorted by version
+// and then by construct (os.ReadDir returns entries sorted by name). It reads
+// the directories like walkValidatedConstructSpecs does, rather than using
+// filepath.Glob, so a root path with characters such as "[" is taken
+// literally. A directory that cannot be read is skipped, as in the walker.
+func constructDirsWithAPISpec(rootDir string) []string {
+	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
+	versionEntries, err := os.ReadDir(constructsDir)
+	if err != nil {
+		return nil
+	}
+
+	var dirs []string
+	for _, vEntry := range versionEntries {
+		if !vEntry.IsDir() || !shouldValidateVersion(vEntry.Name()) {
+			continue
+		}
+		versionDir := filepath.Join(constructsDir, vEntry.Name())
+		constructEntries, err := os.ReadDir(versionDir)
+		if err != nil {
+			continue
+		}
+		for _, cEntry := range constructEntries {
+			if !cEntry.IsDir() {
+				continue
+			}
+			constructDir := filepath.Join(versionDir, cEntry.Name())
+			if _, err := os.Stat(filepath.Join(constructDir, "api.yml")); err == nil {
+				dirs = append(dirs, constructDir)
+			}
+		}
+	}
+	return dirs
 }
 
 // isDeprecatedRawDoc checks if a raw api.yml has x-deprecated: true in info,
