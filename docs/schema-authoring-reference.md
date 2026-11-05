@@ -89,6 +89,11 @@ fields. So, for this class only:
 agreement and the template nulls for every construct in this class. Add a
 new event-metadata construct to its list.
 
+A metadata shape that is a sub-shape of `Event.metadata` inside the event
+construct itself, rather than a construct with its own directory, is declared
+once with no `*Payload` twin: the design event metadata shapes are the worked
+example (see [design-event-metadata-contract.md](design-event-metadata-contract.md)).
+
 A construct with its own endpoints is not in this class, even if its rows
 are also mirrored into events. It follows Rule 1 as written.
 

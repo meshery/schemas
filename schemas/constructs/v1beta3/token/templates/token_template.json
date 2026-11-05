@@ -8,5 +8,8 @@
   "purpose": "",
   "isOauth": false,
   "createdAt": "",
-  "updatedAt": ""
+  "updatedAt": "",
+  "keychainIds": [],
+  "expiresAt": null,
+  "keychainScoped": false
 }

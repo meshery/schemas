@@ -139,7 +139,7 @@ const TokenSchema: Record<string, unknown> = {
                         "x-go-type": "UserToken",
                         "type": "object",
                         "additionalProperties": false,
-                        "description": "Represents a user-owned API token or OAuth session.",
+                        "description": "Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.",
                         "required": [
                           "id",
                           "owner",
@@ -265,6 +265,54 @@ const TokenSchema: Record<string, unknown> = {
                               "json": "updatedAt"
                             },
                             "x-order": 10
+                          },
+                          "keychainIds": {
+                            "type": "array",
+                            "description": "IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.",
+                            "items": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "maxItems": 100,
+                            "uniqueItems": true,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "-",
+                              "json": "keychainIds,omitempty"
+                            },
+                            "x-order": 11
+                          },
+                          "expiresAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.",
+                            "nullable": true,
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "expires_at",
+                              "json": "expiresAt,omitempty"
+                            },
+                            "x-order": 12
+                          },
+                          "keychainScoped": {
+                            "type": "boolean",
+                            "description": "Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.",
+                            "readOnly": true,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "keychain_scoped",
+                              "json": "keychainScoped,omitempty"
+                            },
+                            "x-order": 13
                           }
                         }
                       },
@@ -334,7 +382,7 @@ const TokenSchema: Record<string, unknown> = {
         ],
         "summary": "Generate token",
         "operationId": "generateToken",
-        "description": "Generates a token for the authenticated user.",
+        "description": "Generates a token for the authenticated user. `name` and `purpose` are query parameters, as before. The optional body (`TokenCreatePayload`) limits the token: `keychainIds` restricts it to the keys of those keychains, and `expiresAt` ends its life. Omit the body, or both fields, for an unrestricted token that never expires. An unknown keychain ID, an explicit empty `keychainIds`, an `expiresAt` in the past, or a keychain the caller cannot see is refused with 400. A request authenticated with a keychain-scoped token (`keychainScoped` true, or a non-empty `keychainIds`) answers 403 and mints nothing, whatever the body. A session or unrestricted token is unchanged. See docs/token-scoping-contract.md.",
         "parameters": [
           {
             "name": "name",
@@ -357,6 +405,44 @@ const TokenSchema: Record<string, unknown> = {
             }
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Client-settable limits for a token created with generateToken. Every field is optional; an empty body creates an unrestricted token that never expires. The token's name and purpose are query parameters of the operation, and its id, owner and timestamps are server-generated.",
+                "properties": {
+                  "keychainIds": {
+                    "type": "array",
+                    "description": "IDs of the keychains the token is limited to. A non-empty list limits the token to the keys of those keychains, intersected with the owner's keys in the request's organization. An absent list creates an unrestricted token. An explicit empty list is refused with 400, so a selection that ends up empty never mints a full-access token. The server records keychainScoped from this list; clients do not set it.",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "uniqueItems": true,
+                    "x-order": 1
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true,
+                    "description": "Time after which the token is no longer accepted. Absent or null means it never expires.",
+                    "x-order": 2
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "Token generated",
@@ -378,7 +464,7 @@ const TokenSchema: Record<string, unknown> = {
                         "x-go-type": "UserToken",
                         "type": "object",
                         "additionalProperties": false,
-                        "description": "Represents a user-owned API token or OAuth session.",
+                        "description": "Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.",
                         "required": [
                           "id",
                           "owner",
@@ -504,6 +590,54 @@ const TokenSchema: Record<string, unknown> = {
                               "json": "updatedAt"
                             },
                             "x-order": 10
+                          },
+                          "keychainIds": {
+                            "type": "array",
+                            "description": "IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.",
+                            "items": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "maxItems": 100,
+                            "uniqueItems": true,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "-",
+                              "json": "keychainIds,omitempty"
+                            },
+                            "x-order": 11
+                          },
+                          "expiresAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.",
+                            "nullable": true,
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "expires_at",
+                              "json": "expiresAt,omitempty"
+                            },
+                            "x-order": 12
+                          },
+                          "keychainScoped": {
+                            "type": "boolean",
+                            "description": "Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.",
+                            "readOnly": true,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "keychain_scoped",
+                              "json": "keychainScoped,omitempty"
+                            },
+                            "x-order": 13
                           }
                         }
                       },
@@ -554,6 +688,16 @@ const TokenSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -622,7 +766,7 @@ const TokenSchema: Record<string, unknown> = {
                         "x-go-type": "UserToken",
                         "type": "object",
                         "additionalProperties": false,
-                        "description": "Represents a user-owned API token or OAuth session.",
+                        "description": "Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.",
                         "required": [
                           "id",
                           "owner",
@@ -748,6 +892,54 @@ const TokenSchema: Record<string, unknown> = {
                               "json": "updatedAt"
                             },
                             "x-order": 10
+                          },
+                          "keychainIds": {
+                            "type": "array",
+                            "description": "IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.",
+                            "items": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "maxItems": 100,
+                            "uniqueItems": true,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "-",
+                              "json": "keychainIds,omitempty"
+                            },
+                            "x-order": 11
+                          },
+                          "expiresAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.",
+                            "nullable": true,
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "expires_at",
+                              "json": "expiresAt,omitempty"
+                            },
+                            "x-order": 12
+                          },
+                          "keychainScoped": {
+                            "type": "boolean",
+                            "description": "Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.",
+                            "readOnly": true,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "keychain_scoped",
+                              "json": "keychainScoped,omitempty"
+                            },
+                            "x-order": 13
                           }
                         }
                       },
@@ -855,7 +1047,7 @@ const TokenSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "additionalProperties": false,
-                  "description": "Represents a user-owned API token or OAuth session.",
+                  "description": "Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.",
                   "required": [
                     "id",
                     "owner",
@@ -981,6 +1173,54 @@ const TokenSchema: Record<string, unknown> = {
                         "json": "updatedAt"
                       },
                       "x-order": 10
+                    },
+                    "keychainIds": {
+                      "type": "array",
+                      "description": "IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "maxItems": 100,
+                      "uniqueItems": true,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-",
+                        "json": "keychainIds,omitempty"
+                      },
+                      "x-order": 11
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.",
+                      "nullable": true,
+                      "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "expires_at",
+                        "json": "expiresAt,omitempty"
+                      },
+                      "x-order": 12
+                    },
+                    "keychainScoped": {
+                      "type": "boolean",
+                      "description": "Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.",
+                      "readOnly": true,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "keychain_scoped",
+                        "json": "keychainScoped,omitempty"
+                      },
+                      "x-order": 13
                     }
                   }
                 }
@@ -1030,7 +1270,7 @@ const TokenSchema: Record<string, unknown> = {
         ],
         "summary": "Issue indefinite lifetime token",
         "operationId": "issueIndefiniteLifetimeToken",
-        "description": "Creates a non-expiring user token for provider admin use cases.",
+        "description": "Creates a non-expiring user token for provider admin use cases. A request authenticated with a keychain-scoped token (`keychainScoped` true, or a non-empty `keychainIds`) answers 403 and mints nothing, whatever the query. A session or unrestricted token is unchanged. See docs/token-scoping-contract.md.",
         "parameters": [
           {
             "name": "userId",
@@ -1079,7 +1319,7 @@ const TokenSchema: Record<string, unknown> = {
                         "x-go-type": "UserToken",
                         "type": "object",
                         "additionalProperties": false,
-                        "description": "Represents a user-owned API token or OAuth session.",
+                        "description": "Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.",
                         "required": [
                           "id",
                           "owner",
@@ -1205,6 +1445,54 @@ const TokenSchema: Record<string, unknown> = {
                               "json": "updatedAt"
                             },
                             "x-order": 10
+                          },
+                          "keychainIds": {
+                            "type": "array",
+                            "description": "IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.",
+                            "items": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "maxItems": 100,
+                            "uniqueItems": true,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "-",
+                              "json": "keychainIds,omitempty"
+                            },
+                            "x-order": 11
+                          },
+                          "expiresAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.",
+                            "nullable": true,
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "expires_at",
+                              "json": "expiresAt,omitempty"
+                            },
+                            "x-order": 12
+                          },
+                          "keychainScoped": {
+                            "type": "boolean",
+                            "description": "Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.",
+                            "readOnly": true,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "keychain_scoped",
+                              "json": "keychainScoped,omitempty"
+                            },
+                            "x-order": 13
                           }
                         }
                       },
@@ -1263,6 +1551,16 @@ const TokenSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1286,7 +1584,7 @@ const TokenSchema: Record<string, unknown> = {
         ],
         "summary": "Authorize native client sign-in",
         "operationId": "getNativeClientAuthorization",
-        "description": "Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user and the Create Token permission. Validates the request. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider minimum, it renders the update page with status 426 and issues nothing. Otherwise it stores a single-use authorization code that expires after 60 seconds, bound to the user, the client name and the PKCE code challenge, and redirects the browser to http://127.0.0.1:{port}/callback with code and state query parameters. Only the 127.0.0.1 loopback IP literal is ever used; no token or cookie is placed in the redirect; no consent page is shown.",
+        "description": "Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user and the Create Token permission. Validates the request. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider minimum, it renders the update page with status 426 and issues nothing. Otherwise it stores a single-use authorization code that expires after 60 seconds, bound to the user, the client name and the PKCE code challenge, and redirects the browser to http://127.0.0.1:{port}/callback with code and state query parameters. Only the 127.0.0.1 loopback IP literal is ever used; no token or cookie is placed in the redirect; no consent page is shown. A request authenticated with a keychain-scoped token (`keychainScoped` true, or a non-empty `keychainIds`) answers 403 and mints nothing, including no authorization code, whatever the query. A session or unrestricted token is unchanged. See docs/token-scoping-contract.md.",
         "parameters": [
           {
             "name": "clientName",
@@ -1483,7 +1781,7 @@ const TokenSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "additionalProperties": false,
-                  "description": "Represents a user-owned API token or OAuth session.",
+                  "description": "Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.",
                   "required": [
                     "id",
                     "owner",
@@ -1609,6 +1907,54 @@ const TokenSchema: Record<string, unknown> = {
                         "json": "updatedAt"
                       },
                       "x-order": 10
+                    },
+                    "keychainIds": {
+                      "type": "array",
+                      "description": "IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "maxItems": 100,
+                      "uniqueItems": true,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-",
+                        "json": "keychainIds,omitempty"
+                      },
+                      "x-order": 11
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.",
+                      "nullable": true,
+                      "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "expires_at",
+                        "json": "expiresAt,omitempty"
+                      },
+                      "x-order": 12
+                    },
+                    "keychainScoped": {
+                      "type": "boolean",
+                      "description": "Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.",
+                      "readOnly": true,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "keychain_scoped",
+                        "json": "keychainScoped,omitempty"
+                      },
+                      "x-order": 13
                     }
                   }
                 }
@@ -2234,7 +2580,7 @@ const TokenSchema: Record<string, unknown> = {
       "UserToken": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Represents a user-owned API token or OAuth session.",
+        "description": "Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.",
         "required": [
           "id",
           "owner",
@@ -2360,6 +2706,54 @@ const TokenSchema: Record<string, unknown> = {
               "json": "updatedAt"
             },
             "x-order": 10
+          },
+          "keychainIds": {
+            "type": "array",
+            "description": "IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "maxItems": 100,
+            "uniqueItems": true,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "-",
+              "json": "keychainIds,omitempty"
+            },
+            "x-order": 11
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.",
+            "nullable": true,
+            "x-go-type": "core.NullTime",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "expires_at",
+              "json": "expiresAt,omitempty"
+            },
+            "x-order": 12
+          },
+          "keychainScoped": {
+            "type": "boolean",
+            "description": "Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.",
+            "readOnly": true,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "keychain_scoped",
+              "json": "keychainScoped,omitempty"
+            },
+            "x-order": 13
           }
         }
       },
@@ -2466,6 +2860,88 @@ const TokenSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Always \"Bearer\".",
             "x-order": 10
+          }
+        }
+      },
+      "TokenCreatePayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Client-settable limits for a token created with generateToken. Every field is optional; an empty body creates an unrestricted token that never expires. The token's name and purpose are query parameters of the operation, and its id, owner and timestamps are server-generated.",
+        "properties": {
+          "keychainIds": {
+            "type": "array",
+            "description": "IDs of the keychains the token is limited to. A non-empty list limits the token to the keys of those keychains, intersected with the owner's keys in the request's organization. An absent list creates an unrestricted token. An explicit empty list is refused with 400, so a selection that ends up empty never mints a full-access token. The server records keychainScoped from this list; clients do not set it.",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true,
+            "x-order": 1
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Time after which the token is no longer accepted. Absent or null means it never expires.",
+            "x-order": 2
+          }
+        }
+      },
+      "TokenStanding": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Server-side read result of looking up one presented token by its ID (the token's `jti`) in the token store. It is not a request or response body: the server reads it before any handler runs to decide whether the token is accepted and whether its keys are narrowed to its keychains. The server reports `keychainScoped` true when the stored flag is true or the token has any keychain mapping, so a consumer deciding from this result fails closed. See docs/token-scoping-contract.md.",
+        "required": [
+          "id",
+          "revoked",
+          "expired",
+          "keychainScoped"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "TokenID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id"
+            },
+            "x-order": 1
+          },
+          "revoked": {
+            "type": "boolean",
+            "description": "Whether the stored token has been retired (deleted).",
+            "x-oapi-codegen-extra-tags": {
+              "db": "revoked"
+            },
+            "x-order": 2
+          },
+          "expired": {
+            "type": "boolean",
+            "description": "Whether the stored token's `expiresAt` is at or before the time of the lookup, evaluated by the store. A token with no `expiresAt` never expires.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "expired"
+            },
+            "x-order": 3
+          },
+          "keychainScoped": {
+            "type": "boolean",
+            "description": "True when the token's stored `keychainScoped` flag is true or the token has any keychain mapping. When true the token is limited to the keys of its keychains, and holds no keys if every one of them has been deleted. The lookup's `keychain_scoped` result column is a computed alias for this value (the stored flag OR any keychain mapping), so a query-mapping consumer does not read the raw stored flag.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "keychain_scoped"
+            },
+            "x-order": 4
           }
         }
       },
@@ -2580,7 +3056,7 @@ const TokenSchema: Record<string, unknown> = {
               "x-go-type": "UserToken",
               "type": "object",
               "additionalProperties": false,
-              "description": "Represents a user-owned API token or OAuth session.",
+              "description": "Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.",
               "required": [
                 "id",
                 "owner",
@@ -2706,6 +3182,54 @@ const TokenSchema: Record<string, unknown> = {
                     "json": "updatedAt"
                   },
                   "x-order": 10
+                },
+                "keychainIds": {
+                  "type": "array",
+                  "description": "IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "-",
+                    "json": "keychainIds,omitempty"
+                  },
+                  "x-order": 11
+                },
+                "expiresAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.",
+                  "nullable": true,
+                  "x-go-type": "core.NullTime",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "expires_at",
+                    "json": "expiresAt,omitempty"
+                  },
+                  "x-order": 12
+                },
+                "keychainScoped": {
+                  "type": "boolean",
+                  "description": "Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.",
+                  "readOnly": true,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "keychain_scoped",
+                    "json": "keychainScoped,omitempty"
+                  },
+                  "x-order": 13
                 }
               }
             },
