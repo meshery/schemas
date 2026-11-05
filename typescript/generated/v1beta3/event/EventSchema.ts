@@ -83,6 +83,67 @@ const EventSchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -174,6 +235,67 @@ const EventSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -276,6 +398,67 @@ const EventSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -396,6 +579,67 @@ const EventSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -533,6 +777,20 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
+                          "visibility": {
+                            "type": "string",
+                            "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.",
+                            "enum": [
+                              "private",
+                              "public"
+                            ],
+                            "default": "private",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility",
+                              "json": "visibility"
+                            }
+                          },
                           "owner": {
                             "type": "string",
                             "format": "uuid",
@@ -599,6 +857,12 @@ const EventSchema: Record<string, unknown> = {
                             "description": "The last name of the user associated with the event.",
                             "maxLength": 500
                           },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "URL to the avatar image of the user associated with the event."
+                          },
                           "email": {
                             "description": "Email address of the user associated with the event.",
                             "type": "string",
@@ -659,6 +923,67 @@ const EventSchema: Record<string, unknown> = {
           "404": {
             "description": "Workspace not found"
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error"
           }
@@ -715,7 +1040,7 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -770,6 +1095,67 @@ const EventSchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error"
           }
@@ -791,7 +1177,7 @@ const EventSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating a new event.",
+                "description": "Payload for creating a new event. If visibility is absent, the event is private.",
                 "additionalProperties": true,
                 "properties": {
                   "owner": {
@@ -812,6 +1198,19 @@ const EventSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "The category of the event.",
                     "maxLength": 500
+                  },
+                  "visibility": {
+                    "description": "Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed.",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "visibility,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "private",
+                      "public"
+                    ],
+                    "default": "private",
+                    "x-go-name": "EventVisibility"
                   },
                   "action": {
                     "type": "string",
@@ -859,7 +1258,8 @@ const EventSchema: Record<string, unknown> = {
                     "systemId",
                     "organizationId",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "visibility"
                   ],
                   "properties": {
                     "id": {
@@ -919,7 +1319,7 @@ const EventSchema: Record<string, unknown> = {
                     },
                     "metadata": {
                       "type": "object",
-                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
                       "additionalProperties": true,
                       "nullable": true,
                       "x-go-type": "core.Map",
@@ -1029,6 +1429,21 @@ const EventSchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "visibility": {
+                      "description": "Who can see the event. Defaults to `private`.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility",
+                        "json": "visibility"
+                      },
+                      "x-order": 16,
+                      "type": "string",
+                      "enum": [
+                        "private",
+                        "public"
+                      ],
+                      "default": "private",
+                      "x-go-name": "EventVisibility"
                     },
                     "deletedAt": {
                       "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
@@ -1071,7 +1486,8 @@ const EventSchema: Record<string, unknown> = {
                     "systemId",
                     "organizationId",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "visibility"
                   ],
                   "properties": {
                     "id": {
@@ -1131,7 +1547,7 @@ const EventSchema: Record<string, unknown> = {
                     },
                     "metadata": {
                       "type": "object",
-                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
                       "additionalProperties": true,
                       "nullable": true,
                       "x-go-type": "core.Map",
@@ -1242,6 +1658,21 @@ const EventSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
+                    "visibility": {
+                      "description": "Who can see the event. Defaults to `private`.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility",
+                        "json": "visibility"
+                      },
+                      "x-order": 16,
+                      "type": "string",
+                      "enum": [
+                        "private",
+                        "public"
+                      ],
+                      "default": "private",
+                      "x-go-name": "EventVisibility"
+                    },
                     "deletedAt": {
                       "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
                       "x-oapi-codegen-extra-tags": {
@@ -1279,6 +1710,67 @@ const EventSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1402,6 +1894,20 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
+                          "visibility": {
+                            "type": "string",
+                            "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.",
+                            "enum": [
+                              "private",
+                              "public"
+                            ],
+                            "default": "private",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility",
+                              "json": "visibility"
+                            }
+                          },
                           "owner": {
                             "type": "string",
                             "format": "uuid",
@@ -1468,6 +1974,12 @@ const EventSchema: Record<string, unknown> = {
                             "description": "The last name of the user associated with the event.",
                             "maxLength": 500
                           },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "URL to the avatar image of the user associated with the event."
+                          },
                           "email": {
                             "description": "Email address of the user associated with the event.",
                             "type": "string",
@@ -1513,7 +2025,7 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -1561,8 +2073,414 @@ const EventSchema: Record<string, unknown> = {
           "404": {
             "description": "Not found"
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/events/feed": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "events"
+        ],
+        "operationId": "getEventFeed",
+        "summary": "Get event feed",
+        "description": "Generic, unauthenticated feed of events whose visibility is `public`\nand whose owner's `shareActivityPublicly` preference is on at read\ntime. Results are ordered newest first by `createdAt` and can be\nfiltered by category and action. Rate limited per client IP; an\nover-limit client receives 429 with `Retry-After`. Responses carry\n`Cache-Control: public, max-age=N` where N is at most 30 seconds.\nSee docs/event-feed-contract.md.\n",
+        "security": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "required": false,
+            "description": "Number of feed items per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "description": "Optional event category filter.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "description": "Optional event action filter.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event feed page",
+            "headers": {
+              "Cache-Control": {
+                "description": "`public, max-age=N` with N from 0 to 30; max-age never exceeds 30 seconds.",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "pattern": "^public, max-age=([0-9]|[12][0-9]|30)$"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "One page of event feed items, newest first.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "data"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1,
+                      "maximum": 50
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of matching feed events.",
+                      "minimum": 0
+                    },
+                    "data": {
+                      "type": "array",
+                      "maxItems": 50,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+                        "required": [
+                          "id",
+                          "userId",
+                          "category",
+                          "action",
+                          "createdAt",
+                          "visibility",
+                          "platform",
+                          "role",
+                          "line"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Event ID.",
+                            "x-go-name": "ID",
+                            "x-order": 1,
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "userId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-order": 2
+                          },
+                          "category": {
+                            "type": "string",
+                            "description": "Event category.",
+                            "maxLength": 500,
+                            "x-order": 3
+                          },
+                          "action": {
+                            "type": "string",
+                            "description": "Event action.",
+                            "maxLength": 500,
+                            "x-order": 4
+                          },
+                          "createdAt": {
+                            "description": "Event creation time; the feed is ordered newest first.",
+                            "x-order": 5,
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "visibility": {
+                            "description": "Always `public` in the feed.",
+                            "x-order": 6,
+                            "type": "string",
+                            "enum": [
+                              "private",
+                              "public"
+                            ],
+                            "default": "private",
+                            "x-go-name": "EventVisibility"
+                          },
+                          "platform": {
+                            "type": "string",
+                            "description": "Platform from ScheduleCompletedEventMetadata.",
+                            "enum": [
+                              "linkedin",
+                              "x",
+                              "reddit",
+                              "hacker-news",
+                              "slack",
+                              "bluesky",
+                              "github"
+                            ],
+                            "x-order": 7
+                          },
+                          "role": {
+                            "type": "string",
+                            "description": "Role from ScheduleCompletedEventMetadata.",
+                            "minLength": 3,
+                            "maxLength": 40,
+                            "x-order": 8
+                          },
+                          "line": {
+                            "type": "string",
+                            "description": "One-line result from ScheduleCompletedEventMetadata.",
+                            "minLength": 10,
+                            "maxLength": 120,
+                            "x-order": 9
+                          },
+                          "networks": {
+                            "type": "array",
+                            "description": "Networks from ScheduleCompletedEventMetadata, when present.",
+                            "minItems": 1,
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 255
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "networks,omitempty"
+                            },
+                            "x-order": 10
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "description": "Public username, never a real name; present only for a public profile.",
+                            "maxLength": 80,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "displayName,omitempty"
+                            },
+                            "x-order": 11
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "Public avatar URL; present only for a public profile.",
+                            "x-go-name": "AvatarURL",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "avatarUrl,omitempty"
+                            },
+                            "x-order": 12
+                          },
+                          "organizationName": {
+                            "type": "string",
+                            "description": "Public organization name; present only for a public profile.",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "organizationName,omitempty"
+                            },
+                            "x-order": 13
+                          },
+                          "publicProfileUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "HTTPS URL of the user's public profile.",
+                            "pattern": "^https://",
+                            "maxLength": 2048,
+                            "x-go-name": "PublicProfileURL",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "publicProfileUrl,omitempty"
+                            },
+                            "x-order": 14
+                          }
+                        }
+                      },
+                      "description": "Events for the requested page, newest first."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1670,6 +2588,67 @@ const EventSchema: Record<string, unknown> = {
           "404": {
             "description": "Not found"
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error"
           }
@@ -1748,6 +2727,67 @@ const EventSchema: Record<string, unknown> = {
           "404": {
             "description": "Not found"
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error"
           }
@@ -1797,13 +2837,74 @@ const EventSchema: Record<string, unknown> = {
           }
         }
       },
+      "MeshkitError429": {
+        "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+        "headers": {
+          "Retry-After": {
+            "description": "Number of seconds the caller must wait before retrying.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "MeshkitError403": {
         "description": "Forbidden",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
-              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
               "required": [
                 "error"
               ],
@@ -1915,6 +3016,38 @@ const EventSchema: Record<string, unknown> = {
           "type": "integer"
         }
       },
+      "feedPagesize": {
+        "name": "pagesize",
+        "in": "query",
+        "required": false,
+        "description": "Number of feed items per page.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        }
+      },
+      "feedCategory": {
+        "name": "category",
+        "in": "query",
+        "required": false,
+        "description": "Optional event category filter.",
+        "schema": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "feedAction": {
+        "name": "action",
+        "in": "query",
+        "required": false,
+        "description": "Optional event action filter.",
+        "schema": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
       "search": {
         "name": "search",
         "in": "query",
@@ -1981,7 +3114,7 @@ const EventSchema: Record<string, unknown> = {
     "schemas": {
       "EventPayload": {
         "type": "object",
-        "description": "Payload for creating a new event.",
+        "description": "Payload for creating a new event. If visibility is absent, the event is private.",
         "additionalProperties": true,
         "properties": {
           "owner": {
@@ -2002,6 +3135,19 @@ const EventSchema: Record<string, unknown> = {
             "type": "string",
             "description": "The category of the event.",
             "maxLength": 500
+          },
+          "visibility": {
+            "description": "Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed.",
+            "x-oapi-codegen-extra-tags": {
+              "json": "visibility,omitempty"
+            },
+            "type": "string",
+            "enum": [
+              "private",
+              "public"
+            ],
+            "default": "private",
+            "x-go-name": "EventVisibility"
           },
           "action": {
             "type": "string",
@@ -2147,6 +3293,20 @@ const EventSchema: Record<string, unknown> = {
         "additionalProperties": false,
         "description": "EventResult entity schema.",
         "properties": {
+          "visibility": {
+            "type": "string",
+            "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.",
+            "enum": [
+              "private",
+              "public"
+            ],
+            "default": "private",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "visibility",
+              "json": "visibility"
+            }
+          },
           "owner": {
             "type": "string",
             "format": "uuid",
@@ -2213,6 +3373,12 @@ const EventSchema: Record<string, unknown> = {
             "description": "The last name of the user associated with the event.",
             "maxLength": 500
           },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 500,
+            "description": "URL to the avatar image of the user associated with the event."
+          },
           "email": {
             "description": "Email address of the user associated with the event.",
             "type": "string",
@@ -2258,7 +3424,8 @@ const EventSchema: Record<string, unknown> = {
           "systemId",
           "organizationId",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
+          "visibility"
         ],
         "properties": {
           "id": {
@@ -2318,7 +3485,7 @@ const EventSchema: Record<string, unknown> = {
           },
           "metadata": {
             "type": "object",
-            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
             "additionalProperties": true,
             "nullable": true,
             "x-go-type": "core.Map",
@@ -2429,6 +3596,21 @@ const EventSchema: Record<string, unknown> = {
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
+          "visibility": {
+            "description": "Who can see the event. Defaults to `private`.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "visibility",
+              "json": "visibility"
+            },
+            "x-order": 16,
+            "type": "string",
+            "enum": [
+              "private",
+              "public"
+            ],
+            "default": "private",
+            "x-go-name": "EventVisibility"
+          },
           "deletedAt": {
             "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
             "x-oapi-codegen-extra-tags": {
@@ -2481,6 +3663,20 @@ const EventSchema: Record<string, unknown> = {
               "additionalProperties": false,
               "description": "EventResult entity schema.",
               "properties": {
+                "visibility": {
+                  "type": "string",
+                  "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.",
+                  "enum": [
+                    "private",
+                    "public"
+                  ],
+                  "default": "private",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "visibility",
+                    "json": "visibility"
+                  }
+                },
                 "owner": {
                   "type": "string",
                   "format": "uuid",
@@ -2547,6 +3743,12 @@ const EventSchema: Record<string, unknown> = {
                   "description": "The last name of the user associated with the event.",
                   "maxLength": 500
                 },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 500,
+                  "description": "URL to the avatar image of the user associated with the event."
+                },
                 "email": {
                   "description": "Email address of the user associated with the event.",
                   "type": "string",
@@ -2577,6 +3779,358 @@ const EventSchema: Record<string, unknown> = {
               ]
             },
             "description": "The events returned on the current page."
+          }
+        }
+      },
+      "EventVisibility": {
+        "type": "string",
+        "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.",
+        "enum": [
+          "private",
+          "public"
+        ],
+        "default": "private",
+        "x-go-name": "EventVisibility"
+      },
+      "EventFeedItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+        "required": [
+          "id",
+          "userId",
+          "category",
+          "action",
+          "createdAt",
+          "visibility",
+          "platform",
+          "role",
+          "line"
+        ],
+        "properties": {
+          "id": {
+            "description": "Event ID.",
+            "x-go-name": "ID",
+            "x-order": 1,
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-order": 2
+          },
+          "category": {
+            "type": "string",
+            "description": "Event category.",
+            "maxLength": 500,
+            "x-order": 3
+          },
+          "action": {
+            "type": "string",
+            "description": "Event action.",
+            "maxLength": 500,
+            "x-order": 4
+          },
+          "createdAt": {
+            "description": "Event creation time; the feed is ordered newest first.",
+            "x-order": 5,
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "visibility": {
+            "description": "Always `public` in the feed.",
+            "x-order": 6,
+            "type": "string",
+            "enum": [
+              "private",
+              "public"
+            ],
+            "default": "private",
+            "x-go-name": "EventVisibility"
+          },
+          "platform": {
+            "type": "string",
+            "description": "Platform from ScheduleCompletedEventMetadata.",
+            "enum": [
+              "linkedin",
+              "x",
+              "reddit",
+              "hacker-news",
+              "slack",
+              "bluesky",
+              "github"
+            ],
+            "x-order": 7
+          },
+          "role": {
+            "type": "string",
+            "description": "Role from ScheduleCompletedEventMetadata.",
+            "minLength": 3,
+            "maxLength": 40,
+            "x-order": 8
+          },
+          "line": {
+            "type": "string",
+            "description": "One-line result from ScheduleCompletedEventMetadata.",
+            "minLength": 10,
+            "maxLength": 120,
+            "x-order": 9
+          },
+          "networks": {
+            "type": "array",
+            "description": "Networks from ScheduleCompletedEventMetadata, when present.",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "networks,omitempty"
+            },
+            "x-order": 10
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Public username, never a real name; present only for a public profile.",
+            "maxLength": 80,
+            "x-oapi-codegen-extra-tags": {
+              "json": "displayName,omitempty"
+            },
+            "x-order": 11
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 500,
+            "description": "Public avatar URL; present only for a public profile.",
+            "x-go-name": "AvatarURL",
+            "x-oapi-codegen-extra-tags": {
+              "json": "avatarUrl,omitempty"
+            },
+            "x-order": 12
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "Public organization name; present only for a public profile.",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "json": "organizationName,omitempty"
+            },
+            "x-order": 13
+          },
+          "publicProfileUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "HTTPS URL of the user's public profile.",
+            "pattern": "^https://",
+            "maxLength": 2048,
+            "x-go-name": "PublicProfileURL",
+            "x-oapi-codegen-extra-tags": {
+              "json": "publicProfileUrl,omitempty"
+            },
+            "x-order": 14
+          }
+        }
+      },
+      "EventFeedPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One page of event feed items, newest first.",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "data"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of matching feed events.",
+            "minimum": 0
+          },
+          "data": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+              "required": [
+                "id",
+                "userId",
+                "category",
+                "action",
+                "createdAt",
+                "visibility",
+                "platform",
+                "role",
+                "line"
+              ],
+              "properties": {
+                "id": {
+                  "description": "Event ID.",
+                  "x-go-name": "ID",
+                  "x-order": 1,
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-order": 2
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Event category.",
+                  "maxLength": 500,
+                  "x-order": 3
+                },
+                "action": {
+                  "type": "string",
+                  "description": "Event action.",
+                  "maxLength": 500,
+                  "x-order": 4
+                },
+                "createdAt": {
+                  "description": "Event creation time; the feed is ordered newest first.",
+                  "x-order": 5,
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "visibility": {
+                  "description": "Always `public` in the feed.",
+                  "x-order": 6,
+                  "type": "string",
+                  "enum": [
+                    "private",
+                    "public"
+                  ],
+                  "default": "private",
+                  "x-go-name": "EventVisibility"
+                },
+                "platform": {
+                  "type": "string",
+                  "description": "Platform from ScheduleCompletedEventMetadata.",
+                  "enum": [
+                    "linkedin",
+                    "x",
+                    "reddit",
+                    "hacker-news",
+                    "slack",
+                    "bluesky",
+                    "github"
+                  ],
+                  "x-order": 7
+                },
+                "role": {
+                  "type": "string",
+                  "description": "Role from ScheduleCompletedEventMetadata.",
+                  "minLength": 3,
+                  "maxLength": 40,
+                  "x-order": 8
+                },
+                "line": {
+                  "type": "string",
+                  "description": "One-line result from ScheduleCompletedEventMetadata.",
+                  "minLength": 10,
+                  "maxLength": 120,
+                  "x-order": 9
+                },
+                "networks": {
+                  "type": "array",
+                  "description": "Networks from ScheduleCompletedEventMetadata, when present.",
+                  "minItems": 1,
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "networks,omitempty"
+                  },
+                  "x-order": 10
+                },
+                "displayName": {
+                  "type": "string",
+                  "description": "Public username, never a real name; present only for a public profile.",
+                  "maxLength": 80,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "displayName,omitempty"
+                  },
+                  "x-order": 11
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 500,
+                  "description": "Public avatar URL; present only for a public profile.",
+                  "x-go-name": "AvatarURL",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "avatarUrl,omitempty"
+                  },
+                  "x-order": 12
+                },
+                "organizationName": {
+                  "type": "string",
+                  "description": "Public organization name; present only for a public profile.",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "organizationName,omitempty"
+                  },
+                  "x-order": 13
+                },
+                "publicProfileUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "HTTPS URL of the user's public profile.",
+                  "pattern": "^https://",
+                  "maxLength": 2048,
+                  "x-go-name": "PublicProfileURL",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "publicProfileUrl,omitempty"
+                  },
+                  "x-order": 14
+                }
+              }
+            },
+            "description": "Events for the requested page, newest first."
           }
         }
       },
@@ -2657,6 +4211,423 @@ const EventSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Human-readable error message.",
             "maxLength": 500
+          }
+        }
+      },
+      "DesignEventIdentity": {
+        "type": "object",
+        "description": "The fields that identify the design a design event is about. Every design event that names a design carries them, and they are what remains when Meshery Server's 16 KB guard drops oversized metadata. Event metadata names a design, it never carries one: never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to these identity fields. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys instead of `designName` and `viewLink`; readers should fall back to them.\n",
+        "additionalProperties": false,
+        "required": [
+          "designId"
+        ],
+        "properties": {
+          "designId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the design the event is about.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "DesignID"
+          },
+          "designName": {
+            "type": "string",
+            "description": "Name of the design when the event was recorded.",
+            "maxLength": 255,
+            "x-go-name": "DesignName"
+          },
+          "designVersion": {
+            "type": "string",
+            "description": "Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.",
+            "maxLength": 50,
+            "x-go-name": "DesignVersion"
+          },
+          "designLink": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.\n",
+            "maxLength": 2048,
+            "x-go-name": "DesignLink"
+          },
+          "viewLink": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.\n",
+            "maxLength": 2048,
+            "x-go-name": "ViewLink"
+          }
+        }
+      },
+      "RelationshipEvaluationEventMetadata": {
+        "type": "object",
+        "description": "Metadata of a relationship evaluation event (category `relationship`, action `evaluation`): the design's identity fields (DesignEventIdentity) plus counts of what the evaluation changed. It summarizes the evaluation; it does not carry it. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.\n",
+        "additionalProperties": false,
+        "required": [
+          "designId"
+        ],
+        "properties": {
+          "designId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the design the event is about.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "DesignID"
+          },
+          "designName": {
+            "type": "string",
+            "description": "Name of the design when the event was recorded.",
+            "maxLength": 255,
+            "x-go-name": "DesignName"
+          },
+          "designVersion": {
+            "type": "string",
+            "description": "Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.",
+            "maxLength": 50,
+            "x-go-name": "DesignVersion"
+          },
+          "designLink": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.\n",
+            "maxLength": 2048,
+            "x-go-name": "DesignLink"
+          },
+          "viewLink": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.\n",
+            "maxLength": 2048,
+            "x-go-name": "ViewLink"
+          },
+          "historyTitle": {
+            "type": "string",
+            "description": "One-line title of the evaluation for the design's history, for example `3 changes made at version v0.0.3`.",
+            "maxLength": 500,
+            "x-go-name": "HistoryTitle"
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the evaluation ran.",
+            "x-go-name": "EvaluatedAt"
+          },
+          "relationshipsAdded": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of relationships the evaluation added to the design.",
+            "x-go-name": "RelationshipsAdded"
+          },
+          "relationshipsRemoved": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of relationships the evaluation removed from the design.",
+            "x-go-name": "RelationshipsRemoved"
+          },
+          "relationshipsUpdated": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of existing relationships the evaluation updated.",
+            "x-go-name": "RelationshipsUpdated"
+          },
+          "evaluationStatus": {
+            "type": "string",
+            "description": "Outcome of the evaluation as the evaluator reports it, for example `completed`; consumers must tolerate values they do not know.",
+            "maxLength": 255,
+            "x-go-name": "EvaluationStatus"
+          },
+          "evaluationDurationMs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How long the evaluation took, in milliseconds.",
+            "x-go-name": "EvaluationDurationMs"
+          }
+        }
+      },
+      "DesignValidationEventMetadata": {
+        "type": "object",
+        "description": "Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. When the operation did not complete (`status` `error`), there is no verdict: `errors` is empty or omitted, `errorCount` and `truncated` are omitted, the identity fields are kept, `error` names why the operation failed, and the event is recorded with severity `error` under its usual category `pattern` and action (`validate` for a design validation). Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.\n",
+        "additionalProperties": false,
+        "required": [
+          "designId"
+        ],
+        "properties": {
+          "designId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the design the event is about.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "DesignID"
+          },
+          "designName": {
+            "type": "string",
+            "description": "Name of the design when the event was recorded.",
+            "maxLength": 255,
+            "x-go-name": "DesignName"
+          },
+          "designVersion": {
+            "type": "string",
+            "description": "Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.",
+            "maxLength": 50,
+            "x-go-name": "DesignVersion"
+          },
+          "designLink": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link that opens the design in the designer view, for example `<base>/extension/meshmap?mode=design&design=<designId>`.\n",
+            "maxLength": 2048,
+            "x-go-name": "DesignLink"
+          },
+          "viewLink": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.\n",
+            "maxLength": 2048,
+            "x-go-name": "ViewLink"
+          },
+          "status": {
+            "type": "string",
+            "description": "Outcome of the operation as the producer reports it: `success` (the operation ran and found no errors), `partial` (the operation ran and part of it succeeded), `failed` (the operation ran and found errors, listed in `errors`) or `error` (the operation did not complete, so there is no verdict; `error` says why). It is an open string, not an enum: consumers must tolerate values they do not know.\n",
+            "maxLength": 255,
+            "x-go-name": "Status"
+          },
+          "errorCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20. Omitted when `status` is `error`, because an operation that did not complete found nothing.\n",
+            "x-go-name": "ErrorCount"
+          },
+          "errors": {
+            "type": "array",
+            "maxItems": 20,
+            "description": "Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed. Empty or omitted when `status` is `error`.\n",
+            "items": {
+              "type": "object",
+              "description": "One error a design validate, deploy, undeploy or dry-run operation found: a code and the component it is about, never the offending component itself.\n",
+              "additionalProperties": false,
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "The error's code: a JSON-schema validator keyword such as `required` or `type` when design validation rejected the design, or a MeshKit error code (for example `meshery-server-1234`) when a server-side step failed. Consumers must tolerate codes they do not know.\n",
+                  "maxLength": 255,
+                  "x-go-name": "Code"
+                },
+                "componentId": {
+                  "type": "string",
+                  "description": "ID of the design component the error is about, as the design names it; omitted when the error is about the design as a whole. It is not checked as a UUID, because an invalid design can carry any value here and one bad value must not make the event unreadable.\n",
+                  "maxLength": 255,
+                  "x-id-format": "external",
+                  "x-go-name": "ComponentID"
+                }
+              }
+            },
+            "x-go-name": "Errors"
+          },
+          "truncated": {
+            "type": "boolean",
+            "description": "True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete. Omitted when `status` is `error`.",
+            "x-go-name": "Truncated"
+          },
+          "error": {
+            "description": "Why the operation did not complete. Present only when `status` is `error`; omitted for every other status, including `failed`, whose findings are in `errors`.\n",
+            "x-go-name": "Error",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know.\n",
+                "minLength": 1,
+                "maxLength": 255,
+                "x-go-name": "Code"
+              },
+              "message": {
+                "type": "string",
+                "description": "One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents.\n",
+                "maxLength": 512,
+                "x-go-name": "Message"
+              }
+            }
+          }
+        }
+      },
+      "DesignValidationEventError": {
+        "type": "object",
+        "description": "One error a design validate, deploy, undeploy or dry-run operation found: a code and the component it is about, never the offending component itself.\n",
+        "additionalProperties": false,
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "The error's code: a JSON-schema validator keyword such as `required` or `type` when design validation rejected the design, or a MeshKit error code (for example `meshery-server-1234`) when a server-side step failed. Consumers must tolerate codes they do not know.\n",
+            "maxLength": 255,
+            "x-go-name": "Code"
+          },
+          "componentId": {
+            "type": "string",
+            "description": "ID of the design component the error is about, as the design names it; omitted when the error is about the design as a whole. It is not checked as a UUID, because an invalid design can carry any value here and one bad value must not make the event unreadable.\n",
+            "maxLength": 255,
+            "x-id-format": "external",
+            "x-go-name": "ComponentID"
+          }
+        }
+      },
+      "DesignEventOperationError": {
+        "type": "object",
+        "description": "Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response.\n",
+        "additionalProperties": false,
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know.\n",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-go-name": "Code"
+          },
+          "message": {
+            "type": "string",
+            "description": "One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents.\n",
+            "maxLength": 512,
+            "x-go-name": "Message"
+          }
+        }
+      },
+      "DesignSavedEventMetadata": {
+        "type": "object",
+        "description": "Metadata of a design saved event (category `pattern`, action `create` or `update`): a history title and the saved design's ID and name, never its contents. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.\n",
+        "additionalProperties": false,
+        "required": [
+          "design"
+        ],
+        "properties": {
+          "historyTitle": {
+            "type": "string",
+            "description": "One-line title of the save for the design's history, for example `Version v0.0.3 - 12 components and 9 relationships`.",
+            "maxLength": 500,
+            "x-go-name": "HistoryTitle"
+          },
+          "design": {
+            "description": "The saved design's ID and name.",
+            "x-go-name": "Design",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID of the saved design.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                },
+                "x-go-name": "ID"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the saved design.",
+                "maxLength": 255,
+                "x-go-name": "Name"
+              }
+            }
+          }
+        }
+      },
+      "DesignSavedEventDesign": {
+        "type": "object",
+        "description": "The ID and name of the design a saved event is about - only those two fields, never the design file or any of its contents.\n",
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the saved design.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the saved design.",
+            "maxLength": 255,
+            "x-go-name": "Name"
+          }
+        }
+      },
+      "ScheduleCompletedEventMetadata": {
+        "type": "object",
+        "description": "Metadata for a completed scheduled run (category `schedule`, action `completed`). This typed shape keeps client-specific display data out of the core Event fields and is projected into EventFeedItem.",
+        "additionalProperties": false,
+        "required": [
+          "platform",
+          "role",
+          "line"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "description": "Platform the completed run acted on.",
+            "enum": [
+              "linkedin",
+              "x",
+              "reddit",
+              "hacker-news",
+              "slack",
+              "bluesky",
+              "github"
+            ],
+            "x-go-name": "Platform"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role the completed run acted in.",
+            "minLength": 3,
+            "maxLength": 40,
+            "x-go-name": "Role"
+          },
+          "line": {
+            "type": "string",
+            "description": "One-line result of the run.",
+            "minLength": 10,
+            "maxLength": 120,
+            "x-go-name": "Line"
+          },
+          "networks": {
+            "type": "array",
+            "description": "Networks or communities where the run acted.",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "x-go-name": "Networks"
           }
         }
       }

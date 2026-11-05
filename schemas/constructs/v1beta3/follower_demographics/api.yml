@@ -3,7 +3,7 @@ info:
   title: Follower Demographics
   description: |
     OpenAPI schema for follower-breakdown snapshot rows for a page,
-    consumed by Blowhorn's analytics store. The rows have no endpoints
+    consumed by the posting client's analytics store. The rows have no endpoints
     of their own: they are recorded and read back as the `metadata` of
     events on the events service (category `blowhorn`, action
     `follower_demographics`; see the event construct), so this file
@@ -56,6 +56,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
+          x-go-name: OrganizationID
         platform:
           type: string
           description: The platform the page belongs to (today only `linkedin` produces these exports).

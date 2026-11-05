@@ -29,6 +29,21 @@ selected organization. It is absent from `ConnectionPayload`,
 and `upsertPattern` say the server assigns it from the session. An update
 does not move the resource to another organization.
 
+The field is required on read as well as on write: a server never returns a
+connection without one. v1.3.105 briefly made `Connection.organizationId`
+nullable on read, because Meshery Cloud recorded no organization for
+connections before 2026-10-20. That was withdrawn in favour of the tenancy
+rule that an organization reference is never NULL. A server holding such
+rows assigns each one the organization it can trace (the single organization
+of the environments it is mapped into, else the owner's only organization,
+else the only one the owner owns among their memberships) and deletes the
+rows it cannot trace, then enforces NOT NULL in its database. Meshery Cloud
+does this in migration `20261026060521_connections_organization_backfill`.
+
+When the session names no organization, a server may assign the caller's
+only organization (else the only one the caller owns among their
+memberships), and must not guess between several: Meshery Cloud answers 400.
+
 `MesheryPattern.organizationId` is `readOnly`. `Connection.organizationId` is
 not. `RegistrantData.connection` inlines the connection entity into
 `registerRegistryComponent` and `registerRegistryRelationship`, and the

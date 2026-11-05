@@ -570,18 +570,18 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                                   "WorkspacesInOrganization": "Maximum number of workspaces in an organization; 999999999999 is unlimited.",
                                   "ImageSizeInDesign": "Maximum size, in bytes, of an image embedded in a design; 999999999999 is unlimited.",
                                   "SizePerDesign": "Maximum size of a single design; 999999999999 is unlimited.",
-                                  "BlowhornProfiles": "Maximum number of Blowhorn posting profiles the organization may hold; 999999999999 is unlimited.",
-                                  "BlowhornBrowserAutomation": "Blowhorn may publish through browser automation; granted when quantity is greater than 0.",
-                                  "BlowhornScheduler": "Blowhorn may run scheduled publishes; granted when quantity is greater than 0.",
-                                  "BlowhornDevicesPerSeat": "Maximum number of devices one Blowhorn seat may publish from; 999999999999 is unlimited.",
-                                  "BlowhornPlatformLinkedIn": "Blowhorn may publish to LinkedIn; granted when quantity is greater than 0.",
-                                  "BlowhornPlatformX": "Blowhorn may publish to X; granted when quantity is greater than 0.",
-                                  "BlowhornPlatformReddit": "Blowhorn may publish to Reddit; granted when quantity is greater than 0.",
-                                  "BlowhornPlatformHackerNews": "Blowhorn may publish to Hacker News; granted when quantity is greater than 0.",
-                                  "BlowhornPlatformSlack": "Blowhorn may publish to Slack; granted when quantity is greater than 0.",
-                                  "BlowhornPlatformBluesky": "Blowhorn may publish to Bluesky; granted when quantity is greater than 0.",
-                                  "BlowhornPlatformGitHub": "Blowhorn may publish to GitHub; granted when quantity is greater than 0.",
-                                  "BlowhornPlatformBlog": "Blowhorn may publish to a blog; granted when quantity is greater than 0."
+                                  "BlowhornProfiles": "Maximum number of posting profiles the organization may hold; 999999999999 is unlimited.",
+                                  "BlowhornBrowserAutomation": "The client may publish through browser automation; granted when quantity is greater than 0.",
+                                  "BlowhornScheduler": "The client may run scheduled publishes; granted when quantity is greater than 0.",
+                                  "BlowhornDevicesPerSeat": "Maximum number of devices one seat may publish from; 999999999999 is unlimited.",
+                                  "BlowhornPlatformLinkedIn": "The client may publish to LinkedIn; granted when quantity is greater than 0.",
+                                  "BlowhornPlatformX": "The client may publish to X; granted when quantity is greater than 0.",
+                                  "BlowhornPlatformReddit": "The client may publish to Reddit; granted when quantity is greater than 0.",
+                                  "BlowhornPlatformHackerNews": "The client may publish to Hacker News; granted when quantity is greater than 0.",
+                                  "BlowhornPlatformSlack": "The client may publish to Slack; granted when quantity is greater than 0.",
+                                  "BlowhornPlatformBluesky": "The client may publish to Bluesky; granted when quantity is greater than 0.",
+                                  "BlowhornPlatformGitHub": "The client may publish to GitHub; granted when quantity is greater than 0.",
+                                  "BlowhornPlatformBlog": "The client may publish to a blog; granted when quantity is greater than 0."
                                 }
                               },
                               "quantity": {
@@ -596,29 +596,29 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                                 "x-order": 5
                               },
                               "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "yaml": "created_at"
+                                },
                                 "x-order": 6,
                                 "description": "Timestamp when the resource was created.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "CreatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "created_at",
-                                  "yaml": "created_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "yaml": "updated_at"
+                                },
                                 "x-order": 7,
                                 "description": "Timestamp when the resource was updated.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "UpdatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "updated_at",
-                                  "yaml": "updated_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               }
                             }
@@ -712,6 +712,67 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -741,6 +802,67 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
           "text/plain": {
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      },
+      "MeshkitError429": {
+        "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+        "headers": {
+          "Retry-After": {
+            "description": "Number of seconds the caller must wait before retrying.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         }
@@ -1326,18 +1448,18 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                         "WorkspacesInOrganization": "Maximum number of workspaces in an organization; 999999999999 is unlimited.",
                         "ImageSizeInDesign": "Maximum size, in bytes, of an image embedded in a design; 999999999999 is unlimited.",
                         "SizePerDesign": "Maximum size of a single design; 999999999999 is unlimited.",
-                        "BlowhornProfiles": "Maximum number of Blowhorn posting profiles the organization may hold; 999999999999 is unlimited.",
-                        "BlowhornBrowserAutomation": "Blowhorn may publish through browser automation; granted when quantity is greater than 0.",
-                        "BlowhornScheduler": "Blowhorn may run scheduled publishes; granted when quantity is greater than 0.",
-                        "BlowhornDevicesPerSeat": "Maximum number of devices one Blowhorn seat may publish from; 999999999999 is unlimited.",
-                        "BlowhornPlatformLinkedIn": "Blowhorn may publish to LinkedIn; granted when quantity is greater than 0.",
-                        "BlowhornPlatformX": "Blowhorn may publish to X; granted when quantity is greater than 0.",
-                        "BlowhornPlatformReddit": "Blowhorn may publish to Reddit; granted when quantity is greater than 0.",
-                        "BlowhornPlatformHackerNews": "Blowhorn may publish to Hacker News; granted when quantity is greater than 0.",
-                        "BlowhornPlatformSlack": "Blowhorn may publish to Slack; granted when quantity is greater than 0.",
-                        "BlowhornPlatformBluesky": "Blowhorn may publish to Bluesky; granted when quantity is greater than 0.",
-                        "BlowhornPlatformGitHub": "Blowhorn may publish to GitHub; granted when quantity is greater than 0.",
-                        "BlowhornPlatformBlog": "Blowhorn may publish to a blog; granted when quantity is greater than 0."
+                        "BlowhornProfiles": "Maximum number of posting profiles the organization may hold; 999999999999 is unlimited.",
+                        "BlowhornBrowserAutomation": "The client may publish through browser automation; granted when quantity is greater than 0.",
+                        "BlowhornScheduler": "The client may run scheduled publishes; granted when quantity is greater than 0.",
+                        "BlowhornDevicesPerSeat": "Maximum number of devices one seat may publish from; 999999999999 is unlimited.",
+                        "BlowhornPlatformLinkedIn": "The client may publish to LinkedIn; granted when quantity is greater than 0.",
+                        "BlowhornPlatformX": "The client may publish to X; granted when quantity is greater than 0.",
+                        "BlowhornPlatformReddit": "The client may publish to Reddit; granted when quantity is greater than 0.",
+                        "BlowhornPlatformHackerNews": "The client may publish to Hacker News; granted when quantity is greater than 0.",
+                        "BlowhornPlatformSlack": "The client may publish to Slack; granted when quantity is greater than 0.",
+                        "BlowhornPlatformBluesky": "The client may publish to Bluesky; granted when quantity is greater than 0.",
+                        "BlowhornPlatformGitHub": "The client may publish to GitHub; granted when quantity is greater than 0.",
+                        "BlowhornPlatformBlog": "The client may publish to a blog; granted when quantity is greater than 0."
                       }
                     },
                     "quantity": {
@@ -1352,29 +1474,29 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                       "x-order": 5
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-order": 6,
                       "description": "Timestamp when the resource was created.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-order": 7,
                       "description": "Timestamp when the resource was updated.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1984,18 +2106,18 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                     "WorkspacesInOrganization": "Maximum number of workspaces in an organization; 999999999999 is unlimited.",
                     "ImageSizeInDesign": "Maximum size, in bytes, of an image embedded in a design; 999999999999 is unlimited.",
                     "SizePerDesign": "Maximum size of a single design; 999999999999 is unlimited.",
-                    "BlowhornProfiles": "Maximum number of Blowhorn posting profiles the organization may hold; 999999999999 is unlimited.",
-                    "BlowhornBrowserAutomation": "Blowhorn may publish through browser automation; granted when quantity is greater than 0.",
-                    "BlowhornScheduler": "Blowhorn may run scheduled publishes; granted when quantity is greater than 0.",
-                    "BlowhornDevicesPerSeat": "Maximum number of devices one Blowhorn seat may publish from; 999999999999 is unlimited.",
-                    "BlowhornPlatformLinkedIn": "Blowhorn may publish to LinkedIn; granted when quantity is greater than 0.",
-                    "BlowhornPlatformX": "Blowhorn may publish to X; granted when quantity is greater than 0.",
-                    "BlowhornPlatformReddit": "Blowhorn may publish to Reddit; granted when quantity is greater than 0.",
-                    "BlowhornPlatformHackerNews": "Blowhorn may publish to Hacker News; granted when quantity is greater than 0.",
-                    "BlowhornPlatformSlack": "Blowhorn may publish to Slack; granted when quantity is greater than 0.",
-                    "BlowhornPlatformBluesky": "Blowhorn may publish to Bluesky; granted when quantity is greater than 0.",
-                    "BlowhornPlatformGitHub": "Blowhorn may publish to GitHub; granted when quantity is greater than 0.",
-                    "BlowhornPlatformBlog": "Blowhorn may publish to a blog; granted when quantity is greater than 0."
+                    "BlowhornProfiles": "Maximum number of posting profiles the organization may hold; 999999999999 is unlimited.",
+                    "BlowhornBrowserAutomation": "The client may publish through browser automation; granted when quantity is greater than 0.",
+                    "BlowhornScheduler": "The client may run scheduled publishes; granted when quantity is greater than 0.",
+                    "BlowhornDevicesPerSeat": "Maximum number of devices one seat may publish from; 999999999999 is unlimited.",
+                    "BlowhornPlatformLinkedIn": "The client may publish to LinkedIn; granted when quantity is greater than 0.",
+                    "BlowhornPlatformX": "The client may publish to X; granted when quantity is greater than 0.",
+                    "BlowhornPlatformReddit": "The client may publish to Reddit; granted when quantity is greater than 0.",
+                    "BlowhornPlatformHackerNews": "The client may publish to Hacker News; granted when quantity is greater than 0.",
+                    "BlowhornPlatformSlack": "The client may publish to Slack; granted when quantity is greater than 0.",
+                    "BlowhornPlatformBluesky": "The client may publish to Bluesky; granted when quantity is greater than 0.",
+                    "BlowhornPlatformGitHub": "The client may publish to GitHub; granted when quantity is greater than 0.",
+                    "BlowhornPlatformBlog": "The client may publish to a blog; granted when quantity is greater than 0."
                   }
                 },
                 "quantity": {
@@ -2010,29 +2132,29 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                   "x-order": 5
                 },
                 "created_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
                   "x-order": 6,
                   "description": "Timestamp when the resource was created.",
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "CreatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "yaml": "created_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "updated_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at"
+                  },
                   "x-order": 7,
                   "description": "Timestamp when the resource was updated.",
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "UpdatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "yaml": "updated_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 }
               }

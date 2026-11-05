@@ -82,8 +82,8 @@ type FollowerDemographicsPayload struct {
 	// Followers The page's cumulative followers in this category on the snapshot day; null when the export's cell is blank.
 	Followers *int `json:"followers" yaml:"followers"`
 
-	// OrganizationId Owning organization ID.
-	OrganizationId uuid.UUID `json:"organizationId" yaml:"organizationId"`
+	// OrganizationID Owning organization ID.
+	OrganizationID uuid.UUID `json:"organizationId" yaml:"organizationId"`
 
 	// Platform The platform the page belongs to (today only `linkedin` produces these exports).
 	Platform string `json:"platform" yaml:"platform"`

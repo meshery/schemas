@@ -169,8 +169,8 @@ const PatternSchema: Record<string, unknown> = {
                                 "description": "Tracks the specific content version that has been made available in the Catalog.",
                                 "type": "string"
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -182,8 +182,8 @@ const PatternSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ]
                               },
@@ -200,12 +200,12 @@ const PatternSchema: Record<string, unknown> = {
                                 "minItems": 1,
                                 "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                               },
-                              "pattern_caveats": {
+                              "patternCaveats": {
                                 "type": "string",
                                 "title": "Caveats and Considerations",
                                 "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                               },
-                              "pattern_info": {
+                              "patternInfo": {
                                 "type": "string",
                                 "title": "Description",
                                 "minLength": 1,
@@ -227,7 +227,7 @@ const PatternSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -239,8 +239,8 @@ const PatternSchema: Record<string, unknown> = {
                             },
                             "required": [
                               "compatibility",
-                              "pattern_caveats",
-                              "pattern_info",
+                              "patternCaveats",
+                              "patternInfo",
                               "type"
                             ]
                           },
@@ -960,16 +960,16 @@ const PatternSchema: Record<string, unknown> = {
                                                         "x-order": 6
                                                       },
                                                       "created_at": {
+                                                        "x-oapi-codegen-extra-tags": {
+                                                          "db": "created_at",
+                                                          "yaml": "created_at"
+                                                        },
                                                         "x-order": 7,
                                                         "description": "Timestamp when the resource was created.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "x-go-name": "CreatedAt",
-                                                        "x-oapi-codegen-extra-tags": {
-                                                          "db": "created_at",
-                                                          "yaml": "created_at"
-                                                        },
                                                         "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "metadata": {
@@ -984,16 +984,16 @@ const PatternSchema: Record<string, unknown> = {
                                                         "type": "object"
                                                       },
                                                       "updated_at": {
+                                                        "x-oapi-codegen-extra-tags": {
+                                                          "db": "updated_at",
+                                                          "yaml": "updated_at"
+                                                        },
                                                         "x-order": 9,
                                                         "description": "Timestamp when the resource was updated.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "x-go-name": "UpdatedAt",
-                                                        "x-oapi-codegen-extra-tags": {
-                                                          "db": "updated_at",
-                                                          "yaml": "updated_at"
-                                                        },
                                                         "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "deleted_at": {
@@ -1596,29 +1596,29 @@ const PatternSchema: Record<string, unknown> = {
                                               "minimum": 0
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 14,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 15,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             }
                                           },
@@ -2562,29 +2562,29 @@ const PatternSchema: Record<string, unknown> = {
                                           ]
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         }
                                       },
@@ -5020,8 +5020,8 @@ const PatternSchema: Record<string, unknown> = {
                             "description": "Tracks the specific content version that has been made available in the Catalog.",
                             "type": "string"
                           },
-                          "class": {
-                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "contentClass": {
+                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                             "type": "string",
                             "oneOf": [
                               {
@@ -5033,8 +5033,8 @@ const PatternSchema: Record<string, unknown> = {
                                 "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                               },
                               {
-                                "const": "reference architecture",
-                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                "const": "community",
+                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                               }
                             ]
                           },
@@ -5051,12 +5051,12 @@ const PatternSchema: Record<string, unknown> = {
                             "minItems": 1,
                             "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                           },
-                          "pattern_caveats": {
+                          "patternCaveats": {
                             "type": "string",
                             "title": "Caveats and Considerations",
                             "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                           },
-                          "pattern_info": {
+                          "patternInfo": {
                             "type": "string",
                             "title": "Description",
                             "minLength": 1,
@@ -5078,7 +5078,7 @@ const PatternSchema: Record<string, unknown> = {
                             "default": "Deployment",
                             "description": "Categorization of the type of design or operational flow depicted in this design."
                           },
-                          "snapshotURL": {
+                          "imageURL": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -5090,8 +5090,8 @@ const PatternSchema: Record<string, unknown> = {
                         },
                         "required": [
                           "compatibility",
-                          "pattern_caveats",
-                          "pattern_info",
+                          "patternCaveats",
+                          "patternInfo",
                           "type"
                         ]
                       },
@@ -5811,16 +5811,16 @@ const PatternSchema: Record<string, unknown> = {
                                                     "x-order": 6
                                                   },
                                                   "created_at": {
+                                                    "x-oapi-codegen-extra-tags": {
+                                                      "db": "created_at",
+                                                      "yaml": "created_at"
+                                                    },
                                                     "x-order": 7,
                                                     "description": "Timestamp when the resource was created.",
                                                     "x-go-type": "time.Time",
                                                     "type": "string",
                                                     "format": "date-time",
                                                     "x-go-name": "CreatedAt",
-                                                    "x-oapi-codegen-extra-tags": {
-                                                      "db": "created_at",
-                                                      "yaml": "created_at"
-                                                    },
                                                     "x-go-type-skip-optional-pointer": true
                                                   },
                                                   "metadata": {
@@ -5835,16 +5835,16 @@ const PatternSchema: Record<string, unknown> = {
                                                     "type": "object"
                                                   },
                                                   "updated_at": {
+                                                    "x-oapi-codegen-extra-tags": {
+                                                      "db": "updated_at",
+                                                      "yaml": "updated_at"
+                                                    },
                                                     "x-order": 9,
                                                     "description": "Timestamp when the resource was updated.",
                                                     "x-go-type": "time.Time",
                                                     "type": "string",
                                                     "format": "date-time",
                                                     "x-go-name": "UpdatedAt",
-                                                    "x-oapi-codegen-extra-tags": {
-                                                      "db": "updated_at",
-                                                      "yaml": "updated_at"
-                                                    },
                                                     "x-go-type-skip-optional-pointer": true
                                                   },
                                                   "deleted_at": {
@@ -6447,29 +6447,29 @@ const PatternSchema: Record<string, unknown> = {
                                           "minimum": 0
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         }
                                       },
@@ -7413,29 +7413,29 @@ const PatternSchema: Record<string, unknown> = {
                                       ]
                                     },
                                     "created_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "yaml": "created_at"
+                                      },
                                       "x-order": 14,
                                       "description": "Timestamp when the resource was created.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "CreatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "created_at",
-                                        "yaml": "created_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     },
                                     "updated_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "yaml": "updated_at"
+                                      },
                                       "x-order": 15,
                                       "description": "Timestamp when the resource was updated.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "UpdatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "updated_at",
-                                        "yaml": "updated_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     }
                                   },
@@ -9838,8 +9838,8 @@ const PatternSchema: Record<string, unknown> = {
                           "description": "Tracks the specific content version that has been made available in the Catalog.",
                           "type": "string"
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -9851,8 +9851,8 @@ const PatternSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ]
                         },
@@ -9869,12 +9869,12 @@ const PatternSchema: Record<string, unknown> = {
                           "minItems": 1,
                           "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                         },
-                        "pattern_caveats": {
+                        "patternCaveats": {
                           "type": "string",
                           "title": "Caveats and Considerations",
                           "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                         },
-                        "pattern_info": {
+                        "patternInfo": {
                           "type": "string",
                           "title": "Description",
                           "minLength": 1,
@@ -9896,7 +9896,7 @@ const PatternSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -9908,8 +9908,8 @@ const PatternSchema: Record<string, unknown> = {
                       },
                       "required": [
                         "compatibility",
-                        "pattern_caveats",
-                        "pattern_info",
+                        "patternCaveats",
+                        "patternInfo",
                         "type"
                       ]
                     },
@@ -10629,16 +10629,16 @@ const PatternSchema: Record<string, unknown> = {
                                                   "x-order": 6
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -10653,16 +10653,16 @@ const PatternSchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -11265,29 +11265,29 @@ const PatternSchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -12231,29 +12231,29 @@ const PatternSchema: Record<string, unknown> = {
                                     ]
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -15027,8 +15027,8 @@ const PatternSchema: Record<string, unknown> = {
                           "description": "Tracks the specific content version that has been made available in the Catalog.",
                           "type": "string"
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -15040,8 +15040,8 @@ const PatternSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ]
                         },
@@ -15058,12 +15058,12 @@ const PatternSchema: Record<string, unknown> = {
                           "minItems": 1,
                           "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                         },
-                        "pattern_caveats": {
+                        "patternCaveats": {
                           "type": "string",
                           "title": "Caveats and Considerations",
                           "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                         },
-                        "pattern_info": {
+                        "patternInfo": {
                           "type": "string",
                           "title": "Description",
                           "minLength": 1,
@@ -15085,7 +15085,7 @@ const PatternSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -15097,8 +15097,8 @@ const PatternSchema: Record<string, unknown> = {
                       },
                       "required": [
                         "compatibility",
-                        "pattern_caveats",
-                        "pattern_info",
+                        "patternCaveats",
+                        "patternInfo",
                         "type"
                       ]
                     },
@@ -15818,16 +15818,16 @@ const PatternSchema: Record<string, unknown> = {
                                                   "x-order": 6
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -15842,16 +15842,16 @@ const PatternSchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -16454,29 +16454,29 @@ const PatternSchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -17420,29 +17420,29 @@ const PatternSchema: Record<string, unknown> = {
                                     ]
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -19953,8 +19953,8 @@ const PatternSchema: Record<string, unknown> = {
                           "description": "Tracks the specific content version that has been made available in the Catalog.",
                           "type": "string"
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -19966,8 +19966,8 @@ const PatternSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ]
                         },
@@ -19984,12 +19984,12 @@ const PatternSchema: Record<string, unknown> = {
                           "minItems": 1,
                           "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                         },
-                        "pattern_caveats": {
+                        "patternCaveats": {
                           "type": "string",
                           "title": "Caveats and Considerations",
                           "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                         },
-                        "pattern_info": {
+                        "patternInfo": {
                           "type": "string",
                           "title": "Description",
                           "minLength": 1,
@@ -20011,7 +20011,7 @@ const PatternSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -20023,8 +20023,8 @@ const PatternSchema: Record<string, unknown> = {
                       },
                       "required": [
                         "compatibility",
-                        "pattern_caveats",
-                        "pattern_info",
+                        "patternCaveats",
+                        "patternInfo",
                         "type"
                       ]
                     },
@@ -20744,16 +20744,16 @@ const PatternSchema: Record<string, unknown> = {
                                                   "x-order": 6
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -20768,16 +20768,16 @@ const PatternSchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -21380,29 +21380,29 @@ const PatternSchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -22346,29 +22346,29 @@ const PatternSchema: Record<string, unknown> = {
                                     ]
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -25030,8 +25030,8 @@ const PatternSchema: Record<string, unknown> = {
                             "description": "Tracks the specific content version that has been made available in the Catalog.",
                             "type": "string"
                           },
-                          "class": {
-                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "contentClass": {
+                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                             "type": "string",
                             "oneOf": [
                               {
@@ -25043,8 +25043,8 @@ const PatternSchema: Record<string, unknown> = {
                                 "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                               },
                               {
-                                "const": "reference architecture",
-                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                "const": "community",
+                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                               }
                             ]
                           },
@@ -25061,12 +25061,12 @@ const PatternSchema: Record<string, unknown> = {
                             "minItems": 1,
                             "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                           },
-                          "pattern_caveats": {
+                          "patternCaveats": {
                             "type": "string",
                             "title": "Caveats and Considerations",
                             "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                           },
-                          "pattern_info": {
+                          "patternInfo": {
                             "type": "string",
                             "title": "Description",
                             "minLength": 1,
@@ -25088,7 +25088,7 @@ const PatternSchema: Record<string, unknown> = {
                             "default": "Deployment",
                             "description": "Categorization of the type of design or operational flow depicted in this design."
                           },
-                          "snapshotURL": {
+                          "imageURL": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -25100,8 +25100,8 @@ const PatternSchema: Record<string, unknown> = {
                         },
                         "required": [
                           "compatibility",
-                          "pattern_caveats",
-                          "pattern_info",
+                          "patternCaveats",
+                          "patternInfo",
                           "type"
                         ]
                       },
@@ -25821,16 +25821,16 @@ const PatternSchema: Record<string, unknown> = {
                                                     "x-order": 6
                                                   },
                                                   "created_at": {
+                                                    "x-oapi-codegen-extra-tags": {
+                                                      "db": "created_at",
+                                                      "yaml": "created_at"
+                                                    },
                                                     "x-order": 7,
                                                     "description": "Timestamp when the resource was created.",
                                                     "x-go-type": "time.Time",
                                                     "type": "string",
                                                     "format": "date-time",
                                                     "x-go-name": "CreatedAt",
-                                                    "x-oapi-codegen-extra-tags": {
-                                                      "db": "created_at",
-                                                      "yaml": "created_at"
-                                                    },
                                                     "x-go-type-skip-optional-pointer": true
                                                   },
                                                   "metadata": {
@@ -25845,16 +25845,16 @@ const PatternSchema: Record<string, unknown> = {
                                                     "type": "object"
                                                   },
                                                   "updated_at": {
+                                                    "x-oapi-codegen-extra-tags": {
+                                                      "db": "updated_at",
+                                                      "yaml": "updated_at"
+                                                    },
                                                     "x-order": 9,
                                                     "description": "Timestamp when the resource was updated.",
                                                     "x-go-type": "time.Time",
                                                     "type": "string",
                                                     "format": "date-time",
                                                     "x-go-name": "UpdatedAt",
-                                                    "x-oapi-codegen-extra-tags": {
-                                                      "db": "updated_at",
-                                                      "yaml": "updated_at"
-                                                    },
                                                     "x-go-type-skip-optional-pointer": true
                                                   },
                                                   "deleted_at": {
@@ -26457,29 +26457,29 @@ const PatternSchema: Record<string, unknown> = {
                                           "minimum": 0
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         }
                                       },
@@ -27423,29 +27423,29 @@ const PatternSchema: Record<string, unknown> = {
                                       ]
                                     },
                                     "created_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "yaml": "created_at"
+                                      },
                                       "x-order": 14,
                                       "description": "Timestamp when the resource was created.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "CreatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "created_at",
-                                        "yaml": "created_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     },
                                     "updated_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "yaml": "updated_at"
+                                      },
                                       "x-order": 15,
                                       "description": "Timestamp when the resource was updated.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "UpdatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "updated_at",
-                                        "yaml": "updated_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     }
                                   },
@@ -29992,8 +29992,8 @@ const PatternSchema: Record<string, unknown> = {
                                 "description": "Tracks the specific content version that has been made available in the Catalog.",
                                 "type": "string"
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -30005,8 +30005,8 @@ const PatternSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ]
                               },
@@ -30023,12 +30023,12 @@ const PatternSchema: Record<string, unknown> = {
                                 "minItems": 1,
                                 "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                               },
-                              "pattern_caveats": {
+                              "patternCaveats": {
                                 "type": "string",
                                 "title": "Caveats and Considerations",
                                 "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                               },
-                              "pattern_info": {
+                              "patternInfo": {
                                 "type": "string",
                                 "title": "Description",
                                 "minLength": 1,
@@ -30050,7 +30050,7 @@ const PatternSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -30062,8 +30062,8 @@ const PatternSchema: Record<string, unknown> = {
                             },
                             "required": [
                               "compatibility",
-                              "pattern_caveats",
-                              "pattern_info",
+                              "patternCaveats",
+                              "patternInfo",
                               "type"
                             ]
                           },
@@ -30783,16 +30783,16 @@ const PatternSchema: Record<string, unknown> = {
                                                         "x-order": 6
                                                       },
                                                       "created_at": {
+                                                        "x-oapi-codegen-extra-tags": {
+                                                          "db": "created_at",
+                                                          "yaml": "created_at"
+                                                        },
                                                         "x-order": 7,
                                                         "description": "Timestamp when the resource was created.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "x-go-name": "CreatedAt",
-                                                        "x-oapi-codegen-extra-tags": {
-                                                          "db": "created_at",
-                                                          "yaml": "created_at"
-                                                        },
                                                         "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "metadata": {
@@ -30807,16 +30807,16 @@ const PatternSchema: Record<string, unknown> = {
                                                         "type": "object"
                                                       },
                                                       "updated_at": {
+                                                        "x-oapi-codegen-extra-tags": {
+                                                          "db": "updated_at",
+                                                          "yaml": "updated_at"
+                                                        },
                                                         "x-order": 9,
                                                         "description": "Timestamp when the resource was updated.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "x-go-name": "UpdatedAt",
-                                                        "x-oapi-codegen-extra-tags": {
-                                                          "db": "updated_at",
-                                                          "yaml": "updated_at"
-                                                        },
                                                         "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "deleted_at": {
@@ -31419,29 +31419,29 @@ const PatternSchema: Record<string, unknown> = {
                                               "minimum": 0
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 14,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 15,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             }
                                           },
@@ -32385,29 +32385,29 @@ const PatternSchema: Record<string, unknown> = {
                                           ]
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         }
                                       },
@@ -35394,7 +35394,6 @@ const PatternSchema: Record<string, unknown> = {
         ],
         "summary": "Share a resource",
         "operationId": "handleResourceShare",
-        "description": "Grants access to the actors listed in grantAccess, revokes access from the actors listed in revokeAccess, and optionally notifies the affected actors. Both lists are carried on a single request so a caller can grant and revoke in the same call.\n\nThis one operation spans multiple resource types (design, filter, view), chosen at call time by resourceType, so the generated RTK Query client cannot auto-invalidate the affected resource's list cache the way a single-resource-type operation would: RTK Query cache tags are static per operation, derived from this operation's own OpenAPI tag, not from a runtime path parameter. A caller of the generated mutation must invalidate or refetch the relevant resource list itself after a successful share.",
         "parameters": [
           {
             "name": "resourceType",
@@ -35419,105 +35418,7 @@ const PatternSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": false,
-                "description": "Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.",
-                "required": [
-                  "grantAccess",
-                  "revokeAccess",
-                  "notifyUsers"
-                ],
-                "properties": {
-                  "grantAccess": {
-                    "type": "array",
-                    "description": "Actors to grant access to. May be empty.",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
-                      "required": [
-                        "actorId",
-                        "actorType"
-                      ],
-                      "properties": {
-                        "actorId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-go-name": "ActorId",
-                          "x-oapi-codegen-extra-tags": {
-                            "json": "actorId"
-                          }
-                        },
-                        "actorType": {
-                          "type": "string",
-                          "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
-                          "example": "user",
-                          "x-go-name": "ActorType",
-                          "x-oapi-codegen-extra-tags": {
-                            "json": "actorType"
-                          }
-                        }
-                      }
-                    },
-                    "x-go-name": "GrantAccess",
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "grantAccess"
-                    }
-                  },
-                  "revokeAccess": {
-                    "type": "array",
-                    "description": "Actors to revoke access from. May be empty.",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
-                      "required": [
-                        "actorId",
-                        "actorType"
-                      ],
-                      "properties": {
-                        "actorId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-go-name": "ActorId",
-                          "x-oapi-codegen-extra-tags": {
-                            "json": "actorId"
-                          }
-                        },
-                        "actorType": {
-                          "type": "string",
-                          "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
-                          "example": "user",
-                          "x-go-name": "ActorType",
-                          "x-oapi-codegen-extra-tags": {
-                            "json": "actorType"
-                          }
-                        }
-                      }
-                    },
-                    "x-go-name": "RevokeAccess",
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "revokeAccess"
-                    }
-                  },
-                  "notifyUsers": {
-                    "type": "boolean",
-                    "description": "Whether to notify the affected actors of the change.",
-                    "x-go-name": "NotifyUsers",
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "notifyUsers"
-                    }
-                  }
-                }
+                "additionalProperties": true
               }
             }
           }
@@ -35529,8 +35430,7 @@ const PatternSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true,
-                  "description": "Response body for POST /api/resource/{resourceType}/share/{resourceId}. Left untyped: nothing available (issue #1144, the confirmed-correct client) confirms the real response shape, only that the server answers 200 with the request correctly applied."
+                  "additionalProperties": true
                 }
               }
             }
@@ -36565,16 +36465,16 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-order": 6
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 7,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "metadata": {
@@ -36589,16 +36489,16 @@ const PatternSchema: Record<string, unknown> = {
                                     "type": "object"
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 9,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "deleted_at": {
@@ -37201,29 +37101,29 @@ const PatternSchema: Record<string, unknown> = {
                           "minimum": 0
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
                           "x-order": 14,
                           "description": "Timestamp when the resource was created.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "CreatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "yaml": "created_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
                           "x-order": 15,
                           "description": "Timestamp when the resource was updated.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "UpdatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "yaml": "updated_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         }
                       },
@@ -38167,29 +38067,29 @@ const PatternSchema: Record<string, unknown> = {
                       ]
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-order": 14,
                       "description": "Timestamp when the resource was created.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-order": 15,
                       "description": "Timestamp when the resource was updated.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     }
                   },
@@ -40549,8 +40449,8 @@ const PatternSchema: Record<string, unknown> = {
                 "description": "Tracks the specific content version that has been made available in the Catalog.",
                 "type": "string"
               },
-              "class": {
-                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+              "contentClass": {
+                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                 "type": "string",
                 "oneOf": [
                   {
@@ -40562,8 +40462,8 @@ const PatternSchema: Record<string, unknown> = {
                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                   },
                   {
-                    "const": "reference architecture",
-                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                    "const": "community",
+                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                   }
                 ]
               },
@@ -40580,12 +40480,12 @@ const PatternSchema: Record<string, unknown> = {
                 "minItems": 1,
                 "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
               },
-              "pattern_caveats": {
+              "patternCaveats": {
                 "type": "string",
                 "title": "Caveats and Considerations",
                 "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
               },
-              "pattern_info": {
+              "patternInfo": {
                 "type": "string",
                 "title": "Description",
                 "minLength": 1,
@@ -40607,7 +40507,7 @@ const PatternSchema: Record<string, unknown> = {
                 "default": "Deployment",
                 "description": "Categorization of the type of design or operational flow depicted in this design."
               },
-              "snapshotURL": {
+              "imageURL": {
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -40619,8 +40519,8 @@ const PatternSchema: Record<string, unknown> = {
             },
             "required": [
               "compatibility",
-              "pattern_caveats",
-              "pattern_info",
+              "patternCaveats",
+              "patternInfo",
               "type"
             ]
           },
@@ -41340,16 +41240,16 @@ const PatternSchema: Record<string, unknown> = {
                                         "x-order": 6
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 7,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "metadata": {
@@ -41364,16 +41264,16 @@ const PatternSchema: Record<string, unknown> = {
                                         "type": "object"
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 9,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "deleted_at": {
@@ -41976,29 +41876,29 @@ const PatternSchema: Record<string, unknown> = {
                               "minimum": 0
                             },
                             "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
                               "x-order": 14,
                               "description": "Timestamp when the resource was created.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "CreatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "created_at",
-                                "yaml": "created_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
                               "x-order": 15,
                               "description": "Timestamp when the resource was updated.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "UpdatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "updated_at",
-                                "yaml": "updated_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             }
                           },
@@ -42942,29 +42842,29 @@ const PatternSchema: Record<string, unknown> = {
                           ]
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
                           "x-order": 14,
                           "description": "Timestamp when the resource was created.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "CreatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "yaml": "created_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
                           "x-order": 15,
                           "description": "Timestamp when the resource was updated.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "UpdatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "yaml": "updated_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         }
                       },
@@ -45356,8 +45256,8 @@ const PatternSchema: Record<string, unknown> = {
                       "description": "Tracks the specific content version that has been made available in the Catalog.",
                       "type": "string"
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -45369,8 +45269,8 @@ const PatternSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ]
                     },
@@ -45387,12 +45287,12 @@ const PatternSchema: Record<string, unknown> = {
                       "minItems": 1,
                       "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                     },
-                    "pattern_caveats": {
+                    "patternCaveats": {
                       "type": "string",
                       "title": "Caveats and Considerations",
                       "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                     },
-                    "pattern_info": {
+                    "patternInfo": {
                       "type": "string",
                       "title": "Description",
                       "minLength": 1,
@@ -45414,7 +45314,7 @@ const PatternSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -45426,8 +45326,8 @@ const PatternSchema: Record<string, unknown> = {
                   },
                   "required": [
                     "compatibility",
-                    "pattern_caveats",
-                    "pattern_info",
+                    "patternCaveats",
+                    "patternInfo",
                     "type"
                   ]
                 },
@@ -46147,16 +46047,16 @@ const PatternSchema: Record<string, unknown> = {
                                               "x-order": 6
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
@@ -46171,16 +46071,16 @@ const PatternSchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
@@ -46783,29 +46683,29 @@ const PatternSchema: Record<string, unknown> = {
                                     "minimum": 0
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -47749,29 +47649,29 @@ const PatternSchema: Record<string, unknown> = {
                                 ]
                               },
                               "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "yaml": "created_at"
+                                },
                                 "x-order": 14,
                                 "description": "Timestamp when the resource was created.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "CreatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "created_at",
-                                  "yaml": "created_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "yaml": "updated_at"
+                                },
                                 "x-order": 15,
                                 "description": "Timestamp when the resource was updated.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "UpdatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "updated_at",
-                                  "yaml": "updated_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               }
                             },
@@ -50195,8 +50095,8 @@ const PatternSchema: Record<string, unknown> = {
                     "description": "Tracks the specific content version that has been made available in the Catalog.",
                     "type": "string"
                   },
-                  "class": {
-                    "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                  "contentClass": {
+                    "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                     "type": "string",
                     "oneOf": [
                       {
@@ -50208,8 +50108,8 @@ const PatternSchema: Record<string, unknown> = {
                         "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                       },
                       {
-                        "const": "reference architecture",
-                        "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                        "const": "community",
+                        "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                       }
                     ]
                   },
@@ -50226,12 +50126,12 @@ const PatternSchema: Record<string, unknown> = {
                     "minItems": 1,
                     "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                   },
-                  "pattern_caveats": {
+                  "patternCaveats": {
                     "type": "string",
                     "title": "Caveats and Considerations",
                     "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                   },
-                  "pattern_info": {
+                  "patternInfo": {
                     "type": "string",
                     "title": "Description",
                     "minLength": 1,
@@ -50253,7 +50153,7 @@ const PatternSchema: Record<string, unknown> = {
                     "default": "Deployment",
                     "description": "Categorization of the type of design or operational flow depicted in this design."
                   },
-                  "snapshotURL": {
+                  "imageURL": {
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -50265,8 +50165,8 @@ const PatternSchema: Record<string, unknown> = {
                 },
                 "required": [
                   "compatibility",
-                  "pattern_caveats",
-                  "pattern_info",
+                  "patternCaveats",
+                  "patternInfo",
                   "type"
                 ]
               },
@@ -50986,16 +50886,16 @@ const PatternSchema: Record<string, unknown> = {
                                             "x-order": 6
                                           },
                                           "created_at": {
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "created_at",
+                                              "yaml": "created_at"
+                                            },
                                             "x-order": 7,
                                             "description": "Timestamp when the resource was created.",
                                             "x-go-type": "time.Time",
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-name": "CreatedAt",
-                                            "x-oapi-codegen-extra-tags": {
-                                              "db": "created_at",
-                                              "yaml": "created_at"
-                                            },
                                             "x-go-type-skip-optional-pointer": true
                                           },
                                           "metadata": {
@@ -51010,16 +50910,16 @@ const PatternSchema: Record<string, unknown> = {
                                             "type": "object"
                                           },
                                           "updated_at": {
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "updated_at",
+                                              "yaml": "updated_at"
+                                            },
                                             "x-order": 9,
                                             "description": "Timestamp when the resource was updated.",
                                             "x-go-type": "time.Time",
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-name": "UpdatedAt",
-                                            "x-oapi-codegen-extra-tags": {
-                                              "db": "updated_at",
-                                              "yaml": "updated_at"
-                                            },
                                             "x-go-type-skip-optional-pointer": true
                                           },
                                           "deleted_at": {
@@ -51622,29 +51522,29 @@ const PatternSchema: Record<string, unknown> = {
                                   "minimum": 0
                                 },
                                 "created_at": {
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "created_at",
+                                    "yaml": "created_at"
+                                  },
                                   "x-order": 14,
                                   "description": "Timestamp when the resource was created.",
                                   "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-name": "CreatedAt",
-                                  "x-oapi-codegen-extra-tags": {
-                                    "db": "created_at",
-                                    "yaml": "created_at"
-                                  },
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "updated_at": {
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "updated_at",
+                                    "yaml": "updated_at"
+                                  },
                                   "x-order": 15,
                                   "description": "Timestamp when the resource was updated.",
                                   "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-name": "UpdatedAt",
-                                  "x-oapi-codegen-extra-tags": {
-                                    "db": "updated_at",
-                                    "yaml": "updated_at"
-                                  },
                                   "x-go-type-skip-optional-pointer": true
                                 }
                               },
@@ -52588,29 +52488,29 @@ const PatternSchema: Record<string, unknown> = {
                               ]
                             },
                             "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
                               "x-order": 14,
                               "description": "Timestamp when the resource was created.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "CreatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "created_at",
-                                "yaml": "created_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
                               "x-order": 15,
                               "description": "Timestamp when the resource was updated.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "UpdatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "updated_at",
-                                "yaml": "updated_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             }
                           },
@@ -55132,8 +55032,8 @@ const PatternSchema: Record<string, unknown> = {
                       "description": "Tracks the specific content version that has been made available in the Catalog.",
                       "type": "string"
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -55145,8 +55045,8 @@ const PatternSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ]
                     },
@@ -55163,12 +55063,12 @@ const PatternSchema: Record<string, unknown> = {
                       "minItems": 1,
                       "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                     },
-                    "pattern_caveats": {
+                    "patternCaveats": {
                       "type": "string",
                       "title": "Caveats and Considerations",
                       "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                     },
-                    "pattern_info": {
+                    "patternInfo": {
                       "type": "string",
                       "title": "Description",
                       "minLength": 1,
@@ -55190,7 +55090,7 @@ const PatternSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -55202,8 +55102,8 @@ const PatternSchema: Record<string, unknown> = {
                   },
                   "required": [
                     "compatibility",
-                    "pattern_caveats",
-                    "pattern_info",
+                    "patternCaveats",
+                    "patternInfo",
                     "type"
                   ]
                 },
@@ -55923,16 +55823,16 @@ const PatternSchema: Record<string, unknown> = {
                                               "x-order": 6
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
@@ -55947,16 +55847,16 @@ const PatternSchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
@@ -56559,29 +56459,29 @@ const PatternSchema: Record<string, unknown> = {
                                     "minimum": 0
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -57525,29 +57425,29 @@ const PatternSchema: Record<string, unknown> = {
                                 ]
                               },
                               "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "yaml": "created_at"
+                                },
                                 "x-order": 14,
                                 "description": "Timestamp when the resource was created.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "CreatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "created_at",
-                                  "yaml": "created_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "yaml": "updated_at"
+                                },
                                 "x-order": 15,
                                 "description": "Timestamp when the resource was updated.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "UpdatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "updated_at",
-                                  "yaml": "updated_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               }
                             },
@@ -59976,145 +59876,9 @@ const PatternSchema: Record<string, unknown> = {
         "type": "object",
         "additionalProperties": true
       },
-      "Actor": {
-        "type": "object",
-        "additionalProperties": false,
-        "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
-        "required": [
-          "actorId",
-          "actorType"
-        ],
-        "properties": {
-          "actorId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-go-name": "ActorId",
-            "x-oapi-codegen-extra-tags": {
-              "json": "actorId"
-            }
-          },
-          "actorType": {
-            "type": "string",
-            "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
-            "example": "user",
-            "x-go-name": "ActorType",
-            "x-oapi-codegen-extra-tags": {
-              "json": "actorType"
-            }
-          }
-        }
-      },
-      "ResourceAccessMappingPayload": {
-        "type": "object",
-        "additionalProperties": false,
-        "description": "Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.",
-        "required": [
-          "grantAccess",
-          "revokeAccess",
-          "notifyUsers"
-        ],
-        "properties": {
-          "grantAccess": {
-            "type": "array",
-            "description": "Actors to grant access to. May be empty.",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
-              "required": [
-                "actorId",
-                "actorType"
-              ],
-              "properties": {
-                "actorId": {
-                  "type": "string",
-                  "format": "uuid",
-                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
-                  "x-go-name": "ActorId",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "actorId"
-                  }
-                },
-                "actorType": {
-                  "type": "string",
-                  "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
-                  "example": "user",
-                  "x-go-name": "ActorType",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "actorType"
-                  }
-                }
-              }
-            },
-            "x-go-name": "GrantAccess",
-            "x-oapi-codegen-extra-tags": {
-              "json": "grantAccess"
-            }
-          },
-          "revokeAccess": {
-            "type": "array",
-            "description": "Actors to revoke access from. May be empty.",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
-              "required": [
-                "actorId",
-                "actorType"
-              ],
-              "properties": {
-                "actorId": {
-                  "type": "string",
-                  "format": "uuid",
-                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
-                  "x-go-name": "ActorId",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "actorId"
-                  }
-                },
-                "actorType": {
-                  "type": "string",
-                  "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
-                  "example": "user",
-                  "x-go-name": "ActorType",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "actorType"
-                  }
-                }
-              }
-            },
-            "x-go-name": "RevokeAccess",
-            "x-oapi-codegen-extra-tags": {
-              "json": "revokeAccess"
-            }
-          },
-          "notifyUsers": {
-            "type": "boolean",
-            "description": "Whether to notify the affected actors of the change.",
-            "x-go-name": "NotifyUsers",
-            "x-oapi-codegen-extra-tags": {
-              "json": "notifyUsers"
-            }
-          }
-        }
-      },
       "ResourceAccessMapping": {
         "type": "object",
-        "additionalProperties": true,
-        "description": "Response body for POST /api/resource/{resourceType}/share/{resourceId}. Left untyped: nothing available (issue #1144, the confirmed-correct client) confirms the real response shape, only that the server answers 200 with the request correctly applied."
+        "additionalProperties": true
       },
       "ResourceAccessActorsResponse": {
         "type": "object",
@@ -60147,105 +59911,7 @@ const PatternSchema: Record<string, unknown> = {
           "application/json": {
             "schema": {
               "type": "object",
-              "additionalProperties": false,
-              "description": "Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.",
-              "required": [
-                "grantAccess",
-                "revokeAccess",
-                "notifyUsers"
-              ],
-              "properties": {
-                "grantAccess": {
-                  "type": "array",
-                  "description": "Actors to grant access to. May be empty.",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
-                    "required": [
-                      "actorId",
-                      "actorType"
-                    ],
-                    "properties": {
-                      "actorId": {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                        "x-go-type": "uuid.UUID",
-                        "x-go-type-import": {
-                          "path": "github.com/gofrs/uuid"
-                        },
-                        "x-go-name": "ActorId",
-                        "x-oapi-codegen-extra-tags": {
-                          "json": "actorId"
-                        }
-                      },
-                      "actorType": {
-                        "type": "string",
-                        "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
-                        "example": "user",
-                        "x-go-name": "ActorType",
-                        "x-oapi-codegen-extra-tags": {
-                          "json": "actorType"
-                        }
-                      }
-                    }
-                  },
-                  "x-go-name": "GrantAccess",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "grantAccess"
-                  }
-                },
-                "revokeAccess": {
-                  "type": "array",
-                  "description": "Actors to revoke access from. May be empty.",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
-                    "required": [
-                      "actorId",
-                      "actorType"
-                    ],
-                    "properties": {
-                      "actorId": {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                        "x-go-type": "uuid.UUID",
-                        "x-go-type-import": {
-                          "path": "github.com/gofrs/uuid"
-                        },
-                        "x-go-name": "ActorId",
-                        "x-oapi-codegen-extra-tags": {
-                          "json": "actorId"
-                        }
-                      },
-                      "actorType": {
-                        "type": "string",
-                        "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
-                        "example": "user",
-                        "x-go-name": "ActorType",
-                        "x-oapi-codegen-extra-tags": {
-                          "json": "actorType"
-                        }
-                      }
-                    }
-                  },
-                  "x-go-name": "RevokeAccess",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "revokeAccess"
-                  }
-                },
-                "notifyUsers": {
-                  "type": "boolean",
-                  "description": "Whether to notify the affected actors of the change.",
-                  "x-go-name": "NotifyUsers",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "notifyUsers"
-                  }
-                }
-              }
+              "additionalProperties": true
             }
           }
         }

@@ -2,6 +2,21 @@ type: object
 additionalProperties: false
 description: EventResult entity schema.
 properties:
+  visibility:
+    type: string
+    description: >-
+      Who can see the event. `private` (the default, set by Layer5 Cloud)
+      means visible only inside the event's organization. `public` means the
+      event may appear on the unauthenticated event feed, subject to the
+      owner's `shareActivityPublicly` preference at read time.
+    enum:
+    - private
+    - public
+    default: private
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: visibility
+      json: visibility
   owner:
     type: string
     format: uuid
@@ -61,6 +76,11 @@ properties:
     type: string
     description: The last name of the user associated with the event.
     maxLength: 500
+  avatarUrl:
+    type: string
+    format: uri
+    maxLength: 500
+    description: URL to the avatar image of the user associated with the event.
   email:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Email
     description: Email address of the user associated with the event.

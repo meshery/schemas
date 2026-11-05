@@ -8,6 +8,13 @@
     "extension": true
   },
   {
+    "construct": "activity_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/activity_metrics/activity_metrics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "activity_result",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/activity_result/activity_result.yaml",
@@ -25,13 +32,6 @@
     "construct": "blowhorn_health",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/blowhorn_health/api.yml",
-    "core": false,
-    "extension": true
-  },
-  {
-    "construct": "blowhorn_profile",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/blowhorn_profile/blowhorn_profile.yaml",
     "core": false,
     "extension": true
   },
@@ -131,6 +131,13 @@
     "extension": true
   },
   {
+    "construct": "diagnostics",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/diagnostics/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "environment",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/environment/environment.yaml",
@@ -216,10 +223,38 @@
     "extension": true
   },
   {
+    "construct": "media_asset",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/media_asset/media_asset.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "mention_alias",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/mention_alias/mention_alias.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "model",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/model/model.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/models",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "oauth_consent",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/oauth_consent/oauth_consent.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "oauth_consent_request",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/oauth_consent_request/oauth_consent_request.yaml",
     "core": false,
     "extension": true
   },
@@ -258,6 +293,13 @@
     "href": "/schemas/constructs/v1beta3/plan/plan.yaml",
     "core": false,
     "extension": true
+  },
+  {
+    "construct": "posture",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/posture/posture.yaml",
+    "core": false,
+    "extension": false
   },
   {
     "construct": "profile",
@@ -301,6 +343,13 @@
     "href": "/schemas/constructs/v1beta3/schedule/schedule.yaml",
     "core": false,
     "extension": true
+  },
+  {
+    "construct": "schedule_stop",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/schedule_stop/schedule_stop.yaml",
+    "core": false,
+    "extension": false
   },
   {
     "construct": "subcategory",

@@ -202,6 +202,9 @@ func assertServerOrganizationID(t *testing.T, name string, prop any, readOnly bo
 	} else if _, has := mappingValue(prop, "readOnly"); has {
 		t.Errorf("%s must not set readOnly, got %v", name, mustValue(prop, "readOnly"))
 	}
+	if _, has := mappingValue(prop, "nullable"); has {
+		t.Errorf("%s must not set nullable: an organization reference is never null", name)
+	}
 	if got := mustValue(prop, "x-go-name"); got != "OrganizationID" {
 		t.Errorf("%s x-go-name = %v, want OrganizationID", name, got)
 	}

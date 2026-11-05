@@ -79,6 +79,8 @@ paths:
                 $ref: "#/components/schemas/ProviderCapability"
         "400":
           $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -90,6 +92,8 @@ components:
       bearerFormat: JWT
 
   responses:
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
     ClientUpgradeRequired:

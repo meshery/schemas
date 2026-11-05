@@ -50,6 +50,74 @@ properties:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
 ```
 
+### Event-metadata constructs have no server-generated fields
+
+Some constructs name the shape of an `Event`'s `metadata` rather than a table
+row the server owns: `follower_metrics`, `follower_demographics`,
+`content_metrics`, `activity_metrics`. They have no endpoints (`paths: {}`).
+A producer records a row with a create-event call, and the events service
+stores and returns `metadata` verbatim. The `Event` envelope carries `id`,
+`created_at` and the actor; the metadata itself has no server-generated
+fields. So, for this class only:
+
+- The entity `.yaml` declares no `id`, `created_at`, `updated_at` or
+  `deleted_at`. Adding them would invent fields no server ever writes.
+- The `{Construct}Payload` carries the same field set, the same `required`
+  list and the same `x-go-name` per property as the entity, because nothing
+  is server-owned. It is still a separate schema, so the two can diverge if
+  the construct ever gains endpoints.
+- A field the producer writes on every row belongs in `required` on both:
+  a `boolean` such as `matched`, a string whose empty value is itself
+  meaningful (`sourceFile`), and the row's key. The key fields are the only
+  record of whose reading it is, so they are load-bearing in the sense of
+  [Common Mistake 29](schema-review-checklist.md) (like its
+  `testSessionId`): keep them required. Make a field optional and nullable
+  when the producer can legitimately lack it.
+- `required` binds producers through their generated types. The events
+  service does not validate `metadata`, so a hand-built producer can still
+  omit a required field, and a Go reader then sees the zero value. State
+  this in the construct's description when it matters.
+- The row's natural key (for example organization, platform, subject and
+  reading date) is what makes readings a time series, so state it in the
+  description. The events service appends and enforces no uniqueness, so
+  also state how a reader resolves two events with the same key.
+- The template uses `null` for every nullable property. A blank source cell
+  is `null`, never `0` or `""`, and the template is the example instance
+  producers copy.
+
+`validation/event_metadata_constructs_test.go` pins the payload-entity
+agreement and the template nulls for every construct in this class. Add a
+new event-metadata construct to its list.
+
+A metadata shape that is a sub-shape of `Event.metadata` inside the event
+construct itself, rather than a construct with its own directory, is declared
+once with no `*Payload` twin: the design event metadata shapes are the worked
+example (see [design-event-metadata-contract.md](design-event-metadata-contract.md)).
+
+A construct with its own endpoints is not in this class, even if its rows
+are also mirrored into events. It follows Rule 1 as written.
+
+### Read-through constructs have no stored row
+
+Some constructs have endpoints but no row the server owns: every call reads
+the object from another system, or computes it, and answers it. The
+`oauth_consent_request` construct is the worked example: the server reads
+each pending consent request from the identity provider on every call
+([contract](oauth-consent-request-contract.md#no-stored-row)). The provider
+capabilities document (`provider_capability`) is computed per request the
+same way. For this class only:
+
+- The entity `.yaml` declares no `id`, `created_at`, `updated_at` or
+  `deleted_at`, because no server ever writes them. It still sets
+  `additionalProperties: false`. The object's own key (for example
+  `consentChallenge`) is a required field, not an `id`.
+- Writes, if any, still take a `{Construct}Payload` per Rule 2 and Rule 3.
+- State in the construct's description that nothing is stored, and what a
+  `503` from the upstream system means for each operation.
+
+A construct the server persists, even partly, is not in this class. It
+follows Rule 1 as written.
+
 ### Rule 2 example: `{Construct}Payload` schema in `api.yml`
 
 ```yaml

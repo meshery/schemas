@@ -56,6 +56,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/integrations/credentials/{credentialId}/transfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Transfer credential ownership
+         * @description Transfers ownership of a credential to another user. The authenticated user must be the current owner or have the appropriate RBAC permission. This intentionally bypasses the userId-pinning guard applied to normal credential updates.
+         */
+        post: operations["transferCredentialOwnership"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -184,6 +204,15 @@ export interface components {
         };
         /** @description Expired JWT token used or insufficient privilege */
         401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Forbidden */
+        403: {
             headers: {
                 [name: string]: unknown;
             };
@@ -679,6 +708,121 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    transferCredentialOwnership: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Credential ID */
+                credentialId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description UUID of the user to whom ownership will be transferred.
+                     */
+                    newOwnerId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Credential ownership transferred successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the credential.
+                         */
+                        id: string;
+                        /** @description Human-readable name for the credential. */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the user who owns this credential.
+                         */
+                        userId: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.
+                         */
+                        orgOwner?: string;
+                        /** @description Credential type (e.g. token, basic, AWS). */
+                        type: string;
+                        /** @description Key-value pairs containing the sensitive credential data. */
+                        secret?: Record<string, never>;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the credential was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the credential was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the credential was soft-deleted.
+                         */
+                        deletedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

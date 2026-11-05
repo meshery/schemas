@@ -7,7 +7,7 @@ const FollowerMetricsSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Follower Metrics",
-    "description": "OpenAPI schema for daily new-follower figures for a page, consumed by\nBlowhorn's analytics store. The rows have no endpoints of their own:\nthey are recorded and read back as the `metadata` of events on the\nevents service (category `blowhorn`, action `follower_metrics`; see\nthe event construct), so this file declares the components only and\nthe paths stay with the event construct.\n",
+    "description": "OpenAPI schema for daily new-follower figures for a page, consumed by\nthe posting client's analytics store. The rows have no endpoints of their own:\nthey are recorded and read back as the `metadata` of events on the\nevents service (category `blowhorn`, action `follower_metrics`; see\nthe event construct), so this file declares the components only and\nthe paths stay with the event construct.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -149,7 +149,8 @@ const FollowerMetricsSchema: Record<string, unknown> = {
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            }
+            },
+            "x-go-name": "OrganizationID"
           },
           "platform": {
             "type": "string",

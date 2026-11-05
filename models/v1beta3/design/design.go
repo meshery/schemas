@@ -103,15 +103,6 @@ type DesignPreferences struct {
 	Layers map[string]interface{} `json:"layers" yaml:"layers"`
 }
 
-// Actor One grant or revoke target in a ResourceAccessMappingPayload.
-type Actor struct {
-	// ActorId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ActorId meshcore.Uuid `json:"actorId" yaml:"actorId"`
-
-	// ActorType Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
-	ActorType string `json:"actorType" yaml:"actorType"`
-}
-
 // CatalogContentClass defines model for CatalogContentClass.
 type CatalogContentClass struct {
 	// Class The class of the catalogcontentclass.
@@ -417,6 +408,12 @@ type MesheryPatternDesignType string
 // MesheryPatternVisibility Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
 type MesheryPatternVisibility string
 
+// MesheryPatternClonePayload Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context.
+type MesheryPatternClonePayload struct {
+	// Name Optional name to apply to the cloned design.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
 // MesheryPatternDeleteRequestBody Payload for bulk deleting designs by ID.
 type MesheryPatternDeleteRequestBody struct {
 	// Patterns Designs targeted for deletion.
@@ -565,20 +562,8 @@ type ResourceAccessActorsResponse struct {
 	Users *[]map[string]interface{} `json:"users,omitempty" yaml:"users,omitempty"`
 }
 
-// ResourceAccessMapping Response body for POST /api/resource/{resourceType}/share/{resourceId}. Left untyped: nothing available (issue #1144, the confirmed-correct client) confirms the real response shape, only that the server answers 200 with the request correctly applied.
+// ResourceAccessMapping defines model for ResourceAccessMapping.
 type ResourceAccessMapping map[string]interface{}
-
-// ResourceAccessMappingPayload Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.
-type ResourceAccessMappingPayload struct {
-	// GrantAccess Actors to grant access to. May be empty.
-	GrantAccess []Actor `json:"grantAccess" yaml:"grantAccess"`
-
-	// NotifyUsers Whether to notify the affected actors of the change.
-	NotifyUsers bool `json:"notifyUsers" yaml:"notifyUsers"`
-
-	// RevokeAccess Actors to revoke access from. May be empty.
-	RevokeAccess []Actor `json:"revokeAccess" yaml:"revokeAccess"`
-}
 
 // ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type ConnectionId = meshcore.Uuid
@@ -601,17 +586,17 @@ type PageSize = int
 // Search defines model for search.
 type Search = string
 
-// MeshcoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshcoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshcoreMeshkitError403 = meshcore.MeshkitError
 
-// MeshcoreMeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshcoreMeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshcoreMeshkitError502 = meshcore.MeshkitError
 
 // CatalogContentPayload defines model for catalogContentPayload.
 type CatalogContentPayload map[string]interface{}
 
-// ResourceSharePayload Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.
-type ResourceSharePayload = ResourceAccessMappingPayload
+// ResourceSharePayload defines model for resourceSharePayload.
+type ResourceSharePayload map[string]interface{}
 
 // Getter for additional properties for CatalogContentClass. Returns the specified
 // element and whether it was found
