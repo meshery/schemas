@@ -118,12 +118,6 @@ same way. For this class only:
 A construct the server persists, even partly, is not in this class. It
 follows Rule 1 as written.
 
-An event projection is not this class either. It has endpoints and no row
-of its own, but its `id` is a stored event's id, which a server writes.
-`activity_feed` is that case: `ActivityFeedItem.id` is the event id, and the
-entity declares no `created_at`, `updated_at` or `deleted_at`. See
-[activity-feed-contract.md](activity-feed-contract.md).
-
 ### Rule 2 example: `{Construct}Payload` schema in `api.yml`
 
 ```yaml

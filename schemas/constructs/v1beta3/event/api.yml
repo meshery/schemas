@@ -267,6 +267,49 @@ paths:
           $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
+  /api/public/events:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - events
+      operationId: getPublicEvents
+      summary: Get public events
+      description: |
+        Public projection of events: recent completed scheduled runs, served
+        without authentication as social proof on public sites. The server
+        only serves events with category `schedule` and action `completed`;
+        the `category` and `action` filters accept only those values. Rate
+        limited per client IP; a client over the limit receives 429.
+        Responses carry `Cache-Control: public, max-age=30` (never more than
+        30 seconds). See docs/public-events-contract.md.
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/publicPagesize'
+      - $ref: '#/components/parameters/order'
+      - $ref: '#/components/parameters/publicCategory'
+      - $ref: '#/components/parameters/publicAction'
+      responses:
+        '200':
+          description: Public events page
+          headers:
+            Cache-Control:
+              description: "`public, max-age=N` with N from 0 to 30; max-age never exceeds 30."
+              required: true
+              schema:
+                type: string
+                pattern: "^public, max-age=([0-9]|[12][0-9]|30)$"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicEventPage'
+        '400':
+          $ref: '#/components/responses/400'
+        '429':
+          $ref: '#/components/responses/PerIpRateLimited'
+        '500':
+          $ref: '#/components/responses/500'
   /api/events/summary:
     get:
       x-internal:
@@ -335,6 +378,22 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
     MeshkitError429:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
+    PerIpRateLimited:
+      description: >-
+        Too many requests - the client IP exceeded this endpoint's per-IP
+        request rate. Wait the number of seconds in `Retry-After` before
+        retrying.
+      headers:
+        Retry-After:
+          description: Number of seconds the client must wait before retrying.
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: ../../v1beta2/core/api.yml#/components/schemas/MeshkitError
     500:
       $ref: ../../v1beta2/core/api.yml#/components/responses/500
     MeshkitError403:
@@ -368,6 +427,34 @@ components:
       deprecated: true
       schema:
         type: integer
+    publicPagesize:
+      name: pagesize
+      in: query
+      required: false
+      description: Number of items per page. The server never returns more than 50.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 20
+    publicCategory:
+      name: category
+      in: query
+      required: false
+      description: Event category filter. The public projection only serves `schedule`.
+      schema:
+        type: string
+        enum:
+          - schedule
+    publicAction:
+      name: action
+      in: query
+      required: false
+      description: Event action filter. The public projection only serves `completed`.
+      schema:
+        type: string
+        enum:
+          - completed
     search:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/search
     order:
@@ -722,6 +809,147 @@ components:
           items:
             $ref: '#/components/schemas/EventResult'
           description: The events returned on the current page.
+    PublicEvent:
+      type: object
+      additionalProperties: false
+      description: |
+        Public projection of an Event (see EventResult) for a completed
+        scheduled run: category `schedule`, action `completed`. `owner` is the
+        event's owner, which the server sets to the authenticated caller who
+        recorded it, never taken from event metadata. `platform`, `role`,
+        `roleResult` and `networks` are lifted from the event's free-form
+        metadata; the raw metadata is never served. `displayName`,
+        `avatarUrl`, `publicProfileUrl` and `organizationName` are resolved
+        at read time. Never includes email, real names, raw metadata or
+        description. A stored event whose metadata lacks a valid `platform`,
+        `role` or `roleResult` is skipped.
+      required:
+        - id
+        - category
+        - action
+        - owner
+        - createdAt
+        - platform
+        - role
+        - roleResult
+      properties:
+        id:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Id
+          description: Event ID.
+          x-go-name: ID
+          x-order: 1
+        category:
+          type: string
+          description: The category of the event. Always `schedule` on this projection.
+          maxLength: 500
+          x-order: 2
+        action:
+          type: string
+          description: The action of the event. Always `completed` on this projection.
+          maxLength: 500
+          x-order: 3
+        owner:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: The event's owner, the authenticated caller who recorded it.
+          x-go-type-skip-optional-pointer: true
+          x-order: 4
+        createdAt:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+          description: Timestamp when the event was recorded. Orders the feed, newest first.
+          x-order: 5
+        platform:
+          type: string
+          description: Platform the run acted on, for example `x` or `linkedin`, from the event metadata.
+          minLength: 1
+          maxLength: 64
+          x-order: 6
+        role:
+          type: string
+          description: Short label of the role the run acted in, for example `Launch`, from the event metadata.
+          minLength: 1
+          maxLength: 64
+          x-order: 7
+        roleResult:
+          type: string
+          description: One-line outcome of the run in that role, from the event metadata.
+          minLength: 1
+          maxLength: 255
+          x-order: 8
+        networks:
+          type: array
+          description: Names of the networks or communities the run reached. Omitted when none.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+          maxItems: 20
+          x-oapi-codegen-extra-tags:
+            json: "networks,omitempty"
+          x-order: 9
+        displayName:
+          type: string
+          description: The user's public username, never a real name.
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "displayName,omitempty"
+          x-order: 10
+        avatarUrl:
+          type: string
+          format: uri
+          maxLength: 500
+          description: URL to the avatar image of the event owner. Omitted when unavailable.
+          x-go-name: AvatarURL
+          x-oapi-codegen-extra-tags:
+            json: "avatarUrl,omitempty"
+          x-order: 11
+        organizationName:
+          type: string
+          description: Name of the event's acting organization. Omitted when none or unresolved.
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "organizationName,omitempty"
+          x-order: 12
+        publicProfileUrl:
+          type: string
+          format: uri
+          description: URL of the user's public profile. Omitted when unavailable.
+          maxLength: 2048
+          x-go-name: PublicProfileURL
+          x-oapi-codegen-extra-tags:
+            json: "publicProfileUrl,omitempty"
+          x-order: 13
+    PublicEventPage:
+      type: object
+      additionalProperties: false
+      description: >-
+        One page of public events, newest first, in the same
+        page/pageSize/totalCount/data shape as PublicUsersPage.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - data
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page, at most 50.
+          minimum: 1
+          maximum: 50
+        totalCount:
+          type: integer
+          description: Total number of public events available.
+          minimum: 0
+        data:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PublicEvent'
+            x-go-type: PublicEvent
+          description: Public events for the requested page, newest first.
     EventsAggregate:
       type: object
       description: Aggregated event counts across categories.
