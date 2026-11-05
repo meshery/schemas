@@ -125,9 +125,11 @@ permissions source does not define.
 
 **Routes with no key today.** Connections, events and the organization
 features are not gated by a permission key in Cloud (membership only). The
-seeds above are the closest existing keys. A token scoped to
-`connections:read` or `events:read` has nothing to narrow on those routes until
-Cloud keys them (decision 12, U9 step S4), and `account:read` does not cover
+seeds above are the closest existing keys. Until Cloud keys them (decision 12,
+U9 step S4), a token scoped to `connections:read` or `events:read` is refused
+outright with 403 on those routes: layer5io/meshery-cloud#6369 installs a
+default-deny gate, so a scoped token on a route that makes no permission-key
+decision is refused there. `account:read` does not cover
 the organization features read until then.
 
 ## The organization selector
