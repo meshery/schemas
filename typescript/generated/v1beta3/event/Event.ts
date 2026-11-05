@@ -130,6 +130,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/events/feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event feed
+         * @description Generic, unauthenticated feed of events whose visibility is `public`
+         *     and whose owner's `shareActivityPublicly` preference is on at read
+         *     time. Results are ordered newest first by `createdAt` and can be
+         *     filtered by category and action. Rate limited per client IP; an
+         *     over-limit client receives 429 with `Retry-After`. Responses carry
+         *     `Cache-Control: public, max-age=N` where N is at most 30 seconds.
+         *     See docs/event-feed-contract.md.
+         */
+        get: operations["getEventFeed"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/events/summary": {
         parameters: {
             query?: never;
@@ -168,7 +194,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description Payload for creating a new event. */
+        /** @description Payload for creating a new event. If visibility is absent, the event is private. */
         EventPayload: {
             /**
              * Format: uuid
@@ -177,6 +203,12 @@ export interface components {
             owner?: string;
             /** @description The category of the event. */
             category?: string;
+            /**
+             * @description Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed.
+             * @default private
+             * @enum {string}
+             */
+            visibility: "private" | "public";
             /** @description The action of the event. */
             action?: string;
             /** @description Description of the event. */
@@ -233,6 +265,12 @@ export interface components {
         };
         /** @description EventResult entity schema. */
         EventResult: {
+            /**
+             * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+             * @default private
+             * @enum {string}
+             */
+            visibility: "private" | "public";
             /**
              * Format: uuid
              * @description UUID of the user associated with the event.
@@ -291,7 +329,7 @@ export interface components {
             category: string;
             /** @description Human-readable summary of what happened. */
             description: string;
-            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
             metadata: {
                 [key: string]: unknown;
             } | null;
@@ -330,6 +368,12 @@ export interface components {
              */
             updatedAt: string;
             /**
+             * @description Who can see the event. Defaults to `private`.
+             * @default private
+             * @enum {string}
+             */
+            visibility: "private" | "public";
+            /**
              * Format: date-time
              * @description Timestamp when the event was soft-deleted; omitted when it was not.
              */
@@ -345,6 +389,12 @@ export interface components {
             totalCount?: number;
             /** @description The events returned on the current page. */
             data?: {
+                /**
+                 * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+                 * @default private
+                 * @enum {string}
+                 */
+                visibility: "private" | "public";
                 /**
                  * Format: uuid
                  * @description UUID of the user associated with the event.
@@ -384,6 +434,134 @@ export interface components {
                  * @description Timestamp when the event was recorded.
                  */
                 createdAt?: string;
+            }[];
+        };
+        /**
+         * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+         * @default private
+         * @enum {string}
+         */
+        EventVisibility: "private" | "public";
+        /**
+         * @description An event projected into the public feed. It never includes email,
+         *     firstName, lastName, description, provider or raw metadata.
+         *     `platform`, `role`, `line` and `networks` are projected from
+         *     ScheduleCompletedEventMetadata; events without valid required
+         *     metadata are skipped. Public profile fields are resolved by Cloud at
+         *     read time and are included only when the user's profile is public.
+         */
+        EventFeedItem: {
+            /**
+             * Format: uuid
+             * @description Event ID.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId: string;
+            /** @description Event category. */
+            category: string;
+            /** @description Event action. */
+            action: string;
+            /**
+             * Format: date-time
+             * @description Event creation time; the feed is ordered newest first.
+             */
+            createdAt: string;
+            /**
+             * @description Always `public` in the feed.
+             * @default private
+             * @enum {string}
+             */
+            visibility: "private" | "public";
+            /**
+             * @description Platform from ScheduleCompletedEventMetadata.
+             * @enum {string}
+             */
+            platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+            /** @description Role from ScheduleCompletedEventMetadata. */
+            role: string;
+            /** @description One-line result from ScheduleCompletedEventMetadata. */
+            line: string;
+            /** @description Networks from ScheduleCompletedEventMetadata, when present. */
+            networks?: string[];
+            /** @description Public username, never a real name; present only for a public profile. */
+            displayName?: string;
+            /**
+             * Format: uri
+             * @description Public avatar URL; present only for a public profile.
+             */
+            avatarUrl?: string;
+            /** @description Public organization name; present only for a public profile. */
+            organizationName?: string;
+            /**
+             * Format: uri
+             * @description HTTPS URL of the user's public profile.
+             */
+            publicProfileUrl?: string;
+        };
+        /** @description One page of event feed items, newest first. */
+        EventFeedPage: {
+            /** @description Current page number of the result set. */
+            page: number;
+            /** @description Number of items per page. */
+            pageSize: number;
+            /** @description Total number of matching feed events. */
+            totalCount: number;
+            /** @description Events for the requested page, newest first. */
+            data: {
+                /**
+                 * Format: uuid
+                 * @description Event ID.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                userId: string;
+                /** @description Event category. */
+                category: string;
+                /** @description Event action. */
+                action: string;
+                /**
+                 * Format: date-time
+                 * @description Event creation time; the feed is ordered newest first.
+                 */
+                createdAt: string;
+                /**
+                 * @description Always `public` in the feed.
+                 * @default private
+                 * @enum {string}
+                 */
+                visibility: "private" | "public";
+                /**
+                 * @description Platform from ScheduleCompletedEventMetadata.
+                 * @enum {string}
+                 */
+                platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+                /** @description Role from ScheduleCompletedEventMetadata. */
+                role: string;
+                /** @description One-line result from ScheduleCompletedEventMetadata. */
+                line: string;
+                /** @description Networks from ScheduleCompletedEventMetadata, when present. */
+                networks?: string[];
+                /** @description Public username, never a real name; present only for a public profile. */
+                displayName?: string;
+                /**
+                 * Format: uri
+                 * @description Public avatar URL; present only for a public profile.
+                 */
+                avatarUrl?: string;
+                /** @description Public organization name; present only for a public profile. */
+                organizationName?: string;
+                /**
+                 * Format: uri
+                 * @description HTTPS URL of the user's public profile.
+                 */
+                publicProfileUrl?: string;
             }[];
         };
         /** @description Aggregated event counts across categories. */
@@ -564,6 +742,20 @@ export interface components {
             /** @description Name of the saved design. */
             name?: string;
         };
+        /** @description Metadata for a completed scheduled run (category `schedule`, action `completed`). This typed shape keeps client-specific display data out of the core Event fields and is projected into EventFeedItem. */
+        ScheduleCompletedEventMetadata: {
+            /**
+             * @description Platform the completed run acted on.
+             * @enum {string}
+             */
+            platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+            /** @description Role the completed run acted in. */
+            role: string;
+            /** @description One-line result of the run. */
+            line: string;
+            /** @description Networks or communities where the run acted. */
+            networks?: string[];
+        };
     };
     responses: {
         /** @description Invalid request body or request param */
@@ -667,6 +859,12 @@ export interface components {
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
         pagesizeLegacy: number;
+        /** @description Number of feed items per page. */
+        feedPagesize: number;
+        /** @description Optional event category filter. */
+        feedCategory: string;
+        /** @description Optional event action filter. */
+        feedAction: string;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -1083,6 +1281,12 @@ export interface operations {
                         /** @description The events returned on the current page. */
                         data?: {
                             /**
+                             * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+                             * @default private
+                             * @enum {string}
+                             */
+                            visibility: "private" | "public";
+                            /**
                              * Format: uuid
                              * @description UUID of the user associated with the event.
                              */
@@ -1301,6 +1505,12 @@ export interface operations {
                     owner?: string;
                     /** @description The category of the event. */
                     category?: string;
+                    /**
+                     * @description Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed.
+                     * @default private
+                     * @enum {string}
+                     */
+                    visibility?: "private" | "public";
                     /** @description The action of the event. */
                     action?: string;
                     /** @description Description of the event. */
@@ -1336,7 +1546,7 @@ export interface operations {
                         category: string;
                         /** @description Human-readable summary of what happened. */
                         description: string;
-                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
                         metadata: {
                             [key: string]: unknown;
                         } | null;
@@ -1374,6 +1584,12 @@ export interface operations {
                          * @description Timestamp when the event was last updated.
                          */
                         updatedAt: string;
+                        /**
+                         * @description Who can see the event. Defaults to `private`.
+                         * @default private
+                         * @enum {string}
+                         */
+                        visibility: "private" | "public";
                         /**
                          * Format: date-time
                          * @description Timestamp when the event was soft-deleted; omitted when it was not.
@@ -1405,7 +1621,7 @@ export interface operations {
                         category: string;
                         /** @description Human-readable summary of what happened. */
                         description: string;
-                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
                         metadata: {
                             [key: string]: unknown;
                         } | null;
@@ -1443,6 +1659,12 @@ export interface operations {
                          * @description Timestamp when the event was last updated.
                          */
                         updatedAt: string;
+                        /**
+                         * @description Who can see the event. Defaults to `private`.
+                         * @default private
+                         * @enum {string}
+                         */
+                        visibility: "private" | "public";
                         /**
                          * Format: date-time
                          * @description Timestamp when the event was soft-deleted; omitted when it was not.
@@ -1542,6 +1764,12 @@ export interface operations {
                         totalCount?: number;
                         /** @description The events returned on the current page. */
                         data?: {
+                            /**
+                             * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+                             * @default private
+                             * @enum {string}
+                             */
+                            visibility: "private" | "public";
                             /**
                              * Format: uuid
                              * @description UUID of the user associated with the event.
@@ -1653,6 +1881,140 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getEventFeed: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of feed items per page. */
+                pagesize?: number;
+                /** @description Optional event category filter. */
+                category?: string;
+                /** @description Optional event action filter. */
+                action?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Event feed page */
+            200: {
+                headers: {
+                    /** @description `public, max-age=N` with N from 0 to 30; max-age never exceeds 30 seconds. */
+                    "Cache-Control": string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page: number;
+                        /** @description Number of items per page. */
+                        pageSize: number;
+                        /** @description Total number of matching feed events. */
+                        totalCount: number;
+                        /** @description Events for the requested page, newest first. */
+                        data: {
+                            /**
+                             * Format: uuid
+                             * @description Event ID.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            userId: string;
+                            /** @description Event category. */
+                            category: string;
+                            /** @description Event action. */
+                            action: string;
+                            /**
+                             * Format: date-time
+                             * @description Event creation time; the feed is ordered newest first.
+                             */
+                            createdAt: string;
+                            /**
+                             * @description Always `public` in the feed.
+                             * @default private
+                             * @enum {string}
+                             */
+                            visibility: "private" | "public";
+                            /**
+                             * @description Platform from ScheduleCompletedEventMetadata.
+                             * @enum {string}
+                             */
+                            platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+                            /** @description Role from ScheduleCompletedEventMetadata. */
+                            role: string;
+                            /** @description One-line result from ScheduleCompletedEventMetadata. */
+                            line: string;
+                            /** @description Networks from ScheduleCompletedEventMetadata, when present. */
+                            networks?: string[];
+                            /** @description Public username, never a real name; present only for a public profile. */
+                            displayName?: string;
+                            /**
+                             * Format: uri
+                             * @description Public avatar URL; present only for a public profile.
+                             */
+                            avatarUrl?: string;
+                            /** @description Public organization name; present only for a public profile. */
+                            organizationName?: string;
+                            /**
+                             * Format: uri
+                             * @description HTTPS URL of the user's public profile.
+                             */
+                            publicProfileUrl?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
         };
     };

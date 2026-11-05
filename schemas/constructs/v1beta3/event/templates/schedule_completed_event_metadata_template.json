@@ -1,0 +1,8 @@
+{
+  "platform": "linkedin",
+  "role": "Launch",
+  "line": "Completed the scheduled run",
+  "networks": [
+    "linkedin"
+  ]
+}

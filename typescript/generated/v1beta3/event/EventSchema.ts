@@ -777,6 +777,20 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
+                          "visibility": {
+                            "type": "string",
+                            "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.",
+                            "enum": [
+                              "private",
+                              "public"
+                            ],
+                            "default": "private",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility",
+                              "json": "visibility"
+                            }
+                          },
                           "owner": {
                             "type": "string",
                             "format": "uuid",
@@ -1163,7 +1177,7 @@ const EventSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating a new event.",
+                "description": "Payload for creating a new event. If visibility is absent, the event is private.",
                 "additionalProperties": true,
                 "properties": {
                   "owner": {
@@ -1184,6 +1198,19 @@ const EventSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "The category of the event.",
                     "maxLength": 500
+                  },
+                  "visibility": {
+                    "description": "Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed.",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "visibility,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "private",
+                      "public"
+                    ],
+                    "default": "private",
+                    "x-go-name": "EventVisibility"
                   },
                   "action": {
                     "type": "string",
@@ -1291,7 +1318,7 @@ const EventSchema: Record<string, unknown> = {
                     },
                     "metadata": {
                       "type": "object",
-                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
+                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
                       "additionalProperties": true,
                       "nullable": true,
                       "x-go-type": "core.Map",
@@ -1401,6 +1428,21 @@ const EventSchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "visibility": {
+                      "description": "Who can see the event. Defaults to `private`.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility",
+                        "json": "visibility"
+                      },
+                      "x-order": 16,
+                      "type": "string",
+                      "enum": [
+                        "private",
+                        "public"
+                      ],
+                      "default": "private",
+                      "x-go-name": "EventVisibility"
                     },
                     "deletedAt": {
                       "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
@@ -1503,7 +1545,7 @@ const EventSchema: Record<string, unknown> = {
                     },
                     "metadata": {
                       "type": "object",
-                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
+                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
                       "additionalProperties": true,
                       "nullable": true,
                       "x-go-type": "core.Map",
@@ -1613,6 +1655,21 @@ const EventSchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "visibility": {
+                      "description": "Who can see the event. Defaults to `private`.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility",
+                        "json": "visibility"
+                      },
+                      "x-order": 16,
+                      "type": "string",
+                      "enum": [
+                        "private",
+                        "public"
+                      ],
+                      "default": "private",
+                      "x-go-name": "EventVisibility"
                     },
                     "deletedAt": {
                       "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
@@ -1835,6 +1892,20 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
+                          "visibility": {
+                            "type": "string",
+                            "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.",
+                            "enum": [
+                              "private",
+                              "public"
+                            ],
+                            "default": "private",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility",
+                              "json": "visibility"
+                            }
+                          },
                           "owner": {
                             "type": "string",
                             "format": "uuid",
@@ -2063,6 +2134,351 @@ const EventSchema: Record<string, unknown> = {
           },
           "500": {
             "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/events/feed": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "events"
+        ],
+        "operationId": "getEventFeed",
+        "summary": "Get event feed",
+        "description": "Generic, unauthenticated feed of events whose visibility is `public`\nand whose owner's `shareActivityPublicly` preference is on at read\ntime. Results are ordered newest first by `createdAt` and can be\nfiltered by category and action. Rate limited per client IP; an\nover-limit client receives 429 with `Retry-After`. Responses carry\n`Cache-Control: public, max-age=N` where N is at most 30 seconds.\nSee docs/event-feed-contract.md.\n",
+        "security": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "required": false,
+            "description": "Number of feed items per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "description": "Optional event category filter.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "description": "Optional event action filter.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event feed page",
+            "headers": {
+              "Cache-Control": {
+                "description": "`public, max-age=N` with N from 0 to 30; max-age never exceeds 30 seconds.",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "pattern": "^public, max-age=([0-9]|[12][0-9]|30)$"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "One page of event feed items, newest first.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "data"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1,
+                      "maximum": 50
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of matching feed events.",
+                      "minimum": 0
+                    },
+                    "data": {
+                      "type": "array",
+                      "maxItems": 50,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+                        "required": [
+                          "id",
+                          "userId",
+                          "category",
+                          "action",
+                          "createdAt",
+                          "visibility",
+                          "platform",
+                          "role",
+                          "line"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Event ID.",
+                            "x-go-name": "ID",
+                            "x-order": 1,
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "userId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-order": 2
+                          },
+                          "category": {
+                            "type": "string",
+                            "description": "Event category.",
+                            "maxLength": 500,
+                            "x-order": 3
+                          },
+                          "action": {
+                            "type": "string",
+                            "description": "Event action.",
+                            "maxLength": 500,
+                            "x-order": 4
+                          },
+                          "createdAt": {
+                            "description": "Event creation time; the feed is ordered newest first.",
+                            "x-order": 5,
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "visibility": {
+                            "description": "Always `public` in the feed.",
+                            "x-order": 6,
+                            "type": "string",
+                            "enum": [
+                              "private",
+                              "public"
+                            ],
+                            "default": "private",
+                            "x-go-name": "EventVisibility"
+                          },
+                          "platform": {
+                            "type": "string",
+                            "description": "Platform from ScheduleCompletedEventMetadata.",
+                            "enum": [
+                              "linkedin",
+                              "x",
+                              "reddit",
+                              "hacker-news",
+                              "slack",
+                              "bluesky",
+                              "github"
+                            ],
+                            "x-order": 7
+                          },
+                          "role": {
+                            "type": "string",
+                            "description": "Role from ScheduleCompletedEventMetadata.",
+                            "minLength": 3,
+                            "maxLength": 40,
+                            "x-order": 8
+                          },
+                          "line": {
+                            "type": "string",
+                            "description": "One-line result from ScheduleCompletedEventMetadata.",
+                            "minLength": 10,
+                            "maxLength": 120,
+                            "x-order": 9
+                          },
+                          "networks": {
+                            "type": "array",
+                            "description": "Networks from ScheduleCompletedEventMetadata, when present.",
+                            "minItems": 1,
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 255
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "networks,omitempty"
+                            },
+                            "x-order": 10
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "description": "Public username, never a real name; present only for a public profile.",
+                            "maxLength": 80,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "displayName,omitempty"
+                            },
+                            "x-order": 11
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "Public avatar URL; present only for a public profile.",
+                            "x-go-name": "AvatarURL",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "avatarUrl,omitempty"
+                            },
+                            "x-order": 12
+                          },
+                          "organizationName": {
+                            "type": "string",
+                            "description": "Public organization name; present only for a public profile.",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "organizationName,omitempty"
+                            },
+                            "x-order": 13
+                          },
+                          "publicProfileUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "HTTPS URL of the user's public profile.",
+                            "pattern": "^https://",
+                            "maxLength": 2048,
+                            "x-go-name": "PublicProfileURL",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "publicProfileUrl,omitempty"
+                            },
+                            "x-order": 14
+                          }
+                        }
+                      },
+                      "description": "Events for the requested page, newest first."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -2598,6 +3014,38 @@ const EventSchema: Record<string, unknown> = {
           "type": "integer"
         }
       },
+      "feedPagesize": {
+        "name": "pagesize",
+        "in": "query",
+        "required": false,
+        "description": "Number of feed items per page.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        }
+      },
+      "feedCategory": {
+        "name": "category",
+        "in": "query",
+        "required": false,
+        "description": "Optional event category filter.",
+        "schema": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "feedAction": {
+        "name": "action",
+        "in": "query",
+        "required": false,
+        "description": "Optional event action filter.",
+        "schema": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
       "search": {
         "name": "search",
         "in": "query",
@@ -2664,7 +3112,7 @@ const EventSchema: Record<string, unknown> = {
     "schemas": {
       "EventPayload": {
         "type": "object",
-        "description": "Payload for creating a new event.",
+        "description": "Payload for creating a new event. If visibility is absent, the event is private.",
         "additionalProperties": true,
         "properties": {
           "owner": {
@@ -2685,6 +3133,19 @@ const EventSchema: Record<string, unknown> = {
             "type": "string",
             "description": "The category of the event.",
             "maxLength": 500
+          },
+          "visibility": {
+            "description": "Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed.",
+            "x-oapi-codegen-extra-tags": {
+              "json": "visibility,omitempty"
+            },
+            "type": "string",
+            "enum": [
+              "private",
+              "public"
+            ],
+            "default": "private",
+            "x-go-name": "EventVisibility"
           },
           "action": {
             "type": "string",
@@ -2830,6 +3291,20 @@ const EventSchema: Record<string, unknown> = {
         "additionalProperties": false,
         "description": "EventResult entity schema.",
         "properties": {
+          "visibility": {
+            "type": "string",
+            "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.",
+            "enum": [
+              "private",
+              "public"
+            ],
+            "default": "private",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "visibility",
+              "json": "visibility"
+            }
+          },
           "owner": {
             "type": "string",
             "format": "uuid",
@@ -3007,7 +3482,7 @@ const EventSchema: Record<string, unknown> = {
           },
           "metadata": {
             "type": "object",
-            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
+            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
             "additionalProperties": true,
             "nullable": true,
             "x-go-type": "core.Map",
@@ -3118,6 +3593,21 @@ const EventSchema: Record<string, unknown> = {
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
+          "visibility": {
+            "description": "Who can see the event. Defaults to `private`.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "visibility",
+              "json": "visibility"
+            },
+            "x-order": 16,
+            "type": "string",
+            "enum": [
+              "private",
+              "public"
+            ],
+            "default": "private",
+            "x-go-name": "EventVisibility"
+          },
           "deletedAt": {
             "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
             "x-oapi-codegen-extra-tags": {
@@ -3170,6 +3660,20 @@ const EventSchema: Record<string, unknown> = {
               "additionalProperties": false,
               "description": "EventResult entity schema.",
               "properties": {
+                "visibility": {
+                  "type": "string",
+                  "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.",
+                  "enum": [
+                    "private",
+                    "public"
+                  ],
+                  "default": "private",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "visibility",
+                    "json": "visibility"
+                  }
+                },
                 "owner": {
                   "type": "string",
                   "format": "uuid",
@@ -3272,6 +3776,358 @@ const EventSchema: Record<string, unknown> = {
               ]
             },
             "description": "The events returned on the current page."
+          }
+        }
+      },
+      "EventVisibility": {
+        "type": "string",
+        "description": "Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.",
+        "enum": [
+          "private",
+          "public"
+        ],
+        "default": "private",
+        "x-go-name": "EventVisibility"
+      },
+      "EventFeedItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+        "required": [
+          "id",
+          "userId",
+          "category",
+          "action",
+          "createdAt",
+          "visibility",
+          "platform",
+          "role",
+          "line"
+        ],
+        "properties": {
+          "id": {
+            "description": "Event ID.",
+            "x-go-name": "ID",
+            "x-order": 1,
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-order": 2
+          },
+          "category": {
+            "type": "string",
+            "description": "Event category.",
+            "maxLength": 500,
+            "x-order": 3
+          },
+          "action": {
+            "type": "string",
+            "description": "Event action.",
+            "maxLength": 500,
+            "x-order": 4
+          },
+          "createdAt": {
+            "description": "Event creation time; the feed is ordered newest first.",
+            "x-order": 5,
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "visibility": {
+            "description": "Always `public` in the feed.",
+            "x-order": 6,
+            "type": "string",
+            "enum": [
+              "private",
+              "public"
+            ],
+            "default": "private",
+            "x-go-name": "EventVisibility"
+          },
+          "platform": {
+            "type": "string",
+            "description": "Platform from ScheduleCompletedEventMetadata.",
+            "enum": [
+              "linkedin",
+              "x",
+              "reddit",
+              "hacker-news",
+              "slack",
+              "bluesky",
+              "github"
+            ],
+            "x-order": 7
+          },
+          "role": {
+            "type": "string",
+            "description": "Role from ScheduleCompletedEventMetadata.",
+            "minLength": 3,
+            "maxLength": 40,
+            "x-order": 8
+          },
+          "line": {
+            "type": "string",
+            "description": "One-line result from ScheduleCompletedEventMetadata.",
+            "minLength": 10,
+            "maxLength": 120,
+            "x-order": 9
+          },
+          "networks": {
+            "type": "array",
+            "description": "Networks from ScheduleCompletedEventMetadata, when present.",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "networks,omitempty"
+            },
+            "x-order": 10
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Public username, never a real name; present only for a public profile.",
+            "maxLength": 80,
+            "x-oapi-codegen-extra-tags": {
+              "json": "displayName,omitempty"
+            },
+            "x-order": 11
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 500,
+            "description": "Public avatar URL; present only for a public profile.",
+            "x-go-name": "AvatarURL",
+            "x-oapi-codegen-extra-tags": {
+              "json": "avatarUrl,omitempty"
+            },
+            "x-order": 12
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "Public organization name; present only for a public profile.",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "json": "organizationName,omitempty"
+            },
+            "x-order": 13
+          },
+          "publicProfileUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "HTTPS URL of the user's public profile.",
+            "pattern": "^https://",
+            "maxLength": 2048,
+            "x-go-name": "PublicProfileURL",
+            "x-oapi-codegen-extra-tags": {
+              "json": "publicProfileUrl,omitempty"
+            },
+            "x-order": 14
+          }
+        }
+      },
+      "EventFeedPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One page of event feed items, newest first.",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "data"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of matching feed events.",
+            "minimum": 0
+          },
+          "data": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+              "required": [
+                "id",
+                "userId",
+                "category",
+                "action",
+                "createdAt",
+                "visibility",
+                "platform",
+                "role",
+                "line"
+              ],
+              "properties": {
+                "id": {
+                  "description": "Event ID.",
+                  "x-go-name": "ID",
+                  "x-order": 1,
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-order": 2
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Event category.",
+                  "maxLength": 500,
+                  "x-order": 3
+                },
+                "action": {
+                  "type": "string",
+                  "description": "Event action.",
+                  "maxLength": 500,
+                  "x-order": 4
+                },
+                "createdAt": {
+                  "description": "Event creation time; the feed is ordered newest first.",
+                  "x-order": 5,
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "visibility": {
+                  "description": "Always `public` in the feed.",
+                  "x-order": 6,
+                  "type": "string",
+                  "enum": [
+                    "private",
+                    "public"
+                  ],
+                  "default": "private",
+                  "x-go-name": "EventVisibility"
+                },
+                "platform": {
+                  "type": "string",
+                  "description": "Platform from ScheduleCompletedEventMetadata.",
+                  "enum": [
+                    "linkedin",
+                    "x",
+                    "reddit",
+                    "hacker-news",
+                    "slack",
+                    "bluesky",
+                    "github"
+                  ],
+                  "x-order": 7
+                },
+                "role": {
+                  "type": "string",
+                  "description": "Role from ScheduleCompletedEventMetadata.",
+                  "minLength": 3,
+                  "maxLength": 40,
+                  "x-order": 8
+                },
+                "line": {
+                  "type": "string",
+                  "description": "One-line result from ScheduleCompletedEventMetadata.",
+                  "minLength": 10,
+                  "maxLength": 120,
+                  "x-order": 9
+                },
+                "networks": {
+                  "type": "array",
+                  "description": "Networks from ScheduleCompletedEventMetadata, when present.",
+                  "minItems": 1,
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "networks,omitempty"
+                  },
+                  "x-order": 10
+                },
+                "displayName": {
+                  "type": "string",
+                  "description": "Public username, never a real name; present only for a public profile.",
+                  "maxLength": 80,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "displayName,omitempty"
+                  },
+                  "x-order": 11
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 500,
+                  "description": "Public avatar URL; present only for a public profile.",
+                  "x-go-name": "AvatarURL",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "avatarUrl,omitempty"
+                  },
+                  "x-order": 12
+                },
+                "organizationName": {
+                  "type": "string",
+                  "description": "Public organization name; present only for a public profile.",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "organizationName,omitempty"
+                  },
+                  "x-order": 13
+                },
+                "publicProfileUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "HTTPS URL of the user's public profile.",
+                  "pattern": "^https://",
+                  "maxLength": 2048,
+                  "x-go-name": "PublicProfileURL",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "publicProfileUrl,omitempty"
+                  },
+                  "x-order": 14
+                }
+              }
+            },
+            "description": "Events for the requested page, newest first."
           }
         }
       },
@@ -3717,6 +4573,58 @@ const EventSchema: Record<string, unknown> = {
             "description": "Name of the saved design.",
             "maxLength": 255,
             "x-go-name": "Name"
+          }
+        }
+      },
+      "ScheduleCompletedEventMetadata": {
+        "type": "object",
+        "description": "Metadata for a completed scheduled run (category `schedule`, action `completed`). This typed shape keeps client-specific display data out of the core Event fields and is projected into EventFeedItem.",
+        "additionalProperties": false,
+        "required": [
+          "platform",
+          "role",
+          "line"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "description": "Platform the completed run acted on.",
+            "enum": [
+              "linkedin",
+              "x",
+              "reddit",
+              "hacker-news",
+              "slack",
+              "bluesky",
+              "github"
+            ],
+            "x-go-name": "Platform"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role the completed run acted in.",
+            "minLength": 3,
+            "maxLength": 40,
+            "x-go-name": "Role"
+          },
+          "line": {
+            "type": "string",
+            "description": "One-line result of the run.",
+            "minLength": 10,
+            "maxLength": 120,
+            "x-go-name": "Line"
+          },
+          "networks": {
+            "type": "array",
+            "description": "Networks or communities where the run acted.",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "x-go-name": "Networks"
           }
         }
       }

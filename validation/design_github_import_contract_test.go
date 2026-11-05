@@ -345,7 +345,7 @@ func TestEventMirrorsMeshkitEventWireShape(t *testing.T) {
 
 	alwaysWritten := []string{
 		"actedUpon", "action", "category", "createdAt", "description", "id",
-		"metadata", "operationId", "organizationId", "severity", "status", "systemId", "updatedAt",
+		"metadata", "operationId", "organizationId", "severity", "status", "systemId", "updatedAt", "visibility",
 	}
 	omitEmpty := []string{"deletedAt", "owner"}
 
