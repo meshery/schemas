@@ -10,7 +10,8 @@ import (
 )
 
 // A content item's approval is resolved once, at insert, from its own
-// approvalPolicy and the higher-level settings (platform, workspace, profile).
+// approvalPolicy and the higher-level settings (workspace, profile,
+// organization, platform).
 // The hierarchy is not settled; its issue is
 // https://github.com/layer5io/meshery-cloud/issues/6365. These tests pin the
 // schema side: the enum and its absent default, which fields are read-only and

@@ -190,7 +190,7 @@ settings reuse. The schema declares no default: an absent value means
 - An explicit `required` or `not_required` on the item always wins. Nothing
   higher overrides it.
 - `inherit`, or an absent value, inherits from higher-level settings
-  (platform, workspace, profile), hierarchy defined in
+  (workspace, profile, organization, platform), hierarchy defined in
   https://github.com/layer5io/meshery-cloud/issues/6365. This page does not fix
   their order; the server reads them in the order that issue defines.
 - The user preference `agentsActWithoutApproval` is one profile-level source
