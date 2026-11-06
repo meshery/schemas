@@ -80,9 +80,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "schema": {
               "type": "object",
               "required": [
-                "error",
-                "code",
-                "severity"
+                "error"
               ],
               "properties": {
                 "error": {
@@ -1654,9 +1652,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "required": [
-                    "error",
-                    "code",
-                    "severity"
+                    "error"
                   ],
                   "properties": {
                     "error": {
@@ -2018,9 +2014,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "required": [
-                    "error",
-                    "code",
-                    "severity"
+                    "error"
                   ],
                   "properties": {
                     "error": {

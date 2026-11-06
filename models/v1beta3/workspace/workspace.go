@@ -325,7 +325,7 @@ type WorkspaceId = core.WorkspaceId
 // CoreN403 defines model for 403.
 type CoreN403 struct {
 	// Code MeshKit error code.
-	Code string `json:"code" yaml:"code"`
+	Code *string `json:"code,omitempty" yaml:"code,omitempty"`
 
 	// Error User-facing error message; MeshKit ShortDescription when present.
 	Error           string    `json:"error" yaml:"error"`
@@ -333,6 +333,6 @@ type CoreN403 struct {
 	ProbableCause   *[]string `json:"probableCause,omitempty" yaml:"probableCause,omitempty"`
 
 	// Severity MeshKit error severity.
-	Severity             string    `json:"severity" yaml:"severity"`
+	Severity             *string   `json:"severity,omitempty" yaml:"severity,omitempty"`
 	SuggestedRemediation *[]string `json:"suggestedRemediation,omitempty" yaml:"suggestedRemediation,omitempty"`
 }

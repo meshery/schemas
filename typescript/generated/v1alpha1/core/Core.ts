@@ -717,12 +717,12 @@ export interface components {
                     /** @description User-facing error message; MeshKit ShortDescription when present. */
                     error: string;
                     /** @description MeshKit error code. */
-                    code: string;
+                    code?: string;
                     /**
                      * @description MeshKit error severity.
                      * @enum {string}
                      */
-                    severity: "EMERGENCY" | "ALERT" | "CRITICAL" | "FATAL" | "ERROR";
+                    severity?: "EMERGENCY" | "ALERT" | "CRITICAL" | "FATAL" | "ERROR";
                     probableCause?: string[];
                     suggestedRemediation?: string[];
                     longDescription?: string[];

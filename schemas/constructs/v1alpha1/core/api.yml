@@ -1099,8 +1099,6 @@ components:
             type: object
             required:
               - error
-              - code
-              - severity
             properties:
               error:
                 type: string

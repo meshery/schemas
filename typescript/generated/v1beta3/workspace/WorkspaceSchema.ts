@@ -368,9 +368,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "required": [
-                    "error",
-                    "code",
-                    "severity"
+                    "error"
                   ],
                   "properties": {
                     "error": {
@@ -867,9 +865,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "required": [
-                    "error",
-                    "code",
-                    "severity"
+                    "error"
                   ],
                   "properties": {
                     "error": {
@@ -9281,9 +9277,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "schema": {
               "type": "object",
               "required": [
-                "error",
-                "code",
-                "severity"
+                "error"
               ],
               "properties": {
                 "error": {
