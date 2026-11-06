@@ -37,6 +37,7 @@ properties:
       the client machine that emitted it (for example a desktop client
       recording a run). Asserted by the sender, not checked.
     maxLength: 255
+    x-id-format: external
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       db: system_id
@@ -96,6 +97,78 @@ properties:
     x-oapi-codegen-extra-tags:
       db: created_at
       json: createdAt
+  correlationKey:
+    type: string
+    description: Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: correlation_key
+  occurrenceCount:
+    type: integer
+    description: How many occurrences of the condition the event counts (see Event.occurrenceCount).
+    minimum: 1
+    x-oapi-codegen-extra-tags:
+      db: occurrence_count
+  firstSeenAt:
+    type: string
+    format: date-time
+    description: When the condition's first counted occurrence was seen.
+    x-oapi-codegen-extra-tags:
+      db: first_seen_at
+  lastSeenAt:
+    type: string
+    format: date-time
+    description: When the condition's latest counted occurrence was seen.
+    x-oapi-codegen-extra-tags:
+      db: last_seen_at
+  resolvedAt:
+    type: string
+    format: date-time
+    description: When the condition cleared; omitted while it is open (see Event.resolvedAt).
+    x-oapi-codegen-extra-tags:
+      db: resolved_at
+  source:
+    type: string
+    format: uri-reference
+    description: Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source).
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: source
+  type:
+    type: string
+    description: CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type).
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: type
+  specversion:
+    description: The CloudEvents specification version the event is compatible with (see Event.specversion).
+    $ref: ./api.yml#/components/schemas/EventSpecVersion
+    x-go-name: SpecVersion
+    x-oapi-codegen-extra-tags:
+      db: specversion
+  traceId:
+    type: string
+    description: W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId).
+    minLength: 32
+    maxLength: 32
+    pattern: '^[0-9a-f]{32}$'
+    x-id-format: external
+    x-go-name: TraceID
+    x-oapi-codegen-extra-tags:
+      db: trace_id
+  parentId:
+    type: string
+    description: W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId).
+    minLength: 16
+    maxLength: 16
+    pattern: '^[0-9a-f]{16}$'
+    x-id-format: external
+    x-go-name: ParentID
+    x-oapi-codegen-extra-tags:
+      db: parent_id
 required:
 - owner
 - category

@@ -1,0 +1,254 @@
+openapi: 3.0.0
+info:
+  title: Errors
+  description: |
+    OpenAPI schema for error code definitions: the registry entry behind a
+    code such as `meshery-server-1033`, with each probable cause and the
+    remediations that answer it, and the index docs.meshery.io publishes of
+    every definition (ErrorReferenceIndex). The construct has no endpoints:
+    definitions live in each component's source, MeshKit's `errorutil`
+    exports them to `*_errors_export.json`, and the docs build publishes
+    them. An event that reports an error carries an instance of one
+    definition as `metadata.error` (EventError, in the event construct). See
+    docs/error-definition-contract.md.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+paths: {}
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorDefinition:
+      $ref: "./error.yaml"
+
+    ErrorComponent:
+      type: object
+      additionalProperties: false
+      description: >
+        The component that owns an error code: the `type` and `name` of its
+        MeshKit `component_info.json`. Codes are unique only within one
+        component.
+      required:
+        - type
+        - name
+      properties:
+        type:
+          type: string
+          description: >
+            The kind of component, for example `component` (Meshery Server),
+            `adapter`, `library` (MeshKit) or `client` (mesheryctl). An open
+            set: a new kind of component needs no schema change.
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-z][a-z0-9-]*$'
+          x-go-name: Type
+        name:
+          type: string
+          description: >
+            The component's name, for example `meshery-server`, `meshkit` or
+            `mesheryctl`. It is the prefix of every code the component owns.
+          minLength: 1
+          maxLength: 200
+          pattern: '^[a-z][a-z0-9]*(-[a-z0-9]+)*$'
+          x-go-name: Name
+
+    ErrorSeverity:
+      type: string
+      description: >
+        How severe an error is, as its definition declares. MeshKit's
+        severities map one to one: `Emergency` to `emergency`, `Alert` to
+        `alert`, `Critical` to `critical` and `Fatal` to `fatal`; MeshKit's
+        `None` is an omitted severity. `error`, `warning`, `informational`
+        and `debug` name the less severe levels of the event severity ladder
+        for components that define them. The event that reports an
+        occurrence carries its own `severity`.
+      enum:
+        - emergency
+        - alert
+        - critical
+        - fatal
+        - error
+        - warning
+        - informational
+        - debug
+      x-enum-varnames:
+        - SeverityEmergency
+        - SeverityAlert
+        - SeverityCritical
+        - SeverityFatal
+        - SeverityError
+        - SeverityWarning
+        - SeverityInformational
+        - SeverityDebug
+
+    ProbableCause:
+      type: object
+      additionalProperties: false
+      description: >
+        One probable cause of an error, with the remediations that answer
+        it. Remediations are nested under the cause they address, never kept
+        in a parallel list.
+      required:
+        - id
+        - description
+        - remediations
+      properties:
+        id:
+          type: string
+          description: >
+            Stable id of the cause, unique within the error's definition, for
+            example `service-not-running`. An event names the causes that
+            apply to one occurrence by this id (`EventError.matchedCauses`),
+            and the docs page links to it, so it never changes once
+            published. Lowercase words joined by hyphens.
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-z][a-z0-9]*(-[a-z0-9]+)*$'
+          x-id-format: external
+          x-go-name: ID
+        description:
+          type: string
+          description: What may have caused the error, for example `The service is not running.`
+          minLength: 1
+          maxLength: 2000
+          x-go-name: Description
+        remediations:
+          type: array
+          description: >
+            What answers this cause, the most likely fix first. A remediation
+            that also answers another cause is repeated under that cause with
+            the same `id` and identical fields.
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Remediation"
+          x-go-name: Remediations
+
+    Remediation:
+      type: object
+      additionalProperties: false
+      description: >
+        One remediation for a probable cause: what to do, and optionally a
+        machine-readable action a client may run and the policy that says
+        whether it may run it without asking a person.
+      required:
+        - id
+        - description
+      properties:
+        id:
+          type: string
+          description: >
+            Stable id of the remediation, unique within the error's
+            definition, for example `start-service`. The same id under two
+            causes is one remediation answering both, so its fields must be
+            identical in each place, and the flattened `suggestedRemediation`
+            list carries it once. Lowercase words joined by hyphens.
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-z][a-z0-9]*(-[a-z0-9]+)*$'
+          x-id-format: external
+          x-go-name: ID
+        description:
+          type: string
+          description: What to do, written for a person, for example `Start the service.`
+          minLength: 1
+          maxLength: 2000
+          x-go-name: Description
+        action:
+          type: string
+          description: >
+            Identifier of an action a client can run to apply this
+            remediation, as dot-separated lowercase words, for example
+            `service.start` or `connection.reconnect`. The client that runs
+            it owns its meaning; the definition only names it. Omitted when
+            only a person can apply the remediation.
+          minLength: 3
+          maxLength: 255
+          pattern: '^[a-z][a-z0-9-]*(\.[a-z][a-z0-9-]*)+$'
+          x-go-name: Action
+        actionPolicy:
+          $ref: "#/components/schemas/ActionPolicy"
+          description: >
+            Whether a client may run `action` on its own. `automatic` and
+            `requiresApproval` need an `action`. Omitted means `manual`.
+          x-go-name: ActionPolicy
+
+    ActionPolicy:
+      type: string
+      description: >
+        Whether a client may apply a remediation on its own. `automatic`: the
+        client may run the remediation's `action` without asking and then
+        tells the person it did. `requiresApproval`: the client runs the
+        `action` only after a person approves it. `manual`: a person applies
+        the remediation; a client shows it and never runs anything. An
+        omitted policy is `manual`, and a reader treats a policy it does not
+        know as `manual`, so a remediation is never run by mistake.
+      enum:
+        - automatic
+        - requiresApproval
+        - manual
+      default: manual
+      # MeshKit's ActionPolicy (meshery/meshkit#1138) and the issue that
+      # defines this construct (meshery/schemas#1334) both spell the value
+      # `requiresApproval`; the published spelling is the contract.
+      x-enum-casing-exempt: true
+      x-enum-varnames:
+        - ActionPolicyAutomatic
+        - ActionPolicyRequiresApproval
+        - ActionPolicyManual
+
+    ErrorReferenceIndex:
+      type: object
+      additionalProperties: false
+      description: >
+        A list of error definitions, each code once. Published by
+        docs.meshery.io at `https://docs.meshery.io/reference/error-codes/index.json`,
+        it lists every component's codes, and every entry carries its
+        `referenceUrl`; tools and bots validate codes and link to their pages
+        from it. The same format is a component's export in the nested form
+        (MeshKit's `errorutil`, `*_errors_export.json`): that component's
+        definitions, where `referenceUrl` may be absent because the docs
+        build assigns it when it merges the exports. A code is identified by
+        its component and code.
+      required:
+        - schemaVersion
+        - errors
+      properties:
+        schemaVersion:
+          type: integer
+          description: >
+            Version of the index format. `2` is this schema, whose entries are
+            ErrorDefinitions. Version `1` was the flat format the docs build
+            first published, whose entries carry `componentType`,
+            `componentName`, `name`, the numeric `code` and the joined
+            `probableCause` and `suggestedRemediation` strings; a reader that
+            meets it reads it as unpaired definitions.
+          enum:
+            - 2
+          x-enum-varnames:
+            - SchemaVersion2
+          x-go-name: SchemaVersion
+        generatedAt:
+          type: string
+          format: date-time
+          description: When the docs build generated the index.
+          x-go-name: GeneratedAt
+        errors:
+          type: array
+          description: >
+            The definitions, each code once; the published index orders them
+            by `referenceUrl`. Retired codes stay, marked `retired`.
+          items:
+            $ref: "#/components/schemas/ErrorDefinition"
+          x-go-name: Errors
