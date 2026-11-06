@@ -60,6 +60,9 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
+      - name: Generate Go models
+        run: make generate-golang
+
       - name: Run schema guard tests
         run: go test ./validation/... ./models/...
 
