@@ -34,13 +34,13 @@ paths:
         - $ref: "#/components/parameters/all"
       responses:
         "200":
-          description: Organizations response
+          description: >-
+            Organizations response. An empty result is this envelope with an
+            empty `organizations` array, never a bodiless 204.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrganizationsPage"
-        "204":
-          description: No content
         "401":
           $ref: "#/components/responses/401"
         "500":
