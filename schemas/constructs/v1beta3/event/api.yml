@@ -79,7 +79,7 @@ paths:
       - jwt: []
       responses:
         '200':
-          description: All events marked as read
+          description: All of the caller's unread events were marked as read
           content:
             application/json:
               schema:

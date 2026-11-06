@@ -3,6 +3,7 @@ package validation
 import (
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -124,7 +125,8 @@ func TestGetEventsScope(t *testing.T) {
 // responses, and closed success-response shape.
 func TestMarkAllEventsReadContract(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), "schemas/constructs/v1beta3/event/api.yml"))
-	op := mustLookup(t, doc, "paths", "/api/events/mark-all-read", "post")
+	pathItem := mustLookup(t, doc, "paths", "/api/events/mark-all-read")
+	op := mustLookup(t, pathItem, "post")
 
 	if got := mustValue(op, "operationId"); got != "markAllEventsRead" {
 		t.Errorf("operationId = %v, want markAllEventsRead", got)
@@ -144,14 +146,18 @@ func TestMarkAllEventsReadContract(t *testing.T) {
 		t.Error("markAllEventsRead must derive the caller from the session, not accept a request body")
 	}
 	if _, has := mappingValue(op, "parameters"); has {
-		t.Error("markAllEventsRead must not accept a userId parameter")
+		t.Error("markAllEventsRead must not declare operation-level parameters")
+	}
+	if _, has := mappingValue(pathItem, "parameters"); has {
+		t.Error("/api/events/mark-all-read must not declare path-level parameters")
 	}
 
 	responses := mustValue(op, "responses")
-	for _, status := range []string{"200", "400", "401", "429", "500"} {
-		if _, has := mappingValue(responses, status); !has {
-			t.Errorf("markAllEventsRead responses missing %s", status)
-		}
+	gotStatuses := mappingKeys(responses)
+	sort.Strings(gotStatuses)
+	wantStatuses := []string{"200", "400", "401", "429", "500"}
+	if !reflect.DeepEqual(gotStatuses, wantStatuses) {
+		t.Errorf("markAllEventsRead response codes = %v, want exactly %v", gotStatuses, wantStatuses)
 	}
 	responseSchema := mustLookup(t, op, "responses", "200", "content", "application/json", "schema")
 	if got := mustValue(responseSchema, "$ref"); got != "#/components/schemas/MarkAllEventsReadResponse" {
@@ -164,6 +170,9 @@ func TestMarkAllEventsReadContract(t *testing.T) {
 	}
 	if got := sequenceStrings(mustValue(response, "required")); !reflect.DeepEqual(got, []string{"message"}) {
 		t.Errorf("MarkAllEventsReadResponse required = %v, want [message]", got)
+	}
+	if got := mustLookup(t, response, "properties", "message", "type"); got != "string" {
+		t.Errorf("MarkAllEventsReadResponse.message type = %v, want string", got)
 	}
 }
 
