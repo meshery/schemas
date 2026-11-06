@@ -707,7 +707,7 @@ components:
             mints one at persist time.
           minLength: 32
           maxLength: 32
-          pattern: '^[0-9a-f]{32}$'
+          pattern: '^[0-9a-f]*[1-9a-f][0-9a-f]*$'
           x-id-format: external
           x-go-name: TraceID
           x-oapi-codegen-extra-tags:
@@ -721,7 +721,7 @@ components:
             with `traceId`, never by the server.
           minLength: 16
           maxLength: 16
-          pattern: '^[0-9a-f]{16}$'
+          pattern: '^[0-9a-f]*[1-9a-f][0-9a-f]*$'
           x-id-format: external
           x-go-name: ParentID
           x-oapi-codegen-extra-tags:
@@ -1080,7 +1080,7 @@ components:
             to, as its client minted it; see EventPayload.traceId.
           minLength: 32
           maxLength: 32
-          pattern: '^[0-9a-f]{32}$'
+          pattern: '^[0-9a-f]*[1-9a-f][0-9a-f]*$'
           x-id-format: external
           x-go-name: TraceID
           x-oapi-codegen-extra-tags:
@@ -1093,7 +1093,7 @@ components:
             the event; see EventPayload.parentId.
           minLength: 16
           maxLength: 16
-          pattern: '^[0-9a-f]{16}$'
+          pattern: '^[0-9a-f]*[1-9a-f][0-9a-f]*$'
           x-id-format: external
           x-go-name: ParentID
           x-oapi-codegen-extra-tags:
@@ -1760,7 +1760,6 @@ components:
             `SuggestedRemediation`). With `probableCauses`, it equals every
             remediation's `description` in order, each remediation `id` once;
             without, it is unpaired.
-          maxItems: 50
           items:
             type: string
             minLength: 1

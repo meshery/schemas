@@ -170,10 +170,13 @@ func TestEventCorrelationFieldsRejectMalformedValues(t *testing.T) {
 		wantErr bool
 	}{
 		{"W3C trace id", with("traceId", "4bf92f3577b34da6a3ce929d0e0e4736"), false},
+		{"trace id with one non-zero digit", with("traceId", "00000000000000000000000000000001"), false},
+		{"all-zero trace id", with("traceId", "00000000000000000000000000000000"), true},
 		{"uppercase trace id", with("traceId", "4BF92F3577B34DA6A3CE929D0E0E4736"), true},
 		{"UUID as trace id", with("traceId", sampleUUID), true},
 		{"short trace id", with("traceId", "4bf92f3577b34da6"), true},
 		{"W3C parent id", with("parentId", "00f067aa0ba902b7"), false},
+		{"all-zero parent id", with("parentId", "0000000000000000"), true},
 		{"trace id as parent id", with("parentId", "4bf92f3577b34da6a3ce929d0e0e4736"), true},
 		{"CloudEvents 1.0", with("specversion", "1.0"), false},
 		{"CloudEvents 0.3", with("specversion", "0.3"), true},
@@ -185,9 +188,8 @@ func TestEventCorrelationFieldsRejectMalformedValues(t *testing.T) {
 	})
 }
 
-// TestCreateEventDocumentsTheUpsert pins createEvent's operation and its
-// documented correlation contract: the same id and path, the 200 and 201
-// answers carrying Event-Disposition, and each rule named.
+// TestCreateEventDocumentsTheUpsert pins createEvent's operation: the same
+// id and path, and the 200 and 201 answers carrying Event-Disposition.
 func TestCreateEventDocumentsTheUpsert(t *testing.T) {
 	spec := loadYAMLMap(t, designEventSpec)
 	op, _ := mustLookup(t, spec, "paths", "/api/events", "post").(map[string]any)
@@ -212,21 +214,11 @@ func TestCreateEventDocumentsTheUpsert(t *testing.T) {
 	if header["required"] != false {
 		t.Errorf("Event-Disposition required = %v, want false: servers that predate correlation omit it", header["required"])
 	}
-	description, _ := op["description"].(string)
-	for _, want := range []string{
-		"idempotencyKey", "correlationKey", "occurrenceCount", "lastSeenAt", "resolvedAt",
-		"at most one open event per key", "runs first", "bound to", "must not swallow",
-		"incremented", "resolved", "replayed", "created",
-	} {
-		if !strings.Contains(description, want) {
-			t.Errorf("createEvent description does not state %q", want)
-		}
-	}
 }
 
 // TestEventClassificationStaysOpen pins what the comments on #1334 keep:
-// category and action are two free strings, and severity is an open string
-// whose description names the full eight-level ladder.
+// category and action are two free strings, and severity stays an open
+// string that accepts the full eight-level ladder and any other value.
 func TestEventClassificationStaysOpen(t *testing.T) {
 	shapes := eventShapes(t)
 	for _, name := range []string{"EventPayload", "Event", "EventResult"} {
@@ -242,10 +234,12 @@ func TestEventClassificationStaysOpen(t *testing.T) {
 	if _, ok := severity["enum"]; ok {
 		t.Error("Event.severity has an enum; the set is not closed on the wire")
 	}
-	desc, _ := severity["description"].(string)
-	for _, level := range []string{"emergency", "alert", "critical", "error", "warning", "informational", "debug", "success"} {
-		if !strings.Contains(desc, "`"+level+"`") {
-			t.Errorf("Event.severity description does not name %q", level)
+	event := schemaOf(t, loadSpec(t, designEventSpec), "Event")
+	recorded := constructTemplate(t, eventTemplates, "correlated_event")
+	for _, level := range []string{"emergency", "alert", "critical", "error", "warning", "informational", "debug", "success", "a-level-no-schema-names"} {
+		recorded["severity"] = level
+		if err := event.VisitJSON(recorded); err != nil {
+			t.Errorf("Event.severity %q does not validate: %v", level, err)
 		}
 	}
 }

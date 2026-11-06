@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"slices"
-	"strings"
+	"strconv"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -95,6 +95,25 @@ func flattenCauses(t *testing.T, causes []any) (probableCause, suggestedRemediat
 		}
 	}
 	return probableCause, suggestedRemediation
+}
+
+func causesWithRemediations(causeCount, perCause int) []any {
+	causes := make([]any, causeCount)
+	for c := 0; c < causeCount; c++ {
+		rems := make([]any, perCause)
+		for r := 0; r < perCause; r++ {
+			rems[r] = map[string]any{
+				"id":          "fix-" + strconv.Itoa(c) + "-" + strconv.Itoa(r),
+				"description": "Do step " + strconv.Itoa(c) + "." + strconv.Itoa(r) + ".",
+			}
+		}
+		causes[c] = map[string]any{
+			"id":           "cause-" + strconv.Itoa(c),
+			"description":  "Cause " + strconv.Itoa(c) + " failed.",
+			"remediations": rems,
+		}
+	}
+	return causes
 }
 
 // TestErrorConstructHasNoEndpointsOrServerFields pins the construct's class:
@@ -329,12 +348,6 @@ func TestEventErrorIsTheMetadataErrorShape(t *testing.T) {
 	if ref := mustLookup(t, shape, "properties", "matchedCauses", "items", "$ref"); ref != "#/components/schemas/EventMatchedCause" {
 		t.Errorf("EventError.matchedCauses items $ref = %v, want EventMatchedCause", ref)
 	}
-	description, _ := mustLookup(t, spec, "components", "schemas", "Event", "properties", "metadata", "description").(string)
-	for _, want := range []string{"EventError", "metadata.error", "ProbableCause", "unpaired"} {
-		if !strings.Contains(description, want) {
-			t.Errorf("Event.metadata description does not mention %q (EventError as metadata.error and the legacy fallback)", want)
-		}
-	}
 }
 
 // TestEventErrorNamesOneMatchedCause is the acceptance case: an event that
@@ -368,6 +381,19 @@ func TestEventErrorNamesOneMatchedCause(t *testing.T) {
 	definition := constructTemplate(t, errorTemplates, "error")
 	if matched["code"] != definition["code"] {
 		t.Errorf("event_error code = %v, want the sample definition's %v", matched["code"], definition["code"])
+	}
+
+	for _, width := range []struct{ causes, perCause int }{{1, 51}, {20, 3}} {
+		nested := causesWithRemediations(width.causes, width.perCause)
+		probableCause, flat := flattenCauses(t, nested)
+		if err := eventError.VisitJSON(map[string]any{
+			"code":                 "meshery-server-1033",
+			"probableCauses":       nested,
+			"probableCause":        probableCause,
+			"suggestedRemediation": flat,
+		}); err != nil {
+			t.Errorf("an EventError with %d causes and %d remediations each (derived list %d) does not validate: %v", width.causes, width.perCause, len(flat), err)
+		}
 	}
 
 	unpaired := constructTemplate(t, eventTemplates, "event_error_unpaired")

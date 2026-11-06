@@ -157,7 +157,7 @@ properties:
     description: W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId).
     minLength: 32
     maxLength: 32
-    pattern: '^[0-9a-f]{32}$'
+    pattern: '^[0-9a-f]*[1-9a-f][0-9a-f]*$'
     x-id-format: external
     x-go-name: TraceID
     x-oapi-codegen-extra-tags:
@@ -167,7 +167,7 @@ properties:
     description: W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId).
     minLength: 16
     maxLength: 16
-    pattern: '^[0-9a-f]{16}$'
+    pattern: '^[0-9a-f]*[1-9a-f][0-9a-f]*$'
     x-id-format: external
     x-go-name: ParentID
     x-oapi-codegen-extra-tags:

@@ -963,7 +963,7 @@ const EventSchema: Record<string, unknown> = {
                             "description": "W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId).",
                             "minLength": 32,
                             "maxLength": 32,
-                            "pattern": "^[0-9a-f]{32}$",
+                            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                             "x-id-format": "external",
                             "x-go-name": "TraceID",
                             "x-oapi-codegen-extra-tags": {
@@ -975,7 +975,7 @@ const EventSchema: Record<string, unknown> = {
                             "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId).",
                             "minLength": 16,
                             "maxLength": 16,
-                            "pattern": "^[0-9a-f]{16}$",
+                            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                             "x-id-format": "external",
                             "x-go-name": "ParentID",
                             "x-oapi-codegen-extra-tags": {
@@ -1405,7 +1405,7 @@ const EventSchema: Record<string, unknown> = {
                     "description": "W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time.\n",
                     "minLength": 32,
                     "maxLength": 32,
-                    "pattern": "^[0-9a-f]{32}$",
+                    "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                     "x-id-format": "external",
                     "x-go-name": "TraceID",
                     "x-oapi-codegen-extra-tags": {
@@ -1417,7 +1417,7 @@ const EventSchema: Record<string, unknown> = {
                     "description": "W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.\n",
                     "minLength": 16,
                     "maxLength": 16,
-                    "pattern": "^[0-9a-f]{16}$",
+                    "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                     "x-id-format": "external",
                     "x-go-name": "ParentID",
                     "x-oapi-codegen-extra-tags": {
@@ -1754,7 +1754,7 @@ const EventSchema: Record<string, unknown> = {
                       "description": "W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.\n",
                       "minLength": 32,
                       "maxLength": 32,
-                      "pattern": "^[0-9a-f]{32}$",
+                      "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                       "x-id-format": "external",
                       "x-go-name": "TraceID",
                       "x-oapi-codegen-extra-tags": {
@@ -1767,7 +1767,7 @@ const EventSchema: Record<string, unknown> = {
                       "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.\n",
                       "minLength": 16,
                       "maxLength": 16,
-                      "pattern": "^[0-9a-f]{16}$",
+                      "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                       "x-id-format": "external",
                       "x-go-name": "ParentID",
                       "x-oapi-codegen-extra-tags": {
@@ -2103,7 +2103,7 @@ const EventSchema: Record<string, unknown> = {
                       "description": "W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.\n",
                       "minLength": 32,
                       "maxLength": 32,
-                      "pattern": "^[0-9a-f]{32}$",
+                      "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                       "x-id-format": "external",
                       "x-go-name": "TraceID",
                       "x-oapi-codegen-extra-tags": {
@@ -2116,7 +2116,7 @@ const EventSchema: Record<string, unknown> = {
                       "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.\n",
                       "minLength": 16,
                       "maxLength": 16,
-                      "pattern": "^[0-9a-f]{16}$",
+                      "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                       "x-id-format": "external",
                       "x-go-name": "ParentID",
                       "x-oapi-codegen-extra-tags": {
@@ -2515,7 +2515,7 @@ const EventSchema: Record<string, unknown> = {
                             "description": "W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId).",
                             "minLength": 32,
                             "maxLength": 32,
-                            "pattern": "^[0-9a-f]{32}$",
+                            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                             "x-id-format": "external",
                             "x-go-name": "TraceID",
                             "x-oapi-codegen-extra-tags": {
@@ -2527,7 +2527,7 @@ const EventSchema: Record<string, unknown> = {
                             "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId).",
                             "minLength": 16,
                             "maxLength": 16,
-                            "pattern": "^[0-9a-f]{16}$",
+                            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                             "x-id-format": "external",
                             "x-go-name": "ParentID",
                             "x-oapi-codegen-extra-tags": {
@@ -3792,7 +3792,7 @@ const EventSchema: Record<string, unknown> = {
             "description": "W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time.\n",
             "minLength": 32,
             "maxLength": 32,
-            "pattern": "^[0-9a-f]{32}$",
+            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
             "x-id-format": "external",
             "x-go-name": "TraceID",
             "x-oapi-codegen-extra-tags": {
@@ -3804,7 +3804,7 @@ const EventSchema: Record<string, unknown> = {
             "description": "W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.\n",
             "minLength": 16,
             "maxLength": 16,
-            "pattern": "^[0-9a-f]{16}$",
+            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
             "x-id-format": "external",
             "x-go-name": "ParentID",
             "x-oapi-codegen-extra-tags": {
@@ -4122,7 +4122,7 @@ const EventSchema: Record<string, unknown> = {
             "description": "W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId).",
             "minLength": 32,
             "maxLength": 32,
-            "pattern": "^[0-9a-f]{32}$",
+            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
             "x-id-format": "external",
             "x-go-name": "TraceID",
             "x-oapi-codegen-extra-tags": {
@@ -4134,7 +4134,7 @@ const EventSchema: Record<string, unknown> = {
             "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId).",
             "minLength": 16,
             "maxLength": 16,
-            "pattern": "^[0-9a-f]{16}$",
+            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
             "x-id-format": "external",
             "x-go-name": "ParentID",
             "x-oapi-codegen-extra-tags": {
@@ -4452,7 +4452,7 @@ const EventSchema: Record<string, unknown> = {
             "description": "W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.\n",
             "minLength": 32,
             "maxLength": 32,
-            "pattern": "^[0-9a-f]{32}$",
+            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
             "x-id-format": "external",
             "x-go-name": "TraceID",
             "x-oapi-codegen-extra-tags": {
@@ -4465,7 +4465,7 @@ const EventSchema: Record<string, unknown> = {
             "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.\n",
             "minLength": 16,
             "maxLength": 16,
-            "pattern": "^[0-9a-f]{16}$",
+            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
             "x-id-format": "external",
             "x-go-name": "ParentID",
             "x-oapi-codegen-extra-tags": {
@@ -4695,7 +4695,7 @@ const EventSchema: Record<string, unknown> = {
                   "description": "W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId).",
                   "minLength": 32,
                   "maxLength": 32,
-                  "pattern": "^[0-9a-f]{32}$",
+                  "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                   "x-id-format": "external",
                   "x-go-name": "TraceID",
                   "x-oapi-codegen-extra-tags": {
@@ -4707,7 +4707,7 @@ const EventSchema: Record<string, unknown> = {
                   "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId).",
                   "minLength": 16,
                   "maxLength": 16,
-                  "pattern": "^[0-9a-f]{16}$",
+                  "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
                   "x-id-format": "external",
                   "x-go-name": "ParentID",
                   "x-oapi-codegen-extra-tags": {
@@ -5698,7 +5698,6 @@ const EventSchema: Record<string, unknown> = {
           "suggestedRemediation": {
             "type": "array",
             "description": "The flat list of remediation descriptions (MeshKit's `SuggestedRemediation`). With `probableCauses`, it equals every remediation's `description` in order, each remediation `id` once; without, it is unpaired.\n",
-            "maxItems": 50,
             "items": {
               "type": "string",
               "minLength": 1,
