@@ -147,16 +147,25 @@ func TestErrorConstructHasNoEndpointsOrServerFields(t *testing.T) {
 	}
 }
 
-// TestActionPolicyIsTheThreePublishedValues pins the policy enum, its manual
-// default, and that both a cause and a remediation require a stable id.
+// TestActionPolicyIsTheThreePublishedValues pins the policy enum, that the
+// schema promises no default, and that both a cause and a remediation require
+// a stable id. A remediation that omits the policy still validates; readers
+// treat that omission as manual.
 func TestActionPolicyIsTheThreePublishedValues(t *testing.T) {
 	spec := loadYAMLMap(t, errorSpec)
 	policy, _ := mustLookup(t, spec, "components", "schemas", "ActionPolicy").(map[string]any)
 	if got, want := policy["enum"], []any{"automatic", "requiresApproval", "manual"}; !reflect.DeepEqual(got, want) {
 		t.Errorf("ActionPolicy enum = %v, want %v", got, want)
 	}
-	if policy["default"] != "manual" {
-		t.Errorf("ActionPolicy default = %v, want manual: an omitted policy never runs anything", policy["default"])
+	if _, ok := policy["default"]; ok {
+		t.Errorf("ActionPolicy default = %v, want none: an omitted policy stays omitted on the wire", policy["default"])
+	}
+	doc := loadSpec(t, errorSpec)
+	if err := schemaOf(t, doc, "Remediation").VisitJSON(map[string]any{
+		"id":          "check-network",
+		"description": "Check that Meshery Server can reach the cluster.",
+	}); err != nil {
+		t.Errorf("remediation without actionPolicy does not validate: %v", err)
 	}
 	for name, want := range map[string][]string{
 		"ProbableCause": {"description", "id", "remediations"},

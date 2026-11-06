@@ -214,7 +214,6 @@ const ErrorcodeSchema: Record<string, unknown> = {
                           "requiresApproval",
                           "manual"
                         ],
-                        "default": "manual",
                         "x-enum-casing-exempt": true,
                         "x-enum-varnames": [
                           "ActionPolicyAutomatic",
@@ -387,7 +386,6 @@ const ErrorcodeSchema: Record<string, unknown> = {
                     "requiresApproval",
                     "manual"
                   ],
-                  "default": "manual",
                   "x-enum-casing-exempt": true,
                   "x-enum-varnames": [
                     "ActionPolicyAutomatic",
@@ -443,7 +441,6 @@ const ErrorcodeSchema: Record<string, unknown> = {
               "requiresApproval",
               "manual"
             ],
-            "default": "manual",
             "x-enum-casing-exempt": true,
             "x-enum-varnames": [
               "ActionPolicyAutomatic",
@@ -461,7 +458,6 @@ const ErrorcodeSchema: Record<string, unknown> = {
           "requiresApproval",
           "manual"
         ],
-        "default": "manual",
         "x-enum-casing-exempt": true,
         "x-enum-varnames": [
           "ActionPolicyAutomatic",
@@ -683,7 +679,6 @@ const ErrorcodeSchema: Record<string, unknown> = {
                                 "requiresApproval",
                                 "manual"
                               ],
-                              "default": "manual",
                               "x-enum-casing-exempt": true,
                               "x-enum-varnames": [
                                 "ActionPolicyAutomatic",

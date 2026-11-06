@@ -47,10 +47,9 @@ export interface components {
                     action?: string;
                     /**
                      * @description Whether a client may run `action` on its own. `automatic` and `requiresApproval` need an `action`. Omitted means `manual`.
-                     * @default manual
                      * @enum {string}
                      */
-                    actionPolicy: "automatic" | "requiresApproval" | "manual";
+                    actionPolicy?: "automatic" | "requiresApproval" | "manual";
                 }[];
             }[];
             /** @description The flat list of cause descriptions earlier consumers read (MeshKit's `ProbableCause`). When `probableCauses` is present it equals each cause's `description`, in order. Without `probableCauses` it is the definition's only record of its causes, and nothing pairs an entry with an entry of `suggestedRemediation`. */
@@ -91,10 +90,9 @@ export interface components {
                 action?: string;
                 /**
                  * @description Whether a client may run `action` on its own. `automatic` and `requiresApproval` need an `action`. Omitted means `manual`.
-                 * @default manual
                  * @enum {string}
                  */
-                actionPolicy: "automatic" | "requiresApproval" | "manual";
+                actionPolicy?: "automatic" | "requiresApproval" | "manual";
             }[];
         };
         /** @description One remediation for a probable cause: what to do, and optionally a machine-readable action a client may run and the policy that says whether it may run it without asking a person. */
@@ -107,14 +105,12 @@ export interface components {
             action?: string;
             /**
              * @description Whether a client may run `action` on its own. `automatic` and `requiresApproval` need an `action`. Omitted means `manual`.
-             * @default manual
              * @enum {string}
              */
-            actionPolicy: "automatic" | "requiresApproval" | "manual";
+            actionPolicy?: "automatic" | "requiresApproval" | "manual";
         };
         /**
          * @description Whether a client may apply a remediation on its own. `automatic`: the client may run the remediation's `action` without asking and then tells the person it did. `requiresApproval`: the client runs the `action` only after a person approves it. `manual`: a person applies the remediation; a client shows it and never runs anything. An omitted policy is `manual`, and a reader treats a policy it does not know as `manual`, so a remediation is never run by mistake.
-         * @default manual
          * @enum {string}
          */
         ActionPolicy: "automatic" | "requiresApproval" | "manual";
@@ -170,10 +166,9 @@ export interface components {
                         action?: string;
                         /**
                          * @description Whether a client may run `action` on its own. `automatic` and `requiresApproval` need an `action`. Omitted means `manual`.
-                         * @default manual
                          * @enum {string}
                          */
-                        actionPolicy: "automatic" | "requiresApproval" | "manual";
+                        actionPolicy?: "automatic" | "requiresApproval" | "manual";
                     }[];
                 }[];
                 /** @description The flat list of cause descriptions earlier consumers read (MeshKit's `ProbableCause`). When `probableCauses` is present it equals each cause's `description`, in order. Without `probableCauses` it is the definition's only record of its causes, and nothing pairs an entry with an entry of `suggestedRemediation`. */

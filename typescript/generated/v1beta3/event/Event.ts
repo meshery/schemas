@@ -227,7 +227,7 @@ export interface components {
             idempotencyKey?: string;
             /** @description Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates. */
             correlationKey?: string;
-            /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending. A call that identifies no user stores this value exactly as sent, including when it is omitted. For a call that identifies a user, omitted means 1. Such a correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted. */
+            /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending. A create without a `correlationKey`, and a call that identifies no user, stores this value exactly as sent, including when it is omitted. For a call that identifies a user and carries a `correlationKey`, omitted means 1. An opening create stores that count, counting an open condition adds it, and an already-resolved insert stores it. A resolving create on that open event does not add it. */
             occurrenceCount?: number;
             /**
              * Format: date-time
@@ -357,7 +357,7 @@ export interface components {
             createdAt?: string;
             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
             correlationKey?: string;
-            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it. */
+            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it. */
             occurrenceCount?: number;
             /**
              * Format: date-time
@@ -493,7 +493,7 @@ export interface components {
             deletedAt?: string | null;
             /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
             correlationKey?: string;
-            /** @description How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count. */
+            /** @description How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. */
             occurrenceCount?: number;
             /**
              * Format: date-time
@@ -584,7 +584,7 @@ export interface components {
                 createdAt?: string;
                 /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                 correlationKey?: string;
-                /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it. */
+                /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it. */
                 occurrenceCount?: number;
                 /**
                  * Format: date-time
@@ -974,10 +974,9 @@ export interface components {
                     action?: string;
                     /**
                      * @description Whether a client may run `action` on its own. `automatic` and `requiresApproval` need an `action`. Omitted means `manual`.
-                     * @default manual
                      * @enum {string}
                      */
-                    actionPolicy: "automatic" | "requiresApproval" | "manual";
+                    actionPolicy?: "automatic" | "requiresApproval" | "manual";
                 }[];
             }[];
             /** @description The causes most likely for this occurrence, most likely first, so a reader leads with their remediations. Each names a cause `id` of the definition and, when `probableCauses` is present, one of its causes. Omitted when the producer cannot tell which cause applies. */
@@ -1621,7 +1620,7 @@ export interface operations {
                             createdAt?: string;
                             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                             correlationKey?: string;
-                            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it. */
+                            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it. */
                             occurrenceCount?: number;
                             /**
                              * Format: date-time
@@ -1883,7 +1882,7 @@ export interface operations {
                     idempotencyKey?: string;
                     /** @description Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates. */
                     correlationKey?: string;
-                    /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending. A call that identifies no user stores this value exactly as sent, including when it is omitted. For a call that identifies a user, omitted means 1. Such a correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted. */
+                    /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending. A create without a `correlationKey`, and a call that identifies no user, stores this value exactly as sent, including when it is omitted. For a call that identifies a user and carries a `correlationKey`, omitted means 1. An opening create stores that count, counting an open condition adds it, and an already-resolved insert stores it. A resolving create on that open event does not add it. */
                     occurrenceCount?: number;
                     /**
                      * Format: date-time
@@ -1998,7 +1997,7 @@ export interface operations {
                         deletedAt?: string | null;
                         /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
                         correlationKey?: string;
-                        /** @description How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count. */
+                        /** @description How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. */
                         occurrenceCount?: number;
                         /**
                          * Format: date-time
@@ -2110,7 +2109,7 @@ export interface operations {
                         deletedAt?: string | null;
                         /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
                         correlationKey?: string;
-                        /** @description How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count. */
+                        /** @description How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. */
                         occurrenceCount?: number;
                         /**
                          * Format: date-time
@@ -2284,7 +2283,7 @@ export interface operations {
                             createdAt?: string;
                             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                             correlationKey?: string;
-                            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it. */
+                            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it. */
                             occurrenceCount?: number;
                             /**
                              * Format: date-time

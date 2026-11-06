@@ -11195,7 +11195,7 @@ const DesignSchema: Record<string, unknown> = {
                           },
                           "occurrenceCount": {
                             "type": "integer",
-                            "description": "How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
+                            "description": "How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.\n",
                             "minimum": 1,
                             "x-oapi-codegen-extra-tags": {
                               "db": "occurrence_count"
@@ -25590,7 +25590,7 @@ const DesignSchema: Record<string, unknown> = {
                 },
                 "occurrenceCount": {
                   "type": "integer",
-                  "description": "How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
+                  "description": "How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.\n",
                   "minimum": 1,
                   "x-oapi-codegen-extra-tags": {
                     "db": "occurrence_count"

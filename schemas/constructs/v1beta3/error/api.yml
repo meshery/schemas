@@ -199,7 +199,6 @@ components:
         - automatic
         - requiresApproval
         - manual
-      default: manual
       # MeshKit's ActionPolicy (meshery/meshkit#1138) and the issue that
       # defines this construct (meshery/schemas#1334) both spell the value
       # `requiresApproval`; the published spelling is the contract.

@@ -220,7 +220,7 @@ type Event struct {
 	// CorrelationKey Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
 	CorrelationKey *string `db:"correlation_key" json:"correlationKey,omitempty" yaml:"correlationKey,omitempty"`
 
-	// OccurrenceCount How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.
+	// OccurrenceCount How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
 	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 
 	// FirstSeenAt When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
@@ -381,7 +381,7 @@ type EventPayload struct {
 	// LastSeenAt When the producer last saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition, or while closing one, means the time of receipt; and omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
 	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// OccurrenceCount Number of occurrences this create reports, for a producer that counted repeats locally before sending. A call that identifies no user stores this value exactly as sent, including when it is omitted. For a call that identifies a user, omitted means 1. Such a correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted.
+	// OccurrenceCount Number of occurrences this create reports, for a producer that counted repeats locally before sending. A create without a `correlationKey`, and a call that identifies no user, stores this value exactly as sent, including when it is omitted. For a call that identifies a user and carries a `correlationKey`, omitted means 1. An opening create stores that count, counting an open condition adds it, and an already-resolved insert stores it. A resolving create on that open event does not add it.
 	OccurrenceCount *int `json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 
 	// Owner UUID of the user associated with the event.
@@ -457,7 +457,7 @@ type EventResult struct {
 	// Metadata Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError.
 	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
 
-	// OccurrenceCount How many occurrences of the condition the event counts (see Event.occurrenceCount). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
+	// OccurrenceCount How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
 	OccurrenceCount *int    `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 	OperationID     core.Id `db:"operation_id" json:"operationId,omitempty" yaml:"operationId,omitempty"`
 

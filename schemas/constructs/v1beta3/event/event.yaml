@@ -108,12 +108,14 @@ properties:
     type: integer
     description: >
       How many occurrences of the condition the event counts (see
-      Event.occurrenceCount). A call that identifies no user stores the
-      payload's value exactly as sent. For a call that identifies a user, it
-      is the payload's `occurrenceCount` (1 when omitted) when the event was
-      recorded, opening a condition or inserted already resolved, growing
-      only as later creates that do not resolve are counted. A resolving
-      create on the open event does not add to it.
+      Event.occurrenceCount). A create without a `correlationKey`, and a
+      call that identifies no user, stores the payload's value exactly as
+      sent, so an omitted count stays omitted. For a call that identifies a
+      user and carries a `correlationKey`, it is the payload's
+      `occurrenceCount` (1 when omitted) when the event was recorded,
+      opening a condition or inserted already resolved, growing only as
+      later creates that do not resolve are counted. A resolving create on
+      the open event does not add to it.
     minimum: 1
     x-oapi-codegen-extra-tags:
       db: occurrence_count
