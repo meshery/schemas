@@ -123,6 +123,9 @@ type Preference struct {
 	// SelectedWorkspaceForOrganizations The selected workspace for organizations of the preference.
 	SelectedWorkspaceForOrganizations map[string]string `json:"selectedWorkspaceForOrganizations" yaml:"selectedWorkspaceForOrganizations"`
 
+	// ShareActivityPublicly Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten.
+	ShareActivityPublicly *bool `json:"shareActivityPublicly,omitempty" yaml:"shareActivityPublicly,omitempty"`
+
 	// UpdatedAt Timestamp of when the resource was last updated.
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 
@@ -158,6 +161,9 @@ type PreferencePayload struct {
 
 	// SelectedWorkspaceForOrganizations The selected workspace for organizations of the preference.
 	SelectedWorkspaceForOrganizations *map[string]string `json:"selectedWorkspaceForOrganizations,omitempty" yaml:"selectedWorkspaceForOrganizations,omitempty"`
+
+	// ShareActivityPublicly Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten.
+	ShareActivityPublicly *bool `json:"shareActivityPublicly,omitempty" yaml:"shareActivityPublicly,omitempty"`
 
 	// UsersExtensionPreferences The users extension preferences of the preference.
 	UsersExtensionPreferences *map[string]interface{} `json:"usersExtensionPreferences,omitempty" yaml:"usersExtensionPreferences,omitempty"`

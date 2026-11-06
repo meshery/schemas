@@ -843,6 +843,10 @@ const UserSchema: Record<string, unknown> = {
                     "type": "boolean",
                     "description": "The anonymous usage stats of the preference."
                   },
+                  "shareActivityPublicly": {
+                    "type": "boolean",
+                    "description": "Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten."
+                  },
                   "anonymousPerfResults": {
                     "type": "boolean",
                     "description": "The anonymous perf results of the preference."
@@ -1318,6 +1322,10 @@ const UserSchema: Record<string, unknown> = {
               "anonymousUsageStats": {
                 "type": "boolean",
                 "description": "The anonymous usage stats of the preference."
+              },
+              "shareActivityPublicly": {
+                "type": "boolean",
+                "description": "Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten."
               },
               "anonymousPerfResults": {
                 "type": "boolean",
@@ -2683,6 +2691,10 @@ const UserSchema: Record<string, unknown> = {
             "type": "boolean",
             "description": "The anonymous usage stats of the preference."
           },
+          "shareActivityPublicly": {
+            "type": "boolean",
+            "description": "Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten."
+          },
           "anonymousPerfResults": {
             "type": "boolean",
             "description": "The anonymous perf results of the preference."
@@ -2852,6 +2864,10 @@ const UserSchema: Record<string, unknown> = {
           "anonymousUsageStats": {
             "type": "boolean",
             "description": "The anonymous usage stats of the preference."
+          },
+          "shareActivityPublicly": {
+            "type": "boolean",
+            "description": "Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten."
           },
           "anonymousPerfResults": {
             "type": "boolean",

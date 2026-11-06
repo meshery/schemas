@@ -12,6 +12,40 @@ import (
 	"github.com/meshery/schemas/models/core"
 )
 
+// Defines values for EventFeedItemPlatform.
+const (
+	EventFeedItemPlatformBluesky    EventFeedItemPlatform = "bluesky"
+	EventFeedItemPlatformGithub     EventFeedItemPlatform = "github"
+	EventFeedItemPlatformHackerNews EventFeedItemPlatform = "hacker-news"
+	EventFeedItemPlatformLinkedin   EventFeedItemPlatform = "linkedin"
+	EventFeedItemPlatformReddit     EventFeedItemPlatform = "reddit"
+	EventFeedItemPlatformSlack      EventFeedItemPlatform = "slack"
+	EventFeedItemPlatformX          EventFeedItemPlatform = "x"
+)
+
+// Defines values for EventResultVisibility.
+const (
+	EventResultVisibilityPrivate EventResultVisibility = "private"
+	EventResultVisibilityPublic  EventResultVisibility = "public"
+)
+
+// Defines values for EventVisibility.
+const (
+	EventVisibilityPrivate EventVisibility = "private"
+	EventVisibilityPublic  EventVisibility = "public"
+)
+
+// Defines values for ScheduleCompletedEventMetadataPlatform.
+const (
+	ScheduleCompletedEventMetadataPlatformBluesky    ScheduleCompletedEventMetadataPlatform = "bluesky"
+	ScheduleCompletedEventMetadataPlatformGithub     ScheduleCompletedEventMetadataPlatform = "github"
+	ScheduleCompletedEventMetadataPlatformHackerNews ScheduleCompletedEventMetadataPlatform = "hacker-news"
+	ScheduleCompletedEventMetadataPlatformLinkedin   ScheduleCompletedEventMetadataPlatform = "linkedin"
+	ScheduleCompletedEventMetadataPlatformReddit     ScheduleCompletedEventMetadataPlatform = "reddit"
+	ScheduleCompletedEventMetadataPlatformSlack      ScheduleCompletedEventMetadataPlatform = "slack"
+	ScheduleCompletedEventMetadataPlatformX          ScheduleCompletedEventMetadataPlatform = "x"
+)
+
 // Defines values for EventsScope.
 const (
 	Organization EventsScope = "organization"
@@ -156,7 +190,7 @@ type Event struct {
 	Description string  `db:"description" json:"description" yaml:"description"`
 	ID          core.Id `db:"id" json:"id" yaml:"id"`
 
-	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
 	Metadata    core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
 	OperationID core.Id  `db:"operation_id" json:"operationId" yaml:"operationId"`
 
@@ -173,9 +207,77 @@ type Event struct {
 	Status    string        `db:"status" json:"status" yaml:"status"`
 	SystemID  core.SystemId `db:"system_id" json:"systemId" yaml:"systemId"`
 	UpdatedAt core.Time     `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility EventVisibility `db:"visibility" json:"visibility" yaml:"visibility"`
 }
 
-// EventPayload Payload for creating a new event.
+// EventFeedItem An event projected into the public feed. It never includes email,
+// firstName, lastName, description, provider or raw metadata.
+// `platform`, `role`, `line` and `networks` are projected from
+// ScheduleCompletedEventMetadata; events without valid required
+// metadata are skipped. Public profile fields are resolved by Cloud at
+// read time and are included only when the user's profile is public.
+type EventFeedItem struct {
+	ID core.Id `json:"id" yaml:"id"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserId core.Uuid `json:"userId" yaml:"userId"`
+
+	// Category Event category.
+	Category string `json:"category" yaml:"category"`
+
+	// Action Event action.
+	Action    string    `json:"action" yaml:"action"`
+	CreatedAt core.Time `json:"createdAt" yaml:"createdAt"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility EventVisibility `json:"visibility" yaml:"visibility"`
+
+	// Platform Platform from ScheduleCompletedEventMetadata.
+	Platform EventFeedItemPlatform `json:"platform" yaml:"platform"`
+
+	// Role Role from ScheduleCompletedEventMetadata.
+	Role string `json:"role" yaml:"role"`
+
+	// Line One-line result from ScheduleCompletedEventMetadata.
+	Line string `json:"line" yaml:"line"`
+
+	// Networks Networks from ScheduleCompletedEventMetadata, when present.
+	Networks *[]string `json:"networks,omitempty" yaml:"networks,omitempty"`
+
+	// DisplayName Public username, never a real name; present only for a public profile.
+	DisplayName *string `json:"displayName,omitempty" yaml:"displayName,omitempty"`
+
+	// AvatarURL Public avatar URL; present only for a public profile.
+	AvatarURL *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// OrganizationName Public organization name; present only for a public profile.
+	OrganizationName *string `json:"organizationName,omitempty" yaml:"organizationName,omitempty"`
+
+	// PublicProfileURL HTTPS URL of the user's public profile.
+	PublicProfileURL *string `json:"publicProfileUrl,omitempty" yaml:"publicProfileUrl,omitempty"`
+}
+
+// EventFeedItemPlatform Platform from ScheduleCompletedEventMetadata.
+type EventFeedItemPlatform string
+
+// EventFeedPage One page of event feed items, newest first.
+type EventFeedPage struct {
+	// Data Events for the requested page, newest first.
+	Data []EventFeedItem `json:"data" yaml:"data"`
+
+	// Page Current page number of the result set.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of items per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of matching feed events.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
+// EventPayload Payload for creating a new event. If visibility is absent, the event is private.
 type EventPayload struct {
 	// Action The action of the event.
 	Action *string `json:"action,omitempty" yaml:"action,omitempty"`
@@ -190,7 +292,10 @@ type EventPayload struct {
 	IdempotencyKey *string `json:"idempotencyKey,omitempty" yaml:"idempotencyKey,omitempty"`
 
 	// Owner UUID of the user associated with the event.
-	Owner                *uuid.UUID             `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	Owner *uuid.UUID `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility      *EventVisibility       `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
@@ -198,6 +303,9 @@ type EventPayload struct {
 type EventResult struct {
 	// Action The action of the event.
 	Action string `json:"action" yaml:"action"`
+
+	// AvatarUrl URL to the avatar image of the user associated with the event.
+	AvatarUrl *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
 
 	// Category The category of the event.
 	Category string `json:"category" yaml:"category"`
@@ -228,7 +336,13 @@ type EventResult struct {
 
 	// SystemId System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
 	SystemId string `db:"system_id" json:"systemId" yaml:"systemId"`
+
+	// Visibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+	Visibility EventResultVisibility `db:"visibility" json:"visibility" yaml:"visibility"`
 }
+
+// EventResultVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+type EventResultVisibility string
 
 // EventSummary Per-user event summary entry.
 type EventSummary map[string]interface{}
@@ -256,6 +370,9 @@ type EventType struct {
 	// Category The category of the event type.
 	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
 }
+
+// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+type EventVisibility string
 
 // EventsAggregate Aggregated event counts across categories.
 type EventsAggregate struct {
@@ -312,6 +429,24 @@ type RelationshipEvaluationEventMetadata struct {
 	ViewLink *string `json:"viewLink,omitempty" yaml:"viewLink,omitempty"`
 }
 
+// ScheduleCompletedEventMetadata Metadata for a completed scheduled run (category `schedule`, action `completed`). This typed shape keeps client-specific display data out of the core Event fields and is projected into EventFeedItem.
+type ScheduleCompletedEventMetadata struct {
+	// Line One-line result of the run.
+	Line string `json:"line" yaml:"line"`
+
+	// Networks Networks or communities where the run acted.
+	Networks *[]string `json:"networks,omitempty" yaml:"networks,omitempty"`
+
+	// Platform Platform the completed run acted on.
+	Platform ScheduleCompletedEventMetadataPlatform `json:"platform" yaml:"platform"`
+
+	// Role Role the completed run acted in.
+	Role string `json:"role" yaml:"role"`
+}
+
+// ScheduleCompletedEventMetadataPlatform Platform the completed run acted on.
+type ScheduleCompletedEventMetadataPlatform string
+
 // UpdateEventStatusRequest Payload for updating the status of a single event.
 type UpdateEventStatusRequest struct {
 	// Status Current status of the event.
@@ -342,6 +477,15 @@ type Filter = string
 // EventsScope defines model for eventsScope.
 type EventsScope string
 
+// FeedAction defines model for feedAction.
+type FeedAction = string
+
+// FeedCategory defines model for feedCategory.
+type FeedCategory = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = int
+
 // Order defines model for order.
 type Order = string
 
@@ -351,8 +495,8 @@ type Page = int
 // PageSize defines model for pageSize.
 type PageSize = int
 
-// Pagesize defines model for pagesize.
-type Pagesize = int
+// CorePagesize defines model for pagesize.
+type CorePagesize = int
 
 // PagesizeLegacy defines model for pagesizeLegacy.
 type PagesizeLegacy = int
@@ -434,6 +578,14 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "owner")
 	}
 
+	if raw, found := object["visibility"]; found {
+		err = json.Unmarshal(raw, &a.EventVisibility)
+		if err != nil {
+			return fmt.Errorf("error reading 'visibility': %w", err)
+		}
+		delete(object, "visibility")
+	}
+
 	if len(object) != 0 {
 		a.AdditionalProperties = make(map[string]interface{})
 		for fieldName, fieldBuf := range object {
@@ -485,6 +637,13 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		object["owner"], err = json.Marshal(a.Owner)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'owner': %w", err)
+		}
+	}
+
+	if a.EventVisibility != nil {
+		object["visibility"], err = json.Marshal(a.EventVisibility)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'visibility': %w", err)
 		}
 	}
 
