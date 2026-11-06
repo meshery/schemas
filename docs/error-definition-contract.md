@@ -162,9 +162,14 @@ Version `1` is the flat format the docs build first published (entries with
 `probableCause` and `suggestedRemediation` strings); a reader reads it as
 unpaired definitions.
 
-A component's nested export from MeshKit's `errorutil` (`*_errors_export.json`)
-uses the same format, holding that component's definitions. `referenceUrl` may
-be absent there, because the docs build assigns it when it merges the exports.
+A component's nested export from MeshKit's `errorutil` is a new file,
+`*_errors_index.json`, in the same format, holding that component's
+definitions. `referenceUrl` may be absent there, because the docs build assigns
+it when it merges the exports. The legacy `*_errors_export.json` is unchanged:
+it keeps its snake_case `errors_export` shape (`component_name`,
+`component_type`, and `errors` keyed by code, with joined `probable_cause` and
+`suggested_remediation` strings), because the docs error-codes workflow and its
+Hugo shortcodes read it. It is not an `ErrorReferenceIndex`.
 `ErrorReferenceIndex.Validate` (Go) and `validateErrorReferenceIndex`
 (TypeScript) check each definition and that no code repeats. The published
 index also needs every `referenceUrl`; pass `requireReferenceUrl`.
@@ -212,8 +217,10 @@ as `Event`, because `metadata` is free-form.
 - **MeshKit** (meshery/meshkit#1138): `Cause`, `Remediation` and
   `ActionPolicy` carry the fields above, with JSON names matching this
   schema, and switch to `errorcode` types once released. `GetCause` and
-  `GetRemedy` return the derived flat lists. `errorutil` exports each
-  definition as an `ErrorDefinition`.
+  `GetRemedy` return the derived flat lists. `errorutil` writes the
+  component's definitions to `*_errors_index.json` as an
+  `ErrorReferenceIndex`, and keeps writing the legacy `*_errors_export.json`
+  unchanged.
 - **Meshery Server** sends `metadata.error` as an `EventError`, with
   `matchedCauses` when it can tell which cause applies.
 - **docs.meshery.io** (meshery/meshery#22743) publishes `index.json` as an

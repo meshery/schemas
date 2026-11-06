@@ -305,9 +305,10 @@ func TestErrorReferenceIndexTemplateValidates(t *testing.T) {
 		body    map[string]any
 		wantErr bool
 	}{
-		{"version 1", map[string]any{"schemaVersion": 1, "errors": []any{}}, true},
-		{"without errors", map[string]any{"schemaVersion": 2}, true},
-		{"empty index", map[string]any{"schemaVersion": 2, "errors": []any{}}, false},
+		// JSON numbers decode as float64, which is what the enum holds.
+		{"version 1", map[string]any{"schemaVersion": 1.0, "errors": []any{}}, true},
+		{"without errors", map[string]any{"schemaVersion": 2.0}, true},
+		{"empty index", map[string]any{"schemaVersion": 2.0, "errors": []any{}}, false},
 	})
 }
 

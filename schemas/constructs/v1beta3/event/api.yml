@@ -689,7 +689,10 @@ components:
             and `id` are compatible with, when the producer sets them as
             CloudEvents attributes. A Meshery event is CloudEvents compatible;
             it is not a CloudEvent.
-          $ref: '#/components/schemas/EventSpecVersion'
+          type: string
+          enum:
+            - "1.0"
+          x-go-type: EventSpecVersion
           x-go-name: SpecVersion
           x-oapi-codegen-extra-tags:
             json: "specversion,omitempty"
@@ -1062,7 +1065,10 @@ components:
           x-order: 23
         specversion:
           description: The CloudEvents specification version the event is compatible with; see EventPayload.specversion.
-          $ref: '#/components/schemas/EventSpecVersion'
+          type: string
+          enum:
+            - "1.0"
+          x-go-type: EventSpecVersion
           x-go-name: SpecVersion
           x-oapi-codegen-extra-tags:
             db: specversion

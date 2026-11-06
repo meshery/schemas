@@ -7,7 +7,7 @@ description: >
   definition is not stored by any server and has no endpoints: the
   component that owns the code declares it in source (MeshKit's
   `errors.NewV3`), MeshKit's `errorutil` exports it to the component's
-  `*_errors_export.json`, and docs.meshery.io publishes every definition in
+  `*_errors_index.json`, and docs.meshery.io publishes every definition in
   an ErrorReferenceIndex. It therefore declares no `id`, `createdAt`,
   `updatedAt` or `deletedAt`; the code is its key. Causes and remediations
   are nested, never two parallel lists: each remediation sits under the

@@ -145,7 +145,10 @@ properties:
       db: type
   specversion:
     description: The CloudEvents specification version the event is compatible with (see Event.specversion).
-    $ref: ./api.yml#/components/schemas/EventSpecVersion
+    type: string
+    enum:
+      - "1.0"
+    x-go-type: EventSpecVersion
     x-go-name: SpecVersion
     x-oapi-codegen-extra-tags:
       db: specversion

@@ -7,8 +7,9 @@ info:
     remediations that answer it, and the index docs.meshery.io publishes of
     every definition (ErrorReferenceIndex). The construct has no endpoints:
     definitions live in each component's source, MeshKit's `errorutil`
-    exports them to `*_errors_export.json`, and the docs build publishes
-    them. An event that reports an error carries an instance of one
+    exports each component's definitions to `*_errors_index.json` (an
+    ErrorReferenceIndex; the legacy flat `*_errors_export.json` keeps its
+    snake_case shape beside it), and the docs build publishes them. An event that reports an error carries an instance of one
     definition as `metadata.error` (EventError, in the event construct). See
     docs/error-definition-contract.md.
   version: v1beta3
@@ -217,7 +218,7 @@ components:
         it lists every component's codes, and every entry carries its
         `referenceUrl`; tools and bots validate codes and link to their pages
         from it. The same format is a component's export in the nested form
-        (MeshKit's `errorutil`, `*_errors_export.json`): that component's
+        (MeshKit's `errorutil`, `*_errors_index.json`): that component's
         definitions, where `referenceUrl` may be absent because the docs
         build assigns it when it merges the exports. A code is identified by
         its component and code.
