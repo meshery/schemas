@@ -77,14 +77,11 @@ type ErrorDefinition struct {
 
 	// ReferenceURL The stable docs.meshery.io page for this code, for example `https://docs.meshery.io/reference/error-codes/component-meshery-server/errcreatinguuidinstancecode-1001/`. Always present in a published ErrorReferenceIndex; a component's export may omit it, because the docs build assigns it.
 	ReferenceURL *string `json:"referenceUrl,omitempty" yaml:"referenceUrl,omitempty"`
-
-	// Retired True when the component no longer emits the code. A retired code stays in the reference so its number is never reused and old links still resolve. Omitted (false) for a live code.
-	Retired *bool `json:"retired,omitempty" yaml:"retired,omitempty"`
 }
 
 // ErrorReferenceIndex A list of error definitions, each code once. Published by docs.meshery.io at `https://docs.meshery.io/reference/error-codes/index.json`, it lists every component's codes, and every entry carries its `referenceUrl`; tools and bots validate codes and link to their pages from it. The same format is a component's export in the nested form (MeshKit's `errorutil`, `*_errors_index.json`): that component's definitions, where `referenceUrl` may be absent because the docs build assigns it when it merges the exports. A code is identified by its component and code.
 type ErrorReferenceIndex struct {
-	// Errors The definitions, each code once; the published index orders them by `referenceUrl`. Retired codes stay, marked `retired`.
+	// Errors The definitions, each code once; the published index orders them by `referenceUrl`.
 	Errors []ErrorDefinition `json:"errors" yaml:"errors"`
 
 	// GeneratedAt When the docs build generated the index.

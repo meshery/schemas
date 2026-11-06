@@ -106,7 +106,10 @@ properties:
       db: correlation_key
   occurrenceCount:
     type: integer
-    description: How many occurrences of the condition the event counts (see Event.occurrenceCount).
+    description: >
+      How many occurrences of the condition the event counts: the creating
+      payload's `occurrenceCount` (1 when omitted), growing as later
+      occurrences are counted (see Event.occurrenceCount).
     minimum: 1
     x-oapi-codegen-extra-tags:
       db: occurrence_count

@@ -40,7 +40,6 @@ the code is its key. Nothing writes a definition over HTTP, so it has no
 | `probableCauses` | no | `ProbableCause[]`, most likely first. Omitted for a code declared with the flat `errors.New`. |
 | `probableCause`, `suggestedRemediation` | no | The flat lists (see [Flattening](#flattening)). |
 | `referenceUrl` | no | The code's docs page. Always present in the published index. |
-| `retired` | no | The code is no longer emitted. It stays listed so the number is never reused and links still resolve. |
 
 `ErrorSeverity` maps MeshKit's severities one to one: `Emergency` to
 `emergency`, `Alert` to `alert`, `Critical` to `critical`, `Fatal` to `fatal`.

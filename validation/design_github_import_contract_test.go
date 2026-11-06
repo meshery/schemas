@@ -340,8 +340,10 @@ func TestGithubImportResponseContract(t *testing.T) {
 // `required` holding the fields it writes without omitempty, plus
 // organizationId, which the server assigns and always returns. The
 // correlation, CloudEvents and trace context fields
-// (docs/event-correlation-contract.md) are optional: MeshKit's Event gains
-// them with omitempty (meshery/meshkit#1138), so they join omitEmpty.
+// (docs/event-correlation-contract.md) are optional. MeshKit's
+// models/events.Event adopts these optional fields in the MeshKit follow-up
+// to this schema release (companion to meshery/meshkit#1138), and this test
+// pins the schema contract MeshKit conforms to. They join omitEmpty.
 func TestEventMirrorsMeshkitEventWireShape(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), eventV1beta3Spec))
 	event := mustLookup(t, doc, "components", "schemas", "Event")

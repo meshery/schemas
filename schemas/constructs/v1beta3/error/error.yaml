@@ -147,11 +147,3 @@ properties:
     pattern: '^https://'
     x-go-name: ReferenceURL
     x-order: 11
-  retired:
-    type: boolean
-    description: >
-      True when the component no longer emits the code. A retired code
-      stays in the reference so its number is never reused and old links
-      still resolve. Omitted (false) for a live code.
-    x-go-name: Retired
-    x-order: 12

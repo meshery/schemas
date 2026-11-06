@@ -249,7 +249,7 @@ components:
           type: array
           description: >
             The definitions, each code once; the published index orders them
-            by `referenceUrl`. Retired codes stay, marked `retired`.
+            by `referenceUrl`.
           items:
             $ref: "#/components/schemas/ErrorDefinition"
           x-go-name: Errors

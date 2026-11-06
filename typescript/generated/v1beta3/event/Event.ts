@@ -110,7 +110,7 @@ export interface paths {
          *
          *     **Conditions (`correlationKey`).** A payload that carries a `correlationKey` reports an occurrence of an ongoing condition. A condition is open while its event has no `resolvedAt`, and the authenticated caller (organization and user, as for `idempotencyKey`) has at most one open event per key; the server enforces that atomically. A call that identifies no user records the event without correlating it. For a payload without `resolvedAt`: when the caller has an open event with the key, no event is recorded; that event's `occurrenceCount` grows by the payload's `occurrenceCount` (1 when omitted), its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and the answer is 200 with it (`Event-Disposition: incremented`). Every other field keeps the value it was first recorded with. Otherwise a new event is recorded, which opens the condition: `occurrenceCount` defaults to 1, `firstSeenAt` to the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt, and `lastSeenAt` to the payload's `lastSeenAt`, else `firstSeenAt` (201, `Event-Disposition: created`).
          *
-         *     **Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, that event gets the `resolvedAt`, nothing new is recorded, and the answer is 200 with the closed event (`Event-Disposition: resolved`). When none is open, the payload is recorded as a new, already resolved event (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.
+         *     **Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, nothing new is recorded: that event gets the `resolvedAt`, its `severity` and `description` become the payload's so the closed condition reads as cleared, its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with the closed event (`Event-Disposition: resolved`). Every other field keeps the value it was recorded with. When none is open, the payload is recorded as a new, already resolved event (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.
          *
          *     **Composition.** When a create that carries both keys does not replay, its `idempotencyKey` is bound to the event the create recorded, incremented or resolved, so a retry answers 200 with that event and changes nothing. Deduplication a server applies on its own, without a client key, must not swallow an occurrence of an event that carries a `correlationKey`: the occurrence counts. Whether a counted occurrence notifies anyone again is the reader's policy, not this operation's. See docs/event-correlation-contract.md.
          */
@@ -234,12 +234,12 @@ export interface components {
             firstSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the producer last saw the occurrences this create reports; omitted means the time of receipt.
+             * @description When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt.
              */
             lastSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, so the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+             * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
              */
             resolvedAt?: string;
             /**
@@ -355,7 +355,7 @@ export interface components {
             createdAt?: string;
             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
             correlationKey?: string;
-            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). */
+            /** @description How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount). */
             occurrenceCount?: number;
             /**
              * Format: date-time
@@ -458,7 +458,7 @@ export interface components {
             deletedAt?: string | null;
             /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
             correlationKey?: string;
-            /** @description How many occurrences of the condition this event counts: 1 when it was recorded, growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+            /** @description How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
             occurrenceCount?: number;
             /**
              * Format: date-time
@@ -472,7 +472,7 @@ export interface components {
             lastSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), after which a new occurrence opens a new event.
+             * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
              */
             resolvedAt?: string;
             /**
@@ -549,7 +549,7 @@ export interface components {
                 createdAt?: string;
                 /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                 correlationKey?: string;
-                /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). */
+                /** @description How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount). */
                 occurrenceCount?: number;
                 /**
                  * Format: date-time
@@ -1553,7 +1553,7 @@ export interface operations {
                             createdAt?: string;
                             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                             correlationKey?: string;
-                            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). */
+                            /** @description How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount). */
                             occurrenceCount?: number;
                             /**
                              * Format: date-time
@@ -1789,12 +1789,12 @@ export interface operations {
                     firstSeenAt?: string;
                     /**
                      * Format: date-time
-                     * @description When the producer last saw the occurrences this create reports; omitted means the time of receipt.
+                     * @description When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt.
                      */
                     lastSeenAt?: string;
                     /**
                      * Format: date-time
-                     * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, so the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+                     * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
                      */
                     resolvedAt?: string;
                     /**
@@ -1819,7 +1819,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description No new event was recorded. The answer is the existing event the create resolved to: the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt` (`resolved`). */
+            /** @description No new event was recorded. The answer is the existing event the create resolved to: the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's and its `lastSeenAt` brought forward (`resolved`). */
             200: {
                 headers: {
                     /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
@@ -1895,7 +1895,7 @@ export interface operations {
                         deletedAt?: string | null;
                         /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
                         correlationKey?: string;
-                        /** @description How many occurrences of the condition this event counts: 1 when it was recorded, growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+                        /** @description How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
                         occurrenceCount?: number;
                         /**
                          * Format: date-time
@@ -1909,7 +1909,7 @@ export interface operations {
                         lastSeenAt?: string;
                         /**
                          * Format: date-time
-                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), after which a new occurrence opens a new event.
+                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
                          */
                         resolvedAt?: string;
                         /**
@@ -2007,7 +2007,7 @@ export interface operations {
                         deletedAt?: string | null;
                         /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
                         correlationKey?: string;
-                        /** @description How many occurrences of the condition this event counts: 1 when it was recorded, growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+                        /** @description How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
                         occurrenceCount?: number;
                         /**
                          * Format: date-time
@@ -2021,7 +2021,7 @@ export interface operations {
                         lastSeenAt?: string;
                         /**
                          * Format: date-time
-                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), after which a new occurrence opens a new event.
+                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
                          */
                         resolvedAt?: string;
                         /**
@@ -2181,7 +2181,7 @@ export interface operations {
                             createdAt?: string;
                             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                             correlationKey?: string;
-                            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). */
+                            /** @description How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount). */
                             occurrenceCount?: number;
                             /**
                              * Format: date-time

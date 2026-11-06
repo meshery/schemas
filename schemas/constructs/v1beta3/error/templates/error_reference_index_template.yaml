@@ -1,20 +1,6 @@
 schemaVersion: 2
 generatedAt: '2026-11-06T00:00:00Z'
 errors:
-- code: meshery-server-1001
-  moniker: ErrCreatingUUIDInstanceCode
-  component:
-    type: component
-    name: meshery-server
-  numericCode: '1001'
-  severity: fatal
-  shortDescription: Unable to create UUID instance
-  probableCause:
-  - The system's random number source is unavailable.
-  suggestedRemediation:
-  - Restart Meshery Server.
-  referenceUrl: https://docs.meshery.io/reference/error-codes/component-meshery-server/errcreatinguuidinstancecode-1001/
-  retired: true
 - code: meshery-server-1033
   moniker: ErrKubernetesConnectionUnreachable
   component:

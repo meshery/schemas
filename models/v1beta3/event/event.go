@@ -220,7 +220,7 @@ type Event struct {
 	// CorrelationKey Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
 	CorrelationKey *string `db:"correlation_key" json:"correlationKey,omitempty" yaml:"correlationKey,omitempty"`
 
-	// OccurrenceCount How many occurrences of the condition this event counts: 1 when it was recorded, growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count.
+	// OccurrenceCount How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count.
 	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 
 	// FirstSeenAt When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
@@ -229,7 +229,7 @@ type Event struct {
 	// LastSeenAt When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// ResolvedAt When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), after which a new occurrence opens a new event.
+	// ResolvedAt When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
 	ResolvedAt *time.Time `db:"resolved_at" json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
 
 	// Source Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
@@ -378,7 +378,7 @@ type EventPayload struct {
 	// IdempotencyKey Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
 	IdempotencyKey *string `json:"idempotencyKey,omitempty" yaml:"idempotencyKey,omitempty"`
 
-	// LastSeenAt When the producer last saw the occurrences this create reports; omitted means the time of receipt.
+	// LastSeenAt When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt.
 	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
 	// OccurrenceCount Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. With a `correlationKey` it is added to the open condition's count.
@@ -390,7 +390,7 @@ type EventPayload struct {
 	// ParentID W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.
 	ParentID *string `json:"parentId,omitempty" yaml:"parentId,omitempty"`
 
-	// ResolvedAt When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, so the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+	// ResolvedAt When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
 	ResolvedAt *time.Time `json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
 
 	// Source Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
@@ -445,7 +445,7 @@ type EventResult struct {
 	// LastSeenAt When the condition's latest counted occurrence was seen.
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// OccurrenceCount How many occurrences of the condition the event counts (see Event.occurrenceCount).
+	// OccurrenceCount How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount).
 	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 
 	// OrganizationID The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.

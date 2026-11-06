@@ -299,7 +299,7 @@ func TestErrorDefinitionRejectsMalformedDefinitions(t *testing.T) {
 }
 
 // TestErrorReferenceIndexTemplateValidates checks the index sample: version 2,
-// each code once, every entry linked, and a retired legacy entry allowed.
+// each code once, and every entry linked.
 func TestErrorReferenceIndexTemplateValidates(t *testing.T) {
 	doc := loadSpec(t, errorSpec)
 	schema := schemaOf(t, doc, "ErrorReferenceIndex")

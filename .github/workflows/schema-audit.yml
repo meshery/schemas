@@ -60,6 +60,9 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
+      - name: Run generated-output guard tests
+        run: make test-generated-outputs
+
       - name: Generate Go models
         run: make generate-golang
 
@@ -71,9 +74,6 @@ jobs:
       # stale from a previous run.
       - name: Run RTK guard tests
         run: make test-rtk
-
-      - name: Run generated-output guard tests
-        run: make test-generated-outputs
 
       # `test-python` does not regenerate: it guards the committed pilot
       # client against its manifest (bundled-spec and generated-file

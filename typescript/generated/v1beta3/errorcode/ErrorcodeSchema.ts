@@ -261,12 +261,6 @@ const ErrorcodeSchema: Record<string, unknown> = {
             "pattern": "^https://",
             "x-go-name": "ReferenceURL",
             "x-order": 11
-          },
-          "retired": {
-            "type": "boolean",
-            "description": "True when the component no longer emits the code. A retired code stays in the reference so its number is never reused and old links still resolve. Omitted (false) for a live code.\n",
-            "x-go-name": "Retired",
-            "x-order": 12
           }
         }
       },
@@ -503,7 +497,7 @@ const ErrorcodeSchema: Record<string, unknown> = {
           },
           "errors": {
             "type": "array",
-            "description": "The definitions, each code once; the published index orders them by `referenceUrl`. Retired codes stay, marked `retired`.\n",
+            "description": "The definitions, each code once; the published index orders them by `referenceUrl`.\n",
             "items": {
               "type": "object",
               "additionalProperties": false,
@@ -736,12 +730,6 @@ const ErrorcodeSchema: Record<string, unknown> = {
                   "pattern": "^https://",
                   "x-go-name": "ReferenceURL",
                   "x-order": 11
-                },
-                "retired": {
-                  "type": "boolean",
-                  "description": "True when the component no longer emits the code. A retired code stays in the reference so its number is never reused and old links still resolve. Omitted (false) for a live code.\n",
-                  "x-go-name": "Retired",
-                  "x-order": 12
                 }
               }
             },

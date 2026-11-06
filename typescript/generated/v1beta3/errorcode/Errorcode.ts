@@ -62,8 +62,6 @@ export interface components {
              * @description The stable docs.meshery.io page for this code, for example `https://docs.meshery.io/reference/error-codes/component-meshery-server/errcreatinguuidinstancecode-1001/`. Always present in a published ErrorReferenceIndex; a component's export may omit it, because the docs build assigns it.
              */
             referenceUrl?: string;
-            /** @description True when the component no longer emits the code. A retired code stays in the reference so its number is never reused and old links still resolve. Omitted (false) for a live code. */
-            retired?: boolean;
         };
         /** @description The component that owns an error code: the `type` and `name` of its MeshKit `component_info.json`. Codes are unique only within one component. */
         ErrorComponent: {
@@ -132,7 +130,7 @@ export interface components {
              * @description When the docs build generated the index.
              */
             generatedAt?: string;
-            /** @description The definitions, each code once; the published index orders them by `referenceUrl`. Retired codes stay, marked `retired`. */
+            /** @description The definitions, each code once; the published index orders them by `referenceUrl`. */
             errors: {
                 /** @description The full error code, `<component name>-<numericCode>`, for example `meshery-server-1033`. Codes are scoped to the component that owns them and carry no meaning of their own, so a code is unique only together with its component and nothing may be derived from the number alone. */
                 code: string;
@@ -187,8 +185,6 @@ export interface components {
                  * @description The stable docs.meshery.io page for this code, for example `https://docs.meshery.io/reference/error-codes/component-meshery-server/errcreatinguuidinstancecode-1001/`. Always present in a published ErrorReferenceIndex; a component's export may omit it, because the docs build assigns it.
                  */
                 referenceUrl?: string;
-                /** @description True when the component no longer emits the code. A retired code stays in the reference so its number is never reused and old links still resolve. Omitted (false) for a live code. */
-                retired?: boolean;
             }[];
         };
     };

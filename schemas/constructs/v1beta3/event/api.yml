@@ -241,12 +241,17 @@ paths:
         **Resolution.** A producer closes a condition by creating an event
         with the condition's `correlationKey` and a `resolvedAt` time, after
         the condition clears. When the caller has an open event with the key,
-        that event gets the `resolvedAt`, nothing new is recorded, and the
-        answer is 200 with the closed event (`Event-Disposition: resolved`).
-        When none is open, the payload is recorded as a new, already resolved
-        event (201, `created`). Once closed, the next occurrence opens a new
-        condition with a new event. Send a resolution only when the condition
-        changes from present to cleared, never on every healthy check.
+        nothing new is recorded: that event gets the `resolvedAt`, its
+        `severity` and `description` become the payload's so the closed
+        condition reads as cleared, its `lastSeenAt` becomes the later of
+        its own and the payload's `lastSeenAt` (the time of receipt when
+        omitted), and its `updatedAt` advances. The answer is 200 with the
+        closed event (`Event-Disposition: resolved`). Every other field
+        keeps the value it was recorded with. When none is open, the payload
+        is recorded as a new, already resolved event (201, `created`). Once
+        closed, the next occurrence opens a new condition with a new event.
+        Send a resolution only when the condition changes from present to
+        cleared, never on every healthy check.
 
 
         **Composition.** When a create that carries both keys does not replay,
@@ -264,7 +269,9 @@ paths:
             create resolved to: the one already recorded under this caller's
             `idempotencyKey` (`replayed`, unchanged), the open event of this
             `correlationKey` with the occurrence counted (`incremented`), or
-            that event closed by the payload's `resolvedAt` (`resolved`).
+            that event closed by the payload's `resolvedAt`, with its
+            `severity` and `description` replaced by the payload's and its
+            `lastSeenAt` brought forward (`resolved`).
           headers:
             Event-Disposition:
               $ref: '#/components/headers/EventDisposition'
@@ -640,8 +647,9 @@ components:
           type: string
           format: date-time
           description: >
-            When the producer last saw the occurrences this create reports;
-            omitted means the time of receipt.
+            When the producer last saw the occurrences this create reports.
+            Omitted while opening a condition means `firstSeenAt`; omitted
+            while counting an open condition means the time of receipt.
           x-oapi-codegen-extra-tags:
             json: "lastSeenAt,omitempty"
         resolvedAt:
@@ -650,10 +658,14 @@ components:
           description: >
             When the condition named by `correlationKey` cleared. A create that
             carries it is a resolution: it closes the caller's open event with
-            that key, so the next occurrence opens a new condition (see
-            createEvent). Give the resolution a severity and description that
-            say what cleared, for example severity `success` and `Connection to
-            cluster prod-1 restored`, under the condition's category.
+            that key, copying this payload's `severity` and `description` onto
+            the event and setting `lastSeenAt` to the later of the stored time
+            and this payload's `lastSeenAt` (the time of receipt when omitted),
+            so the closed condition reads as cleared and the next occurrence
+            opens a new condition (see createEvent). Give the resolution a
+            severity and description that say what cleared, for example
+            severity `success` and `Connection to cluster prod-1 restored`,
+            under the condition's category.
           x-oapi-codegen-extra-tags:
             json: "resolvedAt,omitempty"
         source:
@@ -1007,9 +1019,10 @@ components:
         occurrenceCount:
           type: integer
           description: >
-            How many occurrences of the condition this event counts: 1 when it
-            was recorded, growing as createEvent counts later occurrences of
-            the open condition. Omitted for an event recorded without a
+            How many occurrences of the condition this event counts: the
+            payload's `occurrenceCount` when it was recorded (1 when that was
+            omitted), growing as createEvent counts later occurrences of the
+            open condition. Omitted for an event recorded without a
             `correlationKey` and no count.
           minimum: 1
           x-oapi-codegen-extra-tags:
@@ -1034,8 +1047,10 @@ components:
           format: date-time
           description: >
             When the condition cleared. Omitted while the condition is open;
-            set by a resolution (see createEvent), after which a new
-            occurrence opens a new event.
+            set by a resolution (see createEvent), which also replaces
+            `severity` and `description` with the payload's and brings
+            `lastSeenAt` forward, after which a new occurrence opens a new
+            event.
           x-oapi-codegen-extra-tags:
             db: resolved_at
           x-order: 21

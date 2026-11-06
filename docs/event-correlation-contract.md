@@ -16,9 +16,9 @@ alike. A producer that sends none of them sees no change.
 | Field | Type | DB column | Meaning |
 | --- | --- | --- | --- |
 | `correlationKey` | string, 1-255 | `correlation_key` | Names the condition (see [Choosing a key](#choosing-a-correlationkey)). |
-| `occurrenceCount` | integer, minimum 1 | `occurrence_count` | On a payload: how many occurrences this create reports (default 1). On an event: how many it counts. |
+| `occurrenceCount` | integer, minimum 1 | `occurrence_count` | On a payload: how many occurrences this create reports (default 1). On an event: that payload count when recorded (1 when omitted), growing as later occurrences are counted. |
 | `firstSeenAt` | date-time | `first_seen_at` | First counted occurrence. |
-| `lastSeenAt` | date-time | `last_seen_at` | Latest counted occurrence. |
+| `lastSeenAt` | date-time | `last_seen_at` | Latest counted occurrence. On a payload, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt. |
 | `resolvedAt` | date-time | `resolved_at` | When the condition cleared. Absent while it is open. |
 | `source` | string, `uri-reference`, 1-255 | `source` | Which surface emitted the event. |
 | `type` | string, 1-255 | `type` | CloudEvents-compatible type, for example `io.meshery.user.signup`. |
@@ -56,9 +56,13 @@ this order:
      `lastSeenAt` is the payload's `lastSeenAt`, else `firstSeenAt`. The
      answer is `201` (`created`).
 4. **`correlationKey` with `resolvedAt`**, a resolution:
-   - When the caller has an open event with that key, that event gets the
-     `resolvedAt` and its `updatedAt` advances. Nothing new is recorded. The
-     answer is `200` with the closed event (`resolved`).
+   - When the caller has an open event with that key, nothing new is
+     recorded. That event gets the `resolvedAt`. Its `severity` and
+     `description` become the payload's, so the closed condition reads as
+     cleared. Its `lastSeenAt` becomes the later of its own value and the
+     payload's `lastSeenAt` (the time of receipt when omitted). Its
+     `updatedAt` advances. Every other field keeps the value it was recorded
+     with. The answer is `200` with the closed event (`resolved`).
    - Otherwise the payload is recorded as a new event that is already
      resolved (`201`, `created`).
 5. **Binding.** When the create also carried an `idempotencyKey`, that key is
@@ -107,10 +111,16 @@ A producer closes a condition by creating an event with:
 - a severity and description that say what cleared, for example severity
   `success` and `Connection to cluster prod-1 restored`.
 
-It sends a resolution only when the condition changes from present to
-cleared, never on every healthy check: with no open condition, a resolution is
-recorded as its own already-resolved event. Once closed, the next occurrence
-opens a new condition with a new event and a new `firstSeenAt`.
+When the caller has an open event with that key, nothing new is recorded.
+The open event gets the `resolvedAt`, and its `severity` and `description`
+become the payload's, so the closed condition reads as cleared. Its
+`lastSeenAt` becomes the later of its own value and the payload's
+`lastSeenAt` (the time of receipt when omitted), and its `updatedAt`
+advances. It sends a resolution only when the condition changes from present
+to cleared, never on every healthy check: with no open condition, a
+resolution is recorded as its own already-resolved event. Once closed, the
+next occurrence opens a new condition with a new event and a new
+`firstSeenAt`.
 
 ## Choosing a `correlationKey`
 
@@ -161,8 +171,10 @@ the copy the server has already broadcast (meshery/meshery#20879).
 
 ## Consumers
 
-- **MeshKit** (meshery/meshkit#1138): `models/events.Event` gains these
-  fields with these JSON names, and the event builder lets producers set them.
+- **MeshKit**: `models/events.Event` adopts these optional fields, with these
+  JSON names, in the MeshKit follow-up to this schema release (companion to
+  meshery/meshkit#1138, which tracks errorutil remediations). The event
+  builder lets producers set them.
 - **Layer5 Cloud** persists the columns above, implements steps 1 to 5 on its
   `createEvent` handler, sends `Event-Disposition`, and stops its derived
   deduplication from swallowing correlated occurrences.
