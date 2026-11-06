@@ -55,9 +55,11 @@ opposite direction would create a package cycle. TypeScript follows `items.$ref`
 
 This listing is distinct from `EnvironmentConnectionMappingPage`, whose items
 describe environment-to-connection junction records for assignment operations.
-Run `node --test tests/environment-connections-response.test.js` to check schema
+Run `make test-rtk` to bundle the OpenAPI specs and check schema
 reuse and compile a consumer of freshly generated RTK response types, including
-rejected invalid IDs, names, statuses, and unknown properties.
+rejected invalid IDs, names, statuses, and unknown properties. Running
+`node --test tests/environment-connections-response.test.js` directly needs the
+bundled specs built first.
 
 ## Consumer audit
 

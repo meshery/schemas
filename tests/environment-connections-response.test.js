@@ -62,7 +62,7 @@ test("generated environment connection fields are checked rather than any", asyn
 for (const target of ["cloud", "meshery"]) {
   test(`generated ${target} RTK client preserves environment connection response types`, async () => {
     // `make test-rtk` builds both bundled specs before running this test.
-    const temporary = fs.mkdtempSync(path.join(root, "_openapi_build", `${target}-rtk-`));
+    const temporary = fs.mkdtempSync(path.join(os.tmpdir(), `${target}-rtk-`));
     try {
       const { default: config } = require(path.join(rtkDir, `${target}-rtk-config.ts`));
       await generateEndpoints({
@@ -90,7 +90,17 @@ type NameIsChecked = Assert<IsAny<Connection["name"]> extends false ? true : fal
 declare const connection: Connection;
 const id: string = connection.id;
 const name: string = connection.name;
-const status: Connection["status"] = "connected";
+const requiredStatus: string = connection.status;
+const statuses: Connection["status"][] = [
+  "discovered",
+  "registered",
+  "connected",
+  "ignored",
+  "maintenance",
+  "disconnected",
+  "deleted",
+  "not found",
+];
 // @ts-expect-error IDs are strings.
 const invalidId: Connection["id"] = 123;
 // @ts-expect-error Names are strings.
