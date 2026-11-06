@@ -16,10 +16,10 @@ alike. A producer that sends none of them sees no change.
 | Field | Type | DB column | Meaning |
 | --- | --- | --- | --- |
 | `correlationKey` | string, 1-255 | `correlation_key` | Names the condition (see [Choosing a key](#choosing-a-correlationkey)). |
-| `occurrenceCount` | integer, minimum 1 | `occurrence_count` | On a payload: how many occurrences this create reports (default 1). A correlated create that does not resolve adds that count; a resolving create on an open key does not. On an event: that count when recorded (1 when omitted), including an already-resolved insert, growing as later non-resolving creates are counted. |
-| `firstSeenAt` | date-time | `first_seen_at` | First counted occurrence. On a payload, omitted while opening a condition means `lastSeenAt`, else the time of receipt; omitted on an already-resolved insert means `resolvedAt`. A close keeps the stored time. |
-| `lastSeenAt` | date-time | `last_seen_at` | Latest time the condition was seen. On a payload, omitted while opening a condition means `firstSeenAt`; omitted while counting or closing an open condition means the time of receipt; omitted on an already-resolved insert means `resolvedAt`. |
-| `resolvedAt` | date-time | `resolved_at` | When the condition cleared. Absent while it is open. |
+| `occurrenceCount` | integer, minimum 1 | `occurrence_count` | On a payload: how many occurrences this create reports. A call that identifies no user stores it as sent. For a call that identifies a user, omitted means 1; a correlated create that does not resolve adds that count; a resolving create on an open key does not. On an event from such a call: that count when recorded (1 when omitted), including an already-resolved insert, growing as later non-resolving creates are counted. An event from a call that identifies no user keeps the sent value. |
+| `firstSeenAt` | date-time | `first_seen_at` | First counted occurrence. A call that identifies no user stores it as sent. For a call that identifies a user, omitted while opening a condition means `lastSeenAt`, else the time of receipt; omitted on an already-resolved insert means `resolvedAt`. A close keeps the stored time. |
+| `lastSeenAt` | date-time | `last_seen_at` | Latest time the condition was seen. A call that identifies no user stores it as sent. For a call that identifies a user, omitted while opening a condition means `firstSeenAt`; omitted while counting or closing an open condition means the time of receipt; omitted on an already-resolved insert means `resolvedAt`. |
+| `resolvedAt` | date-time | `resolved_at` | When the condition cleared. Absent while it is open. A call that identifies no user stores it as sent and does not close another event. |
 | `source` | string, `uri-reference`, 1-255 | `source` | Which surface emitted the event. |
 | `type` | string, 1-255 | `type` | CloudEvents-compatible type, for example `io.meshery.user.signup`. |
 | `specversion` | `"1.0"` | `specversion` | The CloudEvents version the event is compatible with. |
@@ -44,11 +44,15 @@ this order:
    with the event the key is bound to (`Event-Disposition: replayed`). This
    runs first, so a retried create never counts an occurrence twice.
 2. **No `correlationKey`**, or a call that identifies no user: a new event is
-   recorded (`201`, `created`). The correlation fields are stored as sent.
+   recorded (`201`, `created`). The correlation fields are stored exactly as
+   sent: no defaults are applied and no open event is matched. This step ends
+   the create. Steps 3 and 4 apply only to a call that identifies a user and
+   carries a `correlationKey`.
    A server MAY instead answer a legacy create, one carrying neither
    `correlationKey` nor `idempotencyKey`, with `200` and
    `Event-Disposition: created` (see [Event-Disposition](#event-disposition)).
-3. **`correlationKey` without `resolvedAt`**:
+3. **`correlationKey` without `resolvedAt`**, only when the call identifies a
+   user:
    - When the caller has an **open** event with that key (one with no
      `resolvedAt`), nothing new is recorded. The open event's
      `occurrenceCount` grows by the payload's `occurrenceCount` (1 when
@@ -61,7 +65,8 @@ this order:
      `firstSeenAt`, else its `lastSeenAt`, else the time of receipt.
      `lastSeenAt` is the payload's `lastSeenAt`, else `firstSeenAt`. The
      answer is `201` (`created`).
-4. **`correlationKey` with `resolvedAt`**, a resolution:
+4. **`correlationKey` with `resolvedAt`**, a resolution, only when the call
+   identifies a user:
    - When the caller has an open event with that key, nothing new is
      recorded. That event gets the `resolvedAt`. Its `severity` and
      `description` become the payload's when the payload carries them (an
@@ -87,21 +92,27 @@ most one open event per `correlationKey`. Servers enforce this atomically, for
 example with a unique index on (organization, user, `correlation_key`) over
 rows whose `resolved_at` is null, so two concurrent first occurrences cannot
 both open the condition. A call that identifies no user (such as the public
-token) records the event without correlating it.
+token) records a new event and stores the correlation fields exactly as sent
+(no defaults applied, no matching).
 
 ### Server-side deduplication
 
 A server may deduplicate events on its own, without a client key. Layer5
 Cloud, for example, derives an hourly key for `error` and `critical` events
 sent without an `idempotencyKey`. That deduplication must not swallow an
-occurrence of an event that carries a `correlationKey`: the occurrence counts
-instead (step 3).
+occurrence of an event that carries a `correlationKey`. A call that identifies
+a user counts the occurrence (step 3). A call that identifies no user is
+recorded as a new event with the correlation fields stored exactly as sent
+(step 2).
 
 ### `Event-Disposition`
 
 Every `200` and `201` from a server that implements correlation carries the
 `Event-Disposition` response header: `created`, `replayed`, `incremented` or
-`resolved`. A server MAY answer a legacy create, one carrying neither
+`resolved`. `incremented` and `resolved` apply only to a call that identifies
+a user; a call that identifies no user is `created`, with the correlation
+fields stored exactly as sent. A server MAY answer a legacy create, one
+carrying neither
 `correlationKey` nor `idempotencyKey`, with `200` and
 `Event-Disposition: created`, for compatibility with released Meshery Servers
 that treat any non-200 answer as failure. Clients accept any 2xx and read
@@ -126,7 +137,10 @@ A producer closes a condition by creating an event with:
 - a severity and description that say what cleared, for example severity
   `success` and `Connection to cluster prod-1 restored`.
 
-When the caller has an open event with that key, nothing new is recorded.
+These close and insert rules apply only to a call that identifies a user. A
+call that identifies no user records a new event and stores the correlation
+fields, including `resolvedAt`, exactly as sent. When a call that identifies a
+user has an open event with that key, nothing new is recorded.
 The open event gets the `resolvedAt`, and its `severity` and `description`
 become the payload's when the payload carries them (an omitted field keeps
 the stored value), so the closed condition reads as cleared. Its

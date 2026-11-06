@@ -107,11 +107,13 @@ properties:
   occurrenceCount:
     type: integer
     description: >
-      How many occurrences of the condition the event counts: the payload's
-      `occurrenceCount` (1 when omitted) when the event was recorded, opening
-      a condition or inserted already resolved, growing only as later creates
-      that do not resolve are counted. A resolving create on the open event
-      does not add to it (see Event.occurrenceCount).
+      How many occurrences of the condition the event counts (see
+      Event.occurrenceCount). A call that identifies no user stores the
+      payload's value exactly as sent. For a call that identifies a user, it
+      is the payload's `occurrenceCount` (1 when omitted) when the event was
+      recorded, opening a condition or inserted already resolved, growing
+      only as later creates that do not resolve are counted. A resolving
+      create on the open event does not add to it.
     minimum: 1
     x-oapi-codegen-extra-tags:
       db: occurrence_count
@@ -120,23 +122,29 @@ properties:
     format: date-time
     description: >
       When the condition's first counted occurrence was seen (see
-      Event.firstSeenAt). An already-resolved insert stores the payload's
-      `firstSeenAt`, else `resolvedAt`.
+      Event.firstSeenAt). A call that identifies no user stores the payload's
+      value exactly as sent. For a call that identifies a user, an
+      already-resolved insert stores the payload's `firstSeenAt`, else
+      `resolvedAt`.
     x-oapi-codegen-extra-tags:
       db: first_seen_at
   lastSeenAt:
     type: string
     format: date-time
     description: >
-      When the condition was last seen (see Event.lastSeenAt). An
-      already-resolved insert stores the payload's `lastSeenAt`, else
-      `resolvedAt`.
+      When the condition was last seen (see Event.lastSeenAt). A call that
+      identifies no user stores the payload's value exactly as sent. For a
+      call that identifies a user, an already-resolved insert stores the
+      payload's `lastSeenAt`, else `resolvedAt`.
     x-oapi-codegen-extra-tags:
       db: last_seen_at
   resolvedAt:
     type: string
     format: date-time
-    description: When the condition cleared; omitted while it is open (see Event.resolvedAt).
+    description: >
+      When the condition cleared (see Event.resolvedAt). A call that
+      identifies no user stores the payload's value exactly as sent. For a
+      call that identifies a user it is omitted while the condition is open.
     x-oapi-codegen-extra-tags:
       db: resolved_at
   source:

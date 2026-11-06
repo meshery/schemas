@@ -220,16 +220,16 @@ type Event struct {
 	// CorrelationKey Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
 	CorrelationKey *string `db:"correlation_key" json:"correlationKey,omitempty" yaml:"correlationKey,omitempty"`
 
-	// OccurrenceCount How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.
+	// OccurrenceCount How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.
 	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 
-	// FirstSeenAt When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.
+	// FirstSeenAt When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
 	FirstSeenAt *time.Time `db:"first_seen_at" json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
 
-	// LastSeenAt When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.
+	// LastSeenAt When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// ResolvedAt When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+	// ResolvedAt When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
 	ResolvedAt *time.Time `db:"resolved_at" json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
 
 	// Source Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
@@ -372,16 +372,16 @@ type EventPayload struct {
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
-	// FirstSeenAt When the producer first saw the occurrences this create reports. Omitted while opening a condition means `lastSeenAt`, or the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when the create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
+	// FirstSeenAt When the producer first saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `lastSeenAt`, or the time of receipt, and omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when that create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
 	FirstSeenAt *time.Time `json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
 
 	// IdempotencyKey Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
 	IdempotencyKey *string `json:"idempotencyKey,omitempty" yaml:"idempotencyKey,omitempty"`
 
-	// LastSeenAt When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`. Omitted while counting an open condition, or while closing one, means the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
+	// LastSeenAt When the producer last saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition, or while closing one, means the time of receipt; and omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
 	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// OccurrenceCount Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. A correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted.
+	// OccurrenceCount Number of occurrences this create reports, for a producer that counted repeats locally before sending. A call that identifies no user stores this value exactly as sent, including when it is omitted. For a call that identifies a user, omitted means 1. Such a correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted.
 	OccurrenceCount *int `json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 
 	// Owner UUID of the user associated with the event.
@@ -390,7 +390,7 @@ type EventPayload struct {
 	// ParentID W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.
 	ParentID *string `json:"parentId,omitempty" yaml:"parentId,omitempty"`
 
-	// ResolvedAt When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+	// ResolvedAt When the condition named by `correlationKey` cleared. A call that identifies no user stores this value exactly as sent and does not match an open event. For a call that identifies a user, a create that carries it is a resolution: it closes that caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
 	ResolvedAt *time.Time `json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
 
 	// Severity Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
@@ -444,20 +444,20 @@ type EventResult struct {
 	// FirstName The first name of the user associated with the event.
 	FirstName *string `json:"firstName,omitempty" yaml:"firstName,omitempty"`
 
-	// FirstSeenAt When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
+	// FirstSeenAt When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
 	FirstSeenAt *time.Time `db:"first_seen_at" json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
 	ID          core.Id    `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
-	// LastSeenAt When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
+	// LastSeenAt When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
 	// Metadata Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError.
 	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
 
-	// OccurrenceCount How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount).
+	// OccurrenceCount How many occurrences of the condition the event counts (see Event.occurrenceCount). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
 	OccurrenceCount *int    `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 	OperationID     core.Id `db:"operation_id" json:"operationId,omitempty" yaml:"operationId,omitempty"`
 
@@ -473,7 +473,7 @@ type EventResult struct {
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
 
-	// ResolvedAt When the condition cleared; omitted while it is open (see Event.resolvedAt).
+	// ResolvedAt When the condition cleared (see Event.resolvedAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user it is omitted while the condition is open.
 	ResolvedAt *time.Time `db:"resolved_at" json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
 
 	// Severity Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.

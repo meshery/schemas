@@ -11195,7 +11195,7 @@ const DesignSchema: Record<string, unknown> = {
                           },
                           "occurrenceCount": {
                             "type": "integer",
-                            "description": "How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
+                            "description": "How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
                             "minimum": 1,
                             "x-oapi-codegen-extra-tags": {
                               "db": "occurrence_count"
@@ -11205,7 +11205,7 @@ const DesignSchema: Record<string, unknown> = {
                           "firstSeenAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.\n",
+                            "description": "When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_seen_at"
                             },
@@ -11214,7 +11214,7 @@ const DesignSchema: Record<string, unknown> = {
                           "lastSeenAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.\n",
+                            "description": "When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_seen_at"
                             },
@@ -11223,7 +11223,7 @@ const DesignSchema: Record<string, unknown> = {
                           "resolvedAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.\n",
+                            "description": "When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "resolved_at"
                             },
@@ -25590,7 +25590,7 @@ const DesignSchema: Record<string, unknown> = {
                 },
                 "occurrenceCount": {
                   "type": "integer",
-                  "description": "How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
+                  "description": "How many occurrences of the condition this event counts. A call that identifies no user stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
                   "minimum": 1,
                   "x-oapi-codegen-extra-tags": {
                     "db": "occurrence_count"
@@ -25600,7 +25600,7 @@ const DesignSchema: Record<string, unknown> = {
                 "firstSeenAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.\n",
+                  "description": "When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.\n",
                   "x-oapi-codegen-extra-tags": {
                     "db": "first_seen_at"
                   },
@@ -25609,7 +25609,7 @@ const DesignSchema: Record<string, unknown> = {
                 "lastSeenAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.\n",
+                  "description": "When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.\n",
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_seen_at"
                   },
@@ -25618,7 +25618,7 @@ const DesignSchema: Record<string, unknown> = {
                 "resolvedAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.\n",
+                  "description": "When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.\n",
                   "x-oapi-codegen-extra-tags": {
                     "db": "resolved_at"
                   },
