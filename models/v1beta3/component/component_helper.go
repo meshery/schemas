@@ -3,15 +3,20 @@
 package component
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
 	core "github.com/meshery/schemas/models/core"
+	"gopkg.in/yaml.v3"
 	"gorm.io/gorm/clause"
 )
 
@@ -81,20 +86,92 @@ func (m *ComponentDefinition) UpdateStatus(db *database.Handler, status entity.E
 	return nil
 }
 
+// WriteComponentDefinition writes the component to componentDirPath as
+// <Kind>.<fileType> ("json" or "yaml"). It returns true, and writes nothing,
+// when the component is already there, so generating into an existing
+// directory is safe.
+//
+// Kubernetes allows the same Kind in different API groups, for example the
+// Gateway API HTTPRoute (gateway.networking.k8s.io) and Linkerd's HTTPRoute
+// (policy.linkerd.io). When <Kind>.<fileType> already holds a component from
+// another group, this component is written to <Kind>.<group>.<fileType>
+// instead, so neither is dropped. A component from the same group, in any
+// version, still counts as already there.
 func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, fileType string) (bool, error) {
 	if c.Component.Kind == "" {
 		return false, nil
 	}
 	componentPath := filepath.Join(componentDirPath, c.Component.Kind+"."+fileType)
-	if _, err := os.Stat(componentPath); err != nil {
-		if fileType == "yaml" {
-			err := utils.WriteYamlToFile[ComponentDefinition](componentPath, c)
-			return false, err
-		}
-		err := utils.WriteJSONToFile[ComponentDefinition](componentPath, c)
-		return false, err
+	existingGroup, err := apiGroupInFile(componentPath, fileType)
+	if errors.Is(err, fs.ErrNotExist) {
+		return false, c.writeToFile(componentPath, fileType)
 	}
-	return true, nil
+	group := apiGroup(c.Component.Version)
+	if err != nil || existingGroup == group {
+		// Same group, or a file that cannot be read (which has always been
+		// treated as present): nothing to write.
+		return true, nil
+	}
+
+	componentPath = filepath.Join(componentDirPath, c.Component.Kind+"."+groupFileLabel(group)+"."+fileType)
+	if _, err := os.Stat(componentPath); err == nil {
+		return true, nil
+	}
+	return false, c.writeToFile(componentPath, fileType)
+}
+
+func (c ComponentDefinition) writeToFile(path string, fileType string) error {
+	if fileType == "yaml" {
+		return utils.WriteYamlToFile[ComponentDefinition](path, c)
+	}
+	return utils.WriteJSONToFile[ComponentDefinition](path, c)
+}
+
+// apiGroupInFile returns the API group of the component stored at path.
+func apiGroupInFile(path string, fileType string) (string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	var stored struct {
+		Component struct {
+			Version string `json:"version" yaml:"version"`
+		} `json:"component" yaml:"component"`
+	}
+	if fileType == "yaml" {
+		err = yaml.Unmarshal(data, &stored)
+	} else {
+		err = json.Unmarshal(data, &stored)
+	}
+	if err != nil {
+		return "", err
+	}
+	return apiGroup(stored.Component.Version), nil
+}
+
+// apiGroup returns the API group of a Kubernetes apiVersion: "apps" for
+// "apps/v1", and "" for the core group ("v1").
+func apiGroup(apiVersion string) string {
+	if i := strings.LastIndex(apiVersion, "/"); i >= 0 {
+		return apiVersion[:i]
+	}
+	return ""
+}
+
+// groupFileLabel turns an API group into part of a file name. The core group
+// has no name, so it becomes "core". Characters other than letters, digits,
+// '.', '-' and '_' become '-', so the name always stays inside the directory.
+func groupFileLabel(group string) string {
+	if group == "" {
+		return "core"
+	}
+	return strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9', r == '.', r == '-', r == '_':
+			return r
+		}
+		return '-'
+	}, group)
 }
 
 func (c *ComponentDefinition) ReplaceSVGData(baseDir string) error {
