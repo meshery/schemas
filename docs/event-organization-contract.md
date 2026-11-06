@@ -28,6 +28,13 @@ carries a read-only `organizationId`, so an organization-scope listing shows
 which organization each row belongs to. It is optional there because the list
 is a projection; the server fills it for every row.
 
+The same page item carries, as optional properties, the row fields Layer5
+Cloud's `getEvents` serves on every row: `id`, `actedUpon`, `operationId`,
+`severity`, `status`, `metadata` (the same nullable free-form object as
+`Event.metadata`, so `metadata.error` is an EventError when present),
+`updatedAt` and `deletedAt`. They are not required, so a row recorded
+without them still validates. (#1353)
+
 ## `getEvents` scope
 
 `GET /api/events/list` (`getEvents`) takes the `eventsScope` query parameter

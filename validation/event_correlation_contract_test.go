@@ -152,6 +152,39 @@ func TestEventsWithoutTheNewFieldsStillValidate(t *testing.T) {
 	}
 }
 
+// TestEventResultAcceptsCloudRowFields is the getEvents projection Cloud
+// already serves: the row fields are optional, and metadata.error is an
+// EventError when present (meshery/schemas#1353).
+func TestEventResultAcceptsCloudRowFields(t *testing.T) {
+	doc := loadSpec(t, designEventSpec)
+	result := schemaOf(t, doc, "EventResult")
+	eventError := schemaOf(t, doc, "EventError")
+
+	minimal := map[string]any{"owner": sampleUUID, "category": "connection", "action": "connect"}
+	if err := result.VisitJSON(minimal); err != nil {
+		t.Errorf("an EventResult without the Cloud row fields no longer validates: %v", err)
+	}
+
+	errBody := constructTemplate(t, eventTemplates, "event_error")
+	if err := eventError.VisitJSON(errBody); err != nil {
+		t.Fatalf("event_error template is not an EventError: %v", err)
+	}
+	row := map[string]any{
+		"owner": sampleUUID, "category": "connection", "action": "connect",
+		"id": sampleUUID, "actedUpon": sampleUUID2, "operationId": sampleUUID,
+		"severity": "error", "status": "unread",
+		"metadata": map[string]any{"error": errBody},
+		"updatedAt": "2026-11-06T10:42:00Z",
+		"deletedAt": nil,
+	}
+	if err := result.VisitJSON(row); err != nil {
+		t.Errorf("an EventResult carrying Cloud row fields does not validate: %v", err)
+	}
+	if err := eventError.VisitJSON(row["metadata"].(map[string]any)["error"]); err != nil {
+		t.Errorf("EventResult metadata.error is not an EventError: %v", err)
+	}
+}
+
 // TestEventCorrelationFieldsRejectMalformedValues exercises the constraints.
 func TestEventCorrelationFieldsRejectMalformedValues(t *testing.T) {
 	doc := loadSpec(t, designEventSpec)

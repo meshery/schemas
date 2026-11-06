@@ -220,13 +220,13 @@ type Event struct {
 	// CorrelationKey Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
 	CorrelationKey *string `db:"correlation_key" json:"correlationKey,omitempty" yaml:"correlationKey,omitempty"`
 
-	// OccurrenceCount How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count.
+	// OccurrenceCount How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.
 	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 
-	// FirstSeenAt When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
+	// FirstSeenAt When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.
 	FirstSeenAt *time.Time `db:"first_seen_at" json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
 
-	// LastSeenAt When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
+	// LastSeenAt When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
 	// ResolvedAt When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
@@ -372,16 +372,16 @@ type EventPayload struct {
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
-	// FirstSeenAt When the producer first saw the occurrences this create reports; omitted means `lastSeenAt`, or the time of receipt. Kept only when the create opens a condition.
+	// FirstSeenAt When the producer first saw the occurrences this create reports. Omitted while opening a condition means `lastSeenAt`, or the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when the create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
 	FirstSeenAt *time.Time `json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
 
 	// IdempotencyKey Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
 	IdempotencyKey *string `json:"idempotencyKey,omitempty" yaml:"idempotencyKey,omitempty"`
 
-	// LastSeenAt When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt.
+	// LastSeenAt When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`. Omitted while counting an open condition, or while closing one, means the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
 	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// OccurrenceCount Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. With a `correlationKey` it is added to the open condition's count.
+	// OccurrenceCount Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. A correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted.
 	OccurrenceCount *int `json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
 
 	// Owner UUID of the user associated with the event.
@@ -415,6 +415,8 @@ type EventPayload struct {
 
 // EventResult EventResult entity schema.
 type EventResult struct {
+	ActedUpon core.Id `db:"acted_upon" json:"actedUpon,omitempty" yaml:"actedUpon,omitempty"`
+
 	// Action The action of the event.
 	Action string `json:"action" yaml:"action"`
 
@@ -430,6 +432,9 @@ type EventResult struct {
 	// CreatedAt Timestamp when the event was recorded.
 	CreatedAt time.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
+
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
@@ -439,17 +444,22 @@ type EventResult struct {
 	// FirstName The first name of the user associated with the event.
 	FirstName *string `json:"firstName,omitempty" yaml:"firstName,omitempty"`
 
-	// FirstSeenAt When the condition's first counted occurrence was seen.
+	// FirstSeenAt When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
 	FirstSeenAt *time.Time `db:"first_seen_at" json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
+	ID          core.Id    `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
-	// LastSeenAt When the condition's latest counted occurrence was seen.
+	// LastSeenAt When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// OccurrenceCount How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount).
-	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
+	// Metadata Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError.
+	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+	// OccurrenceCount How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount).
+	OccurrenceCount *int    `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
+	OperationID     core.Id `db:"operation_id" json:"operationId,omitempty" yaml:"operationId,omitempty"`
 
 	// OrganizationID The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
 	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId" yaml:"organizationId"`
@@ -466,11 +476,17 @@ type EventResult struct {
 	// ResolvedAt When the condition cleared; omitted while it is open (see Event.resolvedAt).
 	ResolvedAt *time.Time `db:"resolved_at" json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
 
+	// Severity Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.
+	Severity *string `db:"severity" json:"severity,omitempty" yaml:"severity,omitempty"`
+
 	// Source Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source).
 	Source *string `db:"source" json:"source,omitempty" yaml:"source,omitempty"`
 
 	// SpecVersion The CloudEvents specification version the event is compatible with (see Event.specversion).
 	SpecVersion *EventSpecVersion `db:"specversion" json:"specversion,omitempty" yaml:"specversion,omitempty"`
+
+	// Status Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.
+	Status *string `db:"status" json:"status,omitempty" yaml:"status,omitempty"`
 
 	// SystemId System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
 	SystemId string `db:"system_id" json:"systemId" yaml:"systemId"`
@@ -479,7 +495,8 @@ type EventResult struct {
 	TraceID *string `db:"trace_id" json:"traceId,omitempty" yaml:"traceId,omitempty"`
 
 	// Type CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type).
-	Type *string `db:"type" json:"type,omitempty" yaml:"type,omitempty"`
+	Type      *string   `db:"type" json:"type,omitempty" yaml:"type,omitempty"`
+	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
 	// Visibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
 	Visibility EventResultVisibility `db:"visibility" json:"visibility" yaml:"visibility"`

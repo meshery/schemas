@@ -897,7 +897,7 @@ const EventSchema: Record<string, unknown> = {
                           },
                           "occurrenceCount": {
                             "type": "integer",
-                            "description": "How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount).\n",
+                            "description": "How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount).\n",
                             "minimum": 1,
                             "x-oapi-codegen-extra-tags": {
                               "db": "occurrence_count"
@@ -906,7 +906,7 @@ const EventSchema: Record<string, unknown> = {
                           "firstSeenAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition's first counted occurrence was seen.",
+                            "description": "When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_seen_at"
                             }
@@ -914,7 +914,7 @@ const EventSchema: Record<string, unknown> = {
                           "lastSeenAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition's latest counted occurrence was seen.",
+                            "description": "When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_seen_at"
                             }
@@ -981,6 +981,100 @@ const EventSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "parent_id"
                             }
+                          },
+                          "id": {
+                            "description": "Event ID (see Event.id).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "actedUpon": {
+                            "description": "ID of the entity on which the event was performed (see Event.actedUpon).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "acted_upon"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "operationId": {
+                            "description": "ID correlating the events one operation emitted (see Event.operationId).",
+                            "x-go-name": "OperationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "operation_id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "severity": {
+                            "type": "string",
+                            "description": "Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.\n",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "severity"
+                            }
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.\n",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "status"
+                            }
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "description": "Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError.\n",
+                            "additionalProperties": true,
+                            "nullable": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata"
+                            }
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the event was last updated (see Event.updatedAt).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at"
+                            },
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "x-go-type-skip-optional-pointer": true
                           }
                         },
                         "required": [
@@ -1347,7 +1441,7 @@ const EventSchema: Record<string, unknown> = {
                   },
                   "occurrenceCount": {
                     "type": "integer",
-                    "description": "Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. With a `correlationKey` it is added to the open condition's count.\n",
+                    "description": "Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. A correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted.\n",
                     "minimum": 1,
                     "x-oapi-codegen-extra-tags": {
                       "json": "occurrenceCount,omitempty"
@@ -1356,7 +1450,7 @@ const EventSchema: Record<string, unknown> = {
                   "firstSeenAt": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "When the producer first saw the occurrences this create reports; omitted means `lastSeenAt`, or the time of receipt. Kept only when the create opens a condition.\n",
+                    "description": "When the producer first saw the occurrences this create reports. Omitted while opening a condition means `lastSeenAt`, or the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when the create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.\n",
                     "x-oapi-codegen-extra-tags": {
                       "json": "firstSeenAt,omitempty"
                     }
@@ -1364,7 +1458,7 @@ const EventSchema: Record<string, unknown> = {
                   "lastSeenAt": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt.\n",
+                    "description": "When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`. Omitted while counting an open condition, or while closing one, means the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`.\n",
                     "x-oapi-codegen-extra-tags": {
                       "json": "lastSeenAt,omitempty"
                     }
@@ -1437,13 +1531,13 @@ const EventSchema: Record<string, unknown> = {
             }
           }
         },
-        "description": "Records an event and answers 201 with it. The server assigns the organization from the session; clients do not send it.\n\n**Retries (`idempotencyKey`).** When the payload carries an `idempotencyKey` the authenticated caller already used, nothing is recorded or changed and the answer is 200 with the event that key is bound to (`Event-Disposition: replayed`). This check runs first, so a retried create never counts an occurrence twice.\n\n**Conditions (`correlationKey`).** A payload that carries a `correlationKey` reports an occurrence of an ongoing condition. A condition is open while its event has no `resolvedAt`, and the authenticated caller (organization and user, as for `idempotencyKey`) has at most one open event per key; the server enforces that atomically. A call that identifies no user records the event without correlating it. For a payload without `resolvedAt`: when the caller has an open event with the key, no event is recorded; that event's `occurrenceCount` grows by the payload's `occurrenceCount` (1 when omitted), its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with it (`Event-Disposition: incremented`). Every other field keeps the value it was first recorded with. Otherwise a new event is recorded, which opens the condition: `occurrenceCount` defaults to 1, `firstSeenAt` to the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt, and `lastSeenAt` to the payload's `lastSeenAt`, else `firstSeenAt` (201, `Event-Disposition: created`).\n\n**Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, nothing new is recorded: that event gets the `resolvedAt`, its `severity` and `description` become the payload's when the payload carries them (an omitted field keeps the stored value) so the closed condition reads as cleared, its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with the closed event (`Event-Disposition: resolved`). Every other field keeps the value it was recorded with. When none is open, the payload is recorded as a new, already resolved event (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.\n\n**Composition.** When a create that carries both keys does not replay, its `idempotencyKey` is bound to the event the create recorded, incremented or resolved, so a retry answers 200 with that event and changes nothing. Deduplication a server applies on its own, without a client key, must not swallow an occurrence of an event that carries a `correlationKey`: the occurrence counts. Whether a counted occurrence notifies anyone again is the reader's policy, not this operation's. See docs/event-correlation-contract.md.\n",
+        "description": "Records an event and answers 201 with it. The server assigns the organization from the session; clients do not send it. A server MAY answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `Event-Disposition: created`, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read `Event-Disposition` rather than the status code to tell created from replayed.\n\n**Retries (`idempotencyKey`).** When the payload carries an `idempotencyKey` the authenticated caller already used, nothing is recorded or changed and the answer is 200 with the event that key is bound to (`Event-Disposition: replayed`). This check runs first, so a retried create never counts an occurrence twice.\n\n**Conditions (`correlationKey`).** A payload that carries a `correlationKey` reports an occurrence of an ongoing condition. A condition is open while its event has no `resolvedAt`, and the authenticated caller (organization and user, as for `idempotencyKey`) has at most one open event per key; the server enforces that atomically. A call that identifies no user records the event without correlating it. For a payload without `resolvedAt`: when the caller has an open event with the key, no event is recorded; that event's `occurrenceCount` grows by the payload's `occurrenceCount` (1 when omitted), its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with it (`Event-Disposition: incremented`). Every other field keeps the value it was first recorded with. Otherwise a new event is recorded, which opens the condition: `occurrenceCount` defaults to 1, `firstSeenAt` to the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt, and `lastSeenAt` to the payload's `lastSeenAt`, else `firstSeenAt` (201, `Event-Disposition: created`).\n\n**Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, nothing new is recorded: that event gets the `resolvedAt`, its `severity` and `description` become the payload's when the payload carries them (an omitted field keeps the stored value) so the closed condition reads as cleared, its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with the closed event (`Event-Disposition: resolved`). Every other field keeps the value it was recorded with, so `occurrenceCount` does not grow. When none is open, the payload is recorded as a new, already resolved event, using the opening defaults: `occurrenceCount` is the payload's (1 when omitted), and `firstSeenAt` and `lastSeenAt` are the payload's, else `resolvedAt` (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.\n\n**Composition.** When a create that carries both keys does not replay, its `idempotencyKey` is bound to the event the create recorded, incremented or resolved, so a retry answers 200 with that event and changes nothing. Deduplication a server applies on its own, without a client key, must not swallow an occurrence of an event that carries a `correlationKey`: the occurrence counts. Whether a counted occurrence notifies anyone again is the reader's policy, not this operation's. See docs/event-correlation-contract.md.\n",
         "responses": {
           "200": {
-            "description": "No new event was recorded. The answer is the existing event the create resolved to: the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`).\n",
+            "description": "The event the create resolved to. When no new event was recorded, that is the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`). A server MAY also answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `Event-Disposition: created`, returning the event it just recorded, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read `Event-Disposition` rather than the status code to tell created from replayed.\n",
             "headers": {
               "Event-Disposition": {
-                "description": "What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`.\n",
+                "description": "What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server MAY answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `created`, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read this header rather than the status code to tell created from replayed. A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`.\n",
                 "required": false,
                 "schema": {
                   "type": "string",
@@ -1689,7 +1783,7 @@ const EventSchema: Record<string, unknown> = {
                     },
                     "occurrenceCount": {
                       "type": "integer",
-                      "description": "How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count.\n",
+                      "description": "How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
                       "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "db": "occurrence_count"
@@ -1699,7 +1793,7 @@ const EventSchema: Record<string, unknown> = {
                     "firstSeenAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.",
+                      "description": "When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.\n",
                       "x-oapi-codegen-extra-tags": {
                         "db": "first_seen_at"
                       },
@@ -1708,7 +1802,7 @@ const EventSchema: Record<string, unknown> = {
                     "lastSeenAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.",
+                      "description": "When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.\n",
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_seen_at"
                       },
@@ -1789,10 +1883,10 @@ const EventSchema: Record<string, unknown> = {
             }
           },
           "201": {
-            "description": "A new event was recorded (`Event-Disposition: created`). With a `correlationKey`, it opens a condition, or records one already resolved when the payload carries `resolvedAt`.\n",
+            "description": "A new event was recorded (`Event-Disposition: created`). With a `correlationKey`, it opens a condition, or records one already resolved when the payload carries `resolvedAt`. An already resolved insert uses `occurrenceCount` 1 when omitted, and `firstSeenAt` and `lastSeenAt` from the payload, else `resolvedAt`.\n",
             "headers": {
               "Event-Disposition": {
-                "description": "What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`.\n",
+                "description": "What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server MAY answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `created`, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read this header rather than the status code to tell created from replayed. A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`.\n",
                 "required": false,
                 "schema": {
                   "type": "string",
@@ -2038,7 +2132,7 @@ const EventSchema: Record<string, unknown> = {
                     },
                     "occurrenceCount": {
                       "type": "integer",
-                      "description": "How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count.\n",
+                      "description": "How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
                       "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "db": "occurrence_count"
@@ -2048,7 +2142,7 @@ const EventSchema: Record<string, unknown> = {
                     "firstSeenAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.",
+                      "description": "When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.\n",
                       "x-oapi-codegen-extra-tags": {
                         "db": "first_seen_at"
                       },
@@ -2057,7 +2151,7 @@ const EventSchema: Record<string, unknown> = {
                     "lastSeenAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.",
+                      "description": "When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.\n",
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_seen_at"
                       },
@@ -2457,7 +2551,7 @@ const EventSchema: Record<string, unknown> = {
                           },
                           "occurrenceCount": {
                             "type": "integer",
-                            "description": "How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount).\n",
+                            "description": "How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount).\n",
                             "minimum": 1,
                             "x-oapi-codegen-extra-tags": {
                               "db": "occurrence_count"
@@ -2466,7 +2560,7 @@ const EventSchema: Record<string, unknown> = {
                           "firstSeenAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition's first counted occurrence was seen.",
+                            "description": "When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_seen_at"
                             }
@@ -2474,7 +2568,7 @@ const EventSchema: Record<string, unknown> = {
                           "lastSeenAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition's latest counted occurrence was seen.",
+                            "description": "When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_seen_at"
                             }
@@ -2541,6 +2635,100 @@ const EventSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "parent_id"
                             }
+                          },
+                          "id": {
+                            "description": "Event ID (see Event.id).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "actedUpon": {
+                            "description": "ID of the entity on which the event was performed (see Event.actedUpon).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "acted_upon"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "operationId": {
+                            "description": "ID correlating the events one operation emitted (see Event.operationId).",
+                            "x-go-name": "OperationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "operation_id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "severity": {
+                            "type": "string",
+                            "description": "Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.\n",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "severity"
+                            }
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.\n",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "status"
+                            }
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "description": "Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError.\n",
+                            "additionalProperties": true,
+                            "nullable": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata"
+                            }
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the event was last updated (see Event.updatedAt).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at"
+                            },
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "x-go-type-skip-optional-pointer": true
                           }
                         },
                         "required": [
@@ -3492,7 +3680,7 @@ const EventSchema: Record<string, unknown> = {
     },
     "headers": {
       "EventDisposition": {
-        "description": "What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`.\n",
+        "description": "What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server MAY answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `created`, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read this header rather than the status code to tell created from replayed. A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`.\n",
         "required": false,
         "schema": {
           "type": "string",
@@ -3742,7 +3930,7 @@ const EventSchema: Record<string, unknown> = {
           },
           "occurrenceCount": {
             "type": "integer",
-            "description": "Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. With a `correlationKey` it is added to the open condition's count.\n",
+            "description": "Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. A correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted.\n",
             "minimum": 1,
             "x-oapi-codegen-extra-tags": {
               "json": "occurrenceCount,omitempty"
@@ -3751,7 +3939,7 @@ const EventSchema: Record<string, unknown> = {
           "firstSeenAt": {
             "type": "string",
             "format": "date-time",
-            "description": "When the producer first saw the occurrences this create reports; omitted means `lastSeenAt`, or the time of receipt. Kept only when the create opens a condition.\n",
+            "description": "When the producer first saw the occurrences this create reports. Omitted while opening a condition means `lastSeenAt`, or the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when the create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.\n",
             "x-oapi-codegen-extra-tags": {
               "json": "firstSeenAt,omitempty"
             }
@@ -3759,7 +3947,7 @@ const EventSchema: Record<string, unknown> = {
           "lastSeenAt": {
             "type": "string",
             "format": "date-time",
-            "description": "When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt.\n",
+            "description": "When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`. Omitted while counting an open condition, or while closing one, means the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`.\n",
             "x-oapi-codegen-extra-tags": {
               "json": "lastSeenAt,omitempty"
             }
@@ -4072,7 +4260,7 @@ const EventSchema: Record<string, unknown> = {
           },
           "occurrenceCount": {
             "type": "integer",
-            "description": "How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount).\n",
+            "description": "How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount).\n",
             "minimum": 1,
             "x-oapi-codegen-extra-tags": {
               "db": "occurrence_count"
@@ -4081,7 +4269,7 @@ const EventSchema: Record<string, unknown> = {
           "firstSeenAt": {
             "type": "string",
             "format": "date-time",
-            "description": "When the condition's first counted occurrence was seen.",
+            "description": "When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.\n",
             "x-oapi-codegen-extra-tags": {
               "db": "first_seen_at"
             }
@@ -4089,7 +4277,7 @@ const EventSchema: Record<string, unknown> = {
           "lastSeenAt": {
             "type": "string",
             "format": "date-time",
-            "description": "When the condition's latest counted occurrence was seen.",
+            "description": "When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.\n",
             "x-oapi-codegen-extra-tags": {
               "db": "last_seen_at"
             }
@@ -4156,6 +4344,100 @@ const EventSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "parent_id"
             }
+          },
+          "id": {
+            "description": "Event ID (see Event.id).",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "actedUpon": {
+            "description": "ID of the entity on which the event was performed (see Event.actedUpon).",
+            "x-oapi-codegen-extra-tags": {
+              "db": "acted_upon"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "operationId": {
+            "description": "ID correlating the events one operation emitted (see Event.operationId).",
+            "x-go-name": "OperationID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "operation_id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "severity": {
+            "type": "string",
+            "description": "Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.\n",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "db": "severity"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.\n",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "db": "status"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError.\n",
+            "additionalProperties": true,
+            "nullable": true,
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "metadata"
+            }
+          },
+          "updatedAt": {
+            "description": "Timestamp when the event was last updated (see Event.updatedAt).",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deletedAt": {
+            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at"
+            },
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "x-go-type-skip-optional-pointer": true
           }
         },
         "required": [
@@ -4395,7 +4677,7 @@ const EventSchema: Record<string, unknown> = {
           },
           "occurrenceCount": {
             "type": "integer",
-            "description": "How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count.\n",
+            "description": "How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
             "minimum": 1,
             "x-oapi-codegen-extra-tags": {
               "db": "occurrence_count"
@@ -4405,7 +4687,7 @@ const EventSchema: Record<string, unknown> = {
           "firstSeenAt": {
             "type": "string",
             "format": "date-time",
-            "description": "When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.",
+            "description": "When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.\n",
             "x-oapi-codegen-extra-tags": {
               "db": "first_seen_at"
             },
@@ -4414,7 +4696,7 @@ const EventSchema: Record<string, unknown> = {
           "lastSeenAt": {
             "type": "string",
             "format": "date-time",
-            "description": "When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.",
+            "description": "When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.\n",
             "x-oapi-codegen-extra-tags": {
               "db": "last_seen_at"
             },
@@ -4645,7 +4927,7 @@ const EventSchema: Record<string, unknown> = {
                 },
                 "occurrenceCount": {
                   "type": "integer",
-                  "description": "How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount).\n",
+                  "description": "How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount).\n",
                   "minimum": 1,
                   "x-oapi-codegen-extra-tags": {
                     "db": "occurrence_count"
@@ -4654,7 +4936,7 @@ const EventSchema: Record<string, unknown> = {
                 "firstSeenAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "When the condition's first counted occurrence was seen.",
+                  "description": "When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.\n",
                   "x-oapi-codegen-extra-tags": {
                     "db": "first_seen_at"
                   }
@@ -4662,7 +4944,7 @@ const EventSchema: Record<string, unknown> = {
                 "lastSeenAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "When the condition's latest counted occurrence was seen.",
+                  "description": "When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.\n",
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_seen_at"
                   }
@@ -4729,6 +5011,100 @@ const EventSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "parent_id"
                   }
+                },
+                "id": {
+                  "description": "Event ID (see Event.id).",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "actedUpon": {
+                  "description": "ID of the entity on which the event was performed (see Event.actedUpon).",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "acted_upon"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "operationId": {
+                  "description": "ID correlating the events one operation emitted (see Event.operationId).",
+                  "x-go-name": "OperationID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "operation_id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.\n",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "severity"
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.\n",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "status"
+                  }
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError.\n",
+                  "additionalProperties": true,
+                  "nullable": true,
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "metadata"
+                  }
+                },
+                "updatedAt": {
+                  "description": "Timestamp when the event was last updated (see Event.updatedAt).",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deletedAt": {
+                  "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at"
+                  },
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true,
+                  "x-go-type-skip-optional-pointer": true
                 }
               },
               "required": [

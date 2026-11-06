@@ -16,9 +16,9 @@ alike. A producer that sends none of them sees no change.
 | Field | Type | DB column | Meaning |
 | --- | --- | --- | --- |
 | `correlationKey` | string, 1-255 | `correlation_key` | Names the condition (see [Choosing a key](#choosing-a-correlationkey)). |
-| `occurrenceCount` | integer, minimum 1 | `occurrence_count` | On a payload: how many occurrences this create reports (default 1). On an event: that payload count when recorded (1 when omitted), growing as later occurrences are counted. |
-| `firstSeenAt` | date-time | `first_seen_at` | First counted occurrence. |
-| `lastSeenAt` | date-time | `last_seen_at` | Latest counted occurrence. On a payload, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt. |
+| `occurrenceCount` | integer, minimum 1 | `occurrence_count` | On a payload: how many occurrences this create reports (default 1). A correlated create that does not resolve adds that count; a resolving create on an open key does not. On an event: that count when recorded (1 when omitted), including an already-resolved insert, growing as later non-resolving creates are counted. |
+| `firstSeenAt` | date-time | `first_seen_at` | First counted occurrence. On a payload, omitted while opening a condition means `lastSeenAt`, else the time of receipt; omitted on an already-resolved insert means `resolvedAt`. A close keeps the stored time. |
+| `lastSeenAt` | date-time | `last_seen_at` | Latest time the condition was seen. On a payload, omitted while opening a condition means `firstSeenAt`; omitted while counting or closing an open condition means the time of receipt; omitted on an already-resolved insert means `resolvedAt`. |
 | `resolvedAt` | date-time | `resolved_at` | When the condition cleared. Absent while it is open. |
 | `source` | string, `uri-reference`, 1-255 | `source` | Which surface emitted the event. |
 | `type` | string, 1-255 | `type` | CloudEvents-compatible type, for example `io.meshery.user.signup`. |
@@ -29,7 +29,10 @@ alike. A producer that sends none of them sees no change.
 `createEvent` answers an `Event`, and `getEvents` lists `EventResult`s; both
 carry every field. `EventResult` is closed (`additionalProperties: false`), so
 a server that persists the columns returns them in listings without breaking
-strict readers.
+strict readers. That closure is why the list item also declares the row
+fields Cloud's `getEvents` already serves (`id`, `actedUpon`, `operationId`,
+`severity`, `status`, `metadata`, `updatedAt`, `deletedAt`) as optional
+properties; see docs/event-organization-contract.md.
 
 ## `createEvent` semantics
 
@@ -42,6 +45,9 @@ this order:
    runs first, so a retried create never counts an occurrence twice.
 2. **No `correlationKey`**, or a call that identifies no user: a new event is
    recorded (`201`, `created`). The correlation fields are stored as sent.
+   A server MAY instead answer a legacy create, one carrying neither
+   `correlationKey` nor `idempotencyKey`, with `200` and
+   `Event-Disposition: created` (see [Event-Disposition](#event-disposition)).
 3. **`correlationKey` without `resolvedAt`**:
    - When the caller has an **open** event with that key (one with no
      `resolvedAt`), nothing new is recorded. The open event's
@@ -63,9 +69,12 @@ this order:
      cleared. Its `lastSeenAt` becomes the later of its own value and the
      payload's `lastSeenAt` (the time of receipt when omitted). Its
      `updatedAt` advances. Every other field keeps the value it was recorded
-     with. The answer is `200` with the closed event (`resolved`).
+     with, so `occurrenceCount` does not grow. The answer is `200` with the
+     closed event (`resolved`).
    - Otherwise the payload is recorded as a new event that is already
-     resolved (`201`, `created`).
+     resolved (`201`, `created`), using the opening defaults:
+     `occurrenceCount` is the payload's, 1 when omitted, and `firstSeenAt`
+     and `lastSeenAt` are the payload's, else `resolvedAt`.
 5. **Binding.** When the create also carried an `idempotencyKey`, that key is
    bound to the event step 2, 3 or 4 recorded, incremented or resolved. A
    retry then answers `200` with that event and changes nothing.
@@ -92,7 +101,12 @@ instead (step 3).
 
 Every `200` and `201` from a server that implements correlation carries the
 `Event-Disposition` response header: `created`, `replayed`, `incremented` or
-`resolved`. A server that predates correlation omits it; there `201` means
+`resolved`. A server MAY answer a legacy create, one carrying neither
+`correlationKey` nor `idempotencyKey`, with `200` and
+`Event-Disposition: created`, for compatibility with released Meshery Servers
+that treat any non-200 answer as failure. Clients accept any 2xx and read
+`Event-Disposition` rather than the status code to tell created from replayed.
+A server that predates correlation omits the header; there `201` means
 created and `200` means replayed. A server answering browsers on another origin
 lists the header in `Access-Control-Expose-Headers`.
 
@@ -118,11 +132,12 @@ become the payload's when the payload carries them (an omitted field keeps
 the stored value), so the closed condition reads as cleared. Its
 `lastSeenAt` becomes the later of its own value and the payload's
 `lastSeenAt` (the time of receipt when omitted), and its `updatedAt`
-advances. It sends a resolution only when the condition changes from present
+advances. `occurrenceCount` does not grow. It sends a resolution only when the condition changes from present
 to cleared, never on every healthy check: with no open condition, a
-resolution is recorded as its own already-resolved event. Once closed, the
-next occurrence opens a new condition with a new event and a new
-`firstSeenAt`.
+resolution is recorded as its own already-resolved event. `occurrenceCount`
+is the payload's, 1 when omitted, and `firstSeenAt` and `lastSeenAt` are the
+payload's, else `resolvedAt`. Once closed, the next occurrence opens a new
+condition with a new event and a new `firstSeenAt`.
 
 ## Choosing a `correlationKey`
 

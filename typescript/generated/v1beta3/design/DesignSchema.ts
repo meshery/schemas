@@ -11195,7 +11195,7 @@ const DesignSchema: Record<string, unknown> = {
                           },
                           "occurrenceCount": {
                             "type": "integer",
-                            "description": "How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count.\n",
+                            "description": "How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
                             "minimum": 1,
                             "x-oapi-codegen-extra-tags": {
                               "db": "occurrence_count"
@@ -11205,7 +11205,7 @@ const DesignSchema: Record<string, unknown> = {
                           "firstSeenAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.",
+                            "description": "When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_seen_at"
                             },
@@ -11214,7 +11214,7 @@ const DesignSchema: Record<string, unknown> = {
                           "lastSeenAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.",
+                            "description": "When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_seen_at"
                             },
@@ -25590,7 +25590,7 @@ const DesignSchema: Record<string, unknown> = {
                 },
                 "occurrenceCount": {
                   "type": "integer",
-                  "description": "How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count.\n",
+                  "description": "How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count.\n",
                   "minimum": 1,
                   "x-oapi-codegen-extra-tags": {
                     "db": "occurrence_count"
@@ -25600,7 +25600,7 @@ const DesignSchema: Record<string, unknown> = {
                 "firstSeenAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.",
+                  "description": "When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.\n",
                   "x-oapi-codegen-extra-tags": {
                     "db": "first_seen_at"
                   },
@@ -25609,7 +25609,7 @@ const DesignSchema: Record<string, unknown> = {
                 "lastSeenAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.",
+                  "description": "When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.\n",
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_seen_at"
                   },

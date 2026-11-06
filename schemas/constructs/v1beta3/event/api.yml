@@ -208,7 +208,13 @@ paths:
               $ref: '#/components/schemas/EventPayload'
       description: >
         Records an event and answers 201 with it. The server assigns the
-        organization from the session; clients do not send it.
+        organization from the session; clients do not send it. A server MAY
+        answer a legacy create, one carrying neither `correlationKey` nor
+        `idempotencyKey`, with 200 and `Event-Disposition: created`, for
+        compatibility with released Meshery Servers that treat any non-200
+        answer as failure. Clients accept any 2xx and read
+        `Event-Disposition` rather than the status code to tell created from
+        replayed.
 
 
         **Retries (`idempotencyKey`).** When the payload carries an
@@ -248,8 +254,11 @@ paths:
         its own and the payload's `lastSeenAt` (the time of receipt when
         omitted), and its `updatedAt` advances. The answer is 200 with the
         closed event (`Event-Disposition: resolved`). Every other field
-        keeps the value it was recorded with. When none is open, the payload
-        is recorded as a new, already resolved event (201, `created`). Once
+        keeps the value it was recorded with, so `occurrenceCount` does not
+        grow. When none is open, the payload is recorded as a new, already
+        resolved event, using the opening defaults: `occurrenceCount` is the
+        payload's (1 when omitted), and `firstSeenAt` and `lastSeenAt` are
+        the payload's, else `resolvedAt` (201, `created`). Once
         closed, the next occurrence opens a new condition with a new event.
         Send a resolution only when the condition changes from present to
         cleared, never on every healthy check.
@@ -266,14 +275,20 @@ paths:
       responses:
         '200':
           description: >
-            No new event was recorded. The answer is the existing event the
-            create resolved to: the one already recorded under this caller's
+            The event the create resolved to. When no new event was recorded,
+            that is the one already recorded under this caller's
             `idempotencyKey` (`replayed`, unchanged), the open event of this
             `correlationKey` with the occurrence counted (`incremented`), or
             that event closed by the payload's `resolvedAt`, with its
             `severity` and `description` replaced by the payload's when the
             payload carries them (an omitted field keeps the stored value)
-            and its `lastSeenAt` brought forward (`resolved`).
+            and its `lastSeenAt` brought forward (`resolved`). A server MAY
+            also answer a legacy create, one carrying neither `correlationKey`
+            nor `idempotencyKey`, with 200 and `Event-Disposition: created`,
+            returning the event it just recorded, for compatibility with
+            released Meshery Servers that treat any non-200 answer as failure.
+            Clients accept any 2xx and read `Event-Disposition` rather than
+            the status code to tell created from replayed.
           headers:
             Event-Disposition:
               $ref: '#/components/headers/EventDisposition'
@@ -285,7 +300,10 @@ paths:
           description: >
             A new event was recorded (`Event-Disposition: created`). With a
             `correlationKey`, it opens a condition, or records one already
-            resolved when the payload carries `resolvedAt`.
+            resolved when the payload carries `resolvedAt`. An already
+            resolved insert uses `occurrenceCount` 1 when omitted, and
+            `firstSeenAt` and `lastSeenAt` from the payload, else
+            `resolvedAt`.
           headers:
             Event-Disposition:
               $ref: '#/components/headers/EventDisposition'
@@ -454,9 +472,14 @@ components:
         recorded), `replayed` (the `idempotencyKey` was already used; nothing
         changed), `incremented` (an occurrence of the open condition with
         this `correlationKey` was counted) or `resolved` (that condition was
-        closed). A server that implements condition correlation sends it on
-        every 200 and 201. A server that predates correlation omits it; there
-        201 means created and 200 means replayed. A browser client calling a
+        closed). A server MAY answer a legacy create, one carrying neither
+        `correlationKey` nor `idempotencyKey`, with 200 and `created`, for
+        compatibility with released Meshery Servers that treat any non-200
+        answer as failure. Clients accept any 2xx and read this header
+        rather than the status code to tell created from replayed. A server
+        that implements condition correlation sends it on every 200 and 201.
+        A server that predates correlation omits it; there 201 means created
+        and 200 means replayed. A browser client calling a
         server on another origin reads it only when that server lists it in
         `Access-Control-Expose-Headers`.
       required: false
@@ -642,8 +665,11 @@ components:
           type: integer
           description: >
             Number of occurrences this create reports, for a producer that
-            counted repeats locally before sending; omitted means 1. With a
-            `correlationKey` it is added to the open condition's count.
+            counted repeats locally before sending; omitted means 1. A
+            correlated create that does not resolve (no `resolvedAt`) adds
+            this count to the open condition. A resolving create on that open
+            event does not add it. A resolving create with no open condition
+            is inserted already resolved with this count, 1 when omitted.
           minimum: 1
           x-oapi-codegen-extra-tags:
             json: "occurrenceCount,omitempty"
@@ -651,9 +677,12 @@ components:
           type: string
           format: date-time
           description: >
-            When the producer first saw the occurrences this create reports;
-            omitted means `lastSeenAt`, or the time of receipt. Kept only when
-            the create opens a condition.
+            When the producer first saw the occurrences this create reports.
+            Omitted while opening a condition means `lastSeenAt`, or the time
+            of receipt. Omitted on a resolving create that inserts an already
+            resolved event means `resolvedAt`. Stored when the create opens a
+            condition or inserts one already resolved; a close of an open
+            condition keeps the stored time.
           x-oapi-codegen-extra-tags:
             json: "firstSeenAt,omitempty"
         lastSeenAt:
@@ -661,8 +690,10 @@ components:
           format: date-time
           description: >
             When the producer last saw the occurrences this create reports.
-            Omitted while opening a condition means `firstSeenAt`; omitted
-            while counting an open condition means the time of receipt.
+            Omitted while opening a condition means `firstSeenAt`. Omitted
+            while counting an open condition, or while closing one, means the
+            time of receipt. Omitted on a resolving create that inserts an
+            already resolved event means `resolvedAt`.
           x-oapi-codegen-extra-tags:
             json: "lastSeenAt,omitempty"
         resolvedAt:
@@ -1033,11 +1064,12 @@ components:
         occurrenceCount:
           type: integer
           description: >
-            How many occurrences of the condition this event counts: the
-            payload's `occurrenceCount` when it was recorded (1 when that was
-            omitted), growing as createEvent counts later occurrences of the
-            open condition. Omitted for an event recorded without a
-            `correlationKey` and no count.
+            How many occurrences of the condition this event counts. An
+            opening create, or a resolving create inserted already resolved,
+            stores the payload's `occurrenceCount` (1 when omitted). Later
+            creates that do not resolve add their count. A resolving create
+            on the open event does not add to it. Omitted for an event
+            recorded without a `correlationKey` and no count.
           minimum: 1
           x-oapi-codegen-extra-tags:
             db: occurrence_count
@@ -1045,14 +1077,24 @@ components:
         firstSeenAt:
           type: string
           format: date-time
-          description: When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
+          description: >
+            When the condition's first counted occurrence was seen. An opening
+            create stores the payload's `firstSeenAt`, else its `lastSeenAt`,
+            else the time of receipt. An already-resolved insert stores the
+            payload's `firstSeenAt`, else `resolvedAt`. A close keeps the
+            stored time. Omitted with `occurrenceCount`.
           x-oapi-codegen-extra-tags:
             db: first_seen_at
           x-order: 19
         lastSeenAt:
           type: string
           format: date-time
-          description: When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
+          description: >
+            When the condition was last seen. An opening create stores the
+            payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved
+            insert stores the payload's `lastSeenAt`, else `resolvedAt`.
+            Counting an occurrence, or closing one, brings the stored time
+            forward. Omitted with `occurrenceCount`.
           x-oapi-codegen-extra-tags:
             db: last_seen_at
           x-order: 20

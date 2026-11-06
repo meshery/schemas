@@ -104,13 +104,13 @@ export interface paths {
         put?: never;
         /**
          * Create a new event
-         * @description Records an event and answers 201 with it. The server assigns the organization from the session; clients do not send it.
+         * @description Records an event and answers 201 with it. The server assigns the organization from the session; clients do not send it. A server MAY answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `Event-Disposition: created`, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read `Event-Disposition` rather than the status code to tell created from replayed.
          *
          *     **Retries (`idempotencyKey`).** When the payload carries an `idempotencyKey` the authenticated caller already used, nothing is recorded or changed and the answer is 200 with the event that key is bound to (`Event-Disposition: replayed`). This check runs first, so a retried create never counts an occurrence twice.
          *
          *     **Conditions (`correlationKey`).** A payload that carries a `correlationKey` reports an occurrence of an ongoing condition. A condition is open while its event has no `resolvedAt`, and the authenticated caller (organization and user, as for `idempotencyKey`) has at most one open event per key; the server enforces that atomically. A call that identifies no user records the event without correlating it. For a payload without `resolvedAt`: when the caller has an open event with the key, no event is recorded; that event's `occurrenceCount` grows by the payload's `occurrenceCount` (1 when omitted), its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with it (`Event-Disposition: incremented`). Every other field keeps the value it was first recorded with. Otherwise a new event is recorded, which opens the condition: `occurrenceCount` defaults to 1, `firstSeenAt` to the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt, and `lastSeenAt` to the payload's `lastSeenAt`, else `firstSeenAt` (201, `Event-Disposition: created`).
          *
-         *     **Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, nothing new is recorded: that event gets the `resolvedAt`, its `severity` and `description` become the payload's when the payload carries them (an omitted field keeps the stored value) so the closed condition reads as cleared, its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with the closed event (`Event-Disposition: resolved`). Every other field keeps the value it was recorded with. When none is open, the payload is recorded as a new, already resolved event (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.
+         *     **Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, nothing new is recorded: that event gets the `resolvedAt`, its `severity` and `description` become the payload's when the payload carries them (an omitted field keeps the stored value) so the closed condition reads as cleared, its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with the closed event (`Event-Disposition: resolved`). Every other field keeps the value it was recorded with, so `occurrenceCount` does not grow. When none is open, the payload is recorded as a new, already resolved event, using the opening defaults: `occurrenceCount` is the payload's (1 when omitted), and `firstSeenAt` and `lastSeenAt` are the payload's, else `resolvedAt` (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.
          *
          *     **Composition.** When a create that carries both keys does not replay, its `idempotencyKey` is bound to the event the create recorded, incremented or resolved, so a retry answers 200 with that event and changes nothing. Deduplication a server applies on its own, without a client key, must not swallow an occurrence of an event that carries a `correlationKey`: the occurrence counts. Whether a counted occurrence notifies anyone again is the reader's policy, not this operation's. See docs/event-correlation-contract.md.
          */
@@ -227,16 +227,16 @@ export interface components {
             idempotencyKey?: string;
             /** @description Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates. */
             correlationKey?: string;
-            /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. With a `correlationKey` it is added to the open condition's count. */
+            /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. A correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted. */
             occurrenceCount?: number;
             /**
              * Format: date-time
-             * @description When the producer first saw the occurrences this create reports; omitted means `lastSeenAt`, or the time of receipt. Kept only when the create opens a condition.
+             * @description When the producer first saw the occurrences this create reports. Omitted while opening a condition means `lastSeenAt`, or the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when the create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
              */
             firstSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt.
+             * @description When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`. Omitted while counting an open condition, or while closing one, means the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
              */
             lastSeenAt?: string;
             /**
@@ -357,16 +357,16 @@ export interface components {
             createdAt?: string;
             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
             correlationKey?: string;
-            /** @description How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount). */
+            /** @description How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount). */
             occurrenceCount?: number;
             /**
              * Format: date-time
-             * @description When the condition's first counted occurrence was seen.
+             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
              */
             firstSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the condition's latest counted occurrence was seen.
+             * @description When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
              */
             lastSeenAt?: string;
             /**
@@ -390,6 +390,39 @@ export interface components {
             traceId?: string;
             /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
             parentId?: string;
+            /**
+             * Format: uuid
+             * @description Event ID (see Event.id).
+             */
+            id?: string;
+            /**
+             * Format: uuid
+             * @description ID of the entity on which the event was performed (see Event.actedUpon).
+             */
+            actedUpon?: string;
+            /**
+             * Format: uuid
+             * @description ID correlating the events one operation emitted (see Event.operationId).
+             */
+            operationId?: string;
+            /** @description Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values. */
+            severity?: string;
+            /** @description Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values. */
+            status?: string;
+            /** @description Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError. */
+            metadata?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Format: date-time
+             * @description Timestamp when the event was last updated (see Event.updatedAt).
+             */
+            updatedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).
+             */
+            deletedAt?: string | null;
         };
         /** @description One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields. */
         Event: {
@@ -460,16 +493,16 @@ export interface components {
             deletedAt?: string | null;
             /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
             correlationKey?: string;
-            /** @description How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+            /** @description How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count. */
             occurrenceCount?: number;
             /**
              * Format: date-time
-             * @description When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
+             * @description When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.
              */
             firstSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
+             * @description When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.
              */
             lastSeenAt?: string;
             /**
@@ -551,16 +584,16 @@ export interface components {
                 createdAt?: string;
                 /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                 correlationKey?: string;
-                /** @description How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount). */
+                /** @description How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount). */
                 occurrenceCount?: number;
                 /**
                  * Format: date-time
-                 * @description When the condition's first counted occurrence was seen.
+                 * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
                  */
                 firstSeenAt?: string;
                 /**
                  * Format: date-time
-                 * @description When the condition's latest counted occurrence was seen.
+                 * @description When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
                  */
                 lastSeenAt?: string;
                 /**
@@ -584,6 +617,39 @@ export interface components {
                 traceId?: string;
                 /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
                 parentId?: string;
+                /**
+                 * Format: uuid
+                 * @description Event ID (see Event.id).
+                 */
+                id?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the entity on which the event was performed (see Event.actedUpon).
+                 */
+                actedUpon?: string;
+                /**
+                 * Format: uuid
+                 * @description ID correlating the events one operation emitted (see Event.operationId).
+                 */
+                operationId?: string;
+                /** @description Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values. */
+                severity?: string;
+                /** @description Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values. */
+                status?: string;
+                /** @description Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError. */
+                metadata?: {
+                    [key: string]: unknown;
+                } | null;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the event was last updated (see Event.updatedAt).
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).
+                 */
+                deletedAt?: string | null;
             }[];
         };
         /**
@@ -1105,7 +1171,7 @@ export interface components {
     };
     requestBodies: never;
     headers: {
-        /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
+        /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server MAY answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `created`, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read this header rather than the status code to tell created from replayed. A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
         EventDisposition: "created" | "replayed" | "incremented" | "resolved";
     };
     pathItems: never;
@@ -1555,16 +1621,16 @@ export interface operations {
                             createdAt?: string;
                             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                             correlationKey?: string;
-                            /** @description How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount). */
+                            /** @description How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount). */
                             occurrenceCount?: number;
                             /**
                              * Format: date-time
-                             * @description When the condition's first counted occurrence was seen.
+                             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
                              */
                             firstSeenAt?: string;
                             /**
                              * Format: date-time
-                             * @description When the condition's latest counted occurrence was seen.
+                             * @description When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
                              */
                             lastSeenAt?: string;
                             /**
@@ -1588,6 +1654,39 @@ export interface operations {
                             traceId?: string;
                             /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
                             parentId?: string;
+                            /**
+                             * Format: uuid
+                             * @description Event ID (see Event.id).
+                             */
+                            id?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the entity on which the event was performed (see Event.actedUpon).
+                             */
+                            actedUpon?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID correlating the events one operation emitted (see Event.operationId).
+                             */
+                            operationId?: string;
+                            /** @description Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values. */
+                            severity?: string;
+                            /** @description Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values. */
+                            status?: string;
+                            /** @description Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError. */
+                            metadata?: {
+                                [key: string]: unknown;
+                            } | null;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the event was last updated (see Event.updatedAt).
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).
+                             */
+                            deletedAt?: string | null;
                         }[];
                     };
                 };
@@ -1784,16 +1883,16 @@ export interface operations {
                     idempotencyKey?: string;
                     /** @description Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates. */
                     correlationKey?: string;
-                    /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. With a `correlationKey` it is added to the open condition's count. */
+                    /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. A correlated create that does not resolve (no `resolvedAt`) adds this count to the open condition. A resolving create on that open event does not add it. A resolving create with no open condition is inserted already resolved with this count, 1 when omitted. */
                     occurrenceCount?: number;
                     /**
                      * Format: date-time
-                     * @description When the producer first saw the occurrences this create reports; omitted means `lastSeenAt`, or the time of receipt. Kept only when the create opens a condition.
+                     * @description When the producer first saw the occurrences this create reports. Omitted while opening a condition means `lastSeenAt`, or the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when the create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
                      */
                     firstSeenAt?: string;
                     /**
                      * Format: date-time
-                     * @description When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition means the time of receipt.
+                     * @description When the producer last saw the occurrences this create reports. Omitted while opening a condition means `firstSeenAt`. Omitted while counting an open condition, or while closing one, means the time of receipt. Omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
                      */
                     lastSeenAt?: string;
                     /**
@@ -1823,10 +1922,10 @@ export interface operations {
             };
         };
         responses: {
-            /** @description No new event was recorded. The answer is the existing event the create resolved to: the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`). */
+            /** @description The event the create resolved to. When no new event was recorded, that is the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`). A server MAY also answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `Event-Disposition: created`, returning the event it just recorded, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read `Event-Disposition` rather than the status code to tell created from replayed. */
             200: {
                 headers: {
-                    /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
+                    /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server MAY answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `created`, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read this header rather than the status code to tell created from replayed. A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
                     "Event-Disposition"?: "created" | "replayed" | "incremented" | "resolved";
                     [name: string]: unknown;
                 };
@@ -1899,16 +1998,16 @@ export interface operations {
                         deletedAt?: string | null;
                         /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
                         correlationKey?: string;
-                        /** @description How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+                        /** @description How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count. */
                         occurrenceCount?: number;
                         /**
                          * Format: date-time
-                         * @description When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
+                         * @description When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.
                          */
                         firstSeenAt?: string;
                         /**
                          * Format: date-time
-                         * @description When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
+                         * @description When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.
                          */
                         lastSeenAt?: string;
                         /**
@@ -1935,10 +2034,10 @@ export interface operations {
                     };
                 };
             };
-            /** @description A new event was recorded (`Event-Disposition: created`). With a `correlationKey`, it opens a condition, or records one already resolved when the payload carries `resolvedAt`. */
+            /** @description A new event was recorded (`Event-Disposition: created`). With a `correlationKey`, it opens a condition, or records one already resolved when the payload carries `resolvedAt`. An already resolved insert uses `occurrenceCount` 1 when omitted, and `firstSeenAt` and `lastSeenAt` from the payload, else `resolvedAt`. */
             201: {
                 headers: {
-                    /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
+                    /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server MAY answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `created`, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read this header rather than the status code to tell created from replayed. A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
                     "Event-Disposition"?: "created" | "replayed" | "incremented" | "resolved";
                     [name: string]: unknown;
                 };
@@ -2011,16 +2110,16 @@ export interface operations {
                         deletedAt?: string | null;
                         /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
                         correlationKey?: string;
-                        /** @description How many occurrences of the condition this event counts: the payload's `occurrenceCount` when it was recorded (1 when that was omitted), growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+                        /** @description How many occurrences of the condition this event counts. An opening create, or a resolving create inserted already resolved, stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it. Omitted for an event recorded without a `correlationKey` and no count. */
                         occurrenceCount?: number;
                         /**
                          * Format: date-time
-                         * @description When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
+                         * @description When the condition's first counted occurrence was seen. An opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted with `occurrenceCount`.
                          */
                         firstSeenAt?: string;
                         /**
                          * Format: date-time
-                         * @description When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
+                         * @description When the condition was last seen. An opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted with `occurrenceCount`.
                          */
                         lastSeenAt?: string;
                         /**
@@ -2185,16 +2284,16 @@ export interface operations {
                             createdAt?: string;
                             /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
                             correlationKey?: string;
-                            /** @description How many occurrences of the condition the event counts: the creating payload's `occurrenceCount` (1 when omitted), growing as later occurrences are counted (see Event.occurrenceCount). */
+                            /** @description How many occurrences of the condition the event counts: the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it (see Event.occurrenceCount). */
                             occurrenceCount?: number;
                             /**
                              * Format: date-time
-                             * @description When the condition's first counted occurrence was seen.
+                             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
                              */
                             firstSeenAt?: string;
                             /**
                              * Format: date-time
-                             * @description When the condition's latest counted occurrence was seen.
+                             * @description When the condition was last seen (see Event.lastSeenAt). An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
                              */
                             lastSeenAt?: string;
                             /**
@@ -2218,6 +2317,39 @@ export interface operations {
                             traceId?: string;
                             /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
                             parentId?: string;
+                            /**
+                             * Format: uuid
+                             * @description Event ID (see Event.id).
+                             */
+                            id?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the entity on which the event was performed (see Event.actedUpon).
+                             */
+                            actedUpon?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID correlating the events one operation emitted (see Event.operationId).
+                             */
+                            operationId?: string;
+                            /** @description Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values. */
+                            severity?: string;
+                            /** @description Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values. */
+                            status?: string;
+                            /** @description Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError. */
+                            metadata?: {
+                                [key: string]: unknown;
+                            } | null;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the event was last updated (see Event.updatedAt).
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).
+                             */
+                            deletedAt?: string | null;
                         }[];
                     };
                 };
