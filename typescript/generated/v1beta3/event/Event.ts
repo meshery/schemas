@@ -361,12 +361,12 @@ export interface components {
             occurrenceCount?: number;
             /**
              * Format: date-time
-             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
+             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
              */
             firstSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
+             * @description When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
              */
             lastSeenAt?: string;
             /**
@@ -588,12 +588,12 @@ export interface components {
                 occurrenceCount?: number;
                 /**
                  * Format: date-time
-                 * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
+                 * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
                  */
                 firstSeenAt?: string;
                 /**
                  * Format: date-time
-                 * @description When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
+                 * @description When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
                  */
                 lastSeenAt?: string;
                 /**
@@ -1624,12 +1624,12 @@ export interface operations {
                             occurrenceCount?: number;
                             /**
                              * Format: date-time
-                             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
+                             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
                              */
                             firstSeenAt?: string;
                             /**
                              * Format: date-time
-                             * @description When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
+                             * @description When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
                              */
                             lastSeenAt?: string;
                             /**
@@ -2287,12 +2287,12 @@ export interface operations {
                             occurrenceCount?: number;
                             /**
                              * Format: date-time
-                             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
+                             * @description When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
                              */
                             firstSeenAt?: string;
                             /**
                              * Format: date-time
-                             * @description When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
+                             * @description When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
                              */
                             lastSeenAt?: string;
                             /**

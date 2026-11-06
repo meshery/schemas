@@ -444,14 +444,14 @@ type EventResult struct {
 	// FirstName The first name of the user associated with the event.
 	FirstName *string `json:"firstName,omitempty" yaml:"firstName,omitempty"`
 
-	// FirstSeenAt When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`.
+	// FirstSeenAt When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
 	FirstSeenAt *time.Time `db:"first_seen_at" json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
 	ID          core.Id    `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
-	// LastSeenAt When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`.
+	// LastSeenAt When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
 	// Metadata Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` is an EventError.
