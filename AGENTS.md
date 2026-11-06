@@ -112,6 +112,8 @@ Exception: an **event-metadata construct** (no endpoints; recorded and read back
 
 Exception: a **read-through construct** (has endpoints but no stored row; every call reads the object from another system or computes it, e.g. `oauth_consent_request`) declares no `id`, `created_at`, `updated_at` or `deleted_at`. See [the authoring reference](docs/schema-authoring-reference.md#read-through-constructs-have-no-stored-row).
 
+Exception: a **definition construct** (no endpoints and no stored row; a document components publish as files, e.g. `error`) declares no `id`, `created_at`, `updated_at` or `deleted_at`. See [the authoring reference](docs/schema-authoring-reference.md#definition-constructs-have-neither-endpoints-nor-a-stored-row).
+
 ### Rule 2: Every writable entity needs a `*Payload` schema in `api.yml`
 
 For any entity that has `POST` or `PUT` operations, define a `{Construct}Payload` schema in `api.yml` that:

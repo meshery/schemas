@@ -13,6 +13,7 @@ occurrence of a definition, carried as an error event's `metadata.error`
 | --- | --- |
 | Schema | `schemas/constructs/v1beta3/error/api.yml`, `error.yaml` |
 | Go | `github.com/meshery/schemas/models/v1beta3/errorcode` (package `errorcode`, not `error`, so importers keep the predeclared `error` type) |
+| Generated TypeScript | `typescript/generated/v1beta3/errorcode/Errorcode.ts`, published as `@meshery/schemas/constructs/v1beta3/errorcode/Errorcode` (the package name override names this output too) |
 | TypeScript types | `v1beta3.ErrorDefinition`, `v1beta3.ProbableCause`, `v1beta3.Remediation`, `v1beta3.ActionPolicy`, `v1beta3.ErrorComponent`, `v1beta3.ErrorSeverity`, `v1beta3.ErrorReferenceIndex`, `v1beta3.EventError`, `v1beta3.EventMatchedCause` from `@meshery/schemas` |
 | Helpers | Go `errorcode.FlattenProbableCauses`, `ErrorDefinition.Validate`, `ErrorReferenceIndex.Validate`, and `event.EventError.Validate`; TypeScript `flattenProbableCauses`, `validateErrorDefinition`, `validateErrorReferenceIndex`, `validateEventError` |
 

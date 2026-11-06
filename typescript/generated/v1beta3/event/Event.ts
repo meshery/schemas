@@ -104,7 +104,15 @@ export interface paths {
         put?: never;
         /**
          * Create a new event
-         * @description Records an event and answers 201 with it. When the payload carries an `idempotencyKey` the authenticated caller already used, nothing new is recorded and the answer is 200 with the event first recorded under that key. The server assigns the organization from the session; clients do not send it.
+         * @description Records an event and answers 201 with it. The server assigns the organization from the session; clients do not send it.
+         *
+         *     **Retries (`idempotencyKey`).** When the payload carries an `idempotencyKey` the authenticated caller already used, nothing is recorded or changed and the answer is 200 with the event that key is bound to (`Event-Disposition: replayed`). This check runs first, so a retried create never counts an occurrence twice.
+         *
+         *     **Conditions (`correlationKey`).** A payload that carries a `correlationKey` reports an occurrence of an ongoing condition. A condition is open while its event has no `resolvedAt`, and the authenticated caller (organization and user, as for `idempotencyKey`) has at most one open event per key; the server enforces that atomically. A call that identifies no user records the event without correlating it. For a payload without `resolvedAt`: when the caller has an open event with the key, no event is recorded; that event's `occurrenceCount` grows by the payload's `occurrenceCount` (1 when omitted), its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and the answer is 200 with it (`Event-Disposition: incremented`). Every other field keeps the value it was first recorded with. Otherwise a new event is recorded, which opens the condition: `occurrenceCount` defaults to 1, `firstSeenAt` to the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt, and `lastSeenAt` to the payload's `lastSeenAt`, else `firstSeenAt` (201, `Event-Disposition: created`).
+         *
+         *     **Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, that event gets the `resolvedAt`, nothing new is recorded, and the answer is 200 with the closed event (`Event-Disposition: resolved`). When none is open, the payload is recorded as a new, already resolved event (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.
+         *
+         *     **Composition.** When a create that carries both keys does not replay, its `idempotencyKey` is bound to the event the create recorded, incremented or resolved, so a retry answers 200 with that event and changes nothing. Deduplication a server applies on its own, without a client key, must not swallow an occurrence of an event that carries a `correlationKey`: the occurrence counts. Whether a counted occurrence notifies anyone again is the reader's policy, not this operation's. See docs/event-correlation-contract.md.
          */
         post: operations["createEvent"];
         delete?: never;
@@ -215,6 +223,41 @@ export interface components {
             description?: string;
             /** @description Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication. */
             idempotencyKey?: string;
+            /** @description Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates. */
+            correlationKey?: string;
+            /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. With a `correlationKey` it is added to the open condition's count. */
+            occurrenceCount?: number;
+            /**
+             * Format: date-time
+             * @description When the producer first saw the occurrences this create reports; omitted means `lastSeenAt`, or the time of receipt. Kept only when the create opens a condition.
+             */
+            firstSeenAt?: string;
+            /**
+             * Format: date-time
+             * @description When the producer last saw the occurrences this create reports; omitted means the time of receipt.
+             */
+            lastSeenAt?: string;
+            /**
+             * Format: date-time
+             * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, so the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+             */
+            resolvedAt?: string;
+            /**
+             * Format: uri-reference
+             * @description Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
+             */
+            source?: string;
+            /** @description CloudEvents-compatible `type`: a reverse-DNS name of the kind of occurrence, for example `io.meshery.user.signup`. It does not replace `category` and `action`, which stay two free strings; `type` is for CloudEvents-aware consumers. */
+            type?: string;
+            /**
+             * @description The CloudEvents specification version the event's `source`, `type` and `id` are compatible with, when the producer sets them as CloudEvents attributes. A Meshery event is CloudEvents compatible; it is not a CloudEvent.
+             * @enum {string}
+             */
+            specversion?: "1.0";
+            /** @description W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time. */
+            traceId?: string;
+            /** @description W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server. */
+            parentId?: string;
         } & {
             [key: string]: unknown;
         };
@@ -310,6 +353,41 @@ export interface components {
              * @description Timestamp when the event was recorded.
              */
             createdAt?: string;
+            /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
+            correlationKey?: string;
+            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). */
+            occurrenceCount?: number;
+            /**
+             * Format: date-time
+             * @description When the condition's first counted occurrence was seen.
+             */
+            firstSeenAt?: string;
+            /**
+             * Format: date-time
+             * @description When the condition's latest counted occurrence was seen.
+             */
+            lastSeenAt?: string;
+            /**
+             * Format: date-time
+             * @description When the condition cleared; omitted while it is open (see Event.resolvedAt).
+             */
+            resolvedAt?: string;
+            /**
+             * Format: uri-reference
+             * @description Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source).
+             */
+            source?: string;
+            /** @description CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type). */
+            type?: string;
+            /**
+             * @description The CloudEvents specification version the event is compatible with (see Event.specversion).
+             * @enum {string}
+             */
+            specversion?: "1.0";
+            /** @description W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId). */
+            traceId?: string;
+            /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
+            parentId?: string;
         };
         /** @description One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields. */
         Event: {
@@ -329,7 +407,7 @@ export interface components {
             category: string;
             /** @description Human-readable summary of what happened. */
             description: string;
-            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
             metadata: {
                 [key: string]: unknown;
             } | null;
@@ -378,6 +456,41 @@ export interface components {
              * @description Timestamp when the event was soft-deleted; omitted when it was not.
              */
             deletedAt?: string | null;
+            /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
+            correlationKey?: string;
+            /** @description How many occurrences of the condition this event counts: 1 when it was recorded, growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+            occurrenceCount?: number;
+            /**
+             * Format: date-time
+             * @description When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
+             */
+            firstSeenAt?: string;
+            /**
+             * Format: date-time
+             * @description When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
+             */
+            lastSeenAt?: string;
+            /**
+             * Format: date-time
+             * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), after which a new occurrence opens a new event.
+             */
+            resolvedAt?: string;
+            /**
+             * Format: uri-reference
+             * @description Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+             */
+            source?: string;
+            /** @description CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification. */
+            type?: string;
+            /**
+             * @description The CloudEvents specification version the event is compatible with; see EventPayload.specversion.
+             * @enum {string}
+             */
+            specversion?: "1.0";
+            /** @description W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId. */
+            traceId?: string;
+            /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId. */
+            parentId?: string;
         };
         /** @description Paginated list of events. */
         EventsPage: {
@@ -434,8 +547,48 @@ export interface components {
                  * @description Timestamp when the event was recorded.
                  */
                 createdAt?: string;
+                /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
+                correlationKey?: string;
+                /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). */
+                occurrenceCount?: number;
+                /**
+                 * Format: date-time
+                 * @description When the condition's first counted occurrence was seen.
+                 */
+                firstSeenAt?: string;
+                /**
+                 * Format: date-time
+                 * @description When the condition's latest counted occurrence was seen.
+                 */
+                lastSeenAt?: string;
+                /**
+                 * Format: date-time
+                 * @description When the condition cleared; omitted while it is open (see Event.resolvedAt).
+                 */
+                resolvedAt?: string;
+                /**
+                 * Format: uri-reference
+                 * @description Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source).
+                 */
+                source?: string;
+                /** @description CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type). */
+                type?: string;
+                /**
+                 * @description The CloudEvents specification version the event is compatible with (see Event.specversion).
+                 * @enum {string}
+                 */
+                specversion?: "1.0";
+                /** @description W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId). */
+                traceId?: string;
+                /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
+                parentId?: string;
             }[];
         };
+        /**
+         * @description A CloudEvents specification version a Meshery event is compatible with. Only `1.0` is defined.
+         * @enum {string}
+         */
+        EventSpecVersion: "1.0";
         /**
          * @description Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
          * @default private
@@ -717,6 +870,76 @@ export interface components {
             /** @description One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents. */
             message?: string;
         };
+        /** @description The `metadata.error` of an event that reports an error: one occurrence of an ErrorDefinition (the error construct). It carries the code, the descriptions as rendered for this occurrence, the causes and remediations that apply, which of those causes are likely this time (`matchedCauses`), and the values the descriptions were rendered from (`details`). It holds only the error, never the design, the request or the response that failed. A producer that has only MeshKit's flat lists sends `probableCause` and `suggestedRemediation` alone; such an error is unpaired, and nothing may pair the lists by position. A producer with the nested form sends `probableCauses` and should also send the flat lists derived from it, for readers that predate the nesting. Like every metadata shape it is a sub-shape of Event.metadata, which stays a free-form map, so it has no `*Payload` twin (docs/error-definition-contract.md). */
+        EventError: {
+            /** @description The full error code, for example `meshery-server-1033`, as the definition names it. Consumers must tolerate codes they do not know. */
+            code: string;
+            /** @description The component that owns the code, when the producer names it; the code's prefix is the component's name. */
+            component?: {
+                /** @description The kind of component, for example `component` (Meshery Server), `adapter`, `library` (MeshKit) or `client` (mesheryctl). An open set: a new kind of component needs no schema change. */
+                type: string;
+                /** @description The component's name, for example `meshery-server`, `meshkit` or `mesheryctl`. It is the prefix of every code the component owns. */
+                name: string;
+            };
+            /**
+             * @description The definition's severity. The event's own `severity` is the level this occurrence was recorded at.
+             * @enum {string}
+             */
+            severity?: "emergency" | "alert" | "critical" | "fatal" | "error" | "warning" | "informational" | "debug";
+            /** @description The definition's short description, rendered for this occurrence. */
+            shortDescription?: string;
+            /** @description The definition's long description, rendered for this occurrence. */
+            longDescription?: string;
+            /** @description The definition's causes that apply to this occurrence, each with the remediations that answer it, in the definition's order. A producer may narrow the definition's causes to those that can apply; omitted when the producer has only flat lists. */
+            probableCauses?: {
+                /** @description Stable id of the cause, unique within the error's definition, for example `service-not-running`. An event names the causes that apply to one occurrence by this id (`EventError.matchedCauses`), and the docs page links to it, so it never changes once published. Lowercase words joined by hyphens. */
+                id: string;
+                /** @description What may have caused the error, for example `The service is not running.` */
+                description: string;
+                /** @description What answers this cause, the most likely fix first. A remediation that also answers another cause is repeated under that cause with the same `id` and identical fields. */
+                remediations: {
+                    /** @description Stable id of the remediation, unique within the error's definition, for example `start-service`. The same id under two causes is one remediation answering both, so its fields must be identical in each place, and the flattened `suggestedRemediation` list carries it once. Lowercase words joined by hyphens. */
+                    id: string;
+                    /** @description What to do, written for a person, for example `Start the service.` */
+                    description: string;
+                    /** @description Identifier of an action a client can run to apply this remediation, as dot-separated lowercase words, for example `service.start` or `connection.reconnect`. The client that runs it owns its meaning; the definition only names it. Omitted when only a person can apply the remediation. */
+                    action?: string;
+                    /**
+                     * @description Whether a client may run `action` on its own. `automatic` and `requiresApproval` need an `action`. Omitted means `manual`.
+                     * @default manual
+                     * @enum {string}
+                     */
+                    actionPolicy: "automatic" | "requiresApproval" | "manual";
+                }[];
+            }[];
+            /** @description The causes most likely for this occurrence, most likely first, so a reader leads with their remediations. Each names a cause `id` of the definition and, when `probableCauses` is present, one of its causes. Omitted when the producer cannot tell which cause applies. */
+            matchedCauses?: {
+                /** @description The `id` of the matched cause in the error's definition (ProbableCause.id). */
+                causeId: string;
+                /** @description How sure the producer is that this cause applies, from 0 (a guess) to 1 (certain); omitted when the producer does not estimate it. */
+                confidence?: number;
+            }[];
+            /** @description The flat list of cause descriptions (MeshKit's `ProbableCause`). With `probableCauses`, it equals each cause's `description` in order; without, it is unpaired. */
+            probableCause?: string[];
+            /** @description The flat list of remediation descriptions (MeshKit's `SuggestedRemediation`). With `probableCauses`, it equals every remediation's `description` in order, each remediation `id` once; without, it is unpaired. */
+            suggestedRemediation?: string[];
+            /**
+             * Format: uri
+             * @description The code's page on docs.meshery.io (ErrorDefinition.referenceUrl), when the producer knows it.
+             */
+            referenceUrl?: string;
+            /** @description The instance values this occurrence's descriptions were rendered from, for example the connection name or the path that failed. Keys are camelCase. Never secrets, credentials, design contents or request bodies; Meshery Server's 16 KB metadata guard applies. */
+            details?: {
+                [key: string]: unknown;
+            };
+        };
+        /** @description One cause an error event names as likely for this occurrence (EventError.matchedCauses). */
+        EventMatchedCause: {
+            /** @description The `id` of the matched cause in the error's definition (ProbableCause.id). */
+            causeId: string;
+            /** @description How sure the producer is that this cause applies, from 0 (a guess) to 1 (certain); omitted when the producer does not estimate it. */
+            confidence?: number;
+        };
         /** @description Metadata of a design saved event (category `pattern`, action `create` or `update`): a history title and the saved design's ID and name, never its contents. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields. */
         DesignSavedEventMetadata: {
             /** @description One-line title of the save for the design's history, for example `Version v0.0.3 - 12 components and 9 relationships`. */
@@ -879,7 +1102,10 @@ export interface components {
         eventsScope: "user" | "organization";
     };
     requestBodies: never;
-    headers: never;
+    headers: {
+        /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
+        EventDisposition: "created" | "replayed" | "incremented" | "resolved";
+    };
     pathItems: never;
 }
 export type $defs = Record<string, never>;
@@ -1325,6 +1551,41 @@ export interface operations {
                              * @description Timestamp when the event was recorded.
                              */
                             createdAt?: string;
+                            /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
+                            correlationKey?: string;
+                            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). */
+                            occurrenceCount?: number;
+                            /**
+                             * Format: date-time
+                             * @description When the condition's first counted occurrence was seen.
+                             */
+                            firstSeenAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description When the condition's latest counted occurrence was seen.
+                             */
+                            lastSeenAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description When the condition cleared; omitted while it is open (see Event.resolvedAt).
+                             */
+                            resolvedAt?: string;
+                            /**
+                             * Format: uri-reference
+                             * @description Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source).
+                             */
+                            source?: string;
+                            /** @description CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type). */
+                            type?: string;
+                            /**
+                             * @description The CloudEvents specification version the event is compatible with (see Event.specversion).
+                             * @enum {string}
+                             */
+                            specversion?: "1.0";
+                            /** @description W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId). */
+                            traceId?: string;
+                            /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
+                            parentId?: string;
                         }[];
                     };
                 };
@@ -1517,15 +1778,52 @@ export interface operations {
                     description?: string;
                     /** @description Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication. */
                     idempotencyKey?: string;
+                    /** @description Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates. */
+                    correlationKey?: string;
+                    /** @description Number of occurrences this create reports, for a producer that counted repeats locally before sending; omitted means 1. With a `correlationKey` it is added to the open condition's count. */
+                    occurrenceCount?: number;
+                    /**
+                     * Format: date-time
+                     * @description When the producer first saw the occurrences this create reports; omitted means `lastSeenAt`, or the time of receipt. Kept only when the create opens a condition.
+                     */
+                    firstSeenAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description When the producer last saw the occurrences this create reports; omitted means the time of receipt.
+                     */
+                    lastSeenAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, so the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+                     */
+                    resolvedAt?: string;
+                    /**
+                     * Format: uri-reference
+                     * @description Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
+                     */
+                    source?: string;
+                    /** @description CloudEvents-compatible `type`: a reverse-DNS name of the kind of occurrence, for example `io.meshery.user.signup`. It does not replace `category` and `action`, which stay two free strings; `type` is for CloudEvents-aware consumers. */
+                    type?: string;
+                    /**
+                     * @description The CloudEvents specification version the event's `source`, `type` and `id` are compatible with, when the producer sets them as CloudEvents attributes. A Meshery event is CloudEvents compatible; it is not a CloudEvent.
+                     * @enum {string}
+                     */
+                    specversion?: "1.0";
+                    /** @description W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time. */
+                    traceId?: string;
+                    /** @description W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server. */
+                    parentId?: string;
                 } & {
                     [key: string]: unknown;
                 };
             };
         };
         responses: {
-            /** @description An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded. */
+            /** @description No new event was recorded. The answer is the existing event the create resolved to: the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt` (`resolved`). */
             200: {
                 headers: {
+                    /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
+                    "Event-Disposition"?: "created" | "replayed" | "incremented" | "resolved";
                     [name: string]: unknown;
                 };
                 content: {
@@ -1546,7 +1844,7 @@ export interface operations {
                         category: string;
                         /** @description Human-readable summary of what happened. */
                         description: string;
-                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
                         metadata: {
                             [key: string]: unknown;
                         } | null;
@@ -1595,12 +1893,49 @@ export interface operations {
                          * @description Timestamp when the event was soft-deleted; omitted when it was not.
                          */
                         deletedAt?: string | null;
+                        /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
+                        correlationKey?: string;
+                        /** @description How many occurrences of the condition this event counts: 1 when it was recorded, growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+                        occurrenceCount?: number;
+                        /**
+                         * Format: date-time
+                         * @description When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
+                         */
+                        firstSeenAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
+                         */
+                        lastSeenAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), after which a new occurrence opens a new event.
+                         */
+                        resolvedAt?: string;
+                        /**
+                         * Format: uri-reference
+                         * @description Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+                         */
+                        source?: string;
+                        /** @description CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification. */
+                        type?: string;
+                        /**
+                         * @description The CloudEvents specification version the event is compatible with; see EventPayload.specversion.
+                         * @enum {string}
+                         */
+                        specversion?: "1.0";
+                        /** @description W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId. */
+                        traceId?: string;
+                        /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId. */
+                        parentId?: string;
                     };
                 };
             };
-            /** @description Event created */
+            /** @description A new event was recorded (`Event-Disposition: created`). With a `correlationKey`, it opens a condition, or records one already resolved when the payload carries `resolvedAt`. */
             201: {
                 headers: {
+                    /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
+                    "Event-Disposition"?: "created" | "replayed" | "incremented" | "resolved";
                     [name: string]: unknown;
                 };
                 content: {
@@ -1621,7 +1956,7 @@ export interface operations {
                         category: string;
                         /** @description Human-readable summary of what happened. */
                         description: string;
-                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
                         metadata: {
                             [key: string]: unknown;
                         } | null;
@@ -1670,6 +2005,41 @@ export interface operations {
                          * @description Timestamp when the event was soft-deleted; omitted when it was not.
                          */
                         deletedAt?: string | null;
+                        /** @description Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition. */
+                        correlationKey?: string;
+                        /** @description How many occurrences of the condition this event counts: 1 when it was recorded, growing as createEvent counts later occurrences of the open condition. Omitted for an event recorded without a `correlationKey` and no count. */
+                        occurrenceCount?: number;
+                        /**
+                         * Format: date-time
+                         * @description When the condition's first counted occurrence was seen; omitted with `occurrenceCount`.
+                         */
+                        firstSeenAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
+                         */
+                        lastSeenAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), after which a new occurrence opens a new event.
+                         */
+                        resolvedAt?: string;
+                        /**
+                         * Format: uri-reference
+                         * @description Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+                         */
+                        source?: string;
+                        /** @description CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification. */
+                        type?: string;
+                        /**
+                         * @description The CloudEvents specification version the event is compatible with; see EventPayload.specversion.
+                         * @enum {string}
+                         */
+                        specversion?: "1.0";
+                        /** @description W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId. */
+                        traceId?: string;
+                        /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId. */
+                        parentId?: string;
                     };
                 };
             };
@@ -1809,6 +2179,41 @@ export interface operations {
                              * @description Timestamp when the event was recorded.
                              */
                             createdAt?: string;
+                            /** @description Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
+                            correlationKey?: string;
+                            /** @description How many occurrences of the condition the event counts (see Event.occurrenceCount). */
+                            occurrenceCount?: number;
+                            /**
+                             * Format: date-time
+                             * @description When the condition's first counted occurrence was seen.
+                             */
+                            firstSeenAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description When the condition's latest counted occurrence was seen.
+                             */
+                            lastSeenAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description When the condition cleared; omitted while it is open (see Event.resolvedAt).
+                             */
+                            resolvedAt?: string;
+                            /**
+                             * Format: uri-reference
+                             * @description Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source).
+                             */
+                            source?: string;
+                            /** @description CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type). */
+                            type?: string;
+                            /**
+                             * @description The CloudEvents specification version the event is compatible with (see Event.specversion).
+                             * @enum {string}
+                             */
+                            specversion?: "1.0";
+                            /** @description W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId). */
+                            traceId?: string;
+                            /** @description W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
+                            parentId?: string;
                         }[];
                     };
                 };

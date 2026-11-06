@@ -1,4 +1,4 @@
-import type { components as ErrorComponents } from "../generated/v1beta3/error/Error";
+import type { components as ErrorComponents } from "../generated/v1beta3/errorcode/Errorcode";
 import type { components as EventComponents } from "../generated/v1beta3/event/Event";
 
 /**
