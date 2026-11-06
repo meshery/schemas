@@ -108,9 +108,9 @@ export interface paths {
          *
          *     **Retries (`idempotencyKey`).** When the payload carries an `idempotencyKey` the authenticated caller already used, nothing is recorded or changed and the answer is 200 with the event that key is bound to (`Event-Disposition: replayed`). This check runs first, so a retried create never counts an occurrence twice.
          *
-         *     **Conditions (`correlationKey`).** A payload that carries a `correlationKey` reports an occurrence of an ongoing condition. A condition is open while its event has no `resolvedAt`, and the authenticated caller (organization and user, as for `idempotencyKey`) has at most one open event per key; the server enforces that atomically. A call that identifies no user records the event without correlating it. For a payload without `resolvedAt`: when the caller has an open event with the key, no event is recorded; that event's `occurrenceCount` grows by the payload's `occurrenceCount` (1 when omitted), its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and the answer is 200 with it (`Event-Disposition: incremented`). Every other field keeps the value it was first recorded with. Otherwise a new event is recorded, which opens the condition: `occurrenceCount` defaults to 1, `firstSeenAt` to the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt, and `lastSeenAt` to the payload's `lastSeenAt`, else `firstSeenAt` (201, `Event-Disposition: created`).
+         *     **Conditions (`correlationKey`).** A payload that carries a `correlationKey` reports an occurrence of an ongoing condition. A condition is open while its event has no `resolvedAt`, and the authenticated caller (organization and user, as for `idempotencyKey`) has at most one open event per key; the server enforces that atomically. A call that identifies no user records the event without correlating it. For a payload without `resolvedAt`: when the caller has an open event with the key, no event is recorded; that event's `occurrenceCount` grows by the payload's `occurrenceCount` (1 when omitted), its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with it (`Event-Disposition: incremented`). Every other field keeps the value it was first recorded with. Otherwise a new event is recorded, which opens the condition: `occurrenceCount` defaults to 1, `firstSeenAt` to the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt, and `lastSeenAt` to the payload's `lastSeenAt`, else `firstSeenAt` (201, `Event-Disposition: created`).
          *
-         *     **Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, nothing new is recorded: that event gets the `resolvedAt`, its `severity` and `description` become the payload's so the closed condition reads as cleared, its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with the closed event (`Event-Disposition: resolved`). Every other field keeps the value it was recorded with. When none is open, the payload is recorded as a new, already resolved event (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.
+         *     **Resolution.** A producer closes a condition by creating an event with the condition's `correlationKey` and a `resolvedAt` time, after the condition clears. When the caller has an open event with the key, nothing new is recorded: that event gets the `resolvedAt`, its `severity` and `description` become the payload's when the payload carries them (an omitted field keeps the stored value) so the closed condition reads as cleared, its `lastSeenAt` becomes the later of its own and the payload's `lastSeenAt` (the time of receipt when omitted), and its `updatedAt` advances. The answer is 200 with the closed event (`Event-Disposition: resolved`). Every other field keeps the value it was recorded with. When none is open, the payload is recorded as a new, already resolved event (201, `created`). Once closed, the next occurrence opens a new condition with a new event. Send a resolution only when the condition changes from present to cleared, never on every healthy check.
          *
          *     **Composition.** When a create that carries both keys does not replay, its `idempotencyKey` is bound to the event the create recorded, incremented or resolved, so a retry answers 200 with that event and changes nothing. Deduplication a server applies on its own, without a client key, must not swallow an occurrence of an event that carries a `correlationKey`: the occurrence counts. Whether a counted occurrence notifies anyone again is the reader's policy, not this operation's. See docs/event-correlation-contract.md.
          */
@@ -221,6 +221,8 @@ export interface components {
             action?: string;
             /** @description Description of the event. */
             description?: string;
+            /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+            severity?: string;
             /** @description Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication. */
             idempotencyKey?: string;
             /** @description Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates. */
@@ -239,7 +241,7 @@ export interface components {
             lastSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+             * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
              */
             resolvedAt?: string;
             /**
@@ -472,7 +474,7 @@ export interface components {
             lastSeenAt?: string;
             /**
              * Format: date-time
-             * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+             * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
              */
             resolvedAt?: string;
             /**
@@ -1776,6 +1778,8 @@ export interface operations {
                     action?: string;
                     /** @description Description of the event. */
                     description?: string;
+                    /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+                    severity?: string;
                     /** @description Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication. */
                     idempotencyKey?: string;
                     /** @description Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates. */
@@ -1794,7 +1798,7 @@ export interface operations {
                     lastSeenAt?: string;
                     /**
                      * Format: date-time
-                     * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+                     * @description When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
                      */
                     resolvedAt?: string;
                     /**
@@ -1819,7 +1823,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description No new event was recorded. The answer is the existing event the create resolved to: the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's and its `lastSeenAt` brought forward (`resolved`). */
+            /** @description No new event was recorded. The answer is the existing event the create resolved to: the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged), the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`). */
             200: {
                 headers: {
                     /** @description What `createEvent` did with the payload: `created` (a new event was recorded), `replayed` (the `idempotencyKey` was already used; nothing changed), `incremented` (an occurrence of the open condition with this `correlationKey` was counted) or `resolved` (that condition was closed). A server that implements condition correlation sends it on every 200 and 201. A server that predates correlation omits it; there 201 means created and 200 means replayed. A browser client calling a server on another origin reads it only when that server lists it in `Access-Control-Expose-Headers`. */
@@ -1909,7 +1913,7 @@ export interface operations {
                         lastSeenAt?: string;
                         /**
                          * Format: date-time
-                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
                          */
                         resolvedAt?: string;
                         /**
@@ -2021,7 +2025,7 @@ export interface operations {
                         lastSeenAt?: string;
                         /**
                          * Format: date-time
-                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+                         * @description When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
                          */
                         resolvedAt?: string;
                         /**

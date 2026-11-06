@@ -58,7 +58,8 @@ this order:
 4. **`correlationKey` with `resolvedAt`**, a resolution:
    - When the caller has an open event with that key, nothing new is
      recorded. That event gets the `resolvedAt`. Its `severity` and
-     `description` become the payload's, so the closed condition reads as
+     `description` become the payload's when the payload carries them (an
+     omitted field keeps the stored value), so the closed condition reads as
      cleared. Its `lastSeenAt` becomes the later of its own value and the
      payload's `lastSeenAt` (the time of receipt when omitted). Its
      `updatedAt` advances. Every other field keeps the value it was recorded
@@ -113,7 +114,8 @@ A producer closes a condition by creating an event with:
 
 When the caller has an open event with that key, nothing new is recorded.
 The open event gets the `resolvedAt`, and its `severity` and `description`
-become the payload's, so the closed condition reads as cleared. Its
+become the payload's when the payload carries them (an omitted field keeps
+the stored value), so the closed condition reads as cleared. Its
 `lastSeenAt` becomes the later of its own value and the payload's
 `lastSeenAt` (the time of receipt when omitted), and its `updatedAt`
 advances. It sends a resolution only when the condition changes from present

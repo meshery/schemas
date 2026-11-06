@@ -229,9 +229,9 @@ paths:
         that event's `occurrenceCount` grows by the payload's
         `occurrenceCount` (1 when omitted), its `lastSeenAt` becomes the
         later of its own and the payload's `lastSeenAt` (the time of receipt
-        when omitted), and the answer is 200 with it
-        (`Event-Disposition: incremented`). Every other field keeps the value
-        it was first recorded with. Otherwise a new event is recorded, which
+        when omitted), and its `updatedAt` advances. The answer is 200 with
+        it (`Event-Disposition: incremented`). Every other field keeps the
+        value it was first recorded with. Otherwise a new event is recorded, which
         opens the condition: `occurrenceCount` defaults to 1, `firstSeenAt`
         to the payload's `firstSeenAt`, else its `lastSeenAt`, else the time
         of receipt, and `lastSeenAt` to the payload's `lastSeenAt`, else
@@ -242,7 +242,8 @@ paths:
         with the condition's `correlationKey` and a `resolvedAt` time, after
         the condition clears. When the caller has an open event with the key,
         nothing new is recorded: that event gets the `resolvedAt`, its
-        `severity` and `description` become the payload's so the closed
+        `severity` and `description` become the payload's when the payload
+        carries them (an omitted field keeps the stored value) so the closed
         condition reads as cleared, its `lastSeenAt` becomes the later of
         its own and the payload's `lastSeenAt` (the time of receipt when
         omitted), and its `updatedAt` advances. The answer is 200 with the
@@ -270,8 +271,9 @@ paths:
             `idempotencyKey` (`replayed`, unchanged), the open event of this
             `correlationKey` with the occurrence counted (`incremented`), or
             that event closed by the payload's `resolvedAt`, with its
-            `severity` and `description` replaced by the payload's and its
-            `lastSeenAt` brought forward (`resolved`).
+            `severity` and `description` replaced by the payload's when the
+            payload carries them (an omitted field keeps the stored value)
+            and its `lastSeenAt` brought forward (`resolved`).
           headers:
             Event-Disposition:
               $ref: '#/components/headers/EventDisposition'
@@ -593,6 +595,17 @@ components:
           type: string
           description: Description of the event.
           maxLength: 5000
+        severity:
+          type: string
+          description: >
+            Event level. MeshKit's producers set one of `emergency`, `alert`,
+            `critical`, `error`, `warning`, `informational`, `debug` or
+            `success`. The set is not closed on the wire - the event write
+            APIs persist the value they are given - so consumers must tolerate
+            other values.
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "severity,omitempty"
         idempotencyKey:
           type: string
           description: >
@@ -659,13 +672,14 @@ components:
             When the condition named by `correlationKey` cleared. A create that
             carries it is a resolution: it closes the caller's open event with
             that key, copying this payload's `severity` and `description` onto
-            the event and setting `lastSeenAt` to the later of the stored time
-            and this payload's `lastSeenAt` (the time of receipt when omitted),
-            so the closed condition reads as cleared and the next occurrence
-            opens a new condition (see createEvent). Give the resolution a
-            severity and description that say what cleared, for example
-            severity `success` and `Connection to cluster prod-1 restored`,
-            under the condition's category.
+            the event when this payload carries them (an omitted field keeps
+            the stored value) and setting `lastSeenAt` to the later of the
+            stored time and this payload's `lastSeenAt` (the time of receipt
+            when omitted), so the closed condition reads as cleared and the
+            next occurrence opens a new condition (see createEvent). Give the
+            resolution a severity and description that say what cleared, for
+            example severity `success` and `Connection to cluster prod-1
+            restored`, under the condition's category.
           x-oapi-codegen-extra-tags:
             json: "resolvedAt,omitempty"
         source:
@@ -1048,7 +1062,8 @@ components:
           description: >
             When the condition cleared. Omitted while the condition is open;
             set by a resolution (see createEvent), which also replaces
-            `severity` and `description` with the payload's and brings
+            `severity` and `description` with the payload's when the payload
+            carries them (an omitted field keeps the stored value) and brings
             `lastSeenAt` forward, after which a new occurrence opens a new
             event.
           x-oapi-codegen-extra-tags:

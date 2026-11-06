@@ -229,7 +229,7 @@ type Event struct {
 	// LastSeenAt When the condition's latest counted occurrence was seen; omitted with `occurrenceCount`.
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// ResolvedAt When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+	// ResolvedAt When the condition cleared. Omitted while the condition is open; set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
 	ResolvedAt *time.Time `db:"resolved_at" json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
 
 	// Source Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
@@ -390,8 +390,11 @@ type EventPayload struct {
 	// ParentID W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.
 	ParentID *string `json:"parentId,omitempty" yaml:"parentId,omitempty"`
 
-	// ResolvedAt When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+	// ResolvedAt When the condition named by `correlationKey` cleared. A create that carries it is a resolution: it closes the caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
 	ResolvedAt *time.Time `json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
+
+	// Severity Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+	Severity *string `json:"severity,omitempty" yaml:"severity,omitempty"`
 
 	// Source Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
 	Source *string `json:"source,omitempty" yaml:"source,omitempty"`
@@ -770,6 +773,14 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "resolvedAt")
 	}
 
+	if raw, found := object["severity"]; found {
+		err = json.Unmarshal(raw, &a.Severity)
+		if err != nil {
+			return fmt.Errorf("error reading 'severity': %w", err)
+		}
+		delete(object, "severity")
+	}
+
 	if raw, found := object["source"]; found {
 		err = json.Unmarshal(raw, &a.Source)
 		if err != nil {
@@ -903,6 +914,13 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		object["resolvedAt"], err = json.Marshal(a.ResolvedAt)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'resolvedAt': %w", err)
+		}
+	}
+
+	if a.Severity != nil {
+		object["severity"], err = json.Marshal(a.Severity)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'severity': %w", err)
 		}
 	}
 
