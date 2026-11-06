@@ -10,6 +10,7 @@ const { dereferenceOpenapiSpec } = require("../build/bundle-openapi");
 
 const root = path.join(__dirname, "..");
 const environmentSpec = path.join(root, "schemas/constructs/v1beta3/environment/api.yml");
+const rtkDir = path.join(root, "typescript/rtk");
 
 test("environment connection listings reuse the canonical Connection response", async () => {
   const source = yaml.load(fs.readFileSync(environmentSpec, "utf8"));
@@ -52,9 +53,35 @@ test("generated environment connection fields are checked rather than any", asyn
     });
     assert.equal(typeof generated, "string");
     fs.writeFileSync(path.join(temporary, "generated.ts"), generated);
-    const consumer = path.join(temporary, "consumer.ts");
-    fs.writeFileSync(consumer, `
-import type { GetEnvironmentConnectionsApiResponse } from "./generated";
+    assertConnectionResponseTypes(temporary, "generated");
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
+for (const target of ["cloud", "meshery"]) {
+  test(`generated ${target} RTK client preserves environment connection response types`, async () => {
+    // `make test-rtk` builds both bundled specs before running this test.
+    const temporary = fs.mkdtempSync(path.join(root, "_openapi_build", `${target}-rtk-`));
+    try {
+      const { default: config } = require(path.join(rtkDir, `${target}-rtk-config.ts`));
+      await generateEndpoints({
+        ...config,
+        schemaFile: path.resolve(rtkDir, config.schemaFile),
+        apiFile: path.resolve(rtkDir, config.apiFile).replaceAll(path.sep, "/"),
+        outputFile: path.join(temporary, `${target}.ts`),
+      });
+      assertConnectionResponseTypes(temporary, target);
+    } finally {
+      fs.rmSync(temporary, { recursive: true, force: true });
+    }
+  });
+}
+
+function assertConnectionResponseTypes(directory, client) {
+  const consumer = path.join(directory, "consumer.ts");
+  fs.writeFileSync(consumer, `
+import type { GetEnvironmentConnectionsApiResponse } from "./${client}";
 type Connection = NonNullable<GetEnvironmentConnectionsApiResponse["connections"]>[number];
 type IsAny<T> = 0 extends (1 & T) ? true : false;
 type Assert<T extends true> = T;
@@ -73,22 +100,19 @@ const invalidStatus: Connection["status"] = "not-a-status";
 // @ts-expect-error Connection does not expose arbitrary properties.
 connection.nonexistent;
 `);
-    const program = ts.createProgram([consumer], {
-      strict: true,
-      noEmit: true,
-      skipLibCheck: true,
-      esModuleInterop: true,
-      target: ts.ScriptTarget.ES2018,
-      module: ts.ModuleKind.CommonJS,
-      moduleResolution: ts.ModuleResolutionKind.Node10,
-    });
-    const diagnostics = ts.getPreEmitDiagnostics(program);
-    assert.equal(diagnostics.length, 0, ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-      getCanonicalFileName: (file) => file,
-      getCurrentDirectory: () => root,
-      getNewLine: () => "\n",
-    }));
-  } finally {
-    fs.rmSync(temporary, { recursive: true, force: true });
-  }
-});
+  const program = ts.createProgram([consumer], {
+    strict: true,
+    noEmit: true,
+    skipLibCheck: true,
+    esModuleInterop: true,
+    target: ts.ScriptTarget.ES2018,
+    module: ts.ModuleKind.CommonJS,
+    moduleResolution: ts.ModuleResolutionKind.Node10,
+  });
+  const diagnostics = ts.getPreEmitDiagnostics(program);
+  assert.equal(diagnostics.length, 0, ts.formatDiagnosticsWithColorAndContext(diagnostics, {
+    getCanonicalFileName: (file) => file,
+    getCurrentDirectory: () => root,
+    getNewLine: () => "\n",
+  }));
+}
