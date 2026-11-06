@@ -208,3 +208,97 @@ func TestScheduleRecurrenceGrammar(t *testing.T) {
 		}
 	}
 }
+
+// Schedule visibility is client-settable with default public, persisted via db: visibility.
+func TestScheduleVisibility(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), scheduleV1beta3Spec))
+	wantEnum := []string{"public", "org", "private"}
+	if got := sequenceStrings(mustLookup(t, doc, "components", "schemas", "ScheduleVisibility", "enum")); !reflect.DeepEqual(got, wantEnum) {
+		t.Errorf("ScheduleVisibility enum = %v, want %v", got, wantEnum)
+	}
+	if def := mustLookup(t, doc, "components", "schemas", "ScheduleVisibility", "default"); def != "public" {
+		t.Errorf("ScheduleVisibility default = %v, want public", def)
+	}
+
+	entity := loadYAMLMap(t, scheduleV1beta3Ent)
+	props := entity["properties"].(map[string]any)
+	vis := props["visibility"].(map[string]any)
+	if got := vis["$ref"]; got != "./api.yml#/components/schemas/ScheduleVisibility" {
+		t.Errorf("Schedule.visibility $ref = %v, want ScheduleVisibility ref", got)
+	}
+	if got := vis["default"]; got != "public" {
+		t.Errorf("Schedule.visibility default = %v, want public", got)
+	}
+	if got := vis["x-oapi-codegen-extra-tags"].(map[string]any)["db"]; got != "visibility" {
+		t.Errorf("Schedule.visibility db tag = %v, want visibility", got)
+	}
+	req := sequenceStrings(entity["required"])
+	foundReq := false
+	for _, r := range req {
+		if r == "visibility" {
+			foundReq = true
+			break
+		}
+	}
+	if !foundReq {
+		t.Errorf("Schedule.visibility must be in required list")
+	}
+
+	payload := mustLookup(t, doc, "components", "schemas", "SchedulePayload").(map[string]any)
+	payloadProps := payload["properties"].(map[string]any)
+	payloadVis, ok := payloadProps["visibility"].(map[string]any)
+	if !ok {
+		t.Fatalf("SchedulePayload must carry visibility")
+	}
+	if got := payloadVis["$ref"]; got != "#/components/schemas/ScheduleVisibility" {
+		t.Errorf("SchedulePayload.visibility $ref = %v, want #/components/schemas/ScheduleVisibility", got)
+	}
+}
+
+// Public activity-feed endpoint and response schema contract.
+func TestPublicActivityFeed(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), scheduleV1beta3Spec))
+	op := mustLookup(t, doc, "paths", "/api/public/activity-feed", "get")
+	if got := mustValue(op, "operationId"); got != "getPublicActivityFeed" {
+		t.Errorf("getPublicActivityFeed operationId = %v, want getPublicActivityFeed", got)
+	}
+	if got := sequenceStrings(mustValue(op, "x-internal")); !reflect.DeepEqual(got, []string{"cloud"}) {
+		t.Errorf("getPublicActivityFeed x-internal = %v, want [cloud]", got)
+	}
+	// Route is unauthenticated: security requirement is empty list
+	sec, ok := op.(map[string]any)["security"]
+	if !ok || len(sec.([]any)) != 0 {
+		t.Errorf("getPublicActivityFeed must have empty security requirement (unauthenticated)")
+	}
+
+	resp200 := mustLookup(t, op, "responses", "200")
+	schemaRef := mustLookup(t, resp200, "content", "application/json", "schema", "$ref")
+	if schemaRef != "#/components/schemas/PublicActivityFeedPage" && schemaRef != "#/components/schemas/PublicActivityFeed" {
+		t.Errorf("200 schema ref = %v, want PublicActivityFeedPage", schemaRef)
+	}
+
+	if _, ok := mappingValue(mustLookup(t, resp200, "headers"), "Cache-Control"); !ok {
+		t.Errorf("getPublicActivityFeed must include Cache-Control header")
+	}
+
+	item := mustLookup(t, doc, "components", "schemas", "PublicActivityFeedItem").(map[string]any)
+	if got := item["additionalProperties"]; got != false {
+		t.Errorf("PublicActivityFeedItem additionalProperties = %v, want false", got)
+	}
+	itemProps := item["properties"].(map[string]any)
+	for _, req := range []string{"userId", "platform", "roleResult", "completedAt", "visibility"} {
+		if _, ok := itemProps[req]; !ok {
+			t.Errorf("PublicActivityFeedItem must contain %s", req)
+		}
+	}
+	for _, opt := range []string{"displayName", "avatarUrl", "organizationName", "publicProfileUrl"} {
+		if _, ok := itemProps[opt]; !ok {
+			t.Errorf("PublicActivityFeedItem must contain %s", opt)
+		}
+	}
+	for _, banned := range []string{"email", "emails", "mail", "firstName", "lastName", "password", "token"} {
+		if _, has := itemProps[banned]; has {
+			t.Errorf("PublicActivityFeedItem must NEVER expose %s", banned)
+		}
+	}
+}

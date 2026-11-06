@@ -163,6 +163,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "status",
                           "retryCount",
                           "maxRetries",
+                          "visibility",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -763,6 +764,20 @@ const ScheduleSchema: Record<string, unknown> = {
                               "standard",
                               "brisk"
                             ]
+                          },
+                          "visibility": {
+                            "description": "Visibility of the schedule: `public` (the default) allows completed runs\nto appear on the unauthenticated public activity feed (subject to user\npreferences), `org` restricts visibility to members of the schedule's\norganization, and `private` restricts it to the schedule owner.\n",
+                            "default": "public",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility"
+                            },
+                            "x-order": 29,
+                            "type": "string",
+                            "enum": [
+                              "public",
+                              "org",
+                              "private"
+                            ]
                           }
                         }
                       },
@@ -885,7 +900,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Create a schedule",
         "operationId": "createSchedule",
-        "description": "Creates a schedule in the organization of the authenticated session,\nowned by the session user (`createdBy`). `status` accepts only\n`pending`, `scheduled` and `cancelled`; omitted, the server picks\n`scheduled` when the schedule has a due time and `pending` otherwise.\n`nextRunAt` defaults to `runAt`. A `targetId` must name a live\nresource of `targetType` in the organization, else 400. Send\n`paused: true` to create the schedule already paused.\n",
+        "description": "Creates a schedule in the organization of the authenticated session,\nowned by the session user (`createdBy`). `status` accepts only\n`pending`, `scheduled` and `cancelled`; omitted, the server picks\n`scheduled` when the schedule has a due time and `pending` otherwise.\n`nextRunAt` defaults to `runAt`. A `targetId` must name a live\nresource of `targetType` in the organization, else 400. Send\n`paused: true` to create the schedule already paused. `visibility`\ndefaults to `public`.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -1069,6 +1084,19 @@ const ScheduleSchema: Record<string, unknown> = {
                       "standard",
                       "brisk"
                     ]
+                  },
+                  "visibility": {
+                    "description": "Visibility of the schedule: `public`, `org`, or `private`.\nDefaults to `public` on creation. Omitted on update, the existing\nvisibility is preserved.\n",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "visibility,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "org",
+                      "private"
+                    ],
+                    "default": "public"
                   }
                 }
               }
@@ -1104,6 +1132,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "status",
                     "retryCount",
                     "maxRetries",
+                    "visibility",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -1703,6 +1732,20 @@ const ScheduleSchema: Record<string, unknown> = {
                         "cautious",
                         "standard",
                         "brisk"
+                      ]
+                    },
+                    "visibility": {
+                      "description": "Visibility of the schedule: `public` (the default) allows completed runs\nto appear on the unauthenticated public activity feed (subject to user\npreferences), `org` restricts visibility to members of the schedule's\norganization, and `private` restricts it to the schedule owner.\n",
+                      "default": "public",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility"
+                      },
+                      "x-order": 29,
+                      "type": "string",
+                      "enum": [
+                        "public",
+                        "org",
+                        "private"
                       ]
                     }
                   }
@@ -1871,6 +1914,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "status",
                     "retryCount",
                     "maxRetries",
+                    "visibility",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -2470,6 +2514,20 @@ const ScheduleSchema: Record<string, unknown> = {
                         "cautious",
                         "standard",
                         "brisk"
+                      ]
+                    },
+                    "visibility": {
+                      "description": "Visibility of the schedule: `public` (the default) allows completed runs\nto appear on the unauthenticated public activity feed (subject to user\npreferences), `org` restricts visibility to members of the schedule's\norganization, and `private` restricts it to the schedule owner.\n",
+                      "default": "public",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility"
+                      },
+                      "x-order": 29,
+                      "type": "string",
+                      "enum": [
+                        "public",
+                        "org",
+                        "private"
                       ]
                     }
                   }
@@ -2790,6 +2848,19 @@ const ScheduleSchema: Record<string, unknown> = {
                       "standard",
                       "brisk"
                     ]
+                  },
+                  "visibility": {
+                    "description": "Visibility of the schedule: `public`, `org`, or `private`.\nDefaults to `public` on creation. Omitted on update, the existing\nvisibility is preserved.\n",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "visibility,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "org",
+                      "private"
+                    ],
+                    "default": "public"
                   }
                 }
               }
@@ -2825,6 +2896,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "status",
                     "retryCount",
                     "maxRetries",
+                    "visibility",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -3424,6 +3496,20 @@ const ScheduleSchema: Record<string, unknown> = {
                         "cautious",
                         "standard",
                         "brisk"
+                      ]
+                    },
+                    "visibility": {
+                      "description": "Visibility of the schedule: `public` (the default) allows completed runs\nto appear on the unauthenticated public activity feed (subject to user\npreferences), `org` restricts visibility to members of the schedule's\norganization, and `private` restricts it to the schedule owner.\n",
+                      "default": "public",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility"
+                      },
+                      "x-order": 29,
+                      "type": "string",
+                      "enum": [
+                        "public",
+                        "org",
+                        "private"
                       ]
                     }
                   }
@@ -3794,6 +3880,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "status",
                           "retryCount",
                           "maxRetries",
+                          "visibility",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -4394,6 +4481,20 @@ const ScheduleSchema: Record<string, unknown> = {
                               "standard",
                               "brisk"
                             ]
+                          },
+                          "visibility": {
+                            "description": "Visibility of the schedule: `public` (the default) allows completed runs\nto appear on the unauthenticated public activity feed (subject to user\npreferences), `org` restricts visibility to members of the schedule's\norganization, and `private` restricts it to the schedule owner.\n",
+                            "default": "public",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility"
+                            },
+                            "x-order": 29,
+                            "type": "string",
+                            "enum": [
+                              "public",
+                              "org",
+                              "private"
+                            ]
                           }
                         }
                       },
@@ -4572,6 +4673,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "status",
                     "retryCount",
                     "maxRetries",
+                    "visibility",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -5172,6 +5274,20 @@ const ScheduleSchema: Record<string, unknown> = {
                         "standard",
                         "brisk"
                       ]
+                    },
+                    "visibility": {
+                      "description": "Visibility of the schedule: `public` (the default) allows completed runs\nto appear on the unauthenticated public activity feed (subject to user\npreferences), `org` restricts visibility to members of the schedule's\norganization, and `private` restricts it to the schedule owner.\n",
+                      "default": "public",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility"
+                      },
+                      "x-order": 29,
+                      "type": "string",
+                      "enum": [
+                        "public",
+                        "org",
+                        "private"
+                      ]
                     }
                   }
                 }
@@ -5339,6 +5455,278 @@ const ScheduleSchema: Record<string, unknown> = {
           },
           "404": {
             "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/activity-feed": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "summary": "Get public activity feed",
+        "operationId": "getPublicActivityFeed",
+        "description": "Returns a paginated, unauthenticated feed of completed schedule runs\nwhose visibility is `public` and whose owner's `shareActivityPublicly`\npreference is on at read time. Results are ordered newest first by\n`completedAt`. Rate limited per client IP; an over-limit client\nreceives 429 with `Retry-After`. Responses carry\n`Cache-Control: public, max-age=N` where N is at most 30 seconds.\nBrowsers may call this route cross-origin (CORS-enabled GET/OPTIONS\nonly, without credentials).\n",
+        "security": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public activity feed page",
+            "headers": {
+              "Cache-Control": {
+                "description": "`public, max-age=N` with N from 0 to 30; max-age never exceeds 30 seconds.",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "pattern": "^public, max-age=([0-9]|[12][0-9]|30)$"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "One page of public activity feed items, newest first.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "data"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page; maximum 50.",
+                      "minimum": 1,
+                      "maximum": 50
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Feed items included on this page, newest first.",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time and included only when the user's profile is public.\n",
+                        "required": [
+                          "userId",
+                          "platform",
+                          "roleResult",
+                          "completedAt",
+                          "visibility"
+                        ],
+                        "properties": {
+                          "userId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "UserID",
+                            "x-order": 1
+                          },
+                          "platform": {
+                            "type": "string",
+                            "description": "Social platform the schedule ran on.",
+                            "enum": [
+                              "linkedin",
+                              "x",
+                              "reddit",
+                              "hacker-news",
+                              "slack",
+                              "bluesky",
+                              "github"
+                            ],
+                            "x-order": 2
+                          },
+                          "roleResult": {
+                            "type": "string",
+                            "description": "One-line role and result summary from the completed run.",
+                            "minLength": 3,
+                            "maxLength": 120,
+                            "x-order": 3
+                          },
+                          "completedAt": {
+                            "description": "Time the schedule run completed; feed is ordered newest first.",
+                            "x-order": 4,
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "visibility": {
+                            "description": "Always `public` in this feed.",
+                            "x-order": 5,
+                            "type": "string",
+                            "enum": [
+                              "public",
+                              "org",
+                              "private"
+                            ],
+                            "default": "public"
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "description": "Public username; present only when the user's profile is public.",
+                            "maxLength": 80,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "displayName,omitempty"
+                            },
+                            "x-order": 6
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Public avatar URL; present only when the user's profile is public.",
+                            "maxLength": 500,
+                            "x-go-name": "AvatarURL",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "avatarUrl,omitempty"
+                            },
+                            "x-order": 7
+                          },
+                          "organizationName": {
+                            "type": "string",
+                            "description": "Public organization name; present only when the user's profile is public.",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "organizationName,omitempty"
+                            },
+                            "x-order": 8
+                          },
+                          "publicProfileUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "HTTPS URL of the user's public profile.",
+                            "pattern": "^https://",
+                            "maxLength": 2048,
+                            "x-go-name": "PublicProfileURL",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "publicProfileUrl,omitempty"
+                            },
+                            "x-order": 9
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5670,6 +6058,7 @@ const ScheduleSchema: Record<string, unknown> = {
           "status",
           "retryCount",
           "maxRetries",
+          "visibility",
           "createdAt",
           "updatedAt"
         ],
@@ -6270,6 +6659,20 @@ const ScheduleSchema: Record<string, unknown> = {
               "standard",
               "brisk"
             ]
+          },
+          "visibility": {
+            "description": "Visibility of the schedule: `public` (the default) allows completed runs\nto appear on the unauthenticated public activity feed (subject to user\npreferences), `org` restricts visibility to members of the schedule's\norganization, and `private` restricts it to the schedule owner.\n",
+            "default": "public",
+            "x-oapi-codegen-extra-tags": {
+              "db": "visibility"
+            },
+            "x-order": 29,
+            "type": "string",
+            "enum": [
+              "public",
+              "org",
+              "private"
+            ]
           }
         }
       },
@@ -6309,6 +6712,16 @@ const ScheduleSchema: Record<string, unknown> = {
         "pattern": "^[a-z][a-z0-9_]*$",
         "minLength": 1,
         "maxLength": 64
+      },
+      "ScheduleVisibility": {
+        "type": "string",
+        "description": "Visibility of the schedule: `public` allows completed runs to appear on\nthe unauthenticated public activity feed (subject to user preferences),\n`org` restricts visibility to members of the owning organization, and\n`private` restricts it to the schedule owner.\n",
+        "enum": [
+          "public",
+          "org",
+          "private"
+        ],
+        "default": "public"
       },
       "SchedulePayload": {
         "type": "object",
@@ -6489,6 +6902,19 @@ const ScheduleSchema: Record<string, unknown> = {
               "standard",
               "brisk"
             ]
+          },
+          "visibility": {
+            "description": "Visibility of the schedule: `public`, `org`, or `private`.\nDefaults to `public` on creation. Omitted on update, the existing\nvisibility is preserved.\n",
+            "x-oapi-codegen-extra-tags": {
+              "json": "visibility,omitempty"
+            },
+            "type": "string",
+            "enum": [
+              "public",
+              "org",
+              "private"
+            ],
+            "default": "public"
           }
         }
       },
@@ -6536,6 +6962,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 "status",
                 "retryCount",
                 "maxRetries",
+                "visibility",
                 "createdAt",
                 "updatedAt"
               ],
@@ -7136,10 +7563,405 @@ const ScheduleSchema: Record<string, unknown> = {
                     "standard",
                     "brisk"
                   ]
+                },
+                "visibility": {
+                  "description": "Visibility of the schedule: `public` (the default) allows completed runs\nto appear on the unauthenticated public activity feed (subject to user\npreferences), `org` restricts visibility to members of the schedule's\norganization, and `private` restricts it to the schedule owner.\n",
+                  "default": "public",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "visibility"
+                  },
+                  "x-order": 29,
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "org",
+                    "private"
+                  ]
                 }
               }
             },
             "description": "Schedules included on this page of results."
+          }
+        }
+      },
+      "PublicActivityFeedItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time and included only when the user's profile is public.\n",
+        "required": [
+          "userId",
+          "platform",
+          "roleResult",
+          "completedAt",
+          "visibility"
+        ],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "UserID",
+            "x-order": 1
+          },
+          "platform": {
+            "type": "string",
+            "description": "Social platform the schedule ran on.",
+            "enum": [
+              "linkedin",
+              "x",
+              "reddit",
+              "hacker-news",
+              "slack",
+              "bluesky",
+              "github"
+            ],
+            "x-order": 2
+          },
+          "roleResult": {
+            "type": "string",
+            "description": "One-line role and result summary from the completed run.",
+            "minLength": 3,
+            "maxLength": 120,
+            "x-order": 3
+          },
+          "completedAt": {
+            "description": "Time the schedule run completed; feed is ordered newest first.",
+            "x-order": 4,
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "visibility": {
+            "description": "Always `public` in this feed.",
+            "x-order": 5,
+            "type": "string",
+            "enum": [
+              "public",
+              "org",
+              "private"
+            ],
+            "default": "public"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Public username; present only when the user's profile is public.",
+            "maxLength": 80,
+            "x-oapi-codegen-extra-tags": {
+              "json": "displayName,omitempty"
+            },
+            "x-order": 6
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public avatar URL; present only when the user's profile is public.",
+            "maxLength": 500,
+            "x-go-name": "AvatarURL",
+            "x-oapi-codegen-extra-tags": {
+              "json": "avatarUrl,omitempty"
+            },
+            "x-order": 7
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "Public organization name; present only when the user's profile is public.",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "json": "organizationName,omitempty"
+            },
+            "x-order": 8
+          },
+          "publicProfileUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "HTTPS URL of the user's public profile.",
+            "pattern": "^https://",
+            "maxLength": 2048,
+            "x-go-name": "PublicProfileURL",
+            "x-oapi-codegen-extra-tags": {
+              "json": "publicProfileUrl,omitempty"
+            },
+            "x-order": 9
+          }
+        }
+      },
+      "PublicActivityFeedPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One page of public activity feed items, newest first.",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "data"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page; maximum 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "data": {
+            "type": "array",
+            "description": "Feed items included on this page, newest first.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time and included only when the user's profile is public.\n",
+              "required": [
+                "userId",
+                "platform",
+                "roleResult",
+                "completedAt",
+                "visibility"
+              ],
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "UserID",
+                  "x-order": 1
+                },
+                "platform": {
+                  "type": "string",
+                  "description": "Social platform the schedule ran on.",
+                  "enum": [
+                    "linkedin",
+                    "x",
+                    "reddit",
+                    "hacker-news",
+                    "slack",
+                    "bluesky",
+                    "github"
+                  ],
+                  "x-order": 2
+                },
+                "roleResult": {
+                  "type": "string",
+                  "description": "One-line role and result summary from the completed run.",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "x-order": 3
+                },
+                "completedAt": {
+                  "description": "Time the schedule run completed; feed is ordered newest first.",
+                  "x-order": 4,
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "visibility": {
+                  "description": "Always `public` in this feed.",
+                  "x-order": 5,
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "org",
+                    "private"
+                  ],
+                  "default": "public"
+                },
+                "displayName": {
+                  "type": "string",
+                  "description": "Public username; present only when the user's profile is public.",
+                  "maxLength": 80,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "displayName,omitempty"
+                  },
+                  "x-order": 6
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Public avatar URL; present only when the user's profile is public.",
+                  "maxLength": 500,
+                  "x-go-name": "AvatarURL",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "avatarUrl,omitempty"
+                  },
+                  "x-order": 7
+                },
+                "organizationName": {
+                  "type": "string",
+                  "description": "Public organization name; present only when the user's profile is public.",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "organizationName,omitempty"
+                  },
+                  "x-order": 8
+                },
+                "publicProfileUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "HTTPS URL of the user's public profile.",
+                  "pattern": "^https://",
+                  "maxLength": 2048,
+                  "x-go-name": "PublicProfileURL",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "publicProfileUrl,omitempty"
+                  },
+                  "x-order": 9
+                }
+              }
+            }
+          }
+        }
+      },
+      "PublicActivityFeed": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One page of public activity feed items, newest first.",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "data"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page; maximum 50.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "data": {
+            "type": "array",
+            "description": "Feed items included on this page, newest first.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time and included only when the user's profile is public.\n",
+              "required": [
+                "userId",
+                "platform",
+                "roleResult",
+                "completedAt",
+                "visibility"
+              ],
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "UserID",
+                  "x-order": 1
+                },
+                "platform": {
+                  "type": "string",
+                  "description": "Social platform the schedule ran on.",
+                  "enum": [
+                    "linkedin",
+                    "x",
+                    "reddit",
+                    "hacker-news",
+                    "slack",
+                    "bluesky",
+                    "github"
+                  ],
+                  "x-order": 2
+                },
+                "roleResult": {
+                  "type": "string",
+                  "description": "One-line role and result summary from the completed run.",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "x-order": 3
+                },
+                "completedAt": {
+                  "description": "Time the schedule run completed; feed is ordered newest first.",
+                  "x-order": 4,
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "visibility": {
+                  "description": "Always `public` in this feed.",
+                  "x-order": 5,
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "org",
+                    "private"
+                  ],
+                  "default": "public"
+                },
+                "displayName": {
+                  "type": "string",
+                  "description": "Public username; present only when the user's profile is public.",
+                  "maxLength": 80,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "displayName,omitempty"
+                  },
+                  "x-order": 6
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Public avatar URL; present only when the user's profile is public.",
+                  "maxLength": 500,
+                  "x-go-name": "AvatarURL",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "avatarUrl,omitempty"
+                  },
+                  "x-order": 7
+                },
+                "organizationName": {
+                  "type": "string",
+                  "description": "Public organization name; present only when the user's profile is public.",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "organizationName,omitempty"
+                  },
+                  "x-order": 8
+                },
+                "publicProfileUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "HTTPS URL of the user's public profile.",
+                  "pattern": "^https://",
+                  "maxLength": 2048,
+                  "x-go-name": "PublicProfileURL",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "publicProfileUrl,omitempty"
+                  },
+                  "x-order": 9
+                }
+              }
+            }
           }
         }
       }

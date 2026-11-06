@@ -157,7 +157,22 @@ async function main() {
     checkPrerequisites();
 
     // Discover packages dynamically
-    const schemaPackages = config.getSchemaPackages();
+    const packageFilter = process.env.SCHEMA_PACKAGE
+      ? new Set(
+          process.env.SCHEMA_PACKAGE.split(",")
+            .map((value) => value.trim())
+            .filter(Boolean),
+        )
+      : null;
+    let schemaPackages = config.getSchemaPackages();
+    if (packageFilter) {
+      schemaPackages = schemaPackages.filter(
+        (pkg) =>
+          packageFilter.has(pkg.name) ||
+          packageFilter.has(pkg.dirName) ||
+          packageFilter.has(`${pkg.version}/${pkg.dirName}`),
+      );
+    }
     logger.info(`Discovered ${schemaPackages.length} schema packages`);
 
     if (schemaPackages.length === 0) {
