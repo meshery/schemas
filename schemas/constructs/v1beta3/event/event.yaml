@@ -37,6 +37,7 @@ properties:
       the client machine that emitted it (for example a desktop client
       recording a run). Asserted by the sender, not checked.
     maxLength: 255
+    x-id-format: external
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       db: system_id
@@ -96,6 +97,180 @@ properties:
     x-oapi-codegen-extra-tags:
       db: created_at
       json: createdAt
+  correlationKey:
+    type: string
+    description: Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: correlation_key
+  occurrenceCount:
+    type: integer
+    description: >
+      How many occurrences of the condition the event counts (see
+      Event.occurrenceCount). A create without a `correlationKey`, and a
+      call that identifies no user, stores the payload's value exactly as
+      sent, so an omitted count stays omitted. For a call that identifies a
+      user and carries a `correlationKey`, it is the payload's
+      `occurrenceCount` (1 when omitted) when the event was recorded,
+      opening a condition or inserted already resolved, growing only as
+      later creates that do not resolve are counted. A resolving create on
+      the open event does not add to it.
+    minimum: 1
+    x-oapi-codegen-extra-tags:
+      db: occurrence_count
+  firstSeenAt:
+    type: string
+    format: date-time
+    description: >
+      When the condition's first counted occurrence was seen (see
+      Event.firstSeenAt). A call that identifies no user stores the payload's
+      value exactly as sent. For a call that identifies a user, an opening
+      create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else
+      the time of receipt. An already-resolved insert stores the payload's
+      `firstSeenAt`, else `resolvedAt`. A close keeps the stored time.
+      Omitted when the payload omitted it and the create applied no default.
+    x-oapi-codegen-extra-tags:
+      db: first_seen_at
+  lastSeenAt:
+    type: string
+    format: date-time
+    description: >
+      When the condition was last seen (see Event.lastSeenAt). A call that
+      identifies no user stores the payload's value exactly as sent. For a
+      call that identifies a user, an opening create stores the payload's
+      `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the
+      payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or
+      closing one, brings the stored time forward. Omitted when the payload
+      omitted it and the create applied no default.
+    x-oapi-codegen-extra-tags:
+      db: last_seen_at
+  resolvedAt:
+    type: string
+    format: date-time
+    description: >
+      When the condition cleared (see Event.resolvedAt). A call that
+      identifies no user stores the payload's value exactly as sent. For a
+      call that identifies a user it is omitted while the condition is open.
+    x-oapi-codegen-extra-tags:
+      db: resolved_at
+  source:
+    type: string
+    format: uri-reference
+    description: Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source).
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: source
+  type:
+    type: string
+    description: CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type).
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: type
+  specversion:
+    description: The CloudEvents specification version the event is compatible with (see Event.specversion).
+    type: string
+    enum:
+      - "1.0"
+    x-go-type: EventSpecVersion
+    x-go-name: SpecVersion
+    x-oapi-codegen-extra-tags:
+      db: specversion
+  traceId:
+    type: string
+    description: W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId).
+    minLength: 32
+    maxLength: 32
+    pattern: '^[0-9a-f]*[1-9a-f][0-9a-f]*$'
+    x-id-format: external
+    x-go-name: TraceID
+    x-oapi-codegen-extra-tags:
+      db: trace_id
+  parentId:
+    type: string
+    description: W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId).
+    minLength: 16
+    maxLength: 16
+    pattern: '^[0-9a-f]*[1-9a-f][0-9a-f]*$'
+    x-id-format: external
+    x-go-name: ParentID
+    x-oapi-codegen-extra-tags:
+      db: parent_id
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Event ID (see Event.id).
+    x-oapi-codegen-extra-tags:
+      db: id
+  actedUpon:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the entity on which the event was performed (see Event.actedUpon).
+    x-oapi-codegen-extra-tags:
+      db: acted_upon
+  operationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID correlating the events one operation emitted (see Event.operationId).
+    x-go-name: OperationID
+    x-oapi-codegen-extra-tags:
+      db: operation_id
+  severity:
+    type: string
+    description: >
+      Event level (see Event.severity). MeshKit's producers set one of
+      `emergency`, `alert`, `critical`, `error`, `warning`, `informational`,
+      `debug` or `success`. The set is not closed on the wire, so consumers
+      must tolerate other values.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: severity
+  status:
+    type: string
+    description: >
+      Read state of the event (see Event.status). MeshKit records new events
+      as `unread`, and acknowledged ones become `read`; consumers must
+      tolerate other values.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: status
+  metadata:
+    type: object
+    description: >
+      Event-specific details, the same nullable free-form map as
+      Event.metadata. `null` when the producer attached none. On an error
+      event, `metadata.error` holds only the MeshKit error, never the design
+      or the request that failed: an EventError (the error's code, rendered
+      descriptions, the causes and remediations that apply, `matchedCauses`
+      and instance `details`), except that a design validation event whose
+      operation did not complete (`status` `error`) carries it as a
+      DesignEventOperationError. Rows recorded before EventError carry
+      MeshKit's Go field names instead (`Code`, `Severity` as a number,
+      `ShortDescription`, `LongDescription`, `ProbableCause` and
+      `SuggestedRemediation` as lists); readers fall back to those keys when
+      `code` is absent and treat their flat lists as unpaired.
+    additionalProperties: true
+    nullable: true
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: metadata
+      json: "metadata,omitempty"
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the event was last updated (see Event.updatedAt).
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+  deletedAt:
+    type: string
+    format: date-time
+    nullable: true
+    description: Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
 required:
 - owner
 - category

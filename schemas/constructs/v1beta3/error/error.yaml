@@ -1,0 +1,149 @@
+type: object
+additionalProperties: false
+description: >
+  One error code's definition: the registry entry behind a code such as
+  `meshery-server-1033`. It names the situation the code reports and, for
+  each probable cause, the remediations that answer that cause. A
+  definition is not stored by any server and has no endpoints: the
+  component that owns the code declares it in source (MeshKit's
+  `errors.NewV3`), MeshKit's `errorutil` exports it to the component's
+  `*_errors_index.json`, and docs.meshery.io publishes every definition in
+  an ErrorReferenceIndex. It therefore declares no `id`, `createdAt`,
+  `updatedAt` or `deletedAt`; the code is its key. Causes and remediations
+  are nested, never two parallel lists: each remediation sits under the
+  cause it addresses, and one remediation that answers several causes is
+  repeated under each with the same `id`, so the pairing is explicit and
+  the text is defined once. The flat `probableCause` and
+  `suggestedRemediation` lists earlier consumers read are derived from the
+  nesting (see `probableCause`). The rules JSON Schema cannot state - ids
+  unique, a repeated remediation identical, an `action` behind every
+  `automatic` or `requiresApproval` policy, `code` ending in
+  `-<numericCode>` and the flat lists equal to the derivation - are checked
+  by `Validate` in the generated Go package's helper and by
+  `validateErrorDefinition` in the TypeScript package
+  (docs/error-definition-contract.md).
+required:
+  - code
+  - moniker
+  - component
+  - numericCode
+properties:
+  code:
+    type: string
+    description: >
+      The full error code, `<component name>-<numericCode>`, for example
+      `meshery-server-1033`. Codes are scoped to the component that owns
+      them and carry no meaning of their own, so a code is unique only
+      together with its component and nothing may be derived from the
+      number alone.
+    minLength: 3
+    maxLength: 255
+    pattern: '^[a-z][a-z0-9]*(-[a-z0-9]+)*-[0-9]+$'
+    x-go-name: Code
+    x-order: 1
+  moniker:
+    type: string
+    description: >
+      The name the code has in source, for example `ErrCreatingUUIDInstanceCode`
+      or `ErrApplyManifest`: what MeshKit's export calls `name`. It is not
+      unique across components.
+    minLength: 4
+    maxLength: 255
+    pattern: '^Err[A-Z][A-Za-z0-9]*$'
+    x-go-name: Moniker
+    x-order: 2
+  component:
+    $ref: ./api.yml#/components/schemas/ErrorComponent
+    description: The component that owns the code.
+    x-go-name: Component
+    x-order: 3
+  numericCode:
+    type: string
+    description: >
+      The number at the end of `code`, as a string of digits so leading
+      zeros survive, for example `1033`. MeshKit's `errorutil` allocates it
+      from the component's `component_info.json` and never reuses it.
+    minLength: 1
+    maxLength: 20
+    pattern: '^[0-9]+$'
+    x-go-name: NumericCode
+    x-order: 4
+  severity:
+    $ref: ./api.yml#/components/schemas/ErrorSeverity
+    description: >
+      How severe the error is when it occurs. Omitted when the component
+      assigns none (MeshKit's `None`).
+    x-go-name: Severity
+    x-order: 5
+  shortDescription:
+    type: string
+    description: >
+      One line saying what went wrong, for example `Unable to create UUID
+      instance`. MeshKit's `ShortDescription` lines are joined with `. `.
+      Omitted only for a code whose details the export could not read.
+    minLength: 1
+    maxLength: 1000
+    x-go-name: ShortDescription
+    x-order: 6
+  longDescription:
+    type: string
+    description: >
+      The full explanation of the error. Omitted when the definition has
+      only text rendered at run time, which MeshKit's `errorutil` cannot
+      export.
+    minLength: 1
+    maxLength: 10000
+    x-go-name: LongDescription
+    x-order: 7
+  probableCauses:
+    type: array
+    description: >
+      What may have caused the error, most likely first, each with the
+      remediations that answer it. Cause ids are unique within the
+      definition. Omitted for a definition that documents no causes, such
+      as a code declared with MeshKit's flat `errors.New`, whose flat lists
+      are then the only record (and are unpaired).
+    minItems: 1
+    items:
+      $ref: ./api.yml#/components/schemas/ProbableCause
+    x-go-name: ProbableCauses
+    x-order: 8
+  probableCause:
+    type: array
+    description: >
+      The flat list of cause descriptions earlier consumers read
+      (MeshKit's `ProbableCause`). When `probableCauses` is present it
+      equals each cause's `description`, in order. Without `probableCauses`
+      it is the definition's only record of its causes, and nothing pairs
+      an entry with an entry of `suggestedRemediation`.
+    items:
+      type: string
+      minLength: 1
+      maxLength: 2000
+    x-go-name: ProbableCause
+    x-order: 9
+  suggestedRemediation:
+    type: array
+    description: >
+      The flat list of remediation descriptions earlier consumers read
+      (MeshKit's `SuggestedRemediation`). When `probableCauses` is present
+      it equals every remediation's `description` across the causes, in
+      order, each remediation `id` once (the first time it appears).
+    items:
+      type: string
+      minLength: 1
+      maxLength: 2000
+    x-go-name: SuggestedRemediation
+    x-order: 10
+  referenceUrl:
+    type: string
+    format: uri
+    description: >
+      The stable docs.meshery.io page for this code, for example
+      `https://docs.meshery.io/reference/error-codes/component-meshery-server/errcreatinguuidinstancecode-1001/`.
+      Always present in a published ErrorReferenceIndex; a component's
+      export may omit it, because the docs build assigns it.
+    maxLength: 2048
+    pattern: '^https://'
+    x-go-name: ReferenceURL
+    x-order: 11
