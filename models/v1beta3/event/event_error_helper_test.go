@@ -106,3 +106,41 @@ func TestCorrelatedEventDecodes(t *testing.T) {
 		}
 	}
 }
+
+// A list row keeps the presence of its optional fields: a row that omits
+// them re-encodes without them (no nil UUID, zero time or null), and a row
+// that carries them, an explicitly null deletedAt included, decodes.
+func TestEventResultOptionalFieldsKeepPresence(t *testing.T) {
+	minimal := `{"owner":"11111111-1111-4111-8111-111111111111","category":"connection","action":"connect","systemId":"s"}`
+	var row EventResult
+	if err := json.Unmarshal([]byte(minimal), &row); err != nil {
+		t.Fatal(err)
+	}
+	encoded, err := json.Marshal(row)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, field := range []string{`"id"`, `"actedUpon"`, `"operationId"`, `"updatedAt"`, `"deletedAt"`, `"metadata"`, `"severity"`, `"status"`} {
+		if strings.Contains(string(encoded), field) {
+			t.Errorf("a row without %s re-encodes it: %s", field, encoded)
+		}
+	}
+
+	full := `{"owner":"11111111-1111-4111-8111-111111111111","category":"connection","action":"connect","systemId":"s",
+		"id":"22222222-2222-4222-8222-222222222222","actedUpon":"33333333-3333-4333-8333-333333333333",
+		"operationId":"44444444-4444-4444-8444-444444444444","severity":"error","status":"unread",
+		"updatedAt":"2026-11-06T10:42:00Z","deletedAt":null,"metadata":{"error":{"code":"meshery-server-1033"}}}`
+	var withFields EventResult
+	if err := json.Unmarshal([]byte(full), &withFields); err != nil {
+		t.Fatalf("a row with the optional fields does not decode: %v", err)
+	}
+	if withFields.ID == nil || withFields.ActedUpon == nil || withFields.OperationID == nil || withFields.UpdatedAt == nil {
+		t.Errorf("optional fields lost on decode: %+v", withFields)
+	}
+	if withFields.DeletedAt != nil {
+		t.Errorf("explicit null deletedAt = %v, want nil", withFields.DeletedAt)
+	}
+	if withFields.Metadata["error"] == nil {
+		t.Error("metadata.error lost on decode")
+	}
+}

@@ -415,7 +415,8 @@ type EventPayload struct {
 
 // EventResult EventResult entity schema.
 type EventResult struct {
-	ActedUpon core.Id `db:"acted_upon" json:"actedUpon,omitempty" yaml:"actedUpon,omitempty"`
+	// ActedUpon A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ActedUpon *core.Uuid `db:"acted_upon" json:"actedUpon,omitempty" yaml:"actedUpon,omitempty"`
 
 	// Action The action of the event.
 	Action string `json:"action" yaml:"action"`
@@ -432,8 +433,8 @@ type EventResult struct {
 	// CreatedAt Timestamp when the event was recorded.
 	CreatedAt time.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
-	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
+	// DeletedAt Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).
+	DeletedAt *time.Time `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -446,7 +447,9 @@ type EventResult struct {
 
 	// FirstSeenAt When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
 	FirstSeenAt *time.Time `db:"first_seen_at" json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
-	ID          core.Id    `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
@@ -455,11 +458,13 @@ type EventResult struct {
 	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
 	// Metadata Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired.
-	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// OccurrenceCount How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
-	OccurrenceCount *int    `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
-	OperationID     core.Id `db:"operation_id" json:"operationId,omitempty" yaml:"operationId,omitempty"`
+	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
+
+	// OperationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OperationID *core.Uuid `db:"operation_id" json:"operationId,omitempty" yaml:"operationId,omitempty"`
 
 	// OrganizationID The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
 	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId" yaml:"organizationId"`
@@ -495,8 +500,10 @@ type EventResult struct {
 	TraceID *string `db:"trace_id" json:"traceId,omitempty" yaml:"traceId,omitempty"`
 
 	// Type CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type).
-	Type      *string   `db:"type" json:"type,omitempty" yaml:"type,omitempty"`
-	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+	Type *string `db:"type" json:"type,omitempty" yaml:"type,omitempty"`
+
+	// UpdatedAt Timestamp when the event was last updated (see Event.updatedAt).
+	UpdatedAt *time.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
 	// Visibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
 	Visibility EventResultVisibility `db:"visibility" json:"visibility" yaml:"visibility"`

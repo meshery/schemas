@@ -392,17 +392,17 @@ export interface components {
             parentId?: string;
             /**
              * Format: uuid
-             * @description Event ID (see Event.id).
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id?: string;
             /**
              * Format: uuid
-             * @description ID of the entity on which the event was performed (see Event.actedUpon).
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             actedUpon?: string;
             /**
              * Format: uuid
-             * @description ID correlating the events one operation emitted (see Event.operationId).
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             operationId?: string;
             /** @description Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values. */
@@ -619,17 +619,17 @@ export interface components {
                 parentId?: string;
                 /**
                  * Format: uuid
-                 * @description Event ID (see Event.id).
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id?: string;
                 /**
                  * Format: uuid
-                 * @description ID of the entity on which the event was performed (see Event.actedUpon).
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 actedUpon?: string;
                 /**
                  * Format: uuid
-                 * @description ID correlating the events one operation emitted (see Event.operationId).
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 operationId?: string;
                 /** @description Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values. */
@@ -1655,17 +1655,17 @@ export interface operations {
                             parentId?: string;
                             /**
                              * Format: uuid
-                             * @description Event ID (see Event.id).
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             id?: string;
                             /**
                              * Format: uuid
-                             * @description ID of the entity on which the event was performed (see Event.actedUpon).
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             actedUpon?: string;
                             /**
                              * Format: uuid
-                             * @description ID correlating the events one operation emitted (see Event.operationId).
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             operationId?: string;
                             /** @description Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values. */
@@ -2318,17 +2318,17 @@ export interface operations {
                             parentId?: string;
                             /**
                              * Format: uuid
-                             * @description Event ID (see Event.id).
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             id?: string;
                             /**
                              * Format: uuid
-                             * @description ID of the entity on which the event was performed (see Event.actedUpon).
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             actedUpon?: string;
                             /**
                              * Format: uuid
-                             * @description ID correlating the events one operation emitted (see Event.operationId).
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             operationId?: string;
                             /** @description Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values. */

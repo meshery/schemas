@@ -983,44 +983,41 @@ const EventSchema: Record<string, unknown> = {
                             }
                           },
                           "id": {
-                            "description": "Event ID (see Event.id).",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-go-type-skip-optional-pointer": true
+                            }
                           },
                           "actedUpon": {
-                            "description": "ID of the entity on which the event was performed (see Event.actedUpon).",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "acted_upon"
-                            },
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "x-go-type-skip-optional-pointer": true
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "acted_upon"
+                            }
                           },
                           "operationId": {
-                            "description": "ID correlating the events one operation emitted (see Event.operationId).",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
                             "x-go-name": "OperationID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "operation_id"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-go-type-skip-optional-pointer": true
+                            }
                           },
                           "severity": {
                             "type": "string",
@@ -1049,32 +1046,27 @@ const EventSchema: Record<string, unknown> = {
                             },
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "metadata"
+                              "db": "metadata",
+                              "json": "metadata,omitempty"
                             }
                           },
                           "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
                             "description": "Timestamp when the event was last updated (see Event.updatedAt).",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at"
-                            },
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-type-skip-optional-pointer": true
+                            }
                           },
                           "deletedAt": {
-                            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at"
-                            },
-                            "x-go-type": "meshcore.NullTime",
-                            "x-go-type-import": {
-                              "name": "meshcore",
-                              "path": "github.com/meshery/schemas/models/core"
-                            },
                             "type": "string",
                             "format": "date-time",
                             "nullable": true,
-                            "x-go-type-skip-optional-pointer": true
+                            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            }
                           }
                         },
                         "required": [
@@ -2637,44 +2629,41 @@ const EventSchema: Record<string, unknown> = {
                             }
                           },
                           "id": {
-                            "description": "Event ID (see Event.id).",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-go-type-skip-optional-pointer": true
+                            }
                           },
                           "actedUpon": {
-                            "description": "ID of the entity on which the event was performed (see Event.actedUpon).",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "acted_upon"
-                            },
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "x-go-type-skip-optional-pointer": true
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "acted_upon"
+                            }
                           },
                           "operationId": {
-                            "description": "ID correlating the events one operation emitted (see Event.operationId).",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
                             "x-go-name": "OperationID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "operation_id"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-go-type-skip-optional-pointer": true
+                            }
                           },
                           "severity": {
                             "type": "string",
@@ -2703,32 +2692,27 @@ const EventSchema: Record<string, unknown> = {
                             },
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "metadata"
+                              "db": "metadata",
+                              "json": "metadata,omitempty"
                             }
                           },
                           "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
                             "description": "Timestamp when the event was last updated (see Event.updatedAt).",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at"
-                            },
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-type-skip-optional-pointer": true
+                            }
                           },
                           "deletedAt": {
-                            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at"
-                            },
-                            "x-go-type": "meshcore.NullTime",
-                            "x-go-type-import": {
-                              "name": "meshcore",
-                              "path": "github.com/meshery/schemas/models/core"
-                            },
                             "type": "string",
                             "format": "date-time",
                             "nullable": true,
-                            "x-go-type-skip-optional-pointer": true
+                            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            }
                           }
                         },
                         "required": [
@@ -4346,44 +4330,41 @@ const EventSchema: Record<string, unknown> = {
             }
           },
           "id": {
-            "description": "Event ID (see Event.id).",
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
             "x-oapi-codegen-extra-tags": {
               "db": "id"
-            },
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "actedUpon": {
-            "description": "ID of the entity on which the event was performed (see Event.actedUpon).",
-            "x-oapi-codegen-extra-tags": {
-              "db": "acted_upon"
-            },
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "x-go-type-skip-optional-pointer": true
+            "x-oapi-codegen-extra-tags": {
+              "db": "acted_upon"
+            }
           },
           "operationId": {
-            "description": "ID correlating the events one operation emitted (see Event.operationId).",
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
             "x-go-name": "OperationID",
             "x-oapi-codegen-extra-tags": {
               "db": "operation_id"
-            },
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "severity": {
             "type": "string",
@@ -4412,32 +4393,27 @@ const EventSchema: Record<string, unknown> = {
             },
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "db": "metadata"
+              "db": "metadata",
+              "json": "metadata,omitempty"
             }
           },
           "updatedAt": {
+            "type": "string",
+            "format": "date-time",
             "description": "Timestamp when the event was last updated (see Event.updatedAt).",
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at"
-            },
-            "type": "string",
-            "format": "date-time",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "deletedAt": {
-            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at"
-            },
-            "x-go-type": "meshcore.NullTime",
-            "x-go-type-import": {
-              "name": "meshcore",
-              "path": "github.com/meshery/schemas/models/core"
-            },
             "type": "string",
             "format": "date-time",
             "nullable": true,
-            "x-go-type-skip-optional-pointer": true
+            "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "json": "deletedAt,omitempty"
+            }
           }
         },
         "required": [
@@ -5013,44 +4989,41 @@ const EventSchema: Record<string, unknown> = {
                   }
                 },
                 "id": {
-                  "description": "Event ID (see Event.id).",
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id"
-                  },
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
-                  "x-go-type-skip-optional-pointer": true
+                  }
                 },
                 "actedUpon": {
-                  "description": "ID of the entity on which the event was performed (see Event.actedUpon).",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "acted_upon"
-                  },
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "x-go-type-skip-optional-pointer": true
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "acted_upon"
+                  }
                 },
                 "operationId": {
-                  "description": "ID correlating the events one operation emitted (see Event.operationId).",
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
                   "x-go-name": "OperationID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "operation_id"
-                  },
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
-                  "x-go-type-skip-optional-pointer": true
+                  }
                 },
                 "severity": {
                   "type": "string",
@@ -5079,32 +5052,27 @@ const EventSchema: Record<string, unknown> = {
                   },
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "metadata"
+                    "db": "metadata",
+                    "json": "metadata,omitempty"
                   }
                 },
                 "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
                   "description": "Timestamp when the event was last updated (see Event.updatedAt).",
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at"
-                  },
-                  "type": "string",
-                  "format": "date-time",
-                  "x-go-type-skip-optional-pointer": true
+                  }
                 },
                 "deletedAt": {
-                  "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at"
-                  },
-                  "x-go-type": "meshcore.NullTime",
-                  "x-go-type-import": {
-                    "name": "meshcore",
-                    "path": "github.com/meshery/schemas/models/core"
-                  },
                   "type": "string",
                   "format": "date-time",
                   "nullable": true,
-                  "x-go-type-skip-optional-pointer": true
+                  "description": "Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  }
                 }
               },
               "required": [
