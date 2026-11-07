@@ -454,6 +454,7 @@ paths:
         releases the organization it is leaving when it switches to another.
         Without the header (or with the all-organizations value `all`) the
         server deletes the install's connections in every organization.
+        When nothing matches, the server answers 404 and revokes nothing.
         Servers must revoke the API token linked to each deleted connection
         (`metadata.tokenId`) unless a live connection of the same owner still
         links it: the token still authenticates that connection.
@@ -466,7 +467,13 @@ paths:
             Organization whose connection for this install is deleted. Absent,
             or `all`, deletes the install's connections in every organization.
             A value that is neither an organization id nor `all` is refused
-            with 400.
+            with 400. An organization id where the caller has no connection
+            for this install deletes nothing and is 404. Membership is not
+            checked separately, so an organization the caller is not a member
+            of gets the same 404 and the response does not disclose
+            membership.
+            The schema is a plain string, not `format: uuid` as on
+            `registerConnection`, because `all` is a legal value here.
           schema:
             type: string
       responses:
