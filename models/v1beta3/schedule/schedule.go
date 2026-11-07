@@ -9,6 +9,22 @@ import (
 	posturev1beta3 "github.com/meshery/schemas/models/v1beta3/posture"
 )
 
+// Defines values for PublicActivityFeedItemPlatform.
+const (
+	Bluesky    PublicActivityFeedItemPlatform = "bluesky"
+	Github     PublicActivityFeedItemPlatform = "github"
+	HackerNews PublicActivityFeedItemPlatform = "hacker-news"
+	Linkedin   PublicActivityFeedItemPlatform = "linkedin"
+	Reddit     PublicActivityFeedItemPlatform = "reddit"
+	Slack      PublicActivityFeedItemPlatform = "slack"
+	X          PublicActivityFeedItemPlatform = "x"
+)
+
+// Defines values for PublicActivityFeedItemVisibility.
+const (
+	PublicActivityFeedItemVisibilityPublic PublicActivityFeedItemVisibility = "public"
+)
+
 // Defines values for ScheduleStatus.
 const (
 	Assigned  ScheduleStatus = "assigned"
@@ -21,6 +37,67 @@ const (
 	Running   ScheduleStatus = "running"
 	Scheduled ScheduleStatus = "scheduled"
 )
+
+// Defines values for ScheduleVisibility.
+const (
+	ScheduleVisibilityOrg     ScheduleVisibility = "org"
+	ScheduleVisibilityPrivate ScheduleVisibility = "private"
+	ScheduleVisibilityPublic  ScheduleVisibility = "public"
+)
+
+// PublicActivityFeed One page of public activity feed items, newest first.
+type PublicActivityFeed = PublicActivityFeedPage
+
+// PublicActivityFeedItem A completed schedule run projected into the public feed. Never includes
+// email addresses, real names, or raw metadata. Public profile fields are
+// resolved at read time and included only when the user's profile is public.
+type PublicActivityFeedItem struct {
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID core.Uuid `json:"userId" yaml:"userId"`
+
+	// Platform Social platform the schedule ran on.
+	Platform PublicActivityFeedItemPlatform `json:"platform" yaml:"platform"`
+
+	// RoleResult One-line role and result summary from the completed run.
+	RoleResult  string    `json:"roleResult" yaml:"roleResult"`
+	CompletedAt core.Time `json:"completedAt" yaml:"completedAt"`
+
+	// Visibility Always `public` in this feed.
+	Visibility PublicActivityFeedItemVisibility `json:"visibility" yaml:"visibility"`
+
+	// DisplayName Public username; present only when the user's profile is public.
+	DisplayName *string `json:"displayName,omitempty" yaml:"displayName,omitempty"`
+
+	// AvatarURL Public avatar URL; present only when the user's profile is public.
+	AvatarURL *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// OrganizationName Public organization name; present only when the user's profile is public.
+	OrganizationName *string `json:"organizationName,omitempty" yaml:"organizationName,omitempty"`
+
+	// PublicProfileURL HTTPS URL of the user's public profile.
+	PublicProfileURL *string `json:"publicProfileUrl,omitempty" yaml:"publicProfileUrl,omitempty"`
+}
+
+// PublicActivityFeedItemPlatform Social platform the schedule ran on.
+type PublicActivityFeedItemPlatform string
+
+// PublicActivityFeedItemVisibility Always `public` in this feed.
+type PublicActivityFeedItemVisibility string
+
+// PublicActivityFeedPage One page of public activity feed items, newest first.
+type PublicActivityFeedPage struct {
+	// Data Feed items included on this page, newest first.
+	Data []PublicActivityFeedItem `json:"data" yaml:"data"`
+
+	// Page Current page number.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of items per page; maximum 50.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items available.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
 
 // Schedule Server-returned schedule. A schedule is a job: an action to run, what it
 // acts on (`targetType`, `targetId`) and its parameters, when it is due
@@ -162,6 +239,12 @@ type Schedule struct {
 	// (`v1beta3/schedule`). A new carrier references this component rather
 	// than restating the enum.
 	Posture *posturev1beta3.Posture `db:"posture" json:"posture,omitempty" yaml:"posture,omitempty"`
+
+	// Visibility Visibility of the schedule: `public` allows completed runs to appear on
+	// the unauthenticated public activity feed (subject to user preferences),
+	// `org` restricts visibility to members of the owning organization, and
+	// `private` restricts it to the schedule owner.
+	Visibility ScheduleVisibility `db:"visibility" json:"visibility" yaml:"visibility"`
 }
 
 // SchedulePage Paginated collection of schedules.
@@ -277,6 +360,12 @@ type SchedulePayload struct {
 	// refuses a name it does not know with 400.
 	Timezone *ScheduleTimezone `json:"timezone,omitempty" yaml:"timezone,omitempty"`
 
+	// Visibility Visibility of the schedule: `public` allows completed runs to appear on
+	// the unauthenticated public activity feed (subject to user preferences),
+	// `org` restricts visibility to members of the owning organization, and
+	// `private` restricts it to the schedule owner.
+	Visibility *ScheduleVisibility `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+
 	// WorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	WorkspaceId *core.Uuid `json:"workspaceId,omitempty" yaml:"workspaceId,omitempty"`
 }
@@ -314,6 +403,12 @@ type ScheduleTargetType = string
 // time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
 // refuses a name it does not know with 400.
 type ScheduleTimezone = string
+
+// ScheduleVisibility Visibility of the schedule: `public` allows completed runs to appear on
+// the unauthenticated public activity feed (subject to user preferences),
+// `org` restricts visibility to members of the owning organization, and
+// `private` restricts it to the schedule owner.
+type ScheduleVisibility string
 
 // IfMatch defines model for ifMatch.
 type IfMatch = string

@@ -223,6 +223,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
+- **[`docs/schedule-visibility-and-public-feed-contract.md`](docs/schedule-visibility-and-public-feed-contract.md)** - the schedule visibility enum and the unauthenticated public activity feed wire contract.
 
 ## Questions?
 
