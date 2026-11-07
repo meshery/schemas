@@ -10,7 +10,8 @@ info:
     on /api/identity/orgs/{orgId}/preferences), beside `schedulePause`,
     so this file declares the components only and the paths stay with
     the organization construct. Only organization admins may set or
-    lift it, as with the pause; a preferences patch that omits
+    lift it, as with changing the pause through updateOrg or
+    patchOrgPreferences; a preferences patch that omits
     `scheduleStop` keeps the current stop unchanged.
   version: v1beta3
   contact:

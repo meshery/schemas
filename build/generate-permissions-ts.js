@@ -44,7 +44,7 @@ const fs = require("fs");
 const logger = require("./lib/logger");
 const paths = require("./lib/paths");
 const {
-  loadPermissions,
+  loadPermissionsSource, loadOAuthScopes,
   generateTypeScriptFile,
   buildIndex,
   saveIndex,
@@ -154,7 +154,7 @@ async function main() {
     }
 
     // Load and parse permissions
-    const permissions = await loadPermissions(source, { gid: options.gid });
+    const { csvContent, permissions } = await loadPermissionsSource(source, { gid: options.gid });
     logger.info(`Parsed ${permissions.length} permission keys`);
 
     if (permissions.length === 0) {
@@ -163,12 +163,13 @@ async function main() {
     }
 
 // Phase 1: build and save index (hash-based id)
+const scopes = loadOAuthScopes(csvContent, { gid: options.gid });
 const index = buildIndex(permissions);
 const indexPath = saveIndex(index);
 logger.info(`Saved permissions index: ${paths.relativePath(indexPath)}`);
 
 // Phase 2: generate TypeScript file from index
-const tsContent = generateTypeScriptFile(index.items, index.id);
+const tsContent = generateTypeScriptFile(index.items, index.id, scopes);
 
 // Resolve output path
     let outputPath = options.output;

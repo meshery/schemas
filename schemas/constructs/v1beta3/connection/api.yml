@@ -20,14 +20,22 @@ paths:
       tags:
         - Connections
       operationId: getConnections
+      x-mcp:
+        expose: true
+        title: Get connections
+        scope: connections:read
       summary: Get all connections
-      description: Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
+      description: >
+        Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support.
+        When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md).
+        When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/orgIdQuery"
+        - $ref: "#/components/parameters/currentOrgId"
         - name: filter
           in: query
           description: Filter connections (general filter string)
@@ -75,8 +83,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ConnectionPage"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "../../v1beta2/core/api.yml#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -730,6 +744,8 @@ components:
       bearerFormat: JWT
 
   parameters:
+    currentOrgId:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/currentOrgId"
     connectionId:
       name: connectionId
       in: path
