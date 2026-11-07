@@ -172,6 +172,9 @@ func Audit(opts AuditOptions) AuditResult {
 		return nil
 	})
 
+	// Rule 48: a $ref with no fragment must not point at an OpenAPI document.
+	auditRule48(opts, baseline, &result)
+
 	// Rule 29: report cross-construct duplicates.
 	for _, v := range reportDuplicateSchemas(fingerprints, opts) {
 		addViolation(&result, v, baseline)
@@ -261,24 +264,7 @@ func isDeprecatedDoc(doc *openapi3.T) bool {
 func auditEntitySchemas(constructDir string, opts AuditOptions,
 	baseline map[string]bool, result *AuditResult) {
 
-	entries, err := os.ReadDir(constructDir)
-	if err != nil {
-		return
-	}
-	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].Name() < entries[j].Name()
-	})
-
-	for _, e := range entries {
-		name := e.Name()
-		if !strings.HasSuffix(name, ".yaml") {
-			continue
-		}
-		if name == "api.yml" || strings.Contains(name, "_template") {
-			continue
-		}
-
-		entityPath := filepath.Join(constructDir, name)
+	for _, entityPath := range entitySchemaFiles(constructDir) {
 		entity, err := loadEntitySchema(entityPath)
 		if err != nil || entity == nil {
 			continue
@@ -311,6 +297,153 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 			addViolation(result, v, baseline)
 		}
 	}
+}
+
+// entitySchemaFiles returns the entity schema files (*.yaml, not api.yml and
+// not templates) in a construct directory, in sorted order.
+func entitySchemaFiles(constructDir string) []string {
+	entries, err := os.ReadDir(constructDir)
+	if err != nil {
+		return nil
+	}
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Name() < entries[j].Name()
+	})
+
+	var files []string
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasSuffix(name, ".yaml") {
+			continue
+		}
+		if name == "api.yml" || strings.Contains(name, "_template") {
+			continue
+		}
+		files = append(files, filepath.Join(constructDir, name))
+	}
+	return files
+}
+
+// auditRule48 runs Rule 48 on every non-deprecated construct version: its
+// api.yml, entity schemas and helper .yml files. It is a pass of its own, not
+// part of walkValidatedConstructSpecs, because:
+//
+//   - the walk keeps only the newest version of each construct, but the
+//     generators bundle every version;
+//   - Rule 48 reads raw YAML only, so it must not depend on kin-openapi
+//     loading the api.yml;
+//   - deprecation is read from the raw api.yml, so it is known even when the
+//     typed load fails.
+//
+// An api.yml that is not valid YAML cannot say whether its version is
+// deprecated, so the other files of that version are still checked.
+func auditRule48(opts AuditOptions, baseline map[string]bool, result *AuditResult) {
+	check := func(path string, doc map[string]any) {
+		relPath := relativeToRoot(path, opts.RootDir)
+		for _, v := range checkRule48(relPath, path, doc) {
+			addViolation(result, v, baseline)
+		}
+	}
+
+	for _, constructDir := range constructDirsWithAPISpec(opts.RootDir) {
+		apiYmlPath := filepath.Join(constructDir, "api.yml")
+		if rawDoc, err := loadAPISpecRaw(apiYmlPath); err == nil {
+			if isDeprecatedRawDoc(rawDoc) {
+				continue
+			}
+			check(apiYmlPath, rawDoc)
+		}
+
+		files := append(helperSchemaFiles(constructDir), entitySchemaFiles(constructDir)...)
+		sort.Strings(files)
+		for _, path := range files {
+			if doc, err := loadYAMLDoc(path); err == nil {
+				check(path, doc)
+			}
+		}
+	}
+}
+
+// constructDirsWithAPISpec returns every construct directory that holds an
+// api.yml, in the versions shouldValidateVersion accepts, sorted by version
+// and then by construct (os.ReadDir returns entries sorted by name). It reads
+// the directories rather than using filepath.Glob, so a root path with
+// characters such as "[" is taken literally. A directory that cannot be read
+// is skipped, as in walkValidatedConstructSpecs.
+//
+// Unlike the walker, it follows symlinked version and construct directories:
+// bundle discovery (discoverSchemaPackages in build/lib/config.js) checks
+// entries with fs.statSync, which follows links, so the bundler bundles them.
+func constructDirsWithAPISpec(rootDir string) []string {
+	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
+	versionEntries, err := os.ReadDir(constructsDir)
+	if err != nil {
+		return nil
+	}
+
+	var dirs []string
+	for _, vEntry := range versionEntries {
+		versionDir := filepath.Join(constructsDir, vEntry.Name())
+		if !shouldValidateVersion(vEntry.Name()) || !isDirFollowingLinks(versionDir) {
+			continue
+		}
+		constructEntries, err := os.ReadDir(versionDir)
+		if err != nil {
+			continue
+		}
+		for _, cEntry := range constructEntries {
+			constructDir := filepath.Join(versionDir, cEntry.Name())
+			if !isDirFollowingLinks(constructDir) {
+				continue
+			}
+			if _, err := os.Stat(filepath.Join(constructDir, "api.yml")); err == nil {
+				dirs = append(dirs, constructDir)
+			}
+		}
+	}
+	return dirs
+}
+
+// isDirFollowingLinks reports whether path is a directory, or a symlink that
+// resolves to one. A dangling symlink is not a directory.
+func isDirFollowingLinks(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.IsDir()
+}
+
+// isDeprecatedRawDoc checks if a raw api.yml has x-deprecated: true in info,
+// like isDeprecatedDoc does for a loaded one.
+func isDeprecatedRawDoc(doc map[string]any) bool {
+	info, _ := doc["info"].(map[string]any)
+	deprecated, _ := info["x-deprecated"].(bool)
+	return deprecated
+}
+
+// helperSchemaFiles returns the helper files (*.yml, not api.yml and not
+// templates) in a construct directory, in sorted order. A helper such as
+// feature_operations.yml holds path items that api.yml pulls in by $ref, so
+// the bundler reaches every $ref inside it.
+func helperSchemaFiles(constructDir string) []string {
+	entries, err := os.ReadDir(constructDir)
+	if err != nil {
+		return nil
+	}
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Name() < entries[j].Name()
+	})
+
+	var files []string
+	for _, e := range entries {
+		name := e.Name()
+		if e.IsDir() || !strings.HasSuffix(name, ".yml") {
+			continue
+		}
+		if name == "api.yml" || strings.Contains(name, "_template") {
+			continue
+		}
+		files = append(files, filepath.Join(constructDir, name))
+	}
+	return files
 }
 
 // auditTemplateFiles validates template files in a construct directory.
