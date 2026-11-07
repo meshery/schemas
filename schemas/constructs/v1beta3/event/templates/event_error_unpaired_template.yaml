@@ -1,0 +1,9 @@
+code: meshery-server-1033
+shortDescription: Unable to reach the Kubernetes cluster
+probableCause:
+- The cluster's API server is not reachable from Meshery Server.
+- The connection's credentials for the cluster have expired.
+suggestedRemediation:
+- Check that Meshery Server can reach the cluster's API server address.
+- Reconnect the connection once the cluster is reachable.
+- Refresh the connection's credentials from its credential store.

@@ -338,7 +338,12 @@ func TestGithubImportResponseContract(t *testing.T) {
 // Event must describe the bytes MeshKit's models/events.Event marshals
 // (meshery/meshkit models/events/events.go): every JSON name it writes, with
 // `required` holding the fields it writes without omitempty, plus
-// organizationId, which the server assigns and always returns.
+// organizationId, which the server assigns and always returns. The
+// correlation, CloudEvents and trace context fields
+// (docs/event-correlation-contract.md) are optional. MeshKit's
+// models/events.Event adopts these optional fields in the MeshKit follow-up
+// to this schema release (companion to meshery/meshkit#1138), and this test
+// pins the schema contract MeshKit conforms to. They join omitEmpty.
 func TestEventMirrorsMeshkitEventWireShape(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), eventV1beta3Spec))
 	event := mustLookup(t, doc, "components", "schemas", "Event")
@@ -347,7 +352,7 @@ func TestEventMirrorsMeshkitEventWireShape(t *testing.T) {
 		"actedUpon", "action", "category", "createdAt", "description", "id",
 		"metadata", "operationId", "organizationId", "severity", "status", "systemId", "updatedAt", "visibility",
 	}
-	omitEmpty := []string{"deletedAt", "owner"}
+	omitEmpty := append([]string{"deletedAt", "owner"}, eventCorrelationFields...)
 
 	wantProperties := append(append([]string{}, alwaysWritten...), omitEmpty...)
 	sort.Strings(wantProperties)
