@@ -533,7 +533,6 @@ components:
         - public
         - org
         - private
-      default: public
 
     SchedulePayload:
       type: object

@@ -463,7 +463,6 @@ export interface components {
          *     the unauthenticated public activity feed (subject to user preferences),
          *     `org` restricts visibility to members of the owning organization, and
          *     `private` restricts it to the schedule owner.
-         * @default public
          * @enum {string}
          */
         ScheduleVisibility: "public" | "org" | "private";
@@ -589,10 +588,9 @@ export interface components {
              * @description Visibility of the schedule: `public`, `org`, or `private`.
              *     Defaults to `public` on creation. Omitted on update, the existing
              *     visibility is preserved.
-             * @default public
              * @enum {string}
              */
-            visibility: "public" | "org" | "private";
+            visibility?: "public" | "org" | "private";
         };
         /** @description Paginated collection of schedules. */
         SchedulePage: {
@@ -1548,7 +1546,6 @@ export interface operations {
                      * @description Visibility of the schedule: `public`, `org`, or `private`.
                      *     Defaults to `public` on creation. Omitted on update, the existing
                      *     visibility is preserved.
-                     * @default public
                      * @enum {string}
                      */
                     visibility?: "public" | "org" | "private";
@@ -2318,7 +2315,6 @@ export interface operations {
                      * @description Visibility of the schedule: `public`, `org`, or `private`.
                      *     Defaults to `public` on creation. Omitted on update, the existing
                      *     visibility is preserved.
-                     * @default public
                      * @enum {string}
                      */
                     visibility?: "public" | "org" | "private";

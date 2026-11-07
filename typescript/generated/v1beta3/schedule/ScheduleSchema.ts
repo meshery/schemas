@@ -1095,8 +1095,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "public",
                       "org",
                       "private"
-                    ],
-                    "default": "public"
+                    ]
                   }
                 }
               }
@@ -2859,8 +2858,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "public",
                       "org",
                       "private"
-                    ],
-                    "default": "public"
+                    ]
                   }
                 }
               }
@@ -6721,8 +6719,7 @@ const ScheduleSchema: Record<string, unknown> = {
           "public",
           "org",
           "private"
-        ],
-        "default": "public"
+        ]
       },
       "SchedulePayload": {
         "type": "object",
@@ -6914,8 +6911,7 @@ const ScheduleSchema: Record<string, unknown> = {
               "public",
               "org",
               "private"
-            ],
-            "default": "public"
+            ]
           }
         }
       },

@@ -216,9 +216,6 @@ func TestScheduleVisibility(t *testing.T) {
 	if got := sequenceStrings(mustLookup(t, doc, "components", "schemas", "ScheduleVisibility", "enum")); !reflect.DeepEqual(got, wantEnum) {
 		t.Errorf("ScheduleVisibility enum = %v, want %v", got, wantEnum)
 	}
-	if def := mustLookup(t, doc, "components", "schemas", "ScheduleVisibility", "default"); def != "public" {
-		t.Errorf("ScheduleVisibility default = %v, want public", def)
-	}
 
 	entity := loadYAMLMap(t, scheduleV1beta3Ent)
 	props := entity["properties"].(map[string]any)
@@ -252,6 +249,11 @@ func TestScheduleVisibility(t *testing.T) {
 	}
 	if got := payloadVis["$ref"]; got != "#/components/schemas/ScheduleVisibility" {
 		t.Errorf("SchedulePayload.visibility $ref = %v, want #/components/schemas/ScheduleVisibility", got)
+	}
+	for _, reqName := range sequenceStrings(payload["required"]) {
+		if reqName == "visibility" {
+			t.Errorf("SchedulePayload must not require visibility (clients must be able to omit it on create/update)")
+		}
 	}
 }
 
