@@ -1014,6 +1014,9 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/integrations/connections/desktop/${queryArg.installationId}`,
           method: "DELETE",
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
@@ -11411,6 +11414,9 @@ export type DeregisterDesktopConnectionApiResponse = unknown;
 export type DeregisterDesktopConnectionApiArg = {
   /** Installation identifier from `metadata.installationId`. */
   installationId: string;
+  /** Organization whose connection for this install is deleted. Absent, or `all`, deletes the install's connections in every organization. A value that is neither an organization id nor `all` is refused with 400. An organization id where the caller has no connection for this install deletes nothing and is 404. Membership is not checked: a non-member with no connection there gets the same 404, so the response does not disclose membership, and a connection the caller still owns in an organization it has left is deleted (204). The schema is a plain string, not `format: uuid` as on `registerConnection`, because `all` is a legal value here.
+   */
+  "X-Current-Orgid"?: string;
 };
 export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection after the heartbeat */ {
   /** Connection ID */
