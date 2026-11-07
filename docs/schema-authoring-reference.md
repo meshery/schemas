@@ -118,6 +118,30 @@ same way. For this class only:
 A construct the server persists, even partly, is not in this class. It
 follows Rule 1 as written.
 
+### Definition constructs have neither endpoints nor a stored row
+
+Some constructs describe a document that components publish as files, not
+anything a server stores or serves. The `error` construct is the worked
+example: an error code's definition is declared in the owning component's
+source, exported by MeshKit's `errorutil`, and published by the docs build
+([contract](error-definition-contract.md)). For this class only:
+
+- `api.yml` has `paths: {}`.
+- The entity `.yaml` declares no `id`, `createdAt`, `updatedAt` or
+  `deletedAt`. Its natural key (for example `code`) is a required field. It
+  still sets `additionalProperties: false`.
+- There is no `{Construct}Payload`, because nothing writes it over HTTP.
+- Cross-field rules JSON Schema cannot state belong in a hand-written helper
+  in the generated Go package (`<construct>_helper.go`) and, when the
+  TypeScript package ships one, a mirror under `typescript/`, each with tests
+  against the construct's templates.
+
+When the construct's directory name is a Go predeclared identifier or would
+shadow one in importers (`error`), set its Go package name in
+`packageNameOverrides` (`build/lib/config.js`): the error construct's Go
+models are `models/v1beta3/errorcode`. The override names the generated
+TypeScript output too (`typescript/generated/v1beta3/errorcode/Errorcode.ts`).
+
 ### Rule 2 example: `{Construct}Payload` schema in `api.yml`
 
 ```yaml
