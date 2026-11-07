@@ -31,7 +31,13 @@ is a projection; the server fills it for every row.
 The same page item carries, as optional properties, the row fields Layer5
 Cloud's `getEvents` serves on every row: `id`, `actedUpon`, `operationId`,
 `severity`, `status`, `metadata` (the same nullable free-form object as
-`Event.metadata`, so `metadata.error` is an EventError when present),
+`Event.metadata`. On an error event, `metadata.error` is an EventError when
+present, except that a design validation event whose operation did not
+complete (`status` `error`) carries it as a DesignEventOperationError. Rows
+recorded before EventError carry MeshKit's Go field names instead (`Code`,
+`Severity` as a number, `ShortDescription`, `LongDescription`,
+`ProbableCause` and `SuggestedRemediation` as lists); readers fall back to
+those keys when `code` is absent and treat their flat lists as unpaired),
 `updatedAt` and `deletedAt`. They are not required, so a row recorded
 without them still validates. (#1353)
 
