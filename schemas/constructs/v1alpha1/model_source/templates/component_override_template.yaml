@@ -1,0 +1,14 @@
+description: Custom certificate resource override for cert-manager.
+displayName: Certificate
+shape: round-rectangle
+primaryColor: "#00B39F"
+secondaryColor: "#00D3A9"
+svgColor: ./svg/certificate.svg
+svgWhite: ./svg/certificate-white.svg
+svgComplete: ./svg/certificate-complete.svg
+styles: {}
+capabilities:
+  - mutation
+  - validation
+isAnnotation: false
+status: enabled

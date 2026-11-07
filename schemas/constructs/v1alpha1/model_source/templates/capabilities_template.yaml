@@ -1,0 +1,11 @@
+key: mutation
+displayName: Mutation
+description: Ability to mutate resources and entity configurations.
+kind: mutate
+type: style
+subType: shape
+entityState:
+  - declaration
+  - instance
+status: enabled
+metadata: {}
