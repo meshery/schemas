@@ -267,8 +267,51 @@ func TestPublicActivityFeed(t *testing.T) {
 	}
 	// Route is unauthenticated: security requirement is empty list
 	sec, ok := op.(map[string]any)["security"]
-	if !ok || len(sec.([]any)) != 0 {
+	secList, isList := sec.([]any)
+	if !ok || !isList || len(secList) != 0 {
 		t.Errorf("getPublicActivityFeed must have empty security requirement (unauthenticated)")
+	}
+
+	// Parameter contract: page (min 1, default 1) and pageSize (min 1, max 50, default 20)
+	params, ok := op.(map[string]any)["parameters"].([]any)
+	if !ok || len(params) < 2 {
+		t.Fatalf("getPublicActivityFeed must declare query parameters")
+	}
+	var foundPage, foundPageSize bool
+	for _, pAny := range params {
+		p, isMap := pAny.(map[string]any)
+		if !isMap {
+			continue
+		}
+		name, _ := p["name"].(string)
+		schema, _ := p["schema"].(map[string]any)
+		switch name {
+		case "page":
+			foundPage = true
+			if schema["minimum"] != 1 {
+				t.Errorf("page parameter minimum = %v, want 1", schema["minimum"])
+			}
+			if schema["default"] != 1 {
+				t.Errorf("page parameter default = %v, want 1", schema["default"])
+			}
+		case "pageSize":
+			foundPageSize = true
+			if schema["minimum"] != 1 {
+				t.Errorf("pageSize parameter minimum = %v, want 1", schema["minimum"])
+			}
+			if schema["maximum"] != 50 {
+				t.Errorf("pageSize parameter maximum = %v, want 50", schema["maximum"])
+			}
+			if schema["default"] != 20 {
+				t.Errorf("pageSize parameter default = %v, want 20", schema["default"])
+			}
+		}
+	}
+	if !foundPage {
+		t.Errorf("getPublicActivityFeed missing page parameter")
+	}
+	if !foundPageSize {
+		t.Errorf("getPublicActivityFeed missing pageSize parameter")
 	}
 
 	resp200 := mustLookup(t, op, "responses", "200")
@@ -286,11 +329,35 @@ func TestPublicActivityFeed(t *testing.T) {
 		t.Errorf("PublicActivityFeedItem additionalProperties = %v, want false", got)
 	}
 	itemProps := item["properties"].(map[string]any)
+	required := make(map[string]bool)
+	for _, name := range sequenceStrings(item["required"]) {
+		required[name] = true
+	}
 	for _, req := range []string{"userId", "platform", "roleResult", "completedAt", "visibility"} {
 		if _, ok := itemProps[req]; !ok {
 			t.Errorf("PublicActivityFeedItem must contain %s", req)
 		}
+		if !required[req] {
+			t.Errorf("PublicActivityFeedItem must require %s", req)
+		}
 	}
+
+	visProp, ok := itemProps["visibility"].(map[string]any)
+	if !ok {
+		t.Fatalf("PublicActivityFeedItem must declare visibility property")
+	}
+	visEnum := sequenceStrings(visProp["enum"])
+	if !reflect.DeepEqual(visEnum, []string{"public"}) {
+		t.Errorf("PublicActivityFeedItem.visibility enum = %v, want [public]", visEnum)
+	}
+
+	pageSchema := mustLookup(t, doc, "components", "schemas", "PublicActivityFeedPage").(map[string]any)
+	pageProps := pageSchema["properties"].(map[string]any)
+	pageNumProp := pageProps["page"].(map[string]any)
+	if pageNumProp["minimum"] != 1 {
+		t.Errorf("PublicActivityFeedPage.page minimum = %v, want 1", pageNumProp["minimum"])
+	}
+
 	for _, opt := range []string{"displayName", "avatarUrl", "organizationName", "publicProfileUrl"} {
 		if _, ok := itemProps[opt]; !ok {
 			t.Errorf("PublicActivityFeedItem must contain %s", opt)

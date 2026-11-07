@@ -875,7 +875,7 @@ export interface components {
              * @default public
              * @enum {string}
              */
-            visibility: "public" | "org" | "private";
+            visibility: "public";
             /** @description Public username; present only when the user's profile is public. */
             displayName?: string;
             /**
@@ -923,7 +923,7 @@ export interface components {
                  * @default public
                  * @enum {string}
                  */
-                visibility: "public" | "org" | "private";
+                visibility: "public";
                 /** @description Public username; present only when the user's profile is public. */
                 displayName?: string;
                 /**
@@ -972,7 +972,7 @@ export interface components {
                  * @default public
                  * @enum {string}
                  */
-                visibility: "public" | "org" | "private";
+                visibility: "public";
                 /** @description Public username; present only when the user's profile is public. */
                 displayName?: string;
                 /**
@@ -3474,7 +3474,7 @@ export interface operations {
     getPublicActivityFeed: {
         parameters: {
             query?: {
-                /** @description Get responses by page */
+                /** @description Page number. */
                 page?: number;
                 /** @description Number of items per page. */
                 pageSize?: number;
@@ -3524,7 +3524,7 @@ export interface operations {
                              * @default public
                              * @enum {string}
                              */
-                            visibility: "public" | "org" | "private";
+                            visibility: "public";
                             /** @description Public username; present only when the user's profile is public. */
                             displayName?: string;
                             /**

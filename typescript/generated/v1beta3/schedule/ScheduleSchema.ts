@@ -5553,10 +5553,11 @@ const ScheduleSchema: Record<string, unknown> = {
           {
             "name": "page",
             "in": "query",
-            "description": "Get responses by page",
+            "description": "Page number.",
             "schema": {
               "type": "integer",
-              "minimum": 0
+              "minimum": 1,
+              "default": 1
             }
           },
           {
@@ -5565,7 +5566,9 @@ const ScheduleSchema: Record<string, unknown> = {
             "description": "Number of items per page.",
             "schema": {
               "type": "integer",
-              "minimum": 1
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
             }
           }
         ],
@@ -5598,7 +5601,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "page": {
                       "type": "integer",
                       "description": "Current page number.",
-                      "minimum": 0
+                      "minimum": 1
                     },
                     "pageSize": {
                       "type": "integer",
@@ -5666,15 +5669,13 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "visibility": {
-                            "description": "Always `public` in this feed.",
-                            "x-order": 5,
                             "type": "string",
+                            "description": "Always `public` in this feed.",
                             "enum": [
-                              "public",
-                              "org",
-                              "private"
+                              "public"
                             ],
-                            "default": "public"
+                            "default": "public",
+                            "x-order": 5
                           },
                           "displayName": {
                             "type": "string",
@@ -7636,15 +7637,13 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true
           },
           "visibility": {
-            "description": "Always `public` in this feed.",
-            "x-order": 5,
             "type": "string",
+            "description": "Always `public` in this feed.",
             "enum": [
-              "public",
-              "org",
-              "private"
+              "public"
             ],
-            "default": "public"
+            "default": "public",
+            "x-order": 5
           },
           "displayName": {
             "type": "string",
@@ -7703,7 +7702,7 @@ const ScheduleSchema: Record<string, unknown> = {
           "page": {
             "type": "integer",
             "description": "Current page number.",
-            "minimum": 0
+            "minimum": 1
           },
           "pageSize": {
             "type": "integer",
@@ -7771,15 +7770,13 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "visibility": {
-                  "description": "Always `public` in this feed.",
-                  "x-order": 5,
                   "type": "string",
+                  "description": "Always `public` in this feed.",
                   "enum": [
-                    "public",
-                    "org",
-                    "private"
+                    "public"
                   ],
-                  "default": "public"
+                  "default": "public",
+                  "x-order": 5
                 },
                 "displayName": {
                   "type": "string",
@@ -7841,7 +7838,7 @@ const ScheduleSchema: Record<string, unknown> = {
           "page": {
             "type": "integer",
             "description": "Current page number.",
-            "minimum": 0
+            "minimum": 1
           },
           "pageSize": {
             "type": "integer",
@@ -7909,15 +7906,13 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "visibility": {
-                  "description": "Always `public` in this feed.",
-                  "x-order": 5,
                   "type": "string",
+                  "description": "Always `public` in this feed.",
                   "enum": [
-                    "public",
-                    "org",
-                    "private"
+                    "public"
                   ],
-                  "default": "public"
+                  "default": "public",
+                  "x-order": 5
                 },
                 "displayName": {
                   "type": "string",

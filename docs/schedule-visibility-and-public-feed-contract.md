@@ -13,12 +13,11 @@ activity feed introduced in `v1beta3/schedule` (issue #1346).
 ### Semantics
 
 - **`public`**: Completed runs of the schedule are eligible to appear on public,
-  anonymous activity feeds and social-proof surfaces if the actor's profile is
-  public.
+  anonymous activity feeds and social-proof surfaces if the schedule owner has
+  the account-wide `shareActivityPublicly` preference enabled at read time.
 - **`org`**: Activity is restricted to members within the schedule's owning
   organization.
-- **`private`**: Activity is restricted to the schedule owner and organization
-  administrators.
+- **`private`**: Activity is restricted to the schedule owner.
 
 ### Persistence and updates
 
@@ -64,6 +63,7 @@ The response schema is `PublicActivityFeed` (aliased to `PublicActivityFeedPage`
       "platform": "linkedin",
       "roleResult": "DevOps Engineer deployed canary build successfully",
       "completedAt": "2026-11-06T12:00:00Z",
+      "visibility": "public",
       "displayName": "alex_cloud",
       "avatarUrl": "https://avatar.example.com/alex.png",
       "organizationName": "Acme Corp",
@@ -79,10 +79,11 @@ Each item in `data` represents a `PublicActivityFeedItem`:
 
 1. **Always present**:
    - `userId` (uuid): Cloud user ID of the actor.
-   - `platform` (string): Target platform or channel where the schedule ran (e.g.,
-     `github`, `linkedin`, `slack`).
+   - `platform` (string): Target platform or channel where the schedule ran (one of
+     `linkedin`, `x`, `reddit`, `hacker-news`, `slack`, `bluesky`, `github`).
    - `roleResult` (string): Short summary line combining role and completion result.
    - `completedAt` (date-time): Timestamp when the run completed.
+   - `visibility` (string): Always `public` in this feed.
 
 2. **Conditional on public profile**:
    - `displayName` (string): Public username or handle.
@@ -95,11 +96,31 @@ Each item in `data` represents a `PublicActivityFeedItem`:
    activity sharing.
 
 3. **Privacy invariants**:
+   - **Item-level inclusion**: An item is included in the feed only when the schedule's
+     `visibility` is `public` and the owner's account-wide `shareActivityPublicly`
+     preference is on at read time. Turning it off excludes the entire item (including
+     the `userId` and the run) from subsequent feed responses; runs are never rewritten.
    - **No email addresses**: Email addresses are never exposed in feed responses.
    - **No private schedules**: Runs from schedules with `visibility: "org"` or
      `visibility: "private"` must never appear in this feed.
    - **No sensitive execution data**: Passwords, tokens, payload contents, or error
      traces are strictly excluded.
+
+## Migration and backward compatibility
+
+### Pre-existing schedules
+
+When existing schedules are migrated to `v1beta3`:
+- In the database and API responses, `Schedule.visibility` defaults to `"public"`
+  (existing rows are backfilled with `"public"` to satisfy the required response contract).
+- Public feed eligibility is safely gated: completed runs are included in the public
+  feed only if the schedule owner's account-wide `shareActivityPublicly` preference
+  is on at read time.
+- Users or organizations wishing to restrict their schedules can update `visibility`
+  to `"org"` or `"private"` at any time via `SchedulePayload`, or disable
+  `shareActivityPublicly` in their user preferences.
+- Tenants with strict privacy policies may optionally backfill legacy schedules to
+  `"org"` or `"private"` prior to enabling public activity feed surfaces.
 
 ## Out of scope (event constructs)
 
