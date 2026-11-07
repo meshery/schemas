@@ -146,6 +146,13 @@
     "extension": true
   },
   {
+    "construct": "error",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/error/error.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "evaluation",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/evaluation/api.yml",
