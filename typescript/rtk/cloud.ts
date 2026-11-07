@@ -2153,6 +2153,16 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Schedule_schedules"],
       }),
+      getPublicActivityFeed: build.query<GetPublicActivityFeedApiResponse, GetPublicActivityFeedApiArg>({
+        query: (queryArg) => ({
+          url: `/api/public/activity-feed`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
+      }),
       getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/subscriptions`,
@@ -20729,6 +20739,12 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
         enum is refused with 400.
          */
     posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public` (the default) allows completed runs
+        to appear on the unauthenticated public activity feed (subject to user
+        preferences), `org` restricts visibility to members of the schedule's
+        organization, and `private` restricts it to the schedule owner.
+         */
+    visibility: "public" | "org" | "private";
   }[];
 };
 export type ListSchedulesApiArg = {
@@ -20889,6 +20905,12 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
     enum is refused with 400.
      */
   posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type CreateScheduleApiArg = {
   body: {
@@ -20973,6 +20995,11 @@ export type CreateScheduleApiArg = {
         default resolves to, exactly as before.
          */
     posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public`, `org`, or `private`.
+        Defaults to `public` on creation. Omitted on update, the existing
+        visibility is preserved.
+         */
+    visibility?: "public" | "org" | "private";
   };
 };
 export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
@@ -21110,6 +21137,12 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
     enum is refused with 400.
      */
   posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type GetScheduleByIdApiArg = {
   /** Schedule ID */
@@ -21250,6 +21283,12 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
     enum is refused with 400.
      */
   posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type UpdateScheduleApiArg = {
   /** Schedule ID */
@@ -21338,6 +21377,11 @@ export type UpdateScheduleApiArg = {
         default resolves to, exactly as before.
          */
     posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public`, `org`, or `private`.
+        Defaults to `public` on creation. Omitted on update, the existing
+        visibility is preserved.
+         */
+    visibility?: "public" | "org" | "private";
   };
 };
 export type DeleteScheduleByIdApiResponse = unknown;
@@ -21488,6 +21532,12 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
         enum is refused with 400.
          */
     posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public` (the default) allows completed runs
+        to appear on the unauthenticated public activity feed (subject to user
+        preferences), `org` restricts visibility to members of the schedule's
+        organization, and `private` restricts it to the schedule owner.
+         */
+    visibility: "public" | "org" | "private";
   }[];
 };
 export type GetSchedulesOfWorkspaceApiArg = {
@@ -21648,6 +21698,12 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
     enum is refused with 400.
      */
   posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type AssignScheduleToWorkspaceApiArg = {
   /** Workspace ID */
@@ -21661,6 +21717,41 @@ export type UnassignScheduleFromWorkspaceApiArg = {
   workspaceId: string;
   /** Schedule ID */
   scheduleId: string;
+};
+export type GetPublicActivityFeedApiResponse = /** status 200 Public activity feed page */ {
+  /** Current page number. */
+  page: number;
+  /** Number of items per page; maximum 50. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Feed items included on this page, newest first. */
+  data: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** Social platform the schedule ran on. */
+    platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+    /** One-line role and result summary from the completed run. */
+    roleResult: string;
+    /** Time the schedule run completed; feed is ordered newest first. */
+    completedAt: string;
+    /** Always `public` in this feed. */
+    visibility: "public";
+    /** Public username; present only when the user's profile is public. */
+    displayName?: string;
+    /** Public avatar URL; present only when the user's profile is public. */
+    avatarUrl?: string;
+    /** Public organization name; present only when the user's profile is public. */
+    organizationName?: string;
+    /** HTTPS URL of the user's public profile. */
+    publicProfileUrl?: string;
+  }[];
+};
+export type GetPublicActivityFeedApiArg = {
+  /** Page number. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
 };
 export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response */ {
   /** Current page number of the result set. */
@@ -24343,6 +24434,8 @@ export const {
   useLazyGetSchedulesOfWorkspaceQuery,
   useAssignScheduleToWorkspaceMutation,
   useUnassignScheduleFromWorkspaceMutation,
+  useGetPublicActivityFeedQuery,
+  useLazyGetPublicActivityFeedQuery,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
   useUpsertSubscriptionMutation,
