@@ -173,7 +173,7 @@ func TestEventResultAcceptsCloudRowFields(t *testing.T) {
 		"owner": sampleUUID, "category": "connection", "action": "connect",
 		"id": sampleUUID, "actedUpon": sampleUUID2, "operationId": sampleUUID,
 		"severity": "error", "status": "unread",
-		"metadata": map[string]any{"error": errBody},
+		"metadata":  map[string]any{"error": errBody},
 		"updatedAt": "2026-11-06T10:42:00Z",
 		"deletedAt": nil,
 	}
