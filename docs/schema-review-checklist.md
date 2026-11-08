@@ -69,7 +69,7 @@ These patterns are deliberate. Do not suggest changes during code review:
 - [ ] Verified only schema JSON/YAML files are in the commit
 - [ ] If updating `typescript/index.ts`, verified import paths are correct
 - [ ] (New entity) `<construct>.yaml` has `additionalProperties: false`
-- [ ] (New entity) `<construct>.yaml` includes all server-generated fields in `properties` and `required`
+- [ ] (New entity) `<construct>.yaml` includes server-generated fields as [Rule 1 and its exceptions](schema-authoring-reference.md#dual-schema-pattern-examples) require
 - [ ] (New entity with writes) `api.yml` defines a `{Construct}Payload` with only client-settable fields
 - [ ] (New entity with writes) All `POST`/`PUT` `requestBody` entries reference `{Construct}Payload`, not `{Construct}`
 - [ ] (New entity) `GET` responses reference the full `{Construct}` entity schema
