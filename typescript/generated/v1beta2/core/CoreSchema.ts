@@ -251,6 +251,25 @@ const CoreSchema: Record<string, unknown> = {
         "properties": {},
         "x-go-type-skip-optional-pointer": true
       },
+      "OwnershipTransferPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Request body for transferring ownership of a resource to another user. Used uniformly across all ownable resource constructs.\n",
+        "required": [
+          "newOwnerId"
+        ],
+        "properties": {
+          "newOwnerId": {
+            "description": "UUID of the user to whom ownership will be transferred.",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          }
+        }
+      },
       "EmailPreference": {
         "type": "object",
         "properties": {

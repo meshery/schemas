@@ -246,6 +246,17 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/integrations/credentials/${queryArg.credentialId}` }),
         providesTags: ["credential_credentials"],
       }),
+      transferCredentialOwnership: build.mutation<
+        TransferCredentialOwnershipApiResponse,
+        TransferCredentialOwnershipApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/credentials/${queryArg.credentialId}/transfer`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["credential_credentials"],
+      }),
       getUserKeys: build.query<GetUserKeysApiResponse, GetUserKeysApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/users/keys`,
@@ -1003,6 +1014,9 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/integrations/connections/desktop/${queryArg.installationId}`,
           method: "DELETE",
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
@@ -1427,6 +1441,18 @@ const injectedRtkApi = api
             order: queryArg?.order,
             filter: queryArg?.filter,
             scope: queryArg?.scope,
+          },
+        }),
+        providesTags: ["Events_events"],
+      }),
+      getEventFeed: build.query<GetEventFeedApiResponse, GetEventFeedApiArg>({
+        query: (queryArg) => ({
+          url: `/api/events/feed`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            category: queryArg?.category,
+            action: queryArg?.action,
           },
         }),
         providesTags: ["Events_events"],
@@ -2126,6 +2152,16 @@ const injectedRtkApi = api
           method: "DELETE",
         }),
         invalidatesTags: ["Schedule_schedules"],
+      }),
+      getPublicActivityFeed: build.query<GetPublicActivityFeedApiResponse, GetPublicActivityFeedApiArg>({
+        query: (queryArg) => ({
+          url: `/api/public/activity-feed`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
       }),
       getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
         query: (queryArg) => ({
@@ -3484,6 +3520,34 @@ export type GetCredentialByIdApiResponse = /** status 200 Credential response */
 export type GetCredentialByIdApiArg = {
   /** Credential ID */
   credentialId: string;
+};
+export type TransferCredentialOwnershipApiResponse = /** status 200 Credential ownership transferred successfully */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type TransferCredentialOwnershipApiArg = {
+  /** Credential ID */
+  credentialId: string;
+  body: {
+    /** UUID of the user to whom ownership will be transferred. */
+    newOwnerId: string;
+  };
 };
 export type GetUserKeysApiResponse = /** status 200 Returns user keys based on roles assigned to user */ {
   /** Zero-based page index returned in this response. */
@@ -6648,6 +6712,8 @@ export type UpdateUserPreferencesApiArg = {
     };
     /** The anonymous usage stats of the preference. */
     anonymousUsageStats?: boolean;
+    /** Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten. */
+    shareActivityPublicly?: boolean;
     /** The anonymous perf results of the preference. */
     anonymousPerfResults?: boolean;
     /** The dashboard preferences of the preference. */
@@ -11358,6 +11424,9 @@ export type DeregisterDesktopConnectionApiResponse = unknown;
 export type DeregisterDesktopConnectionApiArg = {
   /** Installation identifier from `metadata.installationId`. */
   installationId: string;
+  /** Organization whose connection for this install is deleted. Absent, or `all`, deletes the install's connections in every organization. A value that is neither an organization id nor `all` is refused with 400. An organization id where the caller has no connection for this install deletes nothing and is 404. Membership is not checked: a non-member with no connection there gets the same 404, so the response does not disclose membership, and a connection the caller still owns in an organization it has left is deleted (204). The schema is a plain string, not `format: uuid` as on `registerConnection`, because `all` is a legal value here.
+   */
+  "X-Current-Orgid"?: string;
 };
 export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection after the heartbeat */ {
   /** Connection ID */
@@ -15123,7 +15192,7 @@ export type ImportGithubRepositoryApiResponse =
       category: string;
       /** Human-readable summary of what happened. */
       description: string;
-      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
        */
       metadata: {
         [key: string]: any;
@@ -15147,8 +15216,39 @@ export type ImportGithubRepositoryApiResponse =
       createdAt: string;
       /** Timestamp when the event was last updated. */
       updatedAt: string;
+      /** Who can see the event. Defaults to `private`. */
+      visibility: "private" | "public";
       /** Timestamp when the event was soft-deleted; omitted when it was not. */
       deletedAt?: string | null;
+      /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+       */
+      correlationKey?: string;
+      /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+       */
+      occurrenceCount?: number;
+      /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+       */
+      firstSeenAt?: string;
+      /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+       */
+      lastSeenAt?: string;
+      /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+       */
+      resolvedAt?: string;
+      /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+       */
+      source?: string;
+      /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+       */
+      type?: string;
+      /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+      specversion?: "1.0";
+      /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+       */
+      traceId?: string;
+      /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+       */
+      parentId?: string;
     }[];
   };
 export type ImportGithubRepositoryApiArg = {
@@ -16482,9 +16582,284 @@ export type GetEnvironmentConnectionsApiResponse = /** status 200 Environment co
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** The connections of the environmentconnectionspage. */
+  /** Connections associated with the environment, using the canonical Connection response schema. */
   connections?: {
-    [key: string]: any;
+    /** Connection ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** Associated Credential ID */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** The connection state reachable from the current state. */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** User ID who owns this connection */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string | null;
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+     */
+    organizationId: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
   }[];
 };
 export type GetEnvironmentConnectionsApiArg = {
@@ -16555,6 +16930,8 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
   totalCount?: number;
   /** The events returned on the current page. */
   data?: {
+    /** Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. */
+    visibility?: "private" | "public";
     /** UUID of the user associated with the event. */
     owner: string;
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
@@ -16573,12 +16950,59 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
     firstName?: string;
     /** The last name of the user associated with the event. */
     lastName?: string;
+    /** URL to the avatar image of the user associated with the event. */
+    avatarUrl?: string;
     /** Email address of the user associated with the event. */
     email?: string;
     /** Authentication provider of the user associated with the event. */
     provider?: string;
     /** Timestamp when the event was recorded. */
     createdAt?: string;
+    /** Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
+    correlationKey?: string;
+    /** How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
+     */
+    occurrenceCount?: number;
+    /** When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+     */
+    firstSeenAt?: string;
+    /** When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+     */
+    lastSeenAt?: string;
+    /** When the condition cleared (see Event.resolvedAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user it is omitted while the condition is open.
+     */
+    resolvedAt?: string;
+    /** Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source). */
+    source?: string;
+    /** CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type). */
+    type?: string;
+    /** The CloudEvents specification version the event is compatible with (see Event.specversion). */
+    specversion?: "1.0";
+    /** W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId). */
+    traceId?: string;
+    /** W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
+    parentId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    actedUpon?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    operationId?: string;
+    /** Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.
+     */
+    severity?: string;
+    /** Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.
+     */
+    status?: string;
+    /** Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired.
+     */
+    metadata?: {
+      [key: string]: any;
+    } | null;
+    /** Timestamp when the event was last updated (see Event.updatedAt). */
+    updatedAt?: string;
+    /** Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt). */
+    deletedAt?: string | null;
   }[];
 };
 export type GetEventsOfWorkspaceApiArg = {
@@ -16605,7 +17029,7 @@ export type GetEventsAggregateApiArg = {
   cumulative?: boolean;
 };
 export type CreateEventApiResponse =
-  /** status 200 An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded.
+  /** status 200 The event the create resolved to. When no new event was recorded, that is the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged) or, for a call that identifies a user, the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`). A call that identifies no user records a new event instead, with the correlation fields stored exactly as sent. A server MAY also answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `Event-Disposition: created`, returning the event it just recorded, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read `Event-Disposition` rather than the status code to tell created from replayed.
      */
     | {
         /** Event ID. */
@@ -16618,7 +17042,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16642,10 +17066,42 @@ export type CreateEventApiResponse =
         createdAt: string;
         /** Timestamp when the event was last updated. */
         updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
         /** Timestamp when the event was soft-deleted; omitted when it was not. */
         deletedAt?: string | null;
+        /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+         */
+        correlationKey?: string;
+        /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+         */
+        occurrenceCount?: number;
+        /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+         */
+        firstSeenAt?: string;
+        /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+         */
+        lastSeenAt?: string;
+        /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+         */
+        resolvedAt?: string;
+        /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+         */
+        source?: string;
+        /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+         */
+        type?: string;
+        /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+        specversion?: "1.0";
+        /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+         */
+        traceId?: string;
+        /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+         */
+        parentId?: string;
       }
-    | /** status 201 Event created */ {
+    | /** status 201 A new event was recorded (`Event-Disposition: created`). A call that identifies no user stores the correlation fields exactly as sent. For a call that identifies a user and carries a `correlationKey`, the event opens a condition, or records one already resolved when the payload carries `resolvedAt`. An already resolved insert uses `occurrenceCount` 1 when omitted, and `firstSeenAt` and `lastSeenAt` from the payload, else `resolvedAt`.
+     */ {
         /** Event ID. */
         id: string;
         /** ID of the entity on which the event was performed. */
@@ -16656,7 +17112,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16680,8 +17136,39 @@ export type CreateEventApiResponse =
         createdAt: string;
         /** Timestamp when the event was last updated. */
         updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
         /** Timestamp when the event was soft-deleted; omitted when it was not. */
         deletedAt?: string | null;
+        /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+         */
+        correlationKey?: string;
+        /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+         */
+        occurrenceCount?: number;
+        /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+         */
+        firstSeenAt?: string;
+        /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+         */
+        lastSeenAt?: string;
+        /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+         */
+        resolvedAt?: string;
+        /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+         */
+        source?: string;
+        /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+         */
+        type?: string;
+        /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+        specversion?: "1.0";
+        /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+         */
+        traceId?: string;
+        /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+         */
+        parentId?: string;
       };
 export type CreateEventApiArg = {
   body: {
@@ -16689,13 +17176,48 @@ export type CreateEventApiArg = {
     owner?: string;
     /** The category of the event. */
     category?: string;
+    /** Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed. */
+    visibility?: "private" | "public";
     /** The action of the event. */
     action?: string;
     /** Description of the event. */
     description?: string;
+    /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+     */
+    severity?: string;
     /** Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
      */
     idempotencyKey?: string;
+    /** Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates.
+     */
+    correlationKey?: string;
+    /** Number of occurrences this create reports, for a producer that counted repeats locally before sending. A create without a `correlationKey`, and a call that identifies no user, stores this value exactly as sent, including when it is omitted. For a call that identifies a user and carries a `correlationKey`, omitted means 1. An opening create stores that count, counting an open condition adds it, and an already-resolved insert stores it. A resolving create on that open event does not add it.
+     */
+    occurrenceCount?: number;
+    /** When the producer first saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `lastSeenAt`, or the time of receipt, and omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when that create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
+     */
+    firstSeenAt?: string;
+    /** When the producer last saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition, or while closing one, means the time of receipt; and omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
+     */
+    lastSeenAt?: string;
+    /** When the condition named by `correlationKey` cleared. A call that identifies no user stores this value exactly as sent and does not match an open event. For a call that identifies a user, a create that carries it is a resolution: it closes that caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+     */
+    resolvedAt?: string;
+    /** Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
+     */
+    source?: string;
+    /** CloudEvents-compatible `type`: a reverse-DNS name of the kind of occurrence, for example `io.meshery.user.signup`. It does not replace `category` and `action`, which stay two free strings; `type` is for CloudEvents-aware consumers.
+     */
+    type?: string;
+    /** The CloudEvents specification version the event's `source`, `type` and `id` are compatible with, when the producer sets them as CloudEvents attributes. A Meshery event is CloudEvents compatible; it is not a CloudEvent.
+     */
+    specversion?: "1.0";
+    /** W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time.
+     */
+    traceId?: string;
+    /** W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.
+     */
+    parentId?: string;
     [key: string]: any;
   };
 };
@@ -16708,6 +17230,8 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
   totalCount?: number;
   /** The events returned on the current page. */
   data?: {
+    /** Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. */
+    visibility?: "private" | "public";
     /** UUID of the user associated with the event. */
     owner: string;
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
@@ -16726,12 +17250,59 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
     firstName?: string;
     /** The last name of the user associated with the event. */
     lastName?: string;
+    /** URL to the avatar image of the user associated with the event. */
+    avatarUrl?: string;
     /** Email address of the user associated with the event. */
     email?: string;
     /** Authentication provider of the user associated with the event. */
     provider?: string;
     /** Timestamp when the event was recorded. */
     createdAt?: string;
+    /** Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
+    correlationKey?: string;
+    /** How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
+     */
+    occurrenceCount?: number;
+    /** When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+     */
+    firstSeenAt?: string;
+    /** When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+     */
+    lastSeenAt?: string;
+    /** When the condition cleared (see Event.resolvedAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user it is omitted while the condition is open.
+     */
+    resolvedAt?: string;
+    /** Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source). */
+    source?: string;
+    /** CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type). */
+    type?: string;
+    /** The CloudEvents specification version the event is compatible with (see Event.specversion). */
+    specversion?: "1.0";
+    /** W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId). */
+    traceId?: string;
+    /** W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
+    parentId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    actedUpon?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    operationId?: string;
+    /** Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.
+     */
+    severity?: string;
+    /** Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.
+     */
+    status?: string;
+    /** Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired.
+     */
+    metadata?: {
+      [key: string]: any;
+    } | null;
+    /** Timestamp when the event was last updated (see Event.updatedAt). */
+    updatedAt?: string;
+    /** Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt). */
+    deletedAt?: string | null;
   }[];
 };
 export type GetEventsApiArg = {
@@ -16748,6 +17319,55 @@ export type GetEventsApiArg = {
   /** Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.
    */
   scope?: "user" | "organization";
+};
+export type GetEventFeedApiResponse = /** status 200 Event feed page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of matching feed events. */
+  totalCount: number;
+  /** Events for the requested page, newest first. */
+  data: {
+    /** Event ID. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** Event category. */
+    category: string;
+    /** Event action. */
+    action: string;
+    /** Event creation time; the feed is ordered newest first. */
+    createdAt: string;
+    /** Always `public` in the feed. */
+    visibility: "private" | "public";
+    /** Platform from ScheduleCompletedEventMetadata. */
+    platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+    /** Role from ScheduleCompletedEventMetadata. */
+    role: string;
+    /** One-line result from ScheduleCompletedEventMetadata. */
+    line: string;
+    /** Networks from ScheduleCompletedEventMetadata, when present. */
+    networks?: string[];
+    /** Public username, never a real name; present only for a public profile. */
+    displayName?: string;
+    /** Public avatar URL; present only for a public profile. */
+    avatarUrl?: string;
+    /** Public organization name; present only for a public profile. */
+    organizationName?: string;
+    /** HTTPS URL of the user's public profile. */
+    publicProfileUrl?: string;
+  }[];
+};
+export type GetEventFeedApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of feed items per page. */
+  pagesize?: number;
+  /** Optional event category filter. */
+  category?: string;
+  /** Optional event action filter. */
+  action?: string;
 };
 export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page */ {
   /** Current page number of the result set. */
@@ -20119,6 +20739,12 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
         enum is refused with 400.
          */
     posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public` (the default) allows completed runs
+        to appear on the unauthenticated public activity feed (subject to user
+        preferences), `org` restricts visibility to members of the schedule's
+        organization, and `private` restricts it to the schedule owner.
+         */
+    visibility: "public" | "org" | "private";
   }[];
 };
 export type ListSchedulesApiArg = {
@@ -20279,6 +20905,12 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
     enum is refused with 400.
      */
   posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type CreateScheduleApiArg = {
   body: {
@@ -20363,6 +20995,11 @@ export type CreateScheduleApiArg = {
         default resolves to, exactly as before.
          */
     posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public`, `org`, or `private`.
+        Defaults to `public` on creation. Omitted on update, the existing
+        visibility is preserved.
+         */
+    visibility?: "public" | "org" | "private";
   };
 };
 export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
@@ -20500,6 +21137,12 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
     enum is refused with 400.
      */
   posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type GetScheduleByIdApiArg = {
   /** Schedule ID */
@@ -20640,6 +21283,12 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
     enum is refused with 400.
      */
   posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type UpdateScheduleApiArg = {
   /** Schedule ID */
@@ -20728,6 +21377,11 @@ export type UpdateScheduleApiArg = {
         default resolves to, exactly as before.
          */
     posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public`, `org`, or `private`.
+        Defaults to `public` on creation. Omitted on update, the existing
+        visibility is preserved.
+         */
+    visibility?: "public" | "org" | "private";
   };
 };
 export type DeleteScheduleByIdApiResponse = unknown;
@@ -20878,6 +21532,12 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
         enum is refused with 400.
          */
     posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public` (the default) allows completed runs
+        to appear on the unauthenticated public activity feed (subject to user
+        preferences), `org` restricts visibility to members of the schedule's
+        organization, and `private` restricts it to the schedule owner.
+         */
+    visibility: "public" | "org" | "private";
   }[];
 };
 export type GetSchedulesOfWorkspaceApiArg = {
@@ -21038,6 +21698,12 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
     enum is refused with 400.
      */
   posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type AssignScheduleToWorkspaceApiArg = {
   /** Workspace ID */
@@ -21051,6 +21717,41 @@ export type UnassignScheduleFromWorkspaceApiArg = {
   workspaceId: string;
   /** Schedule ID */
   scheduleId: string;
+};
+export type GetPublicActivityFeedApiResponse = /** status 200 Public activity feed page */ {
+  /** Current page number. */
+  page: number;
+  /** Number of items per page; maximum 50. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Feed items included on this page, newest first. */
+  data: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** Social platform the schedule ran on. */
+    platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+    /** One-line role and result summary from the completed run. */
+    roleResult: string;
+    /** Time the schedule run completed; feed is ordered newest first. */
+    completedAt: string;
+    /** Always `public` in this feed. */
+    visibility: "public";
+    /** Public username; present only when the user's profile is public. */
+    displayName?: string;
+    /** Public avatar URL; present only when the user's profile is public. */
+    avatarUrl?: string;
+    /** Public organization name; present only when the user's profile is public. */
+    organizationName?: string;
+    /** HTTPS URL of the user's public profile. */
+    publicProfileUrl?: string;
+  }[];
+};
+export type GetPublicActivityFeedApiArg = {
+  /** Page number. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
 };
 export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response */ {
   /** Current page number of the result set. */
@@ -23392,6 +24093,7 @@ export const {
   useDeleteUserCredentialMutation,
   useGetCredentialByIdQuery,
   useLazyGetCredentialByIdQuery,
+  useTransferCredentialOwnershipMutation,
   useGetUserKeysQuery,
   useLazyGetUserKeysQuery,
   useGetKeysQuery,
@@ -23607,6 +24309,8 @@ export const {
   useCreateEventMutation,
   useGetEventsQuery,
   useLazyGetEventsQuery,
+  useGetEventFeedQuery,
+  useLazyGetEventFeedQuery,
   useGetEventSummaryByUserQuery,
   useLazyGetEventSummaryByUserQuery,
   useGetEventTypesQuery,
@@ -23730,6 +24434,8 @@ export const {
   useLazyGetSchedulesOfWorkspaceQuery,
   useAssignScheduleToWorkspaceMutation,
   useUnassignScheduleFromWorkspaceMutation,
+  useGetPublicActivityFeedQuery,
+  useLazyGetPublicActivityFeedQuery,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
   useUpsertSubscriptionMutation,

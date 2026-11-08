@@ -92,6 +92,14 @@ export interface components {
         };
         /** @description Body for empty request */
         Empty: Record<string, never>;
+        /** @description Request body for transferring ownership of a resource to another user. Used uniformly across all ownable resource constructs. */
+        OwnershipTransferPayload: {
+            /**
+             * Format: uuid
+             * @description UUID of the user to whom ownership will be transferred.
+             */
+            newOwnerId: string;
+        };
         EmailPreference: {
             /** @description The welcome email of the emailpreference. */
             welcomeEmail?: boolean;

@@ -10980,7 +10980,8 @@ const DesignSchema: Record<string, unknown> = {
                           "systemId",
                           "organizationId",
                           "createdAt",
-                          "updatedAt"
+                          "updatedAt",
+                          "visibility"
                         ],
                         "properties": {
                           "id": {
@@ -11040,7 +11041,7 @@ const DesignSchema: Record<string, unknown> = {
                           },
                           "metadata": {
                             "type": "object",
-                            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
+                            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
                             "additionalProperties": true,
                             "nullable": true,
                             "x-go-type": "core.Map",
@@ -11151,6 +11152,21 @@ const DesignSchema: Record<string, unknown> = {
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "visibility": {
+                            "description": "Who can see the event. Defaults to `private`.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility",
+                              "json": "visibility"
+                            },
+                            "x-order": 16,
+                            "type": "string",
+                            "enum": [
+                              "private",
+                              "public"
+                            ],
+                            "default": "private",
+                            "x-go-name": "EventVisibility"
+                          },
                           "deletedAt": {
                             "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
                             "x-oapi-codegen-extra-tags": {
@@ -11166,6 +11182,112 @@ const DesignSchema: Record<string, unknown> = {
                             "format": "date-time",
                             "nullable": true,
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "correlationKey": {
+                            "type": "string",
+                            "description": "Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.\n",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "correlation_key"
+                            },
+                            "x-order": 17
+                          },
+                          "occurrenceCount": {
+                            "type": "integer",
+                            "description": "How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.\n",
+                            "minimum": 1,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "occurrence_count"
+                            },
+                            "x-order": 18
+                          },
+                          "firstSeenAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.\n",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "first_seen_at"
+                            },
+                            "x-order": 19
+                          },
+                          "lastSeenAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.\n",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "last_seen_at"
+                            },
+                            "x-order": 20
+                          },
+                          "resolvedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.\n",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "resolved_at"
+                            },
+                            "x-order": 21
+                          },
+                          "source": {
+                            "type": "string",
+                            "format": "uri-reference",
+                            "description": "Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.\n",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "source"
+                            },
+                            "x-order": 22
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.\n",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "type"
+                            },
+                            "x-order": 23
+                          },
+                          "specversion": {
+                            "description": "The CloudEvents specification version the event is compatible with; see EventPayload.specversion.",
+                            "type": "string",
+                            "enum": [
+                              "1.0"
+                            ],
+                            "x-go-type": "EventSpecVersion",
+                            "x-go-name": "SpecVersion",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "specversion"
+                            },
+                            "x-order": 24
+                          },
+                          "traceId": {
+                            "type": "string",
+                            "description": "W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.\n",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
+                            "x-id-format": "external",
+                            "x-go-name": "TraceID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "trace_id"
+                            },
+                            "x-order": 25
+                          },
+                          "parentId": {
+                            "type": "string",
+                            "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.\n",
+                            "minLength": 16,
+                            "maxLength": 16,
+                            "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
+                            "x-id-format": "external",
+                            "x-go-name": "ParentID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "parent_id"
+                            },
+                            "x-order": 26
                           }
                         }
                       }
@@ -25253,7 +25375,8 @@ const DesignSchema: Record<string, unknown> = {
                 "systemId",
                 "organizationId",
                 "createdAt",
-                "updatedAt"
+                "updatedAt",
+                "visibility"
               ],
               "properties": {
                 "id": {
@@ -25313,7 +25436,7 @@ const DesignSchema: Record<string, unknown> = {
                 },
                 "metadata": {
                   "type": "object",
-                  "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
+                  "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
                   "additionalProperties": true,
                   "nullable": true,
                   "x-go-type": "core.Map",
@@ -25424,6 +25547,21 @@ const DesignSchema: Record<string, unknown> = {
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
+                "visibility": {
+                  "description": "Who can see the event. Defaults to `private`.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "visibility",
+                    "json": "visibility"
+                  },
+                  "x-order": 16,
+                  "type": "string",
+                  "enum": [
+                    "private",
+                    "public"
+                  ],
+                  "default": "private",
+                  "x-go-name": "EventVisibility"
+                },
                 "deletedAt": {
                   "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
                   "x-oapi-codegen-extra-tags": {
@@ -25439,6 +25577,112 @@ const DesignSchema: Record<string, unknown> = {
                   "format": "date-time",
                   "nullable": true,
                   "x-go-type-skip-optional-pointer": true
+                },
+                "correlationKey": {
+                  "type": "string",
+                  "description": "Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.\n",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "correlation_key"
+                  },
+                  "x-order": 17
+                },
+                "occurrenceCount": {
+                  "type": "integer",
+                  "description": "How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.\n",
+                  "minimum": 1,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "occurrence_count"
+                  },
+                  "x-order": 18
+                },
+                "firstSeenAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.\n",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "first_seen_at"
+                  },
+                  "x-order": 19
+                },
+                "lastSeenAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.\n",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "last_seen_at"
+                  },
+                  "x-order": 20
+                },
+                "resolvedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.\n",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "resolved_at"
+                  },
+                  "x-order": 21
+                },
+                "source": {
+                  "type": "string",
+                  "format": "uri-reference",
+                  "description": "Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.\n",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "source"
+                  },
+                  "x-order": 22
+                },
+                "type": {
+                  "type": "string",
+                  "description": "CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.\n",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "type"
+                  },
+                  "x-order": 23
+                },
+                "specversion": {
+                  "description": "The CloudEvents specification version the event is compatible with; see EventPayload.specversion.",
+                  "type": "string",
+                  "enum": [
+                    "1.0"
+                  ],
+                  "x-go-type": "EventSpecVersion",
+                  "x-go-name": "SpecVersion",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "specversion"
+                  },
+                  "x-order": 24
+                },
+                "traceId": {
+                  "type": "string",
+                  "description": "W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.\n",
+                  "minLength": 32,
+                  "maxLength": 32,
+                  "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
+                  "x-id-format": "external",
+                  "x-go-name": "TraceID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "trace_id"
+                  },
+                  "x-order": 25
+                },
+                "parentId": {
+                  "type": "string",
+                  "description": "W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.\n",
+                  "minLength": 16,
+                  "maxLength": 16,
+                  "pattern": "^[0-9a-f]*[1-9a-f][0-9a-f]*$",
+                  "x-id-format": "external",
+                  "x-go-name": "ParentID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "parent_id"
+                  },
+                  "x-order": 26
                 }
               }
             }
