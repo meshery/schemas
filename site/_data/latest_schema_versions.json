@@ -146,6 +146,13 @@
     "extension": true
   },
   {
+    "construct": "error",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/error/error.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "evaluation",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/evaluation/api.yml",
@@ -223,10 +230,38 @@
     "extension": true
   },
   {
+    "construct": "media_asset",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/media_asset/media_asset.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "mention_alias",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/mention_alias/mention_alias.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "model",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/model/model.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/models",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "oauth_consent",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/oauth_consent/oauth_consent.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "oauth_consent_request",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/oauth_consent_request/oauth_consent_request.yaml",
     "core": false,
     "extension": true
   },
@@ -267,6 +302,13 @@
     "extension": true
   },
   {
+    "construct": "posture",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/posture/posture.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "profile",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/profile/profile.yaml",
@@ -292,13 +334,6 @@
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/relationship/relationship.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/relationships",
-    "core": false,
-    "extension": false
-  },
-  {
-    "construct": "risk_profile",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/risk_profile/risk_profile.yaml",
     "core": false,
     "extension": false
   },

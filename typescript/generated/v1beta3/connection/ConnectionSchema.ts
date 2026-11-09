@@ -1318,7 +1318,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "registerConnection",
         "summary": "Register a new connection",
-        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nEvery connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body. When the session names none, the server may use the caller's only organization (Meshery Cloud: the only live organization the caller belongs to, else the only one of those the caller owns); it must not guess between several, and answers 400 instead.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
+        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nEvery connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body. When the session names none, the server may use the caller's only organization (Meshery Cloud: the only live organization the caller belongs to, else the only one of those the caller owns); it must not guess between several, and answers 400 instead.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. One sign-in can back one install's connections in several organizations, so a token is revoked only once no live connection of the same owner still links it: removing or superseding one organization's connection must not sign the install out of another. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
         "parameters": [
           {
             "name": "X-Current-Orgid",
@@ -7393,7 +7393,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "deleteConnection",
         "summary": "Delete a connection",
-        "description": "Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token.",
+        "description": "Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token, unless another live connection of the same owner still links it.",
         "parameters": [
           {
             "name": "connectionId",
@@ -8909,7 +8909,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "deregisterDesktopConnection",
         "summary": "Deregister a desktop app install",
-        "description": "Delete the caller's `desktop` connection whose `metadata.installationId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`).\n",
+        "description": "Delete the caller's `desktop` connection whose `metadata.installationId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. An install registers one connection per organization, so with `X-Current-Orgid` naming an organization the server must delete only the install's connection in that organization and leave its connections in other organizations live; this is how an install releases the organization it is leaving when it switches to another. Without the header (or with the all-organizations value `all`) the server deletes the install's connections in every organization. When nothing matches, the server answers 404 and revokes nothing. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`) unless a live connection of the same owner still links it: the token still authenticates that connection.\n",
         "parameters": [
           {
             "name": "installationId",
@@ -8922,11 +8922,30 @@ const ConnectionSchema: Record<string, unknown> = {
               "minLength": 1,
               "maxLength": 255
             }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization whose connection for this install is deleted. Absent, or `all`, deletes the install's connections in every organization. A value that is neither an organization id nor `all` is refused with 400. An organization id where the caller has no connection for this install deletes nothing and is 404. Membership is not checked: a non-member with no connection there gets the same 404, so the response does not disclose membership, and a connection the caller still owns in an organization it has left is deleted (204). The schema is a plain string, not `format: uuid` as on `registerConnection`, because `all` is a legal value here.\n",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "204": {
             "description": "Desktop connection deleted"
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
@@ -16159,7 +16178,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "tokenId": {
             "type": "string",
             "format": "uuid",
-            "description": "Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token. A value sent by the client is ignored.\n"
+            "description": "Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token, unless another live connection of the same owner still links it. A value sent by the client is ignored.\n"
           },
           "lastSeenAt": {
             "type": "string",

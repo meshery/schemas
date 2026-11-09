@@ -110,6 +110,10 @@ The YAML file for an entity represents the **full server-side object** as return
 
 Exception: an **event-metadata construct** (no endpoints; recorded and read back verbatim as an `Event`'s `metadata`) has no server-generated fields, so it declares none and its `*Payload` carries the same field set. See [the authoring reference](docs/schema-authoring-reference.md#event-metadata-constructs-have-no-server-generated-fields).
 
+Exception: a **read-through construct** (has endpoints but no stored row; every call reads the object from another system or computes it, e.g. `oauth_consent_request`) declares no `id`, `created_at`, `updated_at` or `deleted_at`. See [the authoring reference](docs/schema-authoring-reference.md#read-through-constructs-have-no-stored-row).
+
+Exception: a **definition construct** (no endpoints and no stored row; a document components publish as files, e.g. `error`) declares no `id`, `created_at`, `updated_at` or `deleted_at`. See [the authoring reference](docs/schema-authoring-reference.md#definition-constructs-have-neither-endpoints-nor-a-stored-row).
+
 ### Rule 2: Every writable entity needs a `*Payload` schema in `api.yml`
 
 For any entity that has `POST` or `PUT` operations, define a `{Construct}Payload` schema in `api.yml` that:
@@ -180,6 +184,10 @@ Auto-generated Go structs live in `models/<version>/<construct>/<construct>.go` 
 - `x-internal: ["meshery"]` - Meshery-only (`_openapi_build/meshery_openapi.yml`)
 - `x-internal: ["cloud", "meshery"]` - both bundled outputs
 
+## Route ownership (`x-supersedes`)
+
+A newer version moves a route from an older one by setting `x-supersedes: <older version>` on the operation. The bundler then merges only the owner's declaration. Any other duplicate route fails the bundle. See [`docs/http-api-design.md`](docs/http-api-design.md#route-ownership-across-versions).
+
 ## Release Procedure
 
 **Use the `meshery-schemas-release` skill** (`/meshery-schemas-release`) to cut releases - it automates the entire procedure and includes safeguards.
@@ -202,11 +210,20 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
 - **[`docs/environment-purpose-contract.md`](docs/environment-purpose-contract.md)** - what `Environment.purpose` means, why it is not client-settable, and what each consumer must enforce for that to hold.
 - **[`docs/profile-contract.md`](docs/profile-contract.md)** - the profile construct, its workspace assignment, and its permission keys.
+- **[`docs/mention-alias-contract.md`](docs/mention-alias-contract.md)** - the mention alias construct: who's who per platform, its unique key, the upsert, and the keys that guard it.
+- **[`docs/token-scoping-contract.md`](docs/token-scoping-contract.md)** - `Token.keychainIds` (unrestricted only when `keychainScoped` is false and `keychainIds` is empty) and `expiresAt`, set through `TokenCreatePayload`, and the effective-keys rule every token kind must enforce.
+- **[`docs/oauth-consent-contract.md`](docs/oauth-consent-contract.md)** - the OAuth consent construct: list and revoke a user's connected apps by `clientId`.
+- **[`docs/agent-approval-preference.md`](docs/agent-approval-preference.md)** - the typed `agentsActWithoutApproval` preference and its migration from the free-form `remoteProviderPreferences` value.
+- **[`docs/content-item-contract.md`](docs/content-item-contract.md)** - the content item's rules of engagement (tighten only) and thread fields, and why a reply's wait for its parent is client behaviour rather than a claim rule.
 - **[`docs/claim-contract.md`](docs/claim-contract.md)** - the claim construct: connection holders, expiry at read time, kept history, release outcomes, and its permission keys.
+- **[`docs/oauth-consent-request-contract.md`](docs/oauth-consent-request-contract.md)** - the pending OAuth consent request: reading it by challenge, allow and deny, ownership, single-use challenges, and the verified mark that marks trust and never blocks.
+- **[`docs/media-asset-contract.md`](docs/media-asset-contract.md)** - the media asset construct: create-upload-complete flow, per-use download URLs, `r2`/`gdrive` backends with no credential on the wire, limits, expiry and `locationStripped`.
 - **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
+- **[`docs/design-event-metadata-contract.md`](docs/design-event-metadata-contract.md)** - the named shapes of design event metadata, its banned keys and 16 KB guard, the `status` `error` rule for an operation that did not complete, and why they have no `*Payload` twins.
 - **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
+- **[`docs/schedule-visibility-and-public-feed-contract.md`](docs/schedule-visibility-and-public-feed-contract.md)** - the schedule visibility enum and the unauthenticated public activity feed wire contract.
 
 ## Questions?
 

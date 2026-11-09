@@ -3,7 +3,7 @@ info:
   title: Follower Demographics
   description: |
     OpenAPI schema for follower-breakdown snapshot rows for a page,
-    consumed by Blowhorn's analytics store. The rows have no endpoints
+    consumed by the posting client's analytics store. The rows have no endpoints
     of their own: they are recorded and read back as the `metadata` of
     events on the events service (category `blowhorn`, action
     `follower_demographics`; see the event construct), so this file

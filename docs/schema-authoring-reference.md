@@ -89,8 +89,58 @@ fields. So, for this class only:
 agreement and the template nulls for every construct in this class. Add a
 new event-metadata construct to its list.
 
+A metadata shape that is a sub-shape of `Event.metadata` inside the event
+construct itself, rather than a construct with its own directory, is declared
+once with no `*Payload` twin: the design event metadata shapes are the worked
+example (see [design-event-metadata-contract.md](design-event-metadata-contract.md)).
+
 A construct with its own endpoints is not in this class, even if its rows
 are also mirrored into events. It follows Rule 1 as written.
+
+### Read-through constructs have no stored row
+
+Some constructs have endpoints but no row the server owns: every call reads
+the object from another system, or computes it, and answers it. The
+`oauth_consent_request` construct is the worked example: the server reads
+each pending consent request from the identity provider on every call
+([contract](oauth-consent-request-contract.md#no-stored-row)). The provider
+capabilities document (`provider_capability`) is computed per request the
+same way. For this class only:
+
+- The entity `.yaml` declares no `id`, `created_at`, `updated_at` or
+  `deleted_at`, because no server ever writes them. It still sets
+  `additionalProperties: false`. The object's own key (for example
+  `consentChallenge`) is a required field, not an `id`.
+- Writes, if any, still take a `{Construct}Payload` per Rule 2 and Rule 3.
+- State in the construct's description that nothing is stored, and what a
+  `503` from the upstream system means for each operation.
+
+A construct the server persists, even partly, is not in this class. It
+follows Rule 1 as written.
+
+### Definition constructs have neither endpoints nor a stored row
+
+Some constructs describe a document that components publish as files, not
+anything a server stores or serves. The `error` construct is the worked
+example: an error code's definition is declared in the owning component's
+source, exported by MeshKit's `errorutil`, and published by the docs build
+([contract](error-definition-contract.md)). For this class only:
+
+- `api.yml` has `paths: {}`.
+- The entity `.yaml` declares no `id`, `createdAt`, `updatedAt` or
+  `deletedAt`. Its natural key (for example `code`) is a required field. It
+  still sets `additionalProperties: false`.
+- There is no `{Construct}Payload`, because nothing writes it over HTTP.
+- Cross-field rules JSON Schema cannot state belong in a hand-written helper
+  in the generated Go package (`<construct>_helper.go`) and, when the
+  TypeScript package ships one, a mirror under `typescript/`, each with tests
+  against the construct's templates.
+
+When the construct's directory name is a Go predeclared identifier or would
+shadow one in importers (`error`), set its Go package name in
+`packageNameOverrides` (`build/lib/config.js`): the error construct's Go
+models are `models/v1beta3/errorcode`. The override names the generated
+TypeScript output too (`typescript/generated/v1beta3/errorcode/Errorcode.ts`).
 
 ### Rule 2 example: `{Construct}Payload` schema in `api.yml`
 

@@ -1,0 +1,15 @@
+{
+  "designId": "6c4b8a52-1f3e-4d2b-9a7c-0e5f3b2d1a90",
+  "designName": "Online Boutique",
+  "designVersion": "v0.0.3",
+  "designLink": "https://cloud.layer5.io/extension/meshmap?mode=design&design=6c4b8a52-1f3e-4d2b-9a7c-0e5f3b2d1a90",
+  "viewLink": "https://cloud.layer5.io/extension/meshmap?mode=operator&type=view&design_id=6c4b8a52-1f3e-4d2b-9a7c-0e5f3b2d1a90",
+  "status": "failed",
+  "errorCount": 23,
+  "errors": [
+    { "code": "required", "componentId": "0b9f2c1e-7d4a-4e8b-b3c6-5a1d2e3f4a5b" },
+    { "code": "type", "componentId": "8e2d4f6a-1b3c-4d5e-9f7a-2c4e6b8d0f1a" },
+    { "code": "meshery-server-1130" }
+  ],
+  "truncated": true
+}

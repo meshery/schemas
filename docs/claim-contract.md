@@ -55,6 +55,17 @@ the schedule in the same transaction (`lastRunAt`, `lastError`, `status`,
 resource, soft or hard, expires its active claim; released and expired claims
 keep their `resourceId` as history after the resource is gone.
 
+## Claims are exclusion, not readiness
+
+A claim answers one question: is someone already acting on this resource? It
+does not answer whether the resource is ready to act on. A provider does not
+refuse a claim because of a resource's own domain state.
+Readiness belongs to the resource's construct or to the client that acts. For
+example, a content item reply waits until its parent's link was read back.
+That wait is the client's check, made after it holds the claim, and not a claim
+rule. The reasons are in
+[`content-item-contract.md`](content-item-contract.md#a-reply-waits-for-its-parents-link-client-behaviour-not-a-claim-rule).
+
 ## Permission keys (build/permissions.csv, "Workflow Management / Claims")
 
 | Key | ID | Roles |

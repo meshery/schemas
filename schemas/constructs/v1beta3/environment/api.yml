@@ -225,9 +225,12 @@ components:
             json: totalCount
         connections:
           type: array
+          # Connection already imports Environment. Preserve the Go representation
+          # to avoid a package cycle while generating typed TypeScript items.
+          x-go-type: "[]map[string]interface{}"
           items:
-            $ref: "../connection/connection.yaml"
-          description: The connections of the environmentconnectionspage.
+            $ref: ../connection/connection.yaml
+          description: Connections associated with the environment, using the canonical Connection response schema.
 
 
     EnvironmentConnectionMappingPage:

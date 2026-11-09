@@ -31,6 +31,11 @@ export const addTagTypes = [
   "GitHub_github",
   "Invitation_Invitation",
   "Ledger_ledgers",
+  "MediaAsset_mediaAssets",
+  "MentionAlias_mentionAliases",
+  "OauthConsent_oauthConsents",
+  "OauthConsentRequest_oauthConsentRequests",
+  "OauthConsentRequest_oauthConsentDecisions",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
@@ -240,6 +245,17 @@ const injectedRtkApi = api
       getCredentialById: build.query<GetCredentialByIdApiResponse, GetCredentialByIdApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/credentials/${queryArg.credentialId}` }),
         providesTags: ["credential_credentials"],
+      }),
+      transferCredentialOwnership: build.mutation<
+        TransferCredentialOwnershipApiResponse,
+        TransferCredentialOwnershipApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/credentials/${queryArg.credentialId}/transfer`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["credential_credentials"],
       }),
       getUserKeys: build.query<GetUserKeysApiResponse, GetUserKeysApiArg>({
         query: (queryArg) => ({
@@ -998,6 +1014,9 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/integrations/connections/desktop/${queryArg.installationId}`,
           method: "DELETE",
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
@@ -1088,6 +1107,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             profile: queryArg?.profile,
+            threadId: queryArg?.threadId,
           },
         }),
         providesTags: ["ContentItem_contentItems"],
@@ -1425,6 +1445,18 @@ const injectedRtkApi = api
         }),
         providesTags: ["Events_events"],
       }),
+      getEventFeed: build.query<GetEventFeedApiResponse, GetEventFeedApiArg>({
+        query: (queryArg) => ({
+          url: `/api/events/feed`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            category: queryArg?.category,
+            action: queryArg?.action,
+          },
+        }),
+        providesTags: ["Events_events"],
+      }),
       getEventSummaryByUser: build.query<GetEventSummaryByUserApiResponse, GetEventSummaryByUserApiArg>({
         query: (queryArg) => ({
           url: `/api/events/summary`,
@@ -1721,6 +1753,128 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Ledger_ledgers"],
       }),
+      listMediaAssets: build.query<ListMediaAssetsApiResponse, ListMediaAssetsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      createMediaAsset: build.mutation<CreateMediaAssetApiResponse, CreateMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetQuota: build.query<GetMediaAssetQuotaApiResponse, GetMediaAssetQuotaApiArg>({
+        query: () => ({ url: `/api/media-assets/quota` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAsset: build.query<GetMediaAssetApiResponse, GetMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      updateMediaAsset: build.mutation<UpdateMediaAssetApiResponse, UpdateMediaAssetApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets/${queryArg.mediaAssetId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      deleteMediaAsset: build.mutation<DeleteMediaAssetApiResponse, DeleteMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}`, method: "DELETE" }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      completeMediaAsset: build.mutation<CompleteMediaAssetApiResponse, CompleteMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}/complete`, method: "POST" }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetDownload: build.query<GetMediaAssetDownloadApiResponse, GetMediaAssetDownloadApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}/download` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetContent: build.query<GetMediaAssetContentApiResponse, GetMediaAssetContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets/${queryArg.mediaAssetId}/content`,
+          params: {
+            expires: queryArg?.expires,
+            signature: queryArg?.signature,
+          },
+        }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMentionAliases: build.query<GetMentionAliasesApiResponse, GetMentionAliasesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/mention-aliases`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            entity: queryArg?.entity,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["MentionAlias_mentionAliases"],
+      }),
+      upsertMentionAliases: build.mutation<UpsertMentionAliasesApiResponse, UpsertMentionAliasesApiArg>({
+        query: (queryArg) => ({ url: `/api/mention-aliases`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["MentionAlias_mentionAliases"],
+      }),
+      deleteMentionAlias: build.mutation<DeleteMentionAliasApiResponse, DeleteMentionAliasApiArg>({
+        query: (queryArg) => ({ url: `/api/mention-aliases/${queryArg.mentionAliasId}`, method: "DELETE" }),
+        invalidatesTags: ["MentionAlias_mentionAliases"],
+      }),
+      getOauthConsents: build.query<GetOauthConsentsApiResponse, GetOauthConsentsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consents`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["OauthConsent_oauthConsents"],
+      }),
+      deleteOauthConsent: build.mutation<DeleteOauthConsentApiResponse, DeleteOauthConsentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consents`,
+          method: "DELETE",
+          params: {
+            clientId: queryArg?.clientId,
+          },
+        }),
+        invalidatesTags: ["OauthConsent_oauthConsents"],
+      }),
+      getOauthConsentRequest: build.query<GetOauthConsentRequestApiResponse, GetOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests`,
+          params: {
+            consentChallenge: queryArg?.consentChallenge,
+          },
+        }),
+        providesTags: ["OauthConsentRequest_oauthConsentRequests"],
+      }),
+      acceptOauthConsentRequest: build.mutation<AcceptOauthConsentRequestApiResponse, AcceptOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests/accept`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["OauthConsentRequest_oauthConsentDecisions"],
+      }),
+      rejectOauthConsentRequest: build.mutation<RejectOauthConsentRequestApiResponse, RejectOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests/reject`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["OauthConsentRequest_oauthConsentDecisions"],
+      }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
           url: `/api/content/patterns/resource`,
@@ -1999,6 +2153,16 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Schedule_schedules"],
       }),
+      getPublicActivityFeed: build.query<GetPublicActivityFeedApiResponse, GetPublicActivityFeedApiArg>({
+        query: (queryArg) => ({
+          url: `/api/public/activity-feed`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
+      }),
       getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/subscriptions`,
@@ -2073,6 +2237,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/identity/tokens`,
           method: "POST",
+          body: queryArg.body,
           params: {
             name: queryArg?.name,
             purpose: queryArg?.purpose,
@@ -2131,6 +2296,18 @@ const injectedRtkApi = api
       >({
         query: (queryArg) => ({ url: `/api/identity/native/token`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["token_tokens"],
+      }),
+      revokeToken: build.mutation<RevokeTokenApiResponse, RevokeTokenApiArg>({
+        query: (queryArg) => ({ url: `/revoke`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      introspectToken: build.mutation<IntrospectTokenApiResponse, IntrospectTokenApiArg>({
+        query: (queryArg) => ({ url: `/introspect`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      logoutUser: build.query<LogoutUserApiResponse, LogoutUserApiArg>({
+        query: () => ({ url: `/logout` }),
+        providesTags: ["token_tokens"],
       }),
       getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
         query: (queryArg) => ({
@@ -2393,7 +2570,7 @@ export type SubmitFailureDiagnosticApiArg = {
     failure: {
       /** Where the failure first became visible to the person. */
       surface: "tray" | "popover" | "console" | "service";
-      /** Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the Blowhorn engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them. */
+      /** Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the desktop engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them. */
       cause: string;
       /** Machine-readable code for the failure, when the failure carries one beyond its cause (for example an exit or provider code). Kept a string so numeric and symbolic codes both fit; empty when the failure carries no code. */
       code: string;
@@ -2408,7 +2585,7 @@ export type SubmitFailureDiagnosticApiArg = {
       /** Version of the client-server contract this report was built against. Kept a string so dotted versions and plain numbers both fit. */
       contractVersion: string;
     };
-    /** Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (Blowhorn's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out. */
+    /** Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (the client's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out. */
     installId?: string;
   };
 };
@@ -2982,7 +3159,7 @@ export type TestOrganizationSmtpConfigurationApiResponse =
 export type TestOrganizationSmtpConfigurationApiArg = {
   /** Organization ID */
   orgId: string;
-  body: {
+  body?: {
     /** Recipient of the test message. Defaults to the calling administrator's own address. */
     to?: string;
   };
@@ -3343,6 +3520,34 @@ export type GetCredentialByIdApiResponse = /** status 200 Credential response */
 export type GetCredentialByIdApiArg = {
   /** Credential ID */
   credentialId: string;
+};
+export type TransferCredentialOwnershipApiResponse = /** status 200 Credential ownership transferred successfully */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type TransferCredentialOwnershipApiArg = {
+  /** Credential ID */
+  credentialId: string;
+  body: {
+    /** UUID of the user to whom ownership will be transferred. */
+    newOwnerId: string;
+  };
 };
 export type GetUserKeysApiResponse = /** status 200 Returns user keys based on roles assigned to user */ {
   /** Zero-based page index returned in this response. */
@@ -5357,7 +5562,7 @@ export type AddTeamToOrgApiArg = {
   orgId: string;
   /** Team ID. */
   teamId: string;
-  body: {
+  body?: {
     /** Internal action to perform on the team resource. */
     action?: "delete";
   };
@@ -6507,6 +6712,8 @@ export type UpdateUserPreferencesApiArg = {
     };
     /** The anonymous usage stats of the preference. */
     anonymousUsageStats?: boolean;
+    /** Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten. */
+    shareActivityPublicly?: boolean;
     /** The anonymous perf results of the preference. */
     anonymousPerfResults?: boolean;
     /** The dashboard preferences of the preference. */
@@ -6523,10 +6730,12 @@ export type UpdateUserPreferencesApiArg = {
     usersExtensionPreferences?: {
       [key: string]: any;
     };
-    /** The remote provider preferences of the preference. */
+    /** The remote provider preferences of the preference. Writers set the typed agentsActWithoutApproval field, not a provider's free-form agentsActWithoutApproval entry. A token-authenticated request that would change the stored state of a provider's agentsActWithoutApproval entry (a different value, adding it where absent, or removing it where present) is answered 403, and no part of the payload is applied. Writing back the stored entry unchanged is accepted. Once the typed field has been written, the entry is never read again (see Preference.agentsActWithoutApproval). */
     remoteProviderPreferences?: {
       [key: string]: any;
     };
+    /** Interim rule (temporary): until the upstream platform, workspace and profile policies exist, inherit (including absent) resolves to required, and this field is stored but not consulted by approval resolution (see Preference.agentsActWithoutApproval; the hierarchy proposal is https://github.com/layer5io/meshery-cloud/issues/6365). Target model, once the hierarchy places the profile level: one profile-level source for agent writes, consulted only for an AI-app activity whose approvalPolicy is inherit or absent, and only when no higher-level setting (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365) has decided (see Preference.agentsActWithoutApproval): true means not_required, false means required, and absent sets nothing. Three states on write: true or false stores that value; null clears the stored value back to absent (inherit); omitted keeps the stored value. No schema default is declared. An API token, of any kind, cannot set this field: a token-authenticated request whose payload names this field, with any value including null and whatever the stored state is, is answered 403 and no part of the payload is applied. Only a request authenticated by the signed-in session can set it. A token client doing read-modify-write must omit this field: echoing the value it read, or null, answers 403 for the whole payload. See docs/agent-approval-preference.md. */
+    agentsActWithoutApproval?: boolean | null;
   };
 };
 export type GetUserProfileOverviewApiResponse = /** status 200 Profile overview counts for the caller */ {
@@ -7758,10 +7967,12 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
-    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
     /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
     childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -7977,10 +8188,12 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
-    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
     /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
     childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -11211,6 +11424,9 @@ export type DeregisterDesktopConnectionApiResponse = unknown;
 export type DeregisterDesktopConnectionApiArg = {
   /** Installation identifier from `metadata.installationId`. */
   installationId: string;
+  /** Organization whose connection for this install is deleted. Absent, or `all`, deletes the install's connections in every organization. A value that is neither an organization id nor `all` is refused with 400. An organization id where the caller has no connection for this install deletes nothing and is 404. Membership is not checked: a non-member with no connection there gets the same 404, so the response does not disclose membership, and a connection the caller still owns in an organization it has left is deleted (204). The schema is a plain string, not `format: uuid` as on `registerConnection`, because `all` is a legal value here.
+   */
+  "X-Current-Orgid"?: string;
 };
 export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection after the heartbeat */ {
   /** Connection ID */
@@ -12068,15 +12284,16 @@ export type ListContentItemsApiResponse = /** status 200 Content item page */ {
   totalCount?: number;
   /** Content items included on this page of results. */
   contentItems?: {
-    /** Server-generated content item ID. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     organizationId: string;
     /** Subject of the owning profile. */
     profile: string;
     /** Row number of the content item, unique across the live content items of the organization. */
     rowNumber: number;
-    /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+    /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+     */
     fingerprint: string;
     /** Content values, stored as a JSON blob. */
     data?: object;
@@ -12086,9 +12303,49 @@ export type ListContentItemsApiResponse = /** status 200 Content item page */ {
     updatedAt: string;
     /** Timestamp when the content item was soft-deleted. */
     deletedAt?: string | null;
-    /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
-     */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string;
+    /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+     */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    };
+    /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+     */
+    threadId?: string;
+    /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+     */
+    replyToId?: string;
+    /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+     */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+     */
+    mediaAssetIds?: string[];
   }[];
 };
 export type ListContentItemsApiArg = {
@@ -12106,17 +12363,22 @@ export type ListContentItemsApiArg = {
   order?: string;
   /** Filter by owning profile subject (exact match). */
   profile?: string;
+  /** Return one thread: the root item this ID names and every live item
+    whose `threadId` names it.
+     */
+  threadId?: string;
 };
 export type InsertContentItemApiResponse = /** status 201 Content item created */ {
-  /** Server-generated content item ID. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
   /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
@@ -12126,13 +12388,53 @@ export type InsertContentItemApiResponse = /** status 201 Content item created *
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
-  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
-   */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
 };
 export type InsertContentItemApiArg = {
   body: {
-    /** Existing content item ID for updates; ignored on insert. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
     /** Subject of the owning profile. */
     profile: string;
@@ -12150,18 +12452,71 @@ export type InsertContentItemApiArg = {
         insert.
          */
     expectedFingerprint?: string;
+    /** The item's own rules of engagement, which can only tighten the
+        rules its profile and platform run under. Omitted on insert, the
+        item has none; omitted on update, the stored rules are kept;
+        `null` on update clears them.
+         */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    } | null;
+    /** ID of the thread's root item. Read on insert; on update it must
+        be omitted or equal the stored value.
+         */
+    threadId?: string;
+    /** ID of the item this item answers directly: the root named by
+        `threadId` or an item of the same thread. Requires `threadId`.
+        Read on insert; on update it must be omitted or equal the stored
+        value.
+         */
+    replyToId?: string;
+    /** Position of the item in its thread, the root counting as 0.
+        Required exactly when `threadId` is given. Read on insert; on
+        update it must be omitted or equal the stored value.
+         */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Omitted on
+        insert means none; omitted on update keeps the stored list (old
+        clients send the whole item without it); an empty array clears it.
+         */
+    mediaAssetIds?: string[];
   };
 };
 export type GetContentItemApiResponse = /** status 200 Content item response */ {
-  /** Server-generated content item ID. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
   /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
@@ -12171,24 +12526,65 @@ export type GetContentItemApiResponse = /** status 200 Content item response */ 
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
-  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
-   */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
 };
 export type GetContentItemApiArg = {
   /** Content item ID */
   contentItemId: string;
 };
 export type UpdateContentItemApiResponse = /** status 200 Content item updated */ {
-  /** Server-generated content item ID. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
   /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
@@ -12198,15 +12594,55 @@ export type UpdateContentItemApiResponse = /** status 200 Content item updated *
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
-  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
-   */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
 };
 export type UpdateContentItemApiArg = {
   /** Content item ID */
   contentItemId: string;
   body: {
-    /** Existing content item ID for updates; ignored on insert. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
     /** Subject of the owning profile. */
     profile: string;
@@ -12224,6 +12660,58 @@ export type UpdateContentItemApiArg = {
         insert.
          */
     expectedFingerprint?: string;
+    /** The item's own rules of engagement, which can only tighten the
+        rules its profile and platform run under. Omitted on insert, the
+        item has none; omitted on update, the stored rules are kept;
+        `null` on update clears them.
+         */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    } | null;
+    /** ID of the thread's root item. Read on insert; on update it must
+        be omitted or equal the stored value.
+         */
+    threadId?: string;
+    /** ID of the item this item answers directly: the root named by
+        `threadId` or an item of the same thread. Requires `threadId`.
+        Read on insert; on update it must be omitted or equal the stored
+        value.
+         */
+    replyToId?: string;
+    /** Position of the item in its thread, the root counting as 0.
+        Required exactly when `threadId` is given. Read on insert; on
+        update it must be omitted or equal the stored value.
+         */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Omitted on
+        insert means none; omitted on update keeps the stored list (old
+        clients send the whole item without it); an empty array clears it.
+         */
+    mediaAssetIds?: string[];
   };
 };
 export type DeleteContentItemApiResponse = unknown;
@@ -14704,7 +15192,7 @@ export type ImportGithubRepositoryApiResponse =
       category: string;
       /** Human-readable summary of what happened. */
       description: string;
-      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
        */
       metadata: {
         [key: string]: any;
@@ -14728,8 +15216,39 @@ export type ImportGithubRepositoryApiResponse =
       createdAt: string;
       /** Timestamp when the event was last updated. */
       updatedAt: string;
+      /** Who can see the event. Defaults to `private`. */
+      visibility: "private" | "public";
       /** Timestamp when the event was soft-deleted; omitted when it was not. */
       deletedAt?: string | null;
+      /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+       */
+      correlationKey?: string;
+      /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+       */
+      occurrenceCount?: number;
+      /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+       */
+      firstSeenAt?: string;
+      /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+       */
+      lastSeenAt?: string;
+      /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+       */
+      resolvedAt?: string;
+      /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+       */
+      source?: string;
+      /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+       */
+      type?: string;
+      /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+      specversion?: "1.0";
+      /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+       */
+      traceId?: string;
+      /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+       */
+      parentId?: string;
     }[];
   };
 export type ImportGithubRepositoryApiArg = {
@@ -16063,9 +16582,284 @@ export type GetEnvironmentConnectionsApiResponse = /** status 200 Environment co
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** The connections of the environmentconnectionspage. */
+  /** Connections associated with the environment, using the canonical Connection response schema. */
   connections?: {
-    [key: string]: any;
+    /** Connection ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** Associated Credential ID */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** The connection state reachable from the current state. */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** User ID who owns this connection */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string | null;
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+     */
+    organizationId: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
   }[];
 };
 export type GetEnvironmentConnectionsApiArg = {
@@ -16136,6 +16930,8 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
   totalCount?: number;
   /** The events returned on the current page. */
   data?: {
+    /** Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. */
+    visibility?: "private" | "public";
     /** UUID of the user associated with the event. */
     owner: string;
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
@@ -16154,12 +16950,59 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
     firstName?: string;
     /** The last name of the user associated with the event. */
     lastName?: string;
+    /** URL to the avatar image of the user associated with the event. */
+    avatarUrl?: string;
     /** Email address of the user associated with the event. */
     email?: string;
     /** Authentication provider of the user associated with the event. */
     provider?: string;
     /** Timestamp when the event was recorded. */
     createdAt?: string;
+    /** Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
+    correlationKey?: string;
+    /** How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
+     */
+    occurrenceCount?: number;
+    /** When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+     */
+    firstSeenAt?: string;
+    /** When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+     */
+    lastSeenAt?: string;
+    /** When the condition cleared (see Event.resolvedAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user it is omitted while the condition is open.
+     */
+    resolvedAt?: string;
+    /** Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source). */
+    source?: string;
+    /** CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type). */
+    type?: string;
+    /** The CloudEvents specification version the event is compatible with (see Event.specversion). */
+    specversion?: "1.0";
+    /** W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId). */
+    traceId?: string;
+    /** W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
+    parentId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    actedUpon?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    operationId?: string;
+    /** Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.
+     */
+    severity?: string;
+    /** Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.
+     */
+    status?: string;
+    /** Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired.
+     */
+    metadata?: {
+      [key: string]: any;
+    } | null;
+    /** Timestamp when the event was last updated (see Event.updatedAt). */
+    updatedAt?: string;
+    /** Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt). */
+    deletedAt?: string | null;
   }[];
 };
 export type GetEventsOfWorkspaceApiArg = {
@@ -16186,7 +17029,7 @@ export type GetEventsAggregateApiArg = {
   cumulative?: boolean;
 };
 export type CreateEventApiResponse =
-  /** status 200 An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded.
+  /** status 200 The event the create resolved to. When no new event was recorded, that is the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged) or, for a call that identifies a user, the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`). A call that identifies no user records a new event instead, with the correlation fields stored exactly as sent. A server MAY also answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `Event-Disposition: created`, returning the event it just recorded, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read `Event-Disposition` rather than the status code to tell created from replayed.
      */
     | {
         /** Event ID. */
@@ -16199,7 +17042,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16223,10 +17066,42 @@ export type CreateEventApiResponse =
         createdAt: string;
         /** Timestamp when the event was last updated. */
         updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
         /** Timestamp when the event was soft-deleted; omitted when it was not. */
         deletedAt?: string | null;
+        /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+         */
+        correlationKey?: string;
+        /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+         */
+        occurrenceCount?: number;
+        /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+         */
+        firstSeenAt?: string;
+        /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+         */
+        lastSeenAt?: string;
+        /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+         */
+        resolvedAt?: string;
+        /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+         */
+        source?: string;
+        /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+         */
+        type?: string;
+        /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+        specversion?: "1.0";
+        /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+         */
+        traceId?: string;
+        /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+         */
+        parentId?: string;
       }
-    | /** status 201 Event created */ {
+    | /** status 201 A new event was recorded (`Event-Disposition: created`). A call that identifies no user stores the correlation fields exactly as sent. For a call that identifies a user and carries a `correlationKey`, the event opens a condition, or records one already resolved when the payload carries `resolvedAt`. An already resolved insert uses `occurrenceCount` 1 when omitted, and `firstSeenAt` and `lastSeenAt` from the payload, else `resolvedAt`.
+     */ {
         /** Event ID. */
         id: string;
         /** ID of the entity on which the event was performed. */
@@ -16237,7 +17112,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16261,8 +17136,39 @@ export type CreateEventApiResponse =
         createdAt: string;
         /** Timestamp when the event was last updated. */
         updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
         /** Timestamp when the event was soft-deleted; omitted when it was not. */
         deletedAt?: string | null;
+        /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+         */
+        correlationKey?: string;
+        /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+         */
+        occurrenceCount?: number;
+        /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+         */
+        firstSeenAt?: string;
+        /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+         */
+        lastSeenAt?: string;
+        /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+         */
+        resolvedAt?: string;
+        /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+         */
+        source?: string;
+        /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+         */
+        type?: string;
+        /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+        specversion?: "1.0";
+        /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+         */
+        traceId?: string;
+        /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+         */
+        parentId?: string;
       };
 export type CreateEventApiArg = {
   body: {
@@ -16270,13 +17176,48 @@ export type CreateEventApiArg = {
     owner?: string;
     /** The category of the event. */
     category?: string;
+    /** Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed. */
+    visibility?: "private" | "public";
     /** The action of the event. */
     action?: string;
     /** Description of the event. */
     description?: string;
+    /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+     */
+    severity?: string;
     /** Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
      */
     idempotencyKey?: string;
+    /** Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates.
+     */
+    correlationKey?: string;
+    /** Number of occurrences this create reports, for a producer that counted repeats locally before sending. A create without a `correlationKey`, and a call that identifies no user, stores this value exactly as sent, including when it is omitted. For a call that identifies a user and carries a `correlationKey`, omitted means 1. An opening create stores that count, counting an open condition adds it, and an already-resolved insert stores it. A resolving create on that open event does not add it.
+     */
+    occurrenceCount?: number;
+    /** When the producer first saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `lastSeenAt`, or the time of receipt, and omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when that create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
+     */
+    firstSeenAt?: string;
+    /** When the producer last saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition, or while closing one, means the time of receipt; and omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
+     */
+    lastSeenAt?: string;
+    /** When the condition named by `correlationKey` cleared. A call that identifies no user stores this value exactly as sent and does not match an open event. For a call that identifies a user, a create that carries it is a resolution: it closes that caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+     */
+    resolvedAt?: string;
+    /** Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
+     */
+    source?: string;
+    /** CloudEvents-compatible `type`: a reverse-DNS name of the kind of occurrence, for example `io.meshery.user.signup`. It does not replace `category` and `action`, which stay two free strings; `type` is for CloudEvents-aware consumers.
+     */
+    type?: string;
+    /** The CloudEvents specification version the event's `source`, `type` and `id` are compatible with, when the producer sets them as CloudEvents attributes. A Meshery event is CloudEvents compatible; it is not a CloudEvent.
+     */
+    specversion?: "1.0";
+    /** W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time.
+     */
+    traceId?: string;
+    /** W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.
+     */
+    parentId?: string;
     [key: string]: any;
   };
 };
@@ -16289,6 +17230,8 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
   totalCount?: number;
   /** The events returned on the current page. */
   data?: {
+    /** Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. */
+    visibility?: "private" | "public";
     /** UUID of the user associated with the event. */
     owner: string;
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
@@ -16307,12 +17250,59 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
     firstName?: string;
     /** The last name of the user associated with the event. */
     lastName?: string;
+    /** URL to the avatar image of the user associated with the event. */
+    avatarUrl?: string;
     /** Email address of the user associated with the event. */
     email?: string;
     /** Authentication provider of the user associated with the event. */
     provider?: string;
     /** Timestamp when the event was recorded. */
     createdAt?: string;
+    /** Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition. */
+    correlationKey?: string;
+    /** How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
+     */
+    occurrenceCount?: number;
+    /** When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+     */
+    firstSeenAt?: string;
+    /** When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+     */
+    lastSeenAt?: string;
+    /** When the condition cleared (see Event.resolvedAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user it is omitted while the condition is open.
+     */
+    resolvedAt?: string;
+    /** Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source). */
+    source?: string;
+    /** CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type). */
+    type?: string;
+    /** The CloudEvents specification version the event is compatible with (see Event.specversion). */
+    specversion?: "1.0";
+    /** W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId). */
+    traceId?: string;
+    /** W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId). */
+    parentId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    actedUpon?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    operationId?: string;
+    /** Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.
+     */
+    severity?: string;
+    /** Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.
+     */
+    status?: string;
+    /** Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired.
+     */
+    metadata?: {
+      [key: string]: any;
+    } | null;
+    /** Timestamp when the event was last updated (see Event.updatedAt). */
+    updatedAt?: string;
+    /** Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt). */
+    deletedAt?: string | null;
   }[];
 };
 export type GetEventsApiArg = {
@@ -16329,6 +17319,55 @@ export type GetEventsApiArg = {
   /** Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.
    */
   scope?: "user" | "organization";
+};
+export type GetEventFeedApiResponse = /** status 200 Event feed page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of matching feed events. */
+  totalCount: number;
+  /** Events for the requested page, newest first. */
+  data: {
+    /** Event ID. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** Event category. */
+    category: string;
+    /** Event action. */
+    action: string;
+    /** Event creation time; the feed is ordered newest first. */
+    createdAt: string;
+    /** Always `public` in the feed. */
+    visibility: "private" | "public";
+    /** Platform from ScheduleCompletedEventMetadata. */
+    platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+    /** Role from ScheduleCompletedEventMetadata. */
+    role: string;
+    /** One-line result from ScheduleCompletedEventMetadata. */
+    line: string;
+    /** Networks from ScheduleCompletedEventMetadata, when present. */
+    networks?: string[];
+    /** Public username, never a real name; present only for a public profile. */
+    displayName?: string;
+    /** Public avatar URL; present only for a public profile. */
+    avatarUrl?: string;
+    /** Public organization name; present only for a public profile. */
+    organizationName?: string;
+    /** HTTPS URL of the user's public profile. */
+    publicProfileUrl?: string;
+  }[];
+};
+export type GetEventFeedApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of feed items per page. */
+  pagesize?: number;
+  /** Optional event category filter. */
+  category?: string;
+  /** Optional event action filter. */
+  action?: string;
 };
 export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page */ {
   /** Current page number of the result set. */
@@ -16954,10 +17993,12 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
-  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
   acceptanceOutcome?: "direct_membership" | "child_organization";
   /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
   childOrganizationBranding?: "parent" | "provider" | "none";
+  /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+  childOrganizationName?: string;
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -17001,10 +18042,12 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
-  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
   acceptanceOutcome?: "direct_membership" | "child_organization";
   /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
   childOrganizationBranding?: "parent" | "provider" | "none";
+  /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+  childOrganizationName?: string;
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -17040,10 +18083,12 @@ export type UpdateInvitationApiArg = {
     roles?: string[];
     /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
     teams?: string[];
-    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
     /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
     childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
   };
@@ -17081,10 +18126,12 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
-    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
     /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
     childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -17132,10 +18179,12 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
-  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
   acceptanceOutcome?: "direct_membership" | "child_organization";
   /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
   childOrganizationBranding?: "parent" | "provider" | "none";
+  /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+  childOrganizationName?: string;
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -17169,10 +18218,12 @@ export type CreateInvitationApiArg = {
     roles?: string[];
     /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
     teams?: string[];
-    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
     /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
     childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
   };
@@ -17202,10 +18253,12 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
-  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
   acceptanceOutcome?: "direct_membership" | "child_organization";
   /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
   childOrganizationBranding?: "parent" | "provider" | "none";
+  /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+  childOrganizationName?: string;
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -17570,6 +18623,655 @@ export type DeleteLedgerEntryApiArg = {
   ledger: string;
   /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
   entryKey: string;
+};
+export type ListMediaAssetsApiResponse = /** status 200 Media asset page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Media assets included on this page of results. */
+  mediaAssets?: {
+    /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+     */
+    createdBy?: string;
+    /** Where the bytes are stored (`r2` or `gdrive`). */
+    backend: "r2" | "gdrive";
+    /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+     */
+    connectionId?: string;
+    /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+     */
+    externalId?: string;
+    /** Image or video, derived by the server from `contentType`. */
+    kind: "image" | "video";
+    /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+     */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+     */
+    sha256: string;
+    /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+     */
+    name?: string;
+    /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+     */
+    locationStripped: boolean;
+    /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+     */
+    status: "pending" | "ready" | "rejected" | "expired";
+    /** Why the upload was rejected. Set only on a `rejected` asset. */
+    rejectionReason?: "missing" | "size" | "type" | "checksum";
+    /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+     */
+    retainUntil?: string | null;
+    /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+    completedAt?: string | null;
+    /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+     */
+    expiresAt: string;
+    /** Timestamp of media asset creation. */
+    createdAt: string;
+    /** Timestamp of last media asset modification. */
+    updatedAt: string;
+    /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListMediaAssetsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by status, evaluated at read time (a `ready` asset past `expiresAt` matches `expired`). */
+  status?: "pending" | "ready" | "rejected" | "expired";
+};
+export type CreateMediaAssetApiResponse = /** status 201 Media asset created */ {
+  /** Server-returned media asset: one image or video file an organization
+    uploaded so that a content item can post it without a link. A content
+    item refers to an asset by its `id`, never by a URL; a short-lived
+    download URL is minted only when the file is about to be used
+    (`getMediaAssetDownload`) and is never stored.
+    An asset is created `pending` with a short-lived upload URL, becomes
+    `ready` once `completeMediaAsset` has checked the stored bytes against
+    the declared size, type and SHA-256, or `rejected` when they do not
+    match. A `pending` asset that is never completed, and a `ready` asset
+    whose retention ended, read as `expired` from `expiresAt` on: expiry is
+    evaluated when the asset is read, so an asset never reads `pending` or
+    `ready` past its `expiresAt`.
+    No field carries a storage credential, a bucket name, an object key or a
+    signed URL. The bytes live in the backend `backend` names, under a
+    location only the server knows.
+     */
+  mediaAsset: {
+    /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+     */
+    createdBy?: string;
+    /** Where the bytes are stored (`r2` or `gdrive`). */
+    backend: "r2" | "gdrive";
+    /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+     */
+    connectionId?: string;
+    /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+     */
+    externalId?: string;
+    /** Image or video, derived by the server from `contentType`. */
+    kind: "image" | "video";
+    /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+     */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+     */
+    sha256: string;
+    /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+     */
+    name?: string;
+    /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+     */
+    locationStripped: boolean;
+    /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+     */
+    status: "pending" | "ready" | "rejected" | "expired";
+    /** Why the upload was rejected. Set only on a `rejected` asset. */
+    rejectionReason?: "missing" | "size" | "type" | "checksum";
+    /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+     */
+    retainUntil?: string | null;
+    /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+    completedAt?: string | null;
+    /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+     */
+    expiresAt: string;
+    /** Timestamp of media asset creation. */
+    createdAt: string;
+    /** Timestamp of last media asset modification. */
+    updatedAt: string;
+    /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+    deletedAt?: string | null;
+  };
+  /** A short-lived grant to move one file's bytes: send one request with `method` to `url` carrying exactly `headers`, before `expiresAt`. The URL is the only credential, it covers this one file, and it must be treated as a secret: never store it, log it or put it in a content item.
+   */
+  upload: {
+    /** HTTP method to use. `PUT` for an upload, `GET` for a download. */
+    method: "PUT" | "GET";
+    /** Absolute HTTPS URL to send the request to. */
+    url: string;
+    /** Headers the request must carry, verbatim (for an upload, at least `Content-Type`, and any integrity header the signature binds). Empty when none are needed. Never contains an authorization header.
+     */
+    headers: {
+      [key: string]: string;
+    };
+    /** Time the URL stops working. */
+    expiresAt: string;
+  };
+};
+export type CreateMediaAssetApiArg = {
+  body: {
+    /** Media type of the file, from a closed allowlist. The server sniffs the stored bytes on completion and rejects an upload whose real type differs. A provider may accept fewer types than this list (`MediaAssetQuota.contentTypes`).
+     */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes. Must not exceed the quota's limit for its kind. */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the exact bytes that will be uploaded. */
+    sha256: string;
+    /** Display name of the file, typically its original file name. */
+    name?: string;
+    /** Whether the client removed location metadata (EXIF and XMP GPS, maker notes, device serial numbers) from the file before hashing and uploading it. Recorded as sent.
+     */
+    locationStripped: boolean;
+    /** Where to store the file. Required, with no default: the client picks one of the backends `getMediaAssetQuota` lists in `backends`, and a create naming any other answers `400`.
+     */
+    backend: "r2" | "gdrive";
+    /** The caller's own live Google Drive connection in the session organization. Required when `backend` is `gdrive`, refused otherwise.
+     */
+    connectionId?: string;
+    /** Time the asset must stay downloadable until, for example a little after the post that uses it is scheduled. Omitted, the organization's default retention applies from completion.
+     */
+    retainUntil?: string;
+  };
+};
+export type GetMediaAssetQuotaApiResponse = /** status 200 Media asset quota */ {
+  /** Backends this provider serves for the organization, and the only statement of what it serves. A create must name one of them in `backend` (there is no default); naming another is refused with 400.
+   */
+  backends: ("r2" | "gdrive")[];
+  /** Content types this provider accepts. */
+  contentTypes: (
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm"
+  )[];
+  /** Largest image a create accepts, in bytes. */
+  maxImageBytes: number;
+  /** Largest video a create accepts, in bytes. */
+  maxVideoBytes: number;
+  /** How long a `pending` asset waits for its upload and completion before it expires, in seconds. */
+  uploadWindowSeconds: number;
+  /** Days a `ready` asset is kept after completion when no `retainUntil` was set. */
+  defaultRetentionDays: number;
+  /** Furthest `retainUntil` may lie from now, in days. */
+  maxRetentionDays: number;
+  /** Total bytes the organization's live `pending` and `ready` assets may hold. Null when the organization has no storage limit. */
+  bytesLimit: number | null;
+  /** Total bytes of the organization's live `pending` and `ready` assets. Null when it could not be measured, which must be presented as unknown; a number, including 0, is a measurement.
+   */
+  bytesUsed: number | null;
+};
+export type GetMediaAssetQuotaApiArg = void;
+export type GetMediaAssetApiResponse = /** status 200 Media asset response */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type GetMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type UpdateMediaAssetApiResponse = /** status 200 Media asset updated */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type UpdateMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+  body: {
+    /** New time the asset must stay downloadable until. Must be in the future and within `maxRetentionDays` from now. */
+    retainUntil: string;
+  };
+};
+export type DeleteMediaAssetApiResponse = unknown;
+export type DeleteMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type CompleteMediaAssetApiResponse = /** status 200 Media asset ready */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type CompleteMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type GetMediaAssetDownloadApiResponse = /** status 200 Media asset download */ {
+  /** HTTP method to use. `PUT` for an upload, `GET` for a download. */
+  method: "PUT" | "GET";
+  /** Absolute HTTPS URL to send the request to. */
+  url: string;
+  /** Headers the request must carry, verbatim (for an upload, at least `Content-Type`, and any integrity header the signature binds). Empty when none are needed. Never contains an authorization header.
+   */
+  headers: {
+    [key: string]: string;
+  };
+  /** Time the URL stops working. */
+  expiresAt: string;
+};
+export type GetMediaAssetDownloadApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type GetMediaAssetContentApiResponse = /** status 200 Media asset bytes */ Blob;
+export type GetMediaAssetContentApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+  /** Time the grant lapses, in seconds since the Unix epoch. */
+  expires: number;
+  /** Server-computed signature over the asset ID and `expires`. Opaque to clients. */
+  signature: string;
+};
+export type GetMentionAliasesApiResponse = /** status 200 Mention alias page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Mention aliases included on this page of results. */
+  mentionAliases: {
+    /** Server-generated mention alias ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** The tag as written after `@`, without the `@` (`kate`). Compared ignoring case: `Kate` and `kate` are the same entity, and the alias keeps the casing of the write that last stored it. The pattern is the tag grammar a message is read with: letters, digits, `_`, `.` and `-`, starting and ending with a letter, digit or `_`.
+     */
+    entity: string;
+    /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+     */
+    platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+    /** The entity's form on `platform`, stored as confirmed: `@kate_ops` on X, `@kate.example.org` on Bluesky, `u/kate` or `r/kate` on Reddit, a member ID such as `U012AB3CD` on Slack, or a plain-text name on LinkedIn. An empty string is a confirmed answer, not a missing one: it means the entity is sent as its name in plain text on that platform. The server checks length and surrounding whitespace only; whether a value is a valid handle on its platform is the client's check.
+     */
+    handle: string;
+    /** ID of the user whose session last wrote the alias. Derived from the authenticated session on every write, never client-settable. Omitted when that user was later purged.
+     */
+    confirmedBy?: string;
+    /** Timestamp the alias was first confirmed. */
+    createdAt: string;
+    /** Timestamp the alias was last confirmed. Every write of the alias's key advances it, including one that stores the same handle again.
+     */
+    updatedAt: string;
+  }[];
+};
+export type GetMentionAliasesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Return only the aliases of these entities (repeatable), each compared ignoring case. */
+  entity?: string[];
+  /** Return only the aliases on these platforms (repeatable). */
+  platform?: ("linkedin" | "x" | "bluesky" | "reddit" | "slack")[];
+};
+export type UpsertMentionAliasesApiResponse =
+  /** status 200 The stored mention aliases, one per request entry, in request order */ {
+    /** Server-generated mention alias ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** The tag as written after `@`, without the `@` (`kate`). Compared ignoring case: `Kate` and `kate` are the same entity, and the alias keeps the casing of the write that last stored it. The pattern is the tag grammar a message is read with: letters, digits, `_`, `.` and `-`, starting and ending with a letter, digit or `_`.
+     */
+    entity: string;
+    /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+     */
+    platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+    /** The entity's form on `platform`, stored as confirmed: `@kate_ops` on X, `@kate.example.org` on Bluesky, `u/kate` or `r/kate` on Reddit, a member ID such as `U012AB3CD` on Slack, or a plain-text name on LinkedIn. An empty string is a confirmed answer, not a missing one: it means the entity is sent as its name in plain text on that platform. The server checks length and surrounding whitespace only; whether a value is a valid handle on its platform is the client's check.
+     */
+    handle: string;
+    /** ID of the user whose session last wrote the alias. Derived from the authenticated session on every write, never client-settable. Omitted when that user was later purged.
+     */
+    confirmedBy?: string;
+    /** Timestamp the alias was first confirmed. */
+    createdAt: string;
+    /** Timestamp the alias was last confirmed. Every write of the alias's key advances it, including one that stores the same handle again.
+     */
+    updatedAt: string;
+  }[];
+export type UpsertMentionAliasesApiArg = {
+  body: {
+    /** Aliases to write, at most one per (`entity`, `platform`) key with `entity` compared ignoring case. A key named twice refuses the whole request with 400.
+     */
+    mentionAliases: {
+      /** The tag as written after `@`, without the `@`. Compared ignoring case; the stored alias keeps this casing.
+       */
+      entity: string;
+      /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+       */
+      platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+      /** The entity's form on `platform`. Required, because the write replaces the stored handle: an empty string is the confirmed answer "send the name as plain text", never "keep what is stored".
+       */
+      handle: string;
+    }[];
+  };
+};
+export type DeleteMentionAliasApiResponse = unknown;
+export type DeleteMentionAliasApiArg = {
+  /** Mention alias ID */
+  mentionAliasId: string;
+};
+export type GetOauthConsentsApiResponse = /** status 200 OAuth consents of the signed-in user */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** OAuth consents included on this page of results. */
+  oauthConsents: {
+    /** Server-generated consent ID. */
+    id: string;
+    /** OAuth client ID the consent was granted to. An identifier issued by the authorization server, not a UUID. Unique per user among live consents. */
+    clientId: string;
+    /** Display name the client registered, shown to the user as the connected app's name. */
+    clientName: string;
+    /** Home page of the client, when it registered one. Omitted otherwise. */
+    clientUri?: string;
+    /** Logo of the client, when it registered one. Omitted otherwise. */
+    logoUri?: string;
+    /** Scopes the user granted the client, as the strings the authorization server issues. A scope names one keychain, so the client's tokens are limited to the keys of those keychains (see the token scoping contract). At least one scope must map to a keychain in the server's scope map. The server refuses (`400`, nothing stored) a first consent without one (a re-consent without one revokes the consent and the client's tokens), and refuses a scope string the scope map does not know; it never drops one silently. Standard non-keychain scopes never count toward that minimum. The schema enforces only that the list is not empty; the rule is enforced by the server against the scope map. See the description of this schema. */
+    scopes: string[];
+    /** ID of the root organization the consent names. The client acts only in this organization and its descendants. A re-consent keeps it unless the user explicitly chooses another organization on the consent screen; see the description of this schema. */
+    organizationId: string;
+    /** Time the user first granted the consent. A re-consent keeps it. */
+    createdAt: string;
+    /** Time the consent was last granted or changed. Server-set: equal to `createdAt` when the consent is created, and advanced when the same user consents to the same live client again, which replaces `scopes`. */
+    updatedAt: string;
+    /** Time the client last used a token issued under this consent. Null when the client has not used it yet or the server does not record use. */
+    lastUsedAt?: string | null;
+    /** Time the consent was revoked (soft-deleted). Null while the consent is live. getOauthConsents returns live consents only. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetOauthConsentsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of consents per page, at most 1000. Bounded here because the list is the signed-in user's whole consent set. */
+  pageSize?: number;
+};
+export type DeleteOauthConsentApiResponse = unknown;
+export type DeleteOauthConsentApiArg = {
+  /** OAuth client ID of the consent to revoke. An identifier issued by the authorization server, not a UUID. */
+  clientId: string;
+};
+export type GetOauthConsentRequestApiResponse = /** status 200 The pending OAuth consent request */ {
+  /** Opaque challenge the identity provider issued for this consent request, echoed unchanged. Send it back in OauthConsentDecisionPayload to allow or deny the request. */
+  consentChallenge: string;
+  /** The OAuth client that asks for consent. */
+  client: {
+    /** OAuth client ID. An identifier issued by the identity provider, not a UUID. */
+    clientId: string;
+    /** Display name the client registered. Empty when it registered none. Self-asserted by the client; only `verified` marks trust. */
+    clientName: string;
+    /** The network hosts the client can send the user to after the decision: the host of each https redirect URI (for example `app.example.com`) and of each loopback redirect URI (`127.0.0.1` or `[::1]`), without duplicates. Only redirect URIs whose scheme is `https`, or `http` on a loopback IP literal, are listed here; the `localhost` hostname is never registered (RFC 8252 section 8.3), and a private-use app redirect is listed in `appSchemes` instead. Lowercase ASCII, with no scheme, port or path; an internationalized hostname is sent in IDNA A-label (punycode) form. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty. */
+    redirectHosts: string[];
+    /** The private-use URI schemes (RFC 8252 section 7.1) of the client's app redirect URIs, without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. Registration accepts a private-use scheme only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when the client registered only https and loopback redirects; `redirectHosts` and `appSchemes` are never both empty. */
+    appSchemes: string[];
+    /** Derived only from the client's redirect targets, never from `clientName` or `clientId`: true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). Marks trust and never blocks: a false value is shown as an unverified client, and the user may still allow it. */
+    verified: boolean;
+  };
+  /** Scopes the client asks for, as the identity provider recorded them. An accept grants only what the client requested, never more: these scopes, and any audience the client asked the identity provider for. Empty when the client asks for none. */
+  requestedScopes: string[];
+};
+export type GetOauthConsentRequestApiArg = {
+  /** Opaque consent challenge the identity provider issued, as the consent page received it. Required; a missing or blank value answers 400. */
+  consentChallenge: string;
+};
+export type AcceptOauthConsentRequestApiResponse = /** status 200 Consent request allowed; navigate to redirectTo */ {
+  /** Absolute URL the browser must navigate to next, issued by the identity provider. It continues the authorization and returns the user to the client. */
+  redirectTo: string;
+};
+export type AcceptOauthConsentRequestApiArg = {
+  body: {
+    /** The challenge of the request being decided, as getOauthConsentRequest returned it. A blank value answers 400. */
+    consentChallenge: string;
+    /** On accept, true asks the identity provider to remember the grant, so a later request from the same client for the same scopes is not shown again while the grant is remembered. False or omitted grants this request only. Ignored on reject. */
+    remember?: boolean;
+  };
+};
+export type RejectOauthConsentRequestApiResponse = /** status 200 Consent request denied; navigate to redirectTo */ {
+  /** Absolute URL the browser must navigate to next, issued by the identity provider. It continues the authorization and returns the user to the client. */
+  redirectTo: string;
+};
+export type RejectOauthConsentRequestApiArg = {
+  body: {
+    /** The challenge of the request being decided, as getOauthConsentRequest returned it. A blank value answers 400. */
+    consentChallenge: string;
+    /** On accept, true asks the identity provider to remember the grant, so a later request from the same client for the same scopes is not shown again while the grant is remembered. False or omitted grants this request only. Ignored on reject. */
+    remember?: boolean;
+  };
 };
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
@@ -19029,14 +20731,20 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
     updatedAt: string;
     /** Timestamp when the schedule was soft-deleted. Null while live. */
     deletedAt?: string | null;
-    /** Optional Risk Profile this schedule runs under, resolved above the
+    /** Optional Posture this schedule runs under, resolved above the
         profile x platform resolution and below an explicit per-run flag.
         Omitted when the schedule has no override: it then runs under whatever
         profile x platform, configuration, environment, account or default
-        resolves to, exactly as before. Any value outside the Risk Profile
+        resolves to, exactly as before. Any value outside the Posture
         enum is refused with 400.
          */
-    riskProfile?: "cautious" | "standard" | "brisk";
+    posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public` (the default) allows completed runs
+        to appear on the unauthenticated public activity feed (subject to user
+        preferences), `org` restricts visibility to members of the schedule's
+        organization, and `private` restricts it to the schedule owner.
+         */
+    visibility: "public" | "org" | "private";
   }[];
 };
 export type ListSchedulesApiArg = {
@@ -19189,14 +20897,20 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
-  /** Optional Risk Profile this schedule runs under, resolved above the
+  /** Optional Posture this schedule runs under, resolved above the
     profile x platform resolution and below an explicit per-run flag.
     Omitted when the schedule has no override: it then runs under whatever
     profile x platform, configuration, environment, account or default
-    resolves to, exactly as before. Any value outside the Risk Profile
+    resolves to, exactly as before. Any value outside the Posture
     enum is refused with 400.
      */
-  riskProfile?: "cautious" | "standard" | "brisk";
+  posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type CreateScheduleApiArg = {
   body: {
@@ -19274,13 +20988,18 @@ export type CreateScheduleApiArg = {
     paused?: boolean;
     /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
     pauseReason?: string;
-    /** Optional Risk Profile this schedule runs under, resolved above
+    /** Optional Posture this schedule runs under, resolved above
         the profile x platform resolution and below an explicit per-run
         flag. Omit to inherit: the schedule then runs under whatever
         profile x platform, configuration, environment, account or
         default resolves to, exactly as before.
          */
-    riskProfile?: "cautious" | "standard" | "brisk";
+    posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public`, `org`, or `private`.
+        Defaults to `public` on creation. Omitted on update, the existing
+        visibility is preserved.
+         */
+    visibility?: "public" | "org" | "private";
   };
 };
 export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
@@ -19410,14 +21129,20 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
-  /** Optional Risk Profile this schedule runs under, resolved above the
+  /** Optional Posture this schedule runs under, resolved above the
     profile x platform resolution and below an explicit per-run flag.
     Omitted when the schedule has no override: it then runs under whatever
     profile x platform, configuration, environment, account or default
-    resolves to, exactly as before. Any value outside the Risk Profile
+    resolves to, exactly as before. Any value outside the Posture
     enum is refused with 400.
      */
-  riskProfile?: "cautious" | "standard" | "brisk";
+  posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type GetScheduleByIdApiArg = {
   /** Schedule ID */
@@ -19550,14 +21275,20 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
-  /** Optional Risk Profile this schedule runs under, resolved above the
+  /** Optional Posture this schedule runs under, resolved above the
     profile x platform resolution and below an explicit per-run flag.
     Omitted when the schedule has no override: it then runs under whatever
     profile x platform, configuration, environment, account or default
-    resolves to, exactly as before. Any value outside the Risk Profile
+    resolves to, exactly as before. Any value outside the Posture
     enum is refused with 400.
      */
-  riskProfile?: "cautious" | "standard" | "brisk";
+  posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type UpdateScheduleApiArg = {
   /** Schedule ID */
@@ -19639,13 +21370,18 @@ export type UpdateScheduleApiArg = {
     paused?: boolean;
     /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
     pauseReason?: string;
-    /** Optional Risk Profile this schedule runs under, resolved above
+    /** Optional Posture this schedule runs under, resolved above
         the profile x platform resolution and below an explicit per-run
         flag. Omit to inherit: the schedule then runs under whatever
         profile x platform, configuration, environment, account or
         default resolves to, exactly as before.
          */
-    riskProfile?: "cautious" | "standard" | "brisk";
+    posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public`, `org`, or `private`.
+        Defaults to `public` on creation. Omitted on update, the existing
+        visibility is preserved.
+         */
+    visibility?: "public" | "org" | "private";
   };
 };
 export type DeleteScheduleByIdApiResponse = unknown;
@@ -19788,14 +21524,20 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
     updatedAt: string;
     /** Timestamp when the schedule was soft-deleted. Null while live. */
     deletedAt?: string | null;
-    /** Optional Risk Profile this schedule runs under, resolved above the
+    /** Optional Posture this schedule runs under, resolved above the
         profile x platform resolution and below an explicit per-run flag.
         Omitted when the schedule has no override: it then runs under whatever
         profile x platform, configuration, environment, account or default
-        resolves to, exactly as before. Any value outside the Risk Profile
+        resolves to, exactly as before. Any value outside the Posture
         enum is refused with 400.
          */
-    riskProfile?: "cautious" | "standard" | "brisk";
+    posture?: "cautious" | "standard" | "brisk";
+    /** Visibility of the schedule: `public` (the default) allows completed runs
+        to appear on the unauthenticated public activity feed (subject to user
+        preferences), `org` restricts visibility to members of the schedule's
+        organization, and `private` restricts it to the schedule owner.
+         */
+    visibility: "public" | "org" | "private";
   }[];
 };
 export type GetSchedulesOfWorkspaceApiArg = {
@@ -19948,14 +21690,20 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
-  /** Optional Risk Profile this schedule runs under, resolved above the
+  /** Optional Posture this schedule runs under, resolved above the
     profile x platform resolution and below an explicit per-run flag.
     Omitted when the schedule has no override: it then runs under whatever
     profile x platform, configuration, environment, account or default
-    resolves to, exactly as before. Any value outside the Risk Profile
+    resolves to, exactly as before. Any value outside the Posture
     enum is refused with 400.
      */
-  riskProfile?: "cautious" | "standard" | "brisk";
+  posture?: "cautious" | "standard" | "brisk";
+  /** Visibility of the schedule: `public` (the default) allows completed runs
+    to appear on the unauthenticated public activity feed (subject to user
+    preferences), `org` restricts visibility to members of the schedule's
+    organization, and `private` restricts it to the schedule owner.
+     */
+  visibility: "public" | "org" | "private";
 };
 export type AssignScheduleToWorkspaceApiArg = {
   /** Workspace ID */
@@ -19969,6 +21717,41 @@ export type UnassignScheduleFromWorkspaceApiArg = {
   workspaceId: string;
   /** Schedule ID */
   scheduleId: string;
+};
+export type GetPublicActivityFeedApiResponse = /** status 200 Public activity feed page */ {
+  /** Current page number. */
+  page: number;
+  /** Number of items per page; maximum 50. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Feed items included on this page, newest first. */
+  data: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** Social platform the schedule ran on. */
+    platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+    /** One-line role and result summary from the completed run. */
+    roleResult: string;
+    /** Time the schedule run completed; feed is ordered newest first. */
+    completedAt: string;
+    /** Always `public` in this feed. */
+    visibility: "public";
+    /** Public username; present only when the user's profile is public. */
+    displayName?: string;
+    /** Public avatar URL; present only when the user's profile is public. */
+    avatarUrl?: string;
+    /** Public organization name; present only when the user's profile is public. */
+    organizationName?: string;
+    /** HTTPS URL of the user's public profile. */
+    publicProfileUrl?: string;
+  }[];
+};
+export type GetPublicActivityFeedApiArg = {
+  /** Page number. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
 };
 export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response */ {
   /** Current page number of the result set. */
@@ -20312,6 +22095,12 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -20359,6 +22148,12 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -20372,6 +22167,12 @@ export type GenerateTokenApiArg = {
   name: string;
   /** Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
   purpose?: string;
+  body?: {
+    /** IDs of the keychains the token is limited to. A non-empty list limits the token to the keys of those keychains, intersected with the owner's keys in the request's organization. An absent list creates an unrestricted token. An explicit empty list is refused with 400, so a selection that ends up empty never mints a full-access token. The server records keychainScoped from this list; clients do not set it. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means it never expires. */
+    expiresAt?: string | null;
+  };
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
   /** Tokens returned on the current page. */
@@ -20396,6 +22197,12 @@ export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -20429,6 +22236,12 @@ export type DownloadTokenApiResponse = /** status 200 Token response */ {
   createdAt: string;
   /** Timestamp when the token was last updated. */
   updatedAt: string;
+  /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+  keychainIds?: string[];
+  /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+  expiresAt?: string | null;
+  /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+  keychainScoped?: boolean;
 };
 export type DownloadTokenApiArg = {
   /** Token ID */
@@ -20457,6 +22270,12 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -20509,6 +22328,12 @@ export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API toke
   createdAt: string;
   /** Timestamp when the token was last updated. */
   updatedAt: string;
+  /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+  keychainIds?: string[];
+  /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+  expiresAt?: string | null;
+  /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+  keychainScoped?: boolean;
 };
 export type ExchangeNativeAuthorizationCodeApiArg = {
   body: {
@@ -20518,6 +22343,46 @@ export type ExchangeNativeAuthorizationCodeApiArg = {
     codeVerifier: string;
   };
 };
+export type RevokeTokenApiResponse = unknown;
+export type RevokeTokenApiArg = {
+  body: {
+    /** The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+    token: string;
+  };
+};
+export type IntrospectTokenApiResponse =
+  /** status 200 The token is authentic, unexpired, not revoked and valid for the requested resource. The body describes it. */ {
+    /** Always true; a token that is not active is answered with 401 instead. */
+    active: boolean;
+    /** The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for. */
+    aud: string[];
+    /** The subject the token was issued for. */
+    sub?: string;
+    /** The OAuth client the token was issued to. */
+    clientId?: string;
+    /** Space-separated scopes granted to the token. */
+    scope?: string;
+    /** Expiry, in seconds since the Unix epoch. Absent for a token that does not expire. */
+    exp?: number;
+    /** Issue time, in seconds since the Unix epoch. */
+    iat?: number;
+    /** Not-before time, in seconds since the Unix epoch. */
+    nbf?: number;
+    /** The issuer of the token. */
+    iss?: string;
+    /** Always "Bearer". */
+    tokenType?: string;
+  };
+export type IntrospectTokenApiArg = {
+  body: {
+    /** The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+    token: string;
+    /** RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target". */
+    resource?: string;
+  };
+};
+export type LogoutUserApiResponse = unknown;
+export type LogoutUserApiArg = void;
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
   /** Current page number of the result set. */
   page: number;
@@ -22228,6 +24093,7 @@ export const {
   useDeleteUserCredentialMutation,
   useGetCredentialByIdQuery,
   useLazyGetCredentialByIdQuery,
+  useTransferCredentialOwnershipMutation,
   useGetUserKeysQuery,
   useLazyGetUserKeysQuery,
   useGetKeysQuery,
@@ -22443,6 +24309,8 @@ export const {
   useCreateEventMutation,
   useGetEventsQuery,
   useLazyGetEventsQuery,
+  useGetEventFeedQuery,
+  useLazyGetEventFeedQuery,
   useGetEventSummaryByUserQuery,
   useLazyGetEventSummaryByUserQuery,
   useGetEventTypesQuery,
@@ -22494,6 +24362,31 @@ export const {
   useLazyGetLedgerEntryQuery,
   useUpdateLedgerEntryMutation,
   useDeleteLedgerEntryMutation,
+  useListMediaAssetsQuery,
+  useLazyListMediaAssetsQuery,
+  useCreateMediaAssetMutation,
+  useGetMediaAssetQuotaQuery,
+  useLazyGetMediaAssetQuotaQuery,
+  useGetMediaAssetQuery,
+  useLazyGetMediaAssetQuery,
+  useUpdateMediaAssetMutation,
+  useDeleteMediaAssetMutation,
+  useCompleteMediaAssetMutation,
+  useGetMediaAssetDownloadQuery,
+  useLazyGetMediaAssetDownloadQuery,
+  useGetMediaAssetContentQuery,
+  useLazyGetMediaAssetContentQuery,
+  useGetMentionAliasesQuery,
+  useLazyGetMentionAliasesQuery,
+  useUpsertMentionAliasesMutation,
+  useDeleteMentionAliasMutation,
+  useGetOauthConsentsQuery,
+  useLazyGetOauthConsentsQuery,
+  useDeleteOauthConsentMutation,
+  useGetOauthConsentRequestQuery,
+  useLazyGetOauthConsentRequestQuery,
+  useAcceptOauthConsentRequestMutation,
+  useRejectOauthConsentRequestMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
@@ -22541,6 +24434,8 @@ export const {
   useLazyGetSchedulesOfWorkspaceQuery,
   useAssignScheduleToWorkspaceMutation,
   useUnassignScheduleFromWorkspaceMutation,
+  useGetPublicActivityFeedQuery,
+  useLazyGetPublicActivityFeedQuery,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
   useUpsertSubscriptionMutation,
@@ -22562,6 +24457,10 @@ export const {
   useGetNativeClientAuthorizationQuery,
   useLazyGetNativeClientAuthorizationQuery,
   useExchangeNativeAuthorizationCodeMutation,
+  useRevokeTokenMutation,
+  useIntrospectTokenMutation,
+  useLogoutUserQuery,
+  useLazyLogoutUserQuery,
   useGetUsersQuery,
   useLazyGetUsersQuery,
   useSearchUsersQuery,

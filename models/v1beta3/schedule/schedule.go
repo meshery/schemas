@@ -6,7 +6,23 @@ package schedule
 import (
 	core "github.com/meshery/schemas/models/core"
 	claimv1beta3 "github.com/meshery/schemas/models/v1beta3/claim"
-	risk_profilev1beta3 "github.com/meshery/schemas/models/v1beta3/risk_profile"
+	posturev1beta3 "github.com/meshery/schemas/models/v1beta3/posture"
+)
+
+// Defines values for PublicActivityFeedItemPlatform.
+const (
+	Bluesky    PublicActivityFeedItemPlatform = "bluesky"
+	Github     PublicActivityFeedItemPlatform = "github"
+	HackerNews PublicActivityFeedItemPlatform = "hacker-news"
+	Linkedin   PublicActivityFeedItemPlatform = "linkedin"
+	Reddit     PublicActivityFeedItemPlatform = "reddit"
+	Slack      PublicActivityFeedItemPlatform = "slack"
+	X          PublicActivityFeedItemPlatform = "x"
+)
+
+// Defines values for PublicActivityFeedItemVisibility.
+const (
+	PublicActivityFeedItemVisibilityPublic PublicActivityFeedItemVisibility = "public"
 )
 
 // Defines values for ScheduleStatus.
@@ -21,6 +37,67 @@ const (
 	Running   ScheduleStatus = "running"
 	Scheduled ScheduleStatus = "scheduled"
 )
+
+// Defines values for ScheduleVisibility.
+const (
+	ScheduleVisibilityOrg     ScheduleVisibility = "org"
+	ScheduleVisibilityPrivate ScheduleVisibility = "private"
+	ScheduleVisibilityPublic  ScheduleVisibility = "public"
+)
+
+// PublicActivityFeed One page of public activity feed items, newest first.
+type PublicActivityFeed = PublicActivityFeedPage
+
+// PublicActivityFeedItem A completed schedule run projected into the public feed. Never includes
+// email addresses, real names, or raw metadata. Public profile fields are
+// resolved at read time and included only when the user's profile is public.
+type PublicActivityFeedItem struct {
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID core.Uuid `json:"userId" yaml:"userId"`
+
+	// Platform Social platform the schedule ran on.
+	Platform PublicActivityFeedItemPlatform `json:"platform" yaml:"platform"`
+
+	// RoleResult One-line role and result summary from the completed run.
+	RoleResult  string    `json:"roleResult" yaml:"roleResult"`
+	CompletedAt core.Time `json:"completedAt" yaml:"completedAt"`
+
+	// Visibility Always `public` in this feed.
+	Visibility PublicActivityFeedItemVisibility `json:"visibility" yaml:"visibility"`
+
+	// DisplayName Public username; present only when the user's profile is public.
+	DisplayName *string `json:"displayName,omitempty" yaml:"displayName,omitempty"`
+
+	// AvatarURL Public avatar URL; present only when the user's profile is public.
+	AvatarURL *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// OrganizationName Public organization name; present only when the user's profile is public.
+	OrganizationName *string `json:"organizationName,omitempty" yaml:"organizationName,omitempty"`
+
+	// PublicProfileURL HTTPS URL of the user's public profile.
+	PublicProfileURL *string `json:"publicProfileUrl,omitempty" yaml:"publicProfileUrl,omitempty"`
+}
+
+// PublicActivityFeedItemPlatform Social platform the schedule ran on.
+type PublicActivityFeedItemPlatform string
+
+// PublicActivityFeedItemVisibility Always `public` in this feed.
+type PublicActivityFeedItemVisibility string
+
+// PublicActivityFeedPage One page of public activity feed items, newest first.
+type PublicActivityFeedPage struct {
+	// Data Feed items included on this page, newest first.
+	Data []PublicActivityFeedItem `json:"data" yaml:"data"`
+
+	// Page Current page number.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of items per page; maximum 50.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items available.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
 
 // Schedule Server-returned schedule. A schedule is a job: an action to run, what it
 // acts on (`targetType`, `targetId`) and its parameters, when it is due
@@ -149,19 +226,25 @@ type Schedule struct {
 	// DeletedAt Timestamp when the schedule was soft-deleted. Null while live.
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
 
-	// RiskProfile The Risk Profile preset value. Wherever the value is carried, the
-	// workload runs that preset end to end - pace, share of each built-in cap,
-	// quiet hours and the pause after a sign-in challenge - instead of the
-	// preset the surrounding resolution (profile x platform, configuration,
+	// Posture The Posture preset value. Wherever the value is carried, the workload
+	// runs that preset end to end - pace, share of each built-in cap, quiet
+	// hours and the pause after a sign-in challenge - instead of the preset
+	// the surrounding resolution (profile x platform, configuration,
 	// environment, account preference, defaults) would otherwise produce;
 	// omitting the value inherits that resolution unchanged. The value is a
 	// preset name, never `custom`: custom is a reported state of a profile
 	// whose dials sit outside its preset, not a choice anything can make.
-	// Referenced by the optional `riskProfile` property on the schedule
+	// Referenced by the optional `posture` property on the schedule
 	// construct's `Schedule` and `SchedulePayload` components
 	// (`v1beta3/schedule`). A new carrier references this component rather
 	// than restating the enum.
-	RiskProfile *risk_profilev1beta3.RiskProfile `db:"risk_profile" json:"riskProfile,omitempty" yaml:"riskProfile,omitempty"`
+	Posture *posturev1beta3.Posture `db:"posture" json:"posture,omitempty" yaml:"posture,omitempty"`
+
+	// Visibility Visibility of the schedule: `public` allows completed runs to appear on
+	// the unauthenticated public activity feed (subject to user preferences),
+	// `org` restricts visibility to members of the owning organization, and
+	// `private` restricts it to the schedule owner.
+	Visibility ScheduleVisibility `db:"visibility" json:"visibility" yaml:"visibility"`
 }
 
 // SchedulePage Paginated collection of schedules.
@@ -217,6 +300,20 @@ type SchedulePayload struct {
 	// `pausedAt` and `pausedBy`.
 	Paused *bool `json:"paused,omitempty" yaml:"paused,omitempty"`
 
+	// Posture The Posture preset value. Wherever the value is carried, the workload
+	// runs that preset end to end - pace, share of each built-in cap, quiet
+	// hours and the pause after a sign-in challenge - instead of the preset
+	// the surrounding resolution (profile x platform, configuration,
+	// environment, account preference, defaults) would otherwise produce;
+	// omitting the value inherits that resolution unchanged. The value is a
+	// preset name, never `custom`: custom is a reported state of a profile
+	// whose dials sit outside its preset, not a choice anything can make.
+	// Referenced by the optional `posture` property on the schedule
+	// construct's `Schedule` and `SchedulePayload` components
+	// (`v1beta3/schedule`). A new carrier references this component rather
+	// than restating the enum.
+	Posture *posturev1beta3.Posture `json:"posture,omitempty" yaml:"posture,omitempty"`
+
 	// Recurrence How the schedule repeats once it has run. Empty, `once` and `none`
 	// mean run once. `hourly` repeats every hour; `daily`, `weekly` and
 	// `monthly` repeat at the same wall-clock time one calendar day, week
@@ -233,20 +330,6 @@ type SchedulePayload struct {
 
 	// RetryDelayMinutes Minutes to wait before a retry becomes due.
 	RetryDelayMinutes *int `json:"retryDelayMinutes,omitempty" yaml:"retryDelayMinutes,omitempty"`
-
-	// RiskProfile The Risk Profile preset value. Wherever the value is carried, the
-	// workload runs that preset end to end - pace, share of each built-in cap,
-	// quiet hours and the pause after a sign-in challenge - instead of the
-	// preset the surrounding resolution (profile x platform, configuration,
-	// environment, account preference, defaults) would otherwise produce;
-	// omitting the value inherits that resolution unchanged. The value is a
-	// preset name, never `custom`: custom is a reported state of a profile
-	// whose dials sit outside its preset, not a choice anything can make.
-	// Referenced by the optional `riskProfile` property on the schedule
-	// construct's `Schedule` and `SchedulePayload` components
-	// (`v1beta3/schedule`). A new carrier references this component rather
-	// than restating the enum.
-	RiskProfile *risk_profilev1beta3.RiskProfile `json:"riskProfile,omitempty" yaml:"riskProfile,omitempty"`
 
 	// RunAt Time the schedule first becomes due.
 	RunAt *core.NullTime `json:"runAt" yaml:"runAt"`
@@ -276,6 +359,12 @@ type SchedulePayload struct {
 	// time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
 	// refuses a name it does not know with 400.
 	Timezone *ScheduleTimezone `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+
+	// Visibility Visibility of the schedule: `public` allows completed runs to appear on
+	// the unauthenticated public activity feed (subject to user preferences),
+	// `org` restricts visibility to members of the owning organization, and
+	// `private` restricts it to the schedule owner.
+	Visibility *ScheduleVisibility `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 
 	// WorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	WorkspaceId *core.Uuid `json:"workspaceId,omitempty" yaml:"workspaceId,omitempty"`
@@ -314,6 +403,12 @@ type ScheduleTargetType = string
 // time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
 // refuses a name it does not know with 400.
 type ScheduleTimezone = string
+
+// ScheduleVisibility Visibility of the schedule: `public` allows completed runs to appear on
+// the unauthenticated public activity feed (subject to user preferences),
+// `org` restricts visibility to members of the owning organization, and
+// `private` restricts it to the schedule owner.
+type ScheduleVisibility string
 
 // IfMatch defines model for ifMatch.
 type IfMatch = string
