@@ -85,15 +85,15 @@ Each item in `data` represents a `PublicActivityFeedItem`:
    - `completedAt` (date-time): Timestamp when the run completed.
    - `visibility` (string): Always `public` in this feed.
 
-2. **Conditional on public profile**:
-   - `displayName` (string): Public username or handle.
+2. **Resolved for every served owner** (omitted when empty):
+   - `displayName` (string): The same value `PublicUser.username` carries for the owner, bound by the `PublicUser` privacy contract. Never email. No separate handle field.
    - `avatarUrl` (string): Public avatar image URL.
-   - `organizationName` (string): Name of the organization.
+   - `organizationName` (string): Name of the organization; omitted when organization memberships are not public to an anonymous caller.
    - `publicProfileUrl` (string): Link to the actor's public profile page.
 
    These fields are resolved dynamically by Layer5 Cloud when serving the feed and
-   are populated *only* when the actor has a public profile and permits public
-   activity sharing.
+   are populated for every owner the feed serves: live, active, and with
+   `shareActivityPublicly` on.
 
 3. **Privacy invariants**:
    - **Item-level inclusion**: An item is included in the feed only when the schedule's
