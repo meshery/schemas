@@ -64,7 +64,7 @@ The response schema is `PublicActivityFeed` (aliased to `PublicActivityFeedPage`
       "roleResult": "DevOps Engineer deployed canary build successfully",
       "completedAt": "2026-11-06T12:00:00Z",
       "visibility": "public",
-      "displayName": "alex_cloud",
+      "displayName": "Alex Cloud",
       "avatarUrl": "https://avatar.example.com/alex.png",
       "organizationName": "Acme Corp",
       "publicProfileUrl": "https://meshery.io/users/alex_cloud"
@@ -86,7 +86,7 @@ Each item in `data` represents a `PublicActivityFeedItem`:
    - `visibility` (string): Always `public` in this feed.
 
 2. **Conditional on public profile**:
-   - `displayName` (string): Public username or handle.
+   - `displayName` (string): Same public display name as `PublicUser.username` (trimmed first and last name, or a non-PII fallback). Never email. No separate handle field.
    - `avatarUrl` (string): Public avatar image URL.
    - `organizationName` (string): Name of the organization.
    - `publicProfileUrl` (string): Link to the actor's public profile page.

@@ -1337,8 +1337,12 @@ components:
           x-order: 10
         displayName:
           type: string
-          description: Public username, never a real name; present only for a public profile.
-          maxLength: 80
+          description: >
+            Same public display name PublicUser.username carries: the owner's
+            trimmed first and last name, or a non-PII fallback when both are
+            empty. Never email. Present only when the feed serves the owner
+            (live, active, shareActivityPublicly on). Optional; omit when empty.
+          maxLength: 200
           x-oapi-codegen-extra-tags:
             json: "displayName,omitempty"
           x-order: 11
