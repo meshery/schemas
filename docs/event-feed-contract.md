@@ -39,14 +39,13 @@ projection without adding client-specific fields to the core Event.
 `EventFeedItem.userId` is the Cloud user ID of the event owner. Optional
 `displayName`, `avatarUrl`, `organizationName`, and `publicProfileUrl` values
 are resolved by Cloud at read time for every served owner (live, active, and
-`shareActivityPublicly` on). `displayName` is the same public display name
-the unauthenticated user directory serves as `PublicUser.username`: the
-owner's trimmed first and last name, or a non-PII fallback when both are
-empty. It is never an email address. There is no separate handle field; do
-not invent one. `organizationName` remains optional and is omitted when
-organization memberships are not public to an anonymous caller. The feed
-never exposes email, raw `firstName`/`lastName` fields, `description`,
-`provider`, or raw metadata.
+`shareActivityPublicly` on). `displayName` is the same value the
+unauthenticated user directory serves as `PublicUser.username` for the owner,
+so it is bound by the `PublicUser` privacy contract. It is never an email
+address. There is no separate handle field; do not invent one.
+`organizationName` is omitted when organization memberships are not public to
+an anonymous caller. The feed never exposes email, `firstName`, `lastName`,
+`description`, `provider`, or raw metadata.
 
 ## Transport and paging
 

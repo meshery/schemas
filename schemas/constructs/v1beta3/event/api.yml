@@ -1260,7 +1260,8 @@ components:
         `platform`, `role`, `line` and `networks` are projected from
         ScheduleCompletedEventMetadata; events without valid required
         metadata are skipped. Public profile fields are resolved by Cloud at
-        read time and are included only when the user's profile is public.
+        read time for every served owner (live, active, and
+        shareActivityPublicly on).
       required:
         - id
         - userId
@@ -1338,10 +1339,8 @@ components:
         displayName:
           type: string
           description: >
-            Same public display name PublicUser.username carries: the owner's
-            trimmed first and last name, or a non-PII fallback when both are
-            empty. Never email. Present only when the feed serves the owner
-            (live, active, shareActivityPublicly on). Optional; omit when empty.
+            The same value PublicUser.username carries for the owner. Never
+            email. Resolved for every served owner; omitted when empty.
           maxLength: 200
           x-oapi-codegen-extra-tags:
             json: "displayName,omitempty"
@@ -1350,14 +1349,14 @@ components:
           type: string
           format: uri
           maxLength: 500
-          description: Public avatar URL; present only for a public profile.
+          description: Public avatar URL; resolved for every served owner, omitted when empty.
           x-go-name: AvatarURL
           x-oapi-codegen-extra-tags:
             json: "avatarUrl,omitempty"
           x-order: 12
         organizationName:
           type: string
-          description: Public organization name; present only for a public profile.
+          description: Public organization name; omitted when organization memberships are not public to an anonymous caller.
           maxLength: 255
           x-oapi-codegen-extra-tags:
             json: "organizationName,omitempty"

@@ -64,7 +64,7 @@ The response schema is `PublicActivityFeed` (aliased to `PublicActivityFeedPage`
       "roleResult": "DevOps Engineer deployed canary build successfully",
       "completedAt": "2026-11-06T12:00:00Z",
       "visibility": "public",
-      "displayName": "Alex Cloud",
+      "displayName": "alex_cloud",
       "avatarUrl": "https://avatar.example.com/alex.png",
       "organizationName": "Acme Corp",
       "publicProfileUrl": "https://meshery.io/users/alex_cloud"
@@ -85,15 +85,15 @@ Each item in `data` represents a `PublicActivityFeedItem`:
    - `completedAt` (date-time): Timestamp when the run completed.
    - `visibility` (string): Always `public` in this feed.
 
-2. **Conditional on public profile**:
-   - `displayName` (string): Same public display name as `PublicUser.username` (trimmed first and last name, or a non-PII fallback). Never email. No separate handle field.
+2. **Resolved for every served owner** (omitted when empty):
+   - `displayName` (string): The same value `PublicUser.username` carries for the owner, bound by the `PublicUser` privacy contract. Never email. No separate handle field.
    - `avatarUrl` (string): Public avatar image URL.
-   - `organizationName` (string): Name of the organization.
+   - `organizationName` (string): Name of the organization; omitted when organization memberships are not public to an anonymous caller.
    - `publicProfileUrl` (string): Link to the actor's public profile page.
 
    These fields are resolved dynamically by Layer5 Cloud when serving the feed and
-   are populated *only* when the actor has a public profile and permits public
-   activity sharing.
+   are populated for every owner the feed serves: live, active, and with
+   `shareActivityPublicly` on.
 
 3. **Privacy invariants**:
    - **Item-level inclusion**: An item is included in the feed only when the schedule's
