@@ -848,7 +848,8 @@ export interface components {
         /**
          * @description A completed schedule run projected into the public feed. Never includes
          *     email addresses, real names, or raw metadata. Public profile fields are
-         *     resolved at read time and included only when the user's profile is public.
+         *     resolved at read time for every served owner (live, active, and
+         *     shareActivityPublicly on).
          */
         PublicActivityFeedItem: {
             /**
@@ -874,14 +875,14 @@ export interface components {
              * @enum {string}
              */
             visibility: "public";
-            /** @description Public username; present only when the user's profile is public. */
+            /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
             displayName?: string;
             /**
              * Format: uri
-             * @description Public avatar URL; present only when the user's profile is public.
+             * @description Public avatar URL; resolved for every served owner, omitted when empty.
              */
             avatarUrl?: string;
-            /** @description Public organization name; present only when the user's profile is public. */
+            /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
             organizationName?: string;
             /**
              * Format: uri
@@ -922,14 +923,14 @@ export interface components {
                  * @enum {string}
                  */
                 visibility: "public";
-                /** @description Public username; present only when the user's profile is public. */
+                /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
                 displayName?: string;
                 /**
                  * Format: uri
-                 * @description Public avatar URL; present only when the user's profile is public.
+                 * @description Public avatar URL; resolved for every served owner, omitted when empty.
                  */
                 avatarUrl?: string;
-                /** @description Public organization name; present only when the user's profile is public. */
+                /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
                 organizationName?: string;
                 /**
                  * Format: uri
@@ -971,14 +972,14 @@ export interface components {
                  * @enum {string}
                  */
                 visibility: "public";
-                /** @description Public username; present only when the user's profile is public. */
+                /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
                 displayName?: string;
                 /**
                  * Format: uri
-                 * @description Public avatar URL; present only when the user's profile is public.
+                 * @description Public avatar URL; resolved for every served owner, omitted when empty.
                  */
                 avatarUrl?: string;
-                /** @description Public organization name; present only when the user's profile is public. */
+                /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
                 organizationName?: string;
                 /**
                  * Format: uri
@@ -3521,14 +3522,14 @@ export interface operations {
                              * @enum {string}
                              */
                             visibility: "public";
-                            /** @description Public username; present only when the user's profile is public. */
+                            /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
                             displayName?: string;
                             /**
                              * Format: uri
-                             * @description Public avatar URL; present only when the user's profile is public.
+                             * @description Public avatar URL; resolved for every served owner, omitted when empty.
                              */
                             avatarUrl?: string;
-                            /** @description Public organization name; present only when the user's profile is public. */
+                            /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
                             organizationName?: string;
                             /**
                              * Format: uri

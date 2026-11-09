@@ -289,7 +289,8 @@ type EventError struct {
 // `platform`, `role`, `line` and `networks` are projected from
 // ScheduleCompletedEventMetadata; events without valid required
 // metadata are skipped. Public profile fields are resolved by Cloud at
-// read time and are included only when the user's profile is public.
+// read time for every served owner (live, active, and
+// shareActivityPublicly on).
 type EventFeedItem struct {
 	ID core.Id `json:"id" yaml:"id"`
 
@@ -318,13 +319,13 @@ type EventFeedItem struct {
 	// Networks Networks from ScheduleCompletedEventMetadata, when present.
 	Networks *[]string `json:"networks,omitempty" yaml:"networks,omitempty"`
 
-	// DisplayName Public username, never a real name; present only for a public profile.
+	// DisplayName The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.
 	DisplayName *string `json:"displayName,omitempty" yaml:"displayName,omitempty"`
 
-	// AvatarURL Public avatar URL; present only for a public profile.
+	// AvatarURL Public avatar URL; resolved for every served owner, omitted when empty.
 	AvatarURL *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
 
-	// OrganizationName Public organization name; present only for a public profile.
+	// OrganizationName Public organization name; omitted when organization memberships are not public to an anonymous caller.
 	OrganizationName *string `json:"organizationName,omitempty" yaml:"organizationName,omitempty"`
 
 	// PublicProfileURL HTTPS URL of the user's public profile.

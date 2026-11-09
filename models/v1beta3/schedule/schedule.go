@@ -50,7 +50,8 @@ type PublicActivityFeed = PublicActivityFeedPage
 
 // PublicActivityFeedItem A completed schedule run projected into the public feed. Never includes
 // email addresses, real names, or raw metadata. Public profile fields are
-// resolved at read time and included only when the user's profile is public.
+// resolved at read time for every served owner (live, active, and
+// shareActivityPublicly on).
 type PublicActivityFeedItem struct {
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserID core.Uuid `json:"userId" yaml:"userId"`
@@ -65,13 +66,13 @@ type PublicActivityFeedItem struct {
 	// Visibility Always `public` in this feed.
 	Visibility PublicActivityFeedItemVisibility `json:"visibility" yaml:"visibility"`
 
-	// DisplayName Public username; present only when the user's profile is public.
+	// DisplayName The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.
 	DisplayName *string `json:"displayName,omitempty" yaml:"displayName,omitempty"`
 
-	// AvatarURL Public avatar URL; present only when the user's profile is public.
+	// AvatarURL Public avatar URL; resolved for every served owner, omitted when empty.
 	AvatarURL *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
 
-	// OrganizationName Public organization name; present only when the user's profile is public.
+	// OrganizationName Public organization name; omitted when organization memberships are not public to an anonymous caller.
 	OrganizationName *string `json:"organizationName,omitempty" yaml:"organizationName,omitempty"`
 
 	// PublicProfileURL HTTPS URL of the user's public profile.
