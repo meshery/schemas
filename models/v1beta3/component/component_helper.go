@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hash/fnv"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
@@ -95,31 +97,75 @@ func (m *ComponentDefinition) UpdateStatus(db *database.Handler, status entity.E
 // Gateway API HTTPRoute (gateway.networking.k8s.io) and Linkerd's HTTPRoute
 // (policy.linkerd.io). When <Kind>.<fileType> already holds a component from
 // another group, this component is written to <Kind>.<group>.<fileType>
-// instead, so neither is dropped. A component from the same group, in any
-// version, still counts as already there.
+// instead, so neither is dropped. Two groups can get the same <group> part
+// (the core group is named "core", and so is a group called "core"); the
+// later one is then written to <Kind>.<group>.<hash>.<fileType>, where <hash>
+// comes from the exact group. A component from the same group, in any version, still counts
+// as already there, whichever of these files holds it.
 func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, fileType string) (bool, error) {
 	if c.Component.Kind == "" {
 		return false, nil
 	}
-	componentPath := filepath.Join(componentDirPath, c.Component.Kind+"."+fileType)
-	existingGroup, err := apiGroupInFile(componentPath, fileType)
-	if errors.Is(err, fs.ErrNotExist) {
-		return false, c.writeToFile(componentPath, fileType)
-	}
-	group := apiGroup(c.Component.Version)
-	if err != nil || existingGroup == group {
-		// Same group, or a file that cannot be read (which has always been
-		// treated as present): nothing to write.
-		return true, nil
-	}
+	unlock := lockComponentKind(c.Component.Kind)
+	defer unlock()
 
-	componentPath = filepath.Join(componentDirPath, c.Component.Kind+"."+groupFileLabel(group)+"."+fileType)
-	if _, err := os.Stat(componentPath); err == nil {
-		return true, nil
+	group := apiGroup(c.Component.Version)
+	freePath := ""
+	for _, name := range componentFileNames(c.Component.Kind, group, fileType) {
+		path := filepath.Join(componentDirPath, name)
+		storedGroup, err := apiGroupInFile(path, fileType)
+		if errors.Is(err, fs.ErrNotExist) {
+			if freePath == "" {
+				freePath = path
+			}
+			continue
+		}
+		if err != nil || storedGroup == group {
+			// Same group, or a file that cannot be read (which has always been
+			// treated as present): nothing to write.
+			return true, nil
+		}
 	}
-	return false, c.writeToFile(componentPath, fileType)
+	if freePath == "" {
+		return false, fmt.Errorf("no free file name for component %s (%s) in %s", c.Component.Kind, c.Component.Version, componentDirPath)
+	}
+	return false, c.writeToFile(freePath, fileType)
 }
 
+// componentFileNames lists, in order of preference, the names a component of
+// this Kind and API group can be stored under: <Kind>.<fileType>, then
+// <Kind>.<group>.<fileType>, then <Kind>.<group>.<hash>.<fileType>. The last
+// one is for a group whose label is already used by another group.
+func componentFileNames(kind, group, fileType string) []string {
+	label := groupFileLabel(group)
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(group))
+	return []string{
+		kind + "." + fileType,
+		kind + "." + label + "." + fileType,
+		fmt.Sprintf("%s.%s.%08x.%s", kind, label, h.Sum32(), fileType),
+	}
+}
+
+// componentKindLocks serializes WriteComponentDefinition for components of the
+// same Kind, so two goroutines cannot both pick the same free file name. Kinds
+// share a fixed set of locks by hash, which keeps memory constant. The Kind is
+// lowercased because case-insensitive file systems treat Foo.json and
+// foo.json as one file. Separate processes are not coordinated.
+var componentKindLocks [64]sync.Mutex
+
+// lockComponentKind takes the lock for kind and returns the function that
+// releases it.
+func lockComponentKind(kind string) func() {
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(strings.ToLower(kind)))
+	mu := &componentKindLocks[h.Sum32()%uint32(len(componentKindLocks))]
+	mu.Lock()
+	return mu.Unlock
+}
+
+// writeToFile writes the component to path as YAML when fileType is "yaml",
+// and as JSON otherwise.
 func (c ComponentDefinition) writeToFile(path string, fileType string) error {
 	if fileType == "yaml" {
 		return utils.WriteYamlToFile[ComponentDefinition](path, c)

@@ -2,18 +2,22 @@ package component
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
+	"sync"
 	"testing"
 
 	"gopkg.in/yaml.v3"
 )
 
+// componentOf returns a component definition with only Kind and apiVersion set.
 func componentOf(kind, apiVersion string) ComponentDefinition {
 	return ComponentDefinition{Component: Component{Kind: kind, Version: apiVersion}}
 }
 
+// filesIn returns the sorted names of the entries in dir.
 func filesIn(t *testing.T, dir string) []string {
 	t.Helper()
 	entries, err := os.ReadDir(dir)
@@ -28,6 +32,7 @@ func filesIn(t *testing.T, dir string) []string {
 	return names
 }
 
+// storedAPIVersion returns component.version of the component stored at path.
 func storedAPIVersion(t *testing.T, path, fileType string) string {
 	t.Helper()
 	data, err := os.ReadFile(path)
@@ -50,6 +55,8 @@ func storedAPIVersion(t *testing.T, path, fileType string) string {
 	return stored.Component.Version
 }
 
+// write calls WriteComponentDefinition, fails the test on an error, and
+// returns its alreadyExists result.
 func write(t *testing.T, c ComponentDefinition, dir, fileType string) bool {
 	t.Helper()
 	alreadyExists, err := c.WriteComponentDefinition(dir, fileType)
@@ -143,6 +150,103 @@ func TestWriteComponentDefinitionThreeGroups(t *testing.T) {
 	want := []string{"Usage.b.example.com.json", "Usage.c.example.com.json", "Usage.json"}
 	if got := filesIn(t, dir); !equal(got, want) {
 		t.Fatalf("files = %v, want %v", got, want)
+	}
+}
+
+// TestWriteComponentDefinitionSharedGroupLabel covers two groups with the same
+// file label: the core group ("v1") and a group named "core" ("core/v1") both
+// map to <Kind>.core.json. Neither may be dropped, in either write order, and
+// a re-run must write nothing new.
+func TestWriteComponentDefinitionSharedGroupLabel(t *testing.T) {
+	for _, order := range [][]string{{"v1", "core/v1"}, {"core/v1", "v1"}} {
+		t.Run(order[0]+" first", func(t *testing.T) {
+			dir := t.TempDir()
+			versions := append([]string{"example.com/v1"}, order...)
+			for _, v := range versions {
+				if write(t, componentOf("Thing", v), dir, "json") {
+					t.Fatalf("Thing %s reported as already present", v)
+				}
+			}
+			assertOneFilePerVersion(t, dir, "json", versions)
+
+			for _, v := range versions {
+				if !write(t, componentOf("Thing", v), dir, "json") {
+					t.Fatalf("re-run: Thing %s must be reported as already present", v)
+				}
+			}
+			assertOneFilePerVersion(t, dir, "json", versions)
+		})
+	}
+}
+
+// TestWriteComponentDefinitionBaseFileRemoved covers a <Kind> file deleted by
+// hand while a group-qualified file remains: the group stored in the
+// qualified file must still count as present instead of being written again.
+func TestWriteComponentDefinitionBaseFileRemoved(t *testing.T) {
+	dir := t.TempDir()
+	a := componentOf("Usage", "a.example.com/v1")
+	b := componentOf("Usage", "b.example.com/v1")
+	write(t, a, dir, "json")
+	write(t, b, dir, "json")
+	if err := os.Remove(filepath.Join(dir, "Usage.json")); err != nil {
+		t.Fatal(err)
+	}
+
+	if !write(t, b, dir, "json") {
+		t.Fatal("b is stored in Usage.b.example.com.json and must count as present")
+	}
+	if write(t, a, dir, "json") {
+		t.Fatal("a was removed and must be written again")
+	}
+	if got, want := filesIn(t, dir), []string{"Usage.b.example.com.json", "Usage.json"}; !equal(got, want) {
+		t.Fatalf("files = %v, want %v", got, want)
+	}
+	assertOneFilePerVersion(t, dir, "json", []string{"a.example.com/v1", "b.example.com/v1"})
+}
+
+// TestWriteComponentDefinitionConcurrentWriters writes the same Kind from
+// several groups at once. Each group must end up in exactly one file. Run
+// with -race to also check for data races.
+func TestWriteComponentDefinitionConcurrentWriters(t *testing.T) {
+	versions := []string{"v1", "core/v1", "a.example.com/v1", "b.example.com/v1", "c.example.com/v1", "d.example.com/v1"}
+	for round := 0; round < 20; round++ {
+		dir := t.TempDir()
+		var wg sync.WaitGroup
+		errs := make(chan error, len(versions))
+		for _, v := range versions {
+			wg.Add(1)
+			go func(v string) {
+				defer wg.Done()
+				if alreadyExists, err := componentOf("Gizmo", v).WriteComponentDefinition(dir, "json"); err != nil || alreadyExists {
+					errs <- fmt.Errorf("Gizmo %s: alreadyExists=%v err=%v", v, alreadyExists, err)
+				}
+			}(v)
+		}
+		wg.Wait()
+		close(errs)
+		for err := range errs {
+			t.Fatalf("round %d: %v", round, err)
+		}
+		assertOneFilePerVersion(t, dir, "json", versions)
+	}
+}
+
+// assertOneFilePerVersion fails the test unless dir holds exactly one file
+// per apiVersion in versions.
+func assertOneFilePerVersion(t *testing.T, dir, fileType string, versions []string) {
+	t.Helper()
+	files := filesIn(t, dir)
+	count := map[string]int{}
+	for _, name := range files {
+		count[storedAPIVersion(t, filepath.Join(dir, name), fileType)]++
+	}
+	if len(files) != len(versions) {
+		t.Fatalf("files = %v, want one per version %v", files, versions)
+	}
+	for _, v := range versions {
+		if count[v] != 1 {
+			t.Fatalf("%s is stored in %d files, want 1 (files %v)", v, count[v], files)
+		}
 	}
 }
 
