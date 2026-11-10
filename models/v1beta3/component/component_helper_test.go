@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"sync"
 	"testing"
@@ -277,6 +278,37 @@ func TestWriteComponentDefinitionUnreadableFile(t *testing.T) {
 	if got := filesIn(t, dir); len(got) != 1 {
 		t.Fatalf("files = %v, want only Widget.json", got)
 	}
+}
+
+// TestWriteComponentDefinitionDirectoryErrors makes sure an error other than
+// "does not exist" while checking a name is returned, not reported as an
+// existing component: the component would otherwise be dropped silently.
+func TestWriteComponentDefinitionDirectoryErrors(t *testing.T) {
+	c := componentOf("Widget", "example.com/v1")
+
+	t.Run("directory is a regular file", func(t *testing.T) {
+		notDir := filepath.Join(t.TempDir(), "components")
+		if err := os.WriteFile(notDir, []byte("x"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if alreadyExists, err := c.WriteComponentDefinition(notDir, "json"); err == nil || alreadyExists {
+			t.Fatalf("got alreadyExists=%v err=%v, want an error", alreadyExists, err)
+		}
+	})
+
+	t.Run("directory without search permission", func(t *testing.T) {
+		if runtime.GOOS == "windows" || os.Geteuid() == 0 {
+			t.Skip("needs POSIX permissions and a non-root user")
+		}
+		dir := t.TempDir()
+		if err := os.Chmod(dir, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() { _ = os.Chmod(dir, 0o700) })
+		if alreadyExists, err := c.WriteComponentDefinition(dir, "json"); err == nil || alreadyExists {
+			t.Fatalf("got alreadyExists=%v err=%v, want an error", alreadyExists, err)
+		}
+	})
 }
 
 // TestWriteComponentDefinitionEmptyKind writes nothing for a component

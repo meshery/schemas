@@ -113,16 +113,21 @@ func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, f
 	freePath := ""
 	for _, name := range componentFileNames(c.Component.Kind, group, fileType) {
 		path := filepath.Join(componentDirPath, name)
-		storedGroup, err := apiGroupInFile(path, fileType)
-		if errors.Is(err, fs.ErrNotExist) {
+		if _, err := os.Stat(path); err != nil {
+			if !errors.Is(err, fs.ErrNotExist) {
+				// For example no permission on the directory, or the
+				// directory is a file: report it, do not drop the component.
+				return false, err
+			}
 			if freePath == "" {
 				freePath = path
 			}
 			continue
 		}
+		storedGroup, err := apiGroupInFile(path, fileType)
 		if err != nil || storedGroup == group {
-			// Same group, or a file that cannot be read (which has always been
-			// treated as present): nothing to write.
+			// Same group, or a file that exists but cannot be read or parsed
+			// (which has always been treated as present): nothing to write.
 			return true, nil
 		}
 	}
