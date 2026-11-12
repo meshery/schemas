@@ -98,6 +98,7 @@ paths:
         `scheduled` when the schedule has a due time and `pending` otherwise.
         `nextRunAt` defaults to `runAt`. A `targetId` must name a live
         resource of `targetType` in the organization, else 400. Send
+        `paused: true` to create the schedule already paused. `visibility`
         defaults to `public`.
         The optional `Idempotency-Key` header makes the create safe to
         retry: within 24 hours the same key with the same request hash
