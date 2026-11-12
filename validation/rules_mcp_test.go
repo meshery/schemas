@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -368,5 +370,114 @@ func TestRule48_ScopesComeFromTheExtensionSchema(t *testing.T) {
 	}
 	if len(scopes) != 7 {
 		t.Errorf("expected the 7 generic scopes, got %d: %v", len(scopes), sortedScopeNames(scopes))
+	}
+}
+
+// mcpWalkFixture builds a minimal schemas/constructs tree: a good spec, a
+// spec that fails to load, and a deprecated spec carrying an x-mcp operation
+// that would fail Rule 48 (no scope) if it were checked.
+func mcpWalkFixture(t *testing.T) string {
+	t.Helper()
+	root := t.TempDir()
+	write := func(rel, content string) {
+		t.Helper()
+		path := filepath.Join(root, rel)
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatalf("mkdir %s: %v", path, err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatalf("write %s: %v", path, err)
+		}
+	}
+	write("schemas/constructs/v1beta3/good/api.yml", `openapi: 3.0.0
+info:
+  title: Good
+  version: v1beta3
+paths:
+  /api/good:
+    get:
+      x-internal: ["cloud"]
+      operationId: listGood
+      responses:
+        "200":
+          description: Good
+          content:
+            application/json:
+              schema:
+                type: object
+`)
+	write("schemas/constructs/v1beta3/broken/api.yml", `openapi: 3.0.0
+info:
+  title: Broken
+  version: v1beta3
+paths:
+  /api/broken:
+    get: [unclosed
+`)
+	write("schemas/constructs/v1beta3/old/api.yml", `openapi: 3.0.0
+info:
+  title: Old
+  version: v1beta3
+  x-deprecated: true
+paths:
+  /api/old:
+    get:
+      x-internal: ["cloud"]
+      operationId: oldThing
+      x-mcp:
+        expose: true
+      responses:
+        "200":
+          description: Old
+          content:
+            application/json:
+              schema:
+                type: object
+`)
+	return root
+}
+
+// A spec that fails to load is visited with its load error, not silently
+// skipped, while a deprecated spec is still skipped without a word.
+func TestWalkBundledConstructDocs_ReportsLoadErrors(t *testing.T) {
+	root := mcpWalkFixture(t)
+	visited := map[string]bool{}
+	var loadErrs []string
+	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
+		if loadErr != nil {
+			if doc != nil {
+				t.Errorf("%s: a failed load must visit with a nil doc", relPath)
+			}
+			loadErrs = append(loadErrs, relPath)
+			return
+		}
+		visited[relPath] = true
+	})
+	if len(loadErrs) != 1 || loadErrs[0] != "schemas/constructs/v1beta3/broken/api.yml" {
+		t.Fatalf("load errors = %v, want exactly the broken spec", loadErrs)
+	}
+	if !visited["schemas/constructs/v1beta3/good/api.yml"] {
+		t.Errorf("the good spec was not visited: %v", visited)
+	}
+	if visited["schemas/constructs/v1beta3/old/api.yml"] {
+		t.Errorf("a deprecated spec must still be skipped")
+	}
+}
+
+// auditMcpOperations reports a spec it could not load as a blocking Rule 48
+// violation, so the unchecked operations cannot pass silently.
+func TestAuditMcpOperations_ReportsLoadErrors(t *testing.T) {
+	root := mcpWalkFixture(t)
+	var result AuditResult
+	auditMcpOperations(AuditOptions{RootDir: root}, map[string]bool{}, &result)
+	if len(result.Blocking) != 1 {
+		t.Fatalf("blocking violations = %v, want exactly the load failure", result.Blocking)
+	}
+	v := result.Blocking[0]
+	if v.RuleNumber != 48 || v.Severity != SeverityBlocking {
+		t.Errorf("violation must be blocking Rule 48, got rule %d severity %v: %s", v.RuleNumber, v.Severity, v.Message)
+	}
+	if !strings.Contains(v.File, "broken/api.yml") || !strings.Contains(v.Message, "could not be loaded") {
+		t.Errorf("violation must name the broken spec and its unchecked operations, got %s %s", v.File, v.Message)
 	}
 }

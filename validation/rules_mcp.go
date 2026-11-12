@@ -95,7 +95,11 @@ func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 // walkValidatedConstructSpecs it does not keep only the newest version of
 // each construct: an operation can still be served from an older version of a
 // construct whose newest version does not define it (getUser, in v1beta2/user).
-func walkBundledConstructDocs(rootDir string, fn func(relPath string, doc *openapi3.T)) {
+// A spec that fails to load is still visited, with a nil doc and the load
+// error, so callers can report it: its operations go unchecked, and silently
+// skipping it would leave them that way. Only a spec that loads and carries
+// x-deprecated is skipped, and that skip is intentional.
+func walkBundledConstructDocs(rootDir string, fn func(relPath string, doc *openapi3.T, loadErr error)) {
 	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
 	versions, err := os.ReadDir(constructsDir)
 	if err != nil {
@@ -115,10 +119,14 @@ func walkBundledConstructDocs(rootDir string, fn func(relPath string, doc *opena
 				continue
 			}
 			doc, err := loadAPISpec(apiPath)
-			if err != nil || doc == nil || isDeprecatedDoc(doc) {
+			if err != nil {
+				fn(relativeToRoot(apiPath, rootDir), nil, err)
 				continue
 			}
-			fn(relativeToRoot(apiPath, rootDir), doc)
+			if doc == nil || isDeprecatedDoc(doc) {
+				continue
+			}
+			fn(relativeToRoot(apiPath, rootDir), doc, nil)
 		}
 	}
 }
@@ -129,8 +137,17 @@ func fileExists(path string) bool {
 }
 
 // auditMcpOperations applies Rule 48 across every bundled construct api.yml.
+// A spec that fails to load is a blocking Rule 48 violation of its own: its
+// x-mcp operations were not checked, so the audit must say so rather than
+// pass over a gap in its coverage.
 func auditMcpOperations(opts AuditOptions, baseline map[string]bool, result *AuditResult) {
-	walkBundledConstructDocs(opts.RootDir, func(relPath string, doc *openapi3.T) {
+	walkBundledConstructDocs(opts.RootDir, func(relPath string, doc *openapi3.T, loadErr error) {
+		if loadErr != nil {
+			addViolation(result, Violation{File: relPath,
+				Message:  fmt.Sprintf("the spec could not be loaded, so its x-mcp operations were not checked: %v", loadErr),
+				Severity: SeverityBlocking, RuleNumber: 48}, baseline)
+			return
+		}
 		for _, v := range checkRule48(relPath, doc, opts) {
 			addViolation(result, v, baseline)
 		}

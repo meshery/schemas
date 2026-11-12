@@ -104,7 +104,11 @@ func TestHostedMcpOperationsAreExactlyTheSixReads(t *testing.T) {
 	root := repoRootDir(t)
 	got := map[string]string{}
 	var violations []Violation
-	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T) {
+	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
+		if loadErr != nil {
+			t.Errorf("%s could not be loaded, so its x-mcp operations went unchecked: %v", relPath, loadErr)
+			return
+		}
 		violations = append(violations, checkRule48(relPath, doc, AuditOptions{RootDir: root})...)
 		for _, item := range doc.Paths.Map() {
 			for _, method := range httpMethods {
@@ -149,7 +153,11 @@ func TestNothingElseIsAnnotated(t *testing.T) {
 		"listSchedules": true, "getScheduleById": true, "updateSchedule": true,
 	}
 	seen := map[string]bool{}
-	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T) {
+	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
+		if loadErr != nil {
+			t.Errorf("%s could not be loaded, so the annotation check on it proved nothing: %v", relPath, loadErr)
+			return
+		}
 		for _, item := range doc.Paths.Map() {
 			for _, method := range httpMethods {
 				op := getOperation(item, method)
@@ -189,7 +197,11 @@ func TestSharedHeaderParameters(t *testing.T) {
 	}
 	idempotentOps := map[string]bool{}
 	currentOrgOps := map[string]bool{}
-	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T) {
+	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
+		if loadErr != nil {
+			t.Errorf("%s could not be loaded, so the header check on it proved nothing: %v", relPath, loadErr)
+			return
+		}
 		raw := loadOpenAPIDocument(t, filepath.Join(root, relPath))
 		// The core holds the definitions, and provider_capability keeps its own
 		// older currentOrgId (membership reporting, not an organization selector).
@@ -646,7 +658,6 @@ func anyStrings(v any) []string {
 	return out
 }
 
-// No new identifier carries a product name.
 // The organization selector (docs/mcp-operation-contract.md, "The organization
 // selector"): an operation that takes an organization in its path or query also
 // takes X-Current-Orgid, its description points at the rule, and it declares the
@@ -699,6 +710,7 @@ func TestOrganizationSelectorIsDeclared(t *testing.T) {
 	}
 }
 
+// No new identifier carries a product name.
 func TestHostedMcpIdentifiersAreProductNeutral(t *testing.T) {
 	root := repoRootDir(t)
 	banned := []string{"meshery", "layer5", "kanvas"}
@@ -760,7 +772,11 @@ func TestHostedMcpIdentifiersAreProductNeutral(t *testing.T) {
 			}
 		}
 	}
-	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T) {
+	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
+		if loadErr != nil {
+			t.Errorf("%s could not be loaded, so the title check on it proved nothing: %v", relPath, loadErr)
+			return
+		}
 		for _, item := range doc.Paths.Map() {
 			for _, method := range httpMethods {
 				if op := getOperation(item, method); op != nil {
