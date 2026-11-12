@@ -658,6 +658,51 @@ func anyStrings(v any) []string {
 	return out
 }
 
+// Every operation that takes a UUID-constrained parameter declares the 400
+// that a malformed UUID answers (core responses/400: "Invalid request body
+// or request param"). The six hosted reads take X-Current-Orgid
+// (listContentItems also takes threadId), and getRequest also takes
+// requestId; listRequests, approveRequest and denyRequest already declared
+// it. A missing 400 leaves clients without a documented answer for invalid
+// input.
+func TestOperationsWithUuidParametersDeclare400(t *testing.T) {
+	root := repoRootDir(t)
+	want := map[string]bool{
+		"listContentItems": true, "getContentItem": true, "getConnections": true,
+		"getEvents": true, "getUser": true, "getFeaturesByOrganization": true,
+		"getRequest": true,
+	}
+	seen := map[string]bool{}
+	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
+		if loadErr != nil {
+			t.Errorf("%s could not be loaded, so the 400 check on it proved nothing: %v", relPath, loadErr)
+			return
+		}
+		for _, item := range doc.Paths.Map() {
+			for _, method := range httpMethods {
+				op := getOperation(item, method)
+				if op == nil || !want[op.OperationID] {
+					continue
+				}
+				seen[op.OperationID] = true
+				if op.Responses == nil {
+					t.Errorf("%s (%s) declares no responses, so no 400 for a malformed UUID parameter", op.OperationID, relPath)
+					continue
+				}
+				ref, ok := op.Responses.Map()["400"]
+				if !ok || ref == nil || ref.Value == nil {
+					t.Errorf("%s (%s) must declare a 400 response for a malformed UUID parameter", op.OperationID, relPath)
+				}
+			}
+		}
+	})
+	for id := range want {
+		if !seen[id] {
+			t.Errorf("operation %s was not found, so the 400 check on it proved nothing", id)
+		}
+	}
+}
+
 // The organization selector (docs/mcp-operation-contract.md, "The organization
 // selector"): an operation that takes an organization in its path or query also
 // takes X-Current-Orgid, its description points at the rule, and it declares the

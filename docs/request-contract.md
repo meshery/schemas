@@ -32,7 +32,7 @@ no create operation and no create payload. The only payload is
 | Operation | Route | Notes |
 | --- | --- | --- |
 | `listRequests` | `GET /api/requests` | Filters `kind` and `status`. Paged with `page` and `pageSize`, newest first. |
-| `getRequest` | `GET /api/requests/{requestId}` | |
+| `getRequest` | `GET /api/requests/{requestId}` | `400` when `requestId` or `X-Current-Orgid` is not a UUID. |
 | `approveRequest` | `POST /api/requests/{requestId}/approve` | Optional note. `409` when the request is not pending, whatever its subject (decided, or superseded by a content edit or a soft delete of the subject); `404` when the request is pending and its subject is hard-deleted, or the request is unknown. |
 | `denyRequest` | `POST /api/requests/{requestId}/deny` | Optional note. `409` when the request is not pending, whatever its subject (decided, or superseded by a content edit or a soft delete of the subject); `404` when the request is pending and its subject is hard-deleted, or the request is unknown. |
 

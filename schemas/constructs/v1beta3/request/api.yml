@@ -94,6 +94,9 @@ paths:
         - requests
       summary: Get a request by ID
       operationId: getRequest
+      description: >
+        Returns the request with the given id. A `requestId` or
+        `X-Current-Orgid` that is not a UUID answers 400.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
@@ -104,6 +107,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Request"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":

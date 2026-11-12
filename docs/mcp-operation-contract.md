@@ -71,7 +71,10 @@ An operation with `x-mcp` fails `make validate-schemas` unless:
 
 The rule scans every non-deprecated construct `api.yml` of every version, not
 only the newest version of each construct, because an operation can be served
-from an older version (`getUser` is in `v1beta2/user`). The tests are in
+from an older version (`getUser` is in `v1beta2/user`). A spec that fails to
+load is reported as a blocking violation rather than skipped, so a broken spec
+cannot hide unchecked operations; only a spec that loads and carries
+`x-deprecated` is skipped. The tests are in
 `validation/rules_mcp_test.go` (each failure case and the passing case) and
 `validation/mcp_operation_contract_test.go` (the real tree).
 
@@ -151,6 +154,10 @@ comparison is on the parsed UUID and is case-insensitive, so the same
 organization written in upper or lower case matches; the raw strings are never
 compared. Both operation descriptions reference this section and declare the
 `400` and the `403`.
+
+A UUID-constrained parameter that is not a UUID answers `400` on every hosted
+read: `X-Current-Orgid` on all six, `threadId` on `listContentItems`. Each
+hosted read declares the `400`, as does `getRequest` for `requestId`.
 
 This rule covers the operations that declare `X-Current-Orgid`. An operation
 that takes an organization in its path and does not declare the header, such

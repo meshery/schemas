@@ -344,6 +344,9 @@ paths:
         title: Get events
         scope: events:read
       summary: Get events list
+      description: >
+        Returns a page of events. An `X-Current-Orgid` that is not a UUID
+        answers 400.
       parameters:
       - $ref: '#/components/parameters/page'
       - $ref: '#/components/parameters/pagesize'
@@ -359,6 +362,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventsPage'
+        '400':
+          $ref: '#/components/responses/400'
         '401':
           description: Unauthorized
         '403':

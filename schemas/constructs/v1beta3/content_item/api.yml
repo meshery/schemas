@@ -70,7 +70,8 @@ paths:
         case-insensitively. `threadId` returns one whole thread: the root
         item it names and every live item whose `threadId` names it,
         ordered by `threadIndex` (the root first) unless `order` names
-        another column.
+        another column. A `threadId` or `X-Current-Orgid` that is not a
+        UUID answers 400.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -92,6 +93,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContentItemPage"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
