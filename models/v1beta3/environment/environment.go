@@ -106,7 +106,7 @@ type EnvironmentConnectionMappingPage struct {
 
 // EnvironmentConnectionsPage Paginated list of connections associated with an environment.
 type EnvironmentConnectionsPage struct {
-	// Connections The connections of the environmentconnectionspage.
+	// Connections Connections associated with the environment, using the canonical Connection response schema.
 	Connections *[]map[string]interface{} `json:"connections,omitempty" yaml:"connections,omitempty"`
 
 	// Page Current page number of the result set.

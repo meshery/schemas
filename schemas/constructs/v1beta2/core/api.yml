@@ -216,6 +216,19 @@ components:
       properties: {}
       x-go-type-skip-optional-pointer: true
 
+    OwnershipTransferPayload:
+      type: object
+      additionalProperties: false
+      description: >
+        Request body for transferring ownership of a resource to another user.
+        Used uniformly across all ownable resource constructs.
+      required:
+        - newOwnerId
+      properties:
+        newOwnerId:
+          $ref: "#/components/schemas/Uuid"
+          description: UUID of the user to whom ownership will be transferred.
+
     EmailPreference:
       type: object
       properties:

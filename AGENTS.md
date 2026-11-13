@@ -112,6 +112,8 @@ Exception: an **event-metadata construct** (no endpoints; recorded and read back
 
 Exception: a **read-through construct** (has endpoints but no stored row; every call reads the object from another system or computes it, e.g. `oauth_consent_request`) declares no `id`, `created_at`, `updated_at` or `deleted_at`. See [the authoring reference](docs/schema-authoring-reference.md#read-through-constructs-have-no-stored-row).
 
+Exception: a **definition construct** (no endpoints and no stored row; a document components publish as files, e.g. `error`) declares no `id`, `created_at`, `updated_at` or `deleted_at`. See [the authoring reference](docs/schema-authoring-reference.md#definition-constructs-have-neither-endpoints-nor-a-stored-row).
+
 ### Rule 2: Every writable entity needs a `*Payload` schema in `api.yml`
 
 For any entity that has `POST` or `PUT` operations, define a `{Construct}Payload` schema in `api.yml` that:
@@ -217,10 +219,11 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/oauth-consent-request-contract.md`](docs/oauth-consent-request-contract.md)** - the pending OAuth consent request: reading it by challenge, allow and deny, ownership, single-use challenges, and the verified mark that marks trust and never blocks.
 - **[`docs/media-asset-contract.md`](docs/media-asset-contract.md)** - the media asset construct: create-upload-complete flow, per-use download URLs, `r2`/`gdrive` backends with no credential on the wire, limits, expiry and `locationStripped`.
 - **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
-- **[`docs/design-event-metadata-contract.md`](docs/design-event-metadata-contract.md)** - the named shapes of design event metadata, its banned keys and 16 KB guard, and why they have no `*Payload` twins.
+- **[`docs/design-event-metadata-contract.md`](docs/design-event-metadata-contract.md)** - the named shapes of design event metadata, its banned keys and 16 KB guard, the `status` `error` rule for an operation that did not complete, and why they have no `*Payload` twins.
 - **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
+- **[`docs/schedule-visibility-and-public-feed-contract.md`](docs/schedule-visibility-and-public-feed-contract.md)** - the schedule visibility enum and the unauthenticated public activity feed wire contract.
 
 ## Questions?
 

@@ -10,6 +10,46 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
+	errorcodev1beta3 "github.com/meshery/schemas/models/v1beta3/errorcode"
+)
+
+// Defines values for EventFeedItemPlatform.
+const (
+	EventFeedItemPlatformBluesky    EventFeedItemPlatform = "bluesky"
+	EventFeedItemPlatformGithub     EventFeedItemPlatform = "github"
+	EventFeedItemPlatformHackerNews EventFeedItemPlatform = "hacker-news"
+	EventFeedItemPlatformLinkedin   EventFeedItemPlatform = "linkedin"
+	EventFeedItemPlatformReddit     EventFeedItemPlatform = "reddit"
+	EventFeedItemPlatformSlack      EventFeedItemPlatform = "slack"
+	EventFeedItemPlatformX          EventFeedItemPlatform = "x"
+)
+
+// Defines values for EventResultVisibility.
+const (
+	EventResultVisibilityPrivate EventResultVisibility = "private"
+	EventResultVisibilityPublic  EventResultVisibility = "public"
+)
+
+// Defines values for EventSpecVersion.
+const (
+	SpecVersion10 EventSpecVersion = "1.0"
+)
+
+// Defines values for EventVisibility.
+const (
+	EventVisibilityPrivate EventVisibility = "private"
+	EventVisibilityPublic  EventVisibility = "public"
+)
+
+// Defines values for ScheduleCompletedEventMetadataPlatform.
+const (
+	ScheduleCompletedEventMetadataPlatformBluesky    ScheduleCompletedEventMetadataPlatform = "bluesky"
+	ScheduleCompletedEventMetadataPlatformGithub     ScheduleCompletedEventMetadataPlatform = "github"
+	ScheduleCompletedEventMetadataPlatformHackerNews ScheduleCompletedEventMetadataPlatform = "hacker-news"
+	ScheduleCompletedEventMetadataPlatformLinkedin   ScheduleCompletedEventMetadataPlatform = "linkedin"
+	ScheduleCompletedEventMetadataPlatformReddit     ScheduleCompletedEventMetadataPlatform = "reddit"
+	ScheduleCompletedEventMetadataPlatformSlack      ScheduleCompletedEventMetadataPlatform = "slack"
+	ScheduleCompletedEventMetadataPlatformX          ScheduleCompletedEventMetadataPlatform = "x"
 )
 
 // Defines values for EventsScope.
@@ -63,6 +103,15 @@ type DesignEventIdentity struct {
 	ViewLink *string `json:"viewLink,omitempty" yaml:"viewLink,omitempty"`
 }
 
+// DesignEventOperationError Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response.
+type DesignEventOperationError struct {
+	// Code The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know.
+	Code string `json:"code" yaml:"code"`
+
+	// Message One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents.
+	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
+}
+
 // DesignSavedEventDesign The ID and name of the design a saved event is about - only those two fields, never the design file or any of its contents.
 type DesignSavedEventDesign struct {
 	// ID ID of the saved design.
@@ -90,7 +139,7 @@ type DesignValidationEventError struct {
 	ComponentID *string `json:"componentId,omitempty" yaml:"componentId,omitempty"`
 }
 
-// DesignValidationEventMetadata Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
+// DesignValidationEventMetadata Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. When the operation did not complete (`status` `error`), there is no verdict: `errors` is empty or omitted, `errorCount` and `truncated` are omitted, the identity fields are kept, `error` names why the operation failed, and the event is recorded with severity `error` under its usual category `pattern` and action (`validate` for a design validation). Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
 type DesignValidationEventMetadata struct {
 	// DesignID ID of the design the event is about.
 	DesignID uuid.UUID `json:"designId" yaml:"designId"`
@@ -104,16 +153,19 @@ type DesignValidationEventMetadata struct {
 	// DesignVersion Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.
 	DesignVersion *string `json:"designVersion,omitempty" yaml:"designVersion,omitempty"`
 
-	// ErrorCount Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20.
+	// Error Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response.
+	Error *DesignEventOperationError `json:"error,omitempty" yaml:"error,omitempty"`
+
+	// ErrorCount Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20. Omitted when `status` is `error`, because an operation that did not complete found nothing.
 	ErrorCount *int `json:"errorCount,omitempty" yaml:"errorCount,omitempty"`
 
-	// Errors Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed.
+	// Errors Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed. Empty or omitted when `status` is `error`.
 	Errors *[]DesignValidationEventError `json:"errors,omitempty" yaml:"errors,omitempty"`
 
-	// Status Outcome of the operation as the producer reports it, for example `failed`; consumers must tolerate values they do not know.
+	// Status Outcome of the operation as the producer reports it: `success` (the operation ran and found no errors), `partial` (the operation ran and part of it succeeded), `failed` (the operation ran and found errors, listed in `errors`) or `error` (the operation did not complete, so there is no verdict; `error` says why). It is an open string, not an enum: consumers must tolerate values they do not know.
 	Status *string `json:"status,omitempty" yaml:"status,omitempty"`
 
-	// Truncated True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete.
+	// Truncated True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete. Omitted when `status` is `error`.
 	Truncated *bool `json:"truncated,omitempty" yaml:"truncated,omitempty"`
 
 	// ViewLink Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
@@ -144,7 +196,7 @@ type Event struct {
 	Description string  `db:"description" json:"description" yaml:"description"`
 	ID          core.Id `db:"id" json:"id" yaml:"id"`
 
-	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
 	Metadata    core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
 	OperationID core.Id  `db:"operation_id" json:"operationId" yaml:"operationId"`
 
@@ -161,9 +213,153 @@ type Event struct {
 	Status    string        `db:"status" json:"status" yaml:"status"`
 	SystemID  core.SystemId `db:"system_id" json:"systemId" yaml:"systemId"`
 	UpdatedAt core.Time     `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility EventVisibility `db:"visibility" json:"visibility" yaml:"visibility"`
+
+	// CorrelationKey Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+	CorrelationKey *string `db:"correlation_key" json:"correlationKey,omitempty" yaml:"correlationKey,omitempty"`
+
+	// OccurrenceCount How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
+
+	// FirstSeenAt When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+	FirstSeenAt *time.Time `db:"first_seen_at" json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
+
+	// LastSeenAt When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
+
+	// ResolvedAt When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+	ResolvedAt *time.Time `db:"resolved_at" json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
+
+	// Source Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+	Source *string `db:"source" json:"source,omitempty" yaml:"source,omitempty"`
+
+	// Type CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+	Type *string `db:"type" json:"type,omitempty" yaml:"type,omitempty"`
+
+	// SpecVersion The CloudEvents specification version the event is compatible with; see EventPayload.specversion.
+	SpecVersion *EventSpecVersion `db:"specversion" json:"specversion,omitempty" yaml:"specversion,omitempty"`
+
+	// TraceID W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+	TraceID *string `db:"trace_id" json:"traceId,omitempty" yaml:"traceId,omitempty"`
+
+	// ParentID W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+	ParentID *string `db:"parent_id" json:"parentId,omitempty" yaml:"parentId,omitempty"`
 }
 
-// EventPayload Payload for creating a new event.
+// EventError The `metadata.error` of an event that reports an error: one occurrence of an ErrorDefinition (the error construct). It carries the code, the descriptions as rendered for this occurrence, the causes and remediations that apply, which of those causes are likely this time (`matchedCauses`), and the values the descriptions were rendered from (`details`). It holds only the error, never the design, the request or the response that failed. A producer that has only MeshKit's flat lists sends `probableCause` and `suggestedRemediation` alone; such an error is unpaired, and nothing may pair the lists by position. A producer with the nested form sends `probableCauses` and should also send the flat lists derived from it, for readers that predate the nesting. Like every metadata shape it is a sub-shape of Event.metadata, which stays a free-form map, so it has no `*Payload` twin (docs/error-definition-contract.md).
+type EventError struct {
+	// Code The full error code, for example `meshery-server-1033`, as the definition names it. Consumers must tolerate codes they do not know.
+	Code string `json:"code" yaml:"code"`
+
+	// Component The component that owns an error code: the `type` and `name` of its MeshKit `component_info.json`. Codes are unique only within one component.
+	Component *errorcodev1beta3.ErrorComponent `json:"component,omitempty" yaml:"component,omitempty"`
+
+	// Details The instance values this occurrence's descriptions were rendered from, for example the connection name or the path that failed. Keys are camelCase. Never secrets, credentials, design contents or request bodies; Meshery Server's 16 KB metadata guard applies.
+	Details core.Map `json:"details,omitempty" yaml:"details,omitempty"`
+
+	// LongDescription The definition's long description, rendered for this occurrence.
+	LongDescription *string `json:"longDescription,omitempty" yaml:"longDescription,omitempty"`
+
+	// MatchedCauses The causes most likely for this occurrence, most likely first, so a reader leads with their remediations. Each names a cause `id` of the definition and, when `probableCauses` is present, one of its causes. Omitted when the producer cannot tell which cause applies.
+	MatchedCauses *[]EventMatchedCause `json:"matchedCauses,omitempty" yaml:"matchedCauses,omitempty"`
+
+	// ProbableCause The flat list of cause descriptions (MeshKit's `ProbableCause`). With `probableCauses`, it equals each cause's `description` in order; without, it is unpaired.
+	ProbableCause *[]string `json:"probableCause,omitempty" yaml:"probableCause,omitempty"`
+
+	// ProbableCauses The definition's causes that apply to this occurrence, each with the remediations that answer it, in the definition's order. A producer may narrow the definition's causes to those that can apply; omitted when the producer has only flat lists.
+	ProbableCauses *[]errorcodev1beta3.ProbableCause `json:"probableCauses,omitempty" yaml:"probableCauses,omitempty"`
+
+	// ReferenceURL The code's page on docs.meshery.io (ErrorDefinition.referenceUrl), when the producer knows it.
+	ReferenceURL *string `json:"referenceUrl,omitempty" yaml:"referenceUrl,omitempty"`
+
+	// Severity How severe an error is, as its definition declares. MeshKit's severities map one to one: `Emergency` to `emergency`, `Alert` to `alert`, `Critical` to `critical` and `Fatal` to `fatal`; MeshKit's `None` is an omitted severity. `error`, `warning`, `informational` and `debug` name the less severe levels of the event severity ladder for components that define them. The event that reports an occurrence carries its own `severity`.
+	Severity *errorcodev1beta3.ErrorSeverity `json:"severity,omitempty" yaml:"severity,omitempty"`
+
+	// ShortDescription The definition's short description, rendered for this occurrence.
+	ShortDescription *string `json:"shortDescription,omitempty" yaml:"shortDescription,omitempty"`
+
+	// SuggestedRemediation The flat list of remediation descriptions (MeshKit's `SuggestedRemediation`). With `probableCauses`, it equals every remediation's `description` in order, each remediation `id` once; without, it is unpaired.
+	SuggestedRemediation *[]string `json:"suggestedRemediation,omitempty" yaml:"suggestedRemediation,omitempty"`
+}
+
+// EventFeedItem An event projected into the public feed. It never includes email,
+// firstName, lastName, description, provider or raw metadata.
+// `platform`, `role`, `line` and `networks` are projected from
+// ScheduleCompletedEventMetadata; events without valid required
+// metadata are skipped. Public profile fields are resolved by Cloud at
+// read time for every served owner (live, active, and
+// shareActivityPublicly on).
+type EventFeedItem struct {
+	ID core.Id `json:"id" yaml:"id"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserId core.Uuid `json:"userId" yaml:"userId"`
+
+	// Category Event category.
+	Category string `json:"category" yaml:"category"`
+
+	// Action Event action.
+	Action    string    `json:"action" yaml:"action"`
+	CreatedAt core.Time `json:"createdAt" yaml:"createdAt"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility EventVisibility `json:"visibility" yaml:"visibility"`
+
+	// Platform Platform from ScheduleCompletedEventMetadata.
+	Platform EventFeedItemPlatform `json:"platform" yaml:"platform"`
+
+	// Role Role from ScheduleCompletedEventMetadata.
+	Role string `json:"role" yaml:"role"`
+
+	// Line One-line result from ScheduleCompletedEventMetadata.
+	Line string `json:"line" yaml:"line"`
+
+	// Networks Networks from ScheduleCompletedEventMetadata, when present.
+	Networks *[]string `json:"networks,omitempty" yaml:"networks,omitempty"`
+
+	// DisplayName The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.
+	DisplayName *string `json:"displayName,omitempty" yaml:"displayName,omitempty"`
+
+	// AvatarURL Public avatar URL; resolved for every served owner, omitted when empty.
+	AvatarURL *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// OrganizationName Public organization name; omitted when organization memberships are not public to an anonymous caller.
+	OrganizationName *string `json:"organizationName,omitempty" yaml:"organizationName,omitempty"`
+
+	// PublicProfileURL HTTPS URL of the user's public profile.
+	PublicProfileURL *string `json:"publicProfileUrl,omitempty" yaml:"publicProfileUrl,omitempty"`
+}
+
+// EventFeedItemPlatform Platform from ScheduleCompletedEventMetadata.
+type EventFeedItemPlatform string
+
+// EventFeedPage One page of event feed items, newest first.
+type EventFeedPage struct {
+	// Data Events for the requested page, newest first.
+	Data []EventFeedItem `json:"data" yaml:"data"`
+
+	// Page Current page number of the result set.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of items per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of matching feed events.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
+// EventMatchedCause One cause an error event names as likely for this occurrence (EventError.matchedCauses).
+type EventMatchedCause struct {
+	// CauseID The `id` of the matched cause in the error's definition (ProbableCause.id).
+	CauseID string `json:"causeId" yaml:"causeId"`
+
+	// Confidence How sure the producer is that this cause applies, from 0 (a guess) to 1 (certain); omitted when the producer does not estimate it.
+	Confidence *float32 `json:"confidence,omitempty" yaml:"confidence,omitempty"`
+}
+
+// EventPayload Payload for creating a new event. If visibility is absent, the event is private.
 type EventPayload struct {
 	// Action The action of the event.
 	Action *string `json:"action,omitempty" yaml:"action,omitempty"`
@@ -171,27 +367,75 @@ type EventPayload struct {
 	// Category The category of the event.
 	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
 
+	// CorrelationKey Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates.
+	CorrelationKey *string `json:"correlationKey,omitempty" yaml:"correlationKey,omitempty"`
+
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// FirstSeenAt When the producer first saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `lastSeenAt`, or the time of receipt, and omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when that create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
+	FirstSeenAt *time.Time `json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
 
 	// IdempotencyKey Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
 	IdempotencyKey *string `json:"idempotencyKey,omitempty" yaml:"idempotencyKey,omitempty"`
 
+	// LastSeenAt When the producer last saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition, or while closing one, means the time of receipt; and omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
+	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
+
+	// OccurrenceCount Number of occurrences this create reports, for a producer that counted repeats locally before sending. A create without a `correlationKey`, and a call that identifies no user, stores this value exactly as sent, including when it is omitted. For a call that identifies a user and carries a `correlationKey`, omitted means 1. An opening create stores that count, counting an open condition adds it, and an already-resolved insert stores it. A resolving create on that open event does not add it.
+	OccurrenceCount *int `json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
+
 	// Owner UUID of the user associated with the event.
-	Owner                *uuid.UUID             `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	Owner *uuid.UUID `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// ParentID W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.
+	ParentID *string `json:"parentId,omitempty" yaml:"parentId,omitempty"`
+
+	// ResolvedAt When the condition named by `correlationKey` cleared. A call that identifies no user stores this value exactly as sent and does not match an open event. For a call that identifies a user, a create that carries it is a resolution: it closes that caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+	ResolvedAt *time.Time `json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
+
+	// Severity Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+	Severity *string `json:"severity,omitempty" yaml:"severity,omitempty"`
+
+	// Source Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
+	Source *string `json:"source,omitempty" yaml:"source,omitempty"`
+
+	// SpecVersion The CloudEvents specification version the event's `source`, `type` and `id` are compatible with, when the producer sets them as CloudEvents attributes. A Meshery event is CloudEvents compatible; it is not a CloudEvent.
+	SpecVersion *EventSpecVersion `json:"specversion,omitempty" yaml:"specversion,omitempty"`
+
+	// TraceID W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time.
+	TraceID *string `json:"traceId,omitempty" yaml:"traceId,omitempty"`
+
+	// Type CloudEvents-compatible `type`: a reverse-DNS name of the kind of occurrence, for example `io.meshery.user.signup`. It does not replace `category` and `action`, which stay two free strings; `type` is for CloudEvents-aware consumers.
+	Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+
+	// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+	EventVisibility      *EventVisibility       `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // EventResult EventResult entity schema.
 type EventResult struct {
+	// ActedUpon A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ActedUpon *core.Uuid `db:"acted_upon" json:"actedUpon,omitempty" yaml:"actedUpon,omitempty"`
+
 	// Action The action of the event.
 	Action string `json:"action" yaml:"action"`
+
+	// AvatarUrl URL to the avatar image of the user associated with the event.
+	AvatarUrl *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
 
 	// Category The category of the event.
 	Category string `json:"category" yaml:"category"`
 
+	// CorrelationKey Key of the ongoing condition the event records (see Event.correlationKey); omitted for an event that reports no condition.
+	CorrelationKey *string `db:"correlation_key" json:"correlationKey,omitempty" yaml:"correlationKey,omitempty"`
+
 	// CreatedAt Timestamp when the event was recorded.
 	CreatedAt time.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
+
+	// DeletedAt Timestamp when the event was soft-deleted; omitted when it was not (see Event.deletedAt).
+	DeletedAt *time.Time `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -202,8 +446,26 @@ type EventResult struct {
 	// FirstName The first name of the user associated with the event.
 	FirstName *string `json:"firstName,omitempty" yaml:"firstName,omitempty"`
 
+	// FirstSeenAt When the condition's first counted occurrence was seen (see Event.firstSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+	FirstSeenAt *time.Time `db:"first_seen_at" json:"firstSeenAt,omitempty" yaml:"firstSeenAt,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
+
+	// LastSeenAt When the condition was last seen (see Event.lastSeenAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+	LastSeenAt *time.Time `db:"last_seen_at" json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
+
+	// Metadata Event-specific details, the same nullable free-form map as Event.metadata. `null` when the producer attached none. On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired.
+	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+
+	// OccurrenceCount How many occurrences of the condition the event counts (see Event.occurrenceCount). A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, it is the payload's `occurrenceCount` (1 when omitted) when the event was recorded, opening a condition or inserted already resolved, growing only as later creates that do not resolve are counted. A resolving create on the open event does not add to it.
+	OccurrenceCount *int `db:"occurrence_count" json:"occurrenceCount,omitempty" yaml:"occurrenceCount,omitempty"`
+
+	// OperationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OperationID *core.Uuid `db:"operation_id" json:"operationId,omitempty" yaml:"operationId,omitempty"`
 
 	// OrganizationID The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
 	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId" yaml:"organizationId"`
@@ -211,12 +473,48 @@ type EventResult struct {
 	// Owner UUID of the user associated with the event.
 	Owner uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
 
+	// ParentID W3C Trace Context `parent-id` of the sub-operation that emitted the event (see Event.parentId).
+	ParentID *string `db:"parent_id" json:"parentId,omitempty" yaml:"parentId,omitempty"`
+
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
 
+	// ResolvedAt When the condition cleared (see Event.resolvedAt). A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user it is omitted while the condition is open.
+	ResolvedAt *time.Time `db:"resolved_at" json:"resolvedAt,omitempty" yaml:"resolvedAt,omitempty"`
+
+	// Severity Event level (see Event.severity). MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire, so consumers must tolerate other values.
+	Severity *string `db:"severity" json:"severity,omitempty" yaml:"severity,omitempty"`
+
+	// Source Which surface emitted the event, for example `meshery-server` or `mesheryctl` (see Event.source).
+	Source *string `db:"source" json:"source,omitempty" yaml:"source,omitempty"`
+
+	// SpecVersion The CloudEvents specification version the event is compatible with (see Event.specversion).
+	SpecVersion *EventSpecVersion `db:"specversion" json:"specversion,omitempty" yaml:"specversion,omitempty"`
+
+	// Status Read state of the event (see Event.status). MeshKit records new events as `unread`, and acknowledged ones become `read`; consumers must tolerate other values.
+	Status *string `db:"status" json:"status,omitempty" yaml:"status,omitempty"`
+
 	// SystemId System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
 	SystemId string `db:"system_id" json:"systemId" yaml:"systemId"`
+
+	// TraceID W3C Trace Context `trace-id` of the operation the event belongs to (see Event.traceId).
+	TraceID *string `db:"trace_id" json:"traceId,omitempty" yaml:"traceId,omitempty"`
+
+	// Type CloudEvents-compatible `type`, for example `io.meshery.user.signup` (see Event.type).
+	Type *string `db:"type" json:"type,omitempty" yaml:"type,omitempty"`
+
+	// UpdatedAt Timestamp when the event was last updated (see Event.updatedAt).
+	UpdatedAt *time.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// Visibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+	Visibility EventResultVisibility `db:"visibility" json:"visibility" yaml:"visibility"`
 }
+
+// EventResultVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time.
+type EventResultVisibility string
+
+// EventSpecVersion A CloudEvents specification version a Meshery event is compatible with. Only `1.0` is defined.
+type EventSpecVersion string
 
 // EventSummary Per-user event summary entry.
 type EventSummary map[string]interface{}
@@ -244,6 +542,9 @@ type EventType struct {
 	// Category The category of the event type.
 	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
 }
+
+// EventVisibility Who can see the event. `private` (the default, set by Layer5 Cloud) means visible only inside the event's organization. `public` means the event may appear on the unauthenticated event feed, subject to the owner's `shareActivityPublicly` preference at read time. Clients such as Blowhorn decide whether to mark their own events public.
+type EventVisibility string
 
 // EventsAggregate Aggregated event counts across categories.
 type EventsAggregate struct {
@@ -300,6 +601,24 @@ type RelationshipEvaluationEventMetadata struct {
 	ViewLink *string `json:"viewLink,omitempty" yaml:"viewLink,omitempty"`
 }
 
+// ScheduleCompletedEventMetadata Metadata for a completed scheduled run (category `schedule`, action `completed`). This typed shape keeps client-specific display data out of the core Event fields and is projected into EventFeedItem.
+type ScheduleCompletedEventMetadata struct {
+	// Line One-line result of the run.
+	Line string `json:"line" yaml:"line"`
+
+	// Networks Networks or communities where the run acted.
+	Networks *[]string `json:"networks,omitempty" yaml:"networks,omitempty"`
+
+	// Platform Platform the completed run acted on.
+	Platform ScheduleCompletedEventMetadataPlatform `json:"platform" yaml:"platform"`
+
+	// Role Role the completed run acted in.
+	Role string `json:"role" yaml:"role"`
+}
+
+// ScheduleCompletedEventMetadataPlatform Platform the completed run acted on.
+type ScheduleCompletedEventMetadataPlatform string
+
 // UpdateEventStatusRequest Payload for updating the status of a single event.
 type UpdateEventStatusRequest struct {
 	// Status Current status of the event.
@@ -330,6 +649,15 @@ type Filter = string
 // EventsScope defines model for eventsScope.
 type EventsScope string
 
+// FeedAction defines model for feedAction.
+type FeedAction = string
+
+// FeedCategory defines model for feedCategory.
+type FeedCategory = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = int
+
 // Order defines model for order.
 type Order = string
 
@@ -339,8 +667,8 @@ type Page = int
 // PageSize defines model for pageSize.
 type PageSize = int
 
-// Pagesize defines model for pagesize.
-type Pagesize = int
+// CorePagesize defines model for pagesize.
+type CorePagesize = int
 
 // PagesizeLegacy defines model for pagesizeLegacy.
 type PagesizeLegacy = int
@@ -398,12 +726,28 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "category")
 	}
 
+	if raw, found := object["correlationKey"]; found {
+		err = json.Unmarshal(raw, &a.CorrelationKey)
+		if err != nil {
+			return fmt.Errorf("error reading 'correlationKey': %w", err)
+		}
+		delete(object, "correlationKey")
+	}
+
 	if raw, found := object["description"]; found {
 		err = json.Unmarshal(raw, &a.Description)
 		if err != nil {
 			return fmt.Errorf("error reading 'description': %w", err)
 		}
 		delete(object, "description")
+	}
+
+	if raw, found := object["firstSeenAt"]; found {
+		err = json.Unmarshal(raw, &a.FirstSeenAt)
+		if err != nil {
+			return fmt.Errorf("error reading 'firstSeenAt': %w", err)
+		}
+		delete(object, "firstSeenAt")
 	}
 
 	if raw, found := object["idempotencyKey"]; found {
@@ -414,12 +758,92 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "idempotencyKey")
 	}
 
+	if raw, found := object["lastSeenAt"]; found {
+		err = json.Unmarshal(raw, &a.LastSeenAt)
+		if err != nil {
+			return fmt.Errorf("error reading 'lastSeenAt': %w", err)
+		}
+		delete(object, "lastSeenAt")
+	}
+
+	if raw, found := object["occurrenceCount"]; found {
+		err = json.Unmarshal(raw, &a.OccurrenceCount)
+		if err != nil {
+			return fmt.Errorf("error reading 'occurrenceCount': %w", err)
+		}
+		delete(object, "occurrenceCount")
+	}
+
 	if raw, found := object["owner"]; found {
 		err = json.Unmarshal(raw, &a.Owner)
 		if err != nil {
 			return fmt.Errorf("error reading 'owner': %w", err)
 		}
 		delete(object, "owner")
+	}
+
+	if raw, found := object["parentId"]; found {
+		err = json.Unmarshal(raw, &a.ParentID)
+		if err != nil {
+			return fmt.Errorf("error reading 'parentId': %w", err)
+		}
+		delete(object, "parentId")
+	}
+
+	if raw, found := object["resolvedAt"]; found {
+		err = json.Unmarshal(raw, &a.ResolvedAt)
+		if err != nil {
+			return fmt.Errorf("error reading 'resolvedAt': %w", err)
+		}
+		delete(object, "resolvedAt")
+	}
+
+	if raw, found := object["severity"]; found {
+		err = json.Unmarshal(raw, &a.Severity)
+		if err != nil {
+			return fmt.Errorf("error reading 'severity': %w", err)
+		}
+		delete(object, "severity")
+	}
+
+	if raw, found := object["source"]; found {
+		err = json.Unmarshal(raw, &a.Source)
+		if err != nil {
+			return fmt.Errorf("error reading 'source': %w", err)
+		}
+		delete(object, "source")
+	}
+
+	if raw, found := object["specversion"]; found {
+		err = json.Unmarshal(raw, &a.SpecVersion)
+		if err != nil {
+			return fmt.Errorf("error reading 'specversion': %w", err)
+		}
+		delete(object, "specversion")
+	}
+
+	if raw, found := object["traceId"]; found {
+		err = json.Unmarshal(raw, &a.TraceID)
+		if err != nil {
+			return fmt.Errorf("error reading 'traceId': %w", err)
+		}
+		delete(object, "traceId")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if raw, found := object["visibility"]; found {
+		err = json.Unmarshal(raw, &a.EventVisibility)
+		if err != nil {
+			return fmt.Errorf("error reading 'visibility': %w", err)
+		}
+		delete(object, "visibility")
 	}
 
 	if len(object) != 0 {
@@ -455,10 +879,24 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		}
 	}
 
+	if a.CorrelationKey != nil {
+		object["correlationKey"], err = json.Marshal(a.CorrelationKey)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'correlationKey': %w", err)
+		}
+	}
+
 	if a.Description != nil {
 		object["description"], err = json.Marshal(a.Description)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'description': %w", err)
+		}
+	}
+
+	if a.FirstSeenAt != nil {
+		object["firstSeenAt"], err = json.Marshal(a.FirstSeenAt)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'firstSeenAt': %w", err)
 		}
 	}
 
@@ -469,10 +907,80 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		}
 	}
 
+	if a.LastSeenAt != nil {
+		object["lastSeenAt"], err = json.Marshal(a.LastSeenAt)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'lastSeenAt': %w", err)
+		}
+	}
+
+	if a.OccurrenceCount != nil {
+		object["occurrenceCount"], err = json.Marshal(a.OccurrenceCount)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'occurrenceCount': %w", err)
+		}
+	}
+
 	if a.Owner != nil {
 		object["owner"], err = json.Marshal(a.Owner)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'owner': %w", err)
+		}
+	}
+
+	if a.ParentID != nil {
+		object["parentId"], err = json.Marshal(a.ParentID)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'parentId': %w", err)
+		}
+	}
+
+	if a.ResolvedAt != nil {
+		object["resolvedAt"], err = json.Marshal(a.ResolvedAt)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'resolvedAt': %w", err)
+		}
+	}
+
+	if a.Severity != nil {
+		object["severity"], err = json.Marshal(a.Severity)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'severity': %w", err)
+		}
+	}
+
+	if a.Source != nil {
+		object["source"], err = json.Marshal(a.Source)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'source': %w", err)
+		}
+	}
+
+	if a.SpecVersion != nil {
+		object["specversion"], err = json.Marshal(a.SpecVersion)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'specversion': %w", err)
+		}
+	}
+
+	if a.TraceID != nil {
+		object["traceId"], err = json.Marshal(a.TraceID)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'traceId': %w", err)
+		}
+	}
+
+	if a.Type != nil {
+		object["type"], err = json.Marshal(a.Type)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'type': %w", err)
+		}
+	}
+
+	if a.EventVisibility != nil {
+		object["visibility"], err = json.Marshal(a.EventVisibility)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'visibility': %w", err)
 		}
 	}
 

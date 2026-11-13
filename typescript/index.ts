@@ -44,6 +44,7 @@ import { components as V1Beta2SubscriptionComponents } from "./generated/v1beta2
 import { components as V1Beta2TokenComponents } from "./generated/v1beta2/token/Token";
 
 // v1beta3
+import { components as V1Beta3ErrorComponents } from "./generated/v1beta3/errorcode/Errorcode";
 import { components as V1Beta3EventComponents } from "./generated/v1beta3/event/Event";
 import { components as V1Beta3UserComponents } from "./generated/v1beta3/user/User";
 
@@ -101,6 +102,15 @@ import type * as core from "./generated/v1alpha1/core/Core";
 // Includes CoreConnectionKinds - note that a connection's `kind` stays an
 // open-ended string; that enum only names the kinds with bespoke handling.
 export * from "./constants";
+// Error definition helpers (docs/error-definition-contract.md).
+export {
+  effectiveActionPolicy,
+  flattenProbableCauses,
+  validateErrorDefinition,
+  validateErrorReferenceIndex,
+  validateEventError,
+} from "./errors/errorDefinition";
+export type { ErrorContractViolation, FlattenedCauses } from "./errors/errorDefinition";
 
 // Export schemas
 export {
@@ -231,6 +241,28 @@ export namespace v1beta2 {
 }
 
 export namespace v1beta3 {
+  // Error definitions and an error event's metadata.error
+  // (docs/error-definition-contract.md).
+  export type ErrorDefinition =
+    V1Beta3ErrorComponents["schemas"]["ErrorDefinition"];
+  export type ErrorComponent =
+    V1Beta3ErrorComponents["schemas"]["ErrorComponent"];
+  export type ErrorSeverity =
+    V1Beta3ErrorComponents["schemas"]["ErrorSeverity"];
+  export type ProbableCause =
+    V1Beta3ErrorComponents["schemas"]["ProbableCause"];
+  export type Remediation = V1Beta3ErrorComponents["schemas"]["Remediation"];
+  export type ActionPolicy = V1Beta3ErrorComponents["schemas"]["ActionPolicy"];
+  export type ErrorReferenceIndex =
+    V1Beta3ErrorComponents["schemas"]["ErrorReferenceIndex"];
+  export type EventError = V1Beta3EventComponents["schemas"]["EventError"];
+  export type EventMatchedCause =
+    V1Beta3EventComponents["schemas"]["EventMatchedCause"];
+  // Events (docs/event-correlation-contract.md).
+  export type Event = V1Beta3EventComponents["schemas"]["Event"];
+  export type EventPayload = V1Beta3EventComponents["schemas"]["EventPayload"];
+  export type EventSpecVersion =
+    V1Beta3EventComponents["schemas"]["EventSpecVersion"];
   // Design event metadata shapes (docs/design-event-metadata-contract.md).
   export type DesignEventIdentity =
     V1Beta3EventComponents["schemas"]["DesignEventIdentity"];
@@ -240,6 +272,8 @@ export namespace v1beta3 {
     V1Beta3EventComponents["schemas"]["DesignValidationEventMetadata"];
   export type DesignValidationEventError =
     V1Beta3EventComponents["schemas"]["DesignValidationEventError"];
+  export type DesignEventOperationError =
+    V1Beta3EventComponents["schemas"]["DesignEventOperationError"];
   export type DesignSavedEventMetadata =
     V1Beta3EventComponents["schemas"]["DesignSavedEventMetadata"];
   export type DesignSavedEventDesign =

@@ -37,8 +37,8 @@ export interface paths {
          *     items so a deleted item's number is not handed out again by
          *     assignment), atomically with the insert, so
          *     concurrent inserts never receive the same number. An organization
-         *     that has never had a content item is assigned row number 1 first
-         *     (an explicit `rowNumber` of 0 is still accepted). A supplied
+         *     that has never had a content item is assigned row number 1 first.
+         *     A supplied
          *     `rowNumber` that another live content item of the organization
          *     already holds refuses the insert with a 409.
          *     A `rulesOfEngagement` outside its schema (an unknown preset or
