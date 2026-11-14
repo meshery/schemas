@@ -6,10 +6,10 @@ package academy
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 	invitationv1beta1 "github.com/meshery/schemas/models/v1beta1/invitation"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for AcademyRegistrationStatus.
@@ -178,7 +178,7 @@ type AcademyRegistration struct {
 	Certificate core.Map `db:"certificate" json:"certificate" yaml:"certificate"`
 
 	// ContentId ID of the course content
-	ContentId string            `db:"content_id" json:"content_id" yaml:"content_id"`
+	ContentId string    `db:"content_id" json:"content_id" yaml:"content_id"`
 	CreatedAt core.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
@@ -195,7 +195,7 @@ type AcademyRegistration struct {
 
 	// Status Status of the user's course registration
 	Status    AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
-	UpdatedAt core.Time         `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	UpdatedAt core.Time                 `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserId core.Uuid `db:"owner" json:"user_id" yaml:"user_id"`
@@ -484,7 +484,7 @@ type QuizSubmission struct {
 
 	// TestSessionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	TestSessionId core.Uuid `json:"testSessionId" yaml:"testSessionId"`
-	UserId        string            `json:"user_id" yaml:"user_id"`
+	UserId        string    `json:"user_id" yaml:"user_id"`
 }
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
@@ -504,7 +504,7 @@ type SingleAcademyCurriculaResponse struct {
 	DeletedAt AcademyCurriculaDeletedAt `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// ID Id of the Curricula
-	ID         string                   `db:"id" json:"id" yaml:"id"`
+	ID         string                        `db:"id" json:"id" yaml:"id"`
 	Invitation *invitationv1beta1.Invitation `json:"invitation,omitempty" yaml:"invitation,omitempty"`
 
 	// InviteId ID of the invite associated with this Curricula
@@ -562,7 +562,7 @@ type TestSubmission struct {
 	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// RegistrationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RegistrationId core.Uuid     `db:"registration_id" json:"registration_id" yaml:"registration_id"`
+	RegistrationId core.Uuid             `db:"registration_id" json:"registration_id" yaml:"registration_id"`
 	Result         *QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
 	Status         TestSubmissionStatus  `json:"status" yaml:"status"`
 	SubmissionData *QuizSubmission       `db:"submission_data" json:"submission_data,omitempty" yaml:"submission_data,omitempty"`

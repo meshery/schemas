@@ -58,6 +58,7 @@ type fieldShape struct {
 	Format    string // "uuid", "date-time", etc.
 	Required  bool
 	RefTarget string // if originally a $ref, what it resolved to
+	DBBacked  bool   // property carries x-oapi-codegen-extra-tags db:/gorm: (meshery/schemas#724)
 }
 
 // schemaIndex holds all endpoints from a schemas repo walk.
@@ -361,6 +362,7 @@ func buildSchemaShape(ref *openapi3.SchemaRef) *schemaShape {
 		fs := fieldShape{
 			Name:     name,
 			Required: requiredSet[name],
+			DBBacked: IsDBBackedProperty(propRef),
 		}
 		if propRef != nil && propRef.Ref != "" {
 			fs.RefTarget = refTail(propRef.Ref)

@@ -4,9 +4,9 @@
 package connection
 
 import (
+	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
 	environmentv1beta1 "github.com/meshery/schemas/models/v1beta1/environment"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for ConnectionStatus.
@@ -72,6 +72,9 @@ type Connection struct {
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
 	SchemaVersion core.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID *core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId"`
 }
 
 // ConnectionStatus Connection Status

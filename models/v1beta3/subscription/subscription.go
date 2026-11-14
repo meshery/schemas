@@ -6,10 +6,10 @@ package subscription
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 	planv1beta3 "github.com/meshery/schemas/models/v1beta3/plan"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for PaymentProcessor.
@@ -78,7 +78,7 @@ type Subscription struct {
 	BillingID string `db:"billing_id" json:"billingId" yaml:"billingId"`
 
 	// CreatedAt Timestamp when the subscription was created.
-	CreatedAt time.Time                `db:"created_at" json:"createdAt" yaml:"createdAt"`
+	CreatedAt time.Time        `db:"created_at" json:"createdAt" yaml:"createdAt"`
 	DeletedAt core.SqlNullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
 	// EndDate Timestamp when the current subscription period ends.
@@ -126,6 +126,22 @@ type SubscriptionPage struct {
 
 // SubscriptionStatus Possible statuses of a Stripe subscription.
 type SubscriptionStatus string
+
+// SubscriptionUpdatePayload Body of an update to an existing subscription (`POST /api/entitlement/subscriptions`).
+//
+// This is an update payload, never a create payload: `id` names the subscription to update and the server refuses a body without one. It is also a full replacement of the writable surface rather than a partial merge, which is why `planId` and `quantity` are both required - omitting either stores its zero value.
+//
+// The fields the payment processor and the webhook own - `orgId`, `billingId`, `status`, `startDate` and `endDate` - are deliberately absent: the server pins each of them to the stored row and ignores any value supplied for them.
+type SubscriptionUpdatePayload struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	PlanID core.Uuid `json:"planId" yaml:"planId"`
+
+	// Quantity Number of units subscribed (eg number of users).
+	Quantity int `json:"quantity" yaml:"quantity"`
+}
 
 // UpdateUsersRequest Payload for synchronizing the current user count with the payment processor.
 type UpdateUsersRequest struct {

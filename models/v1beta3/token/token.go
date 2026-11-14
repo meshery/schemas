@@ -7,7 +7,108 @@ import (
 	"time"
 
 	core "github.com/meshery/schemas/models/core"
+	provider_capabilityv1beta3 "github.com/meshery/schemas/models/v1beta3/provider_capability"
 )
+
+// Defines values for NativeAuthorizationPayloadCodeChallengeMethod.
+const (
+	NativeAuthorizationPayloadCodeChallengeMethodS256 NativeAuthorizationPayloadCodeChallengeMethod = "S256"
+)
+
+// Defines values for NativeCodeChallengeMethod.
+const (
+	NativeCodeChallengeMethodS256 NativeCodeChallengeMethod = "S256"
+)
+
+// NativeAuthorizationCallback Query parameters of the loopback redirect that getNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token.
+type NativeAuthorizationCallback struct {
+	// Code Single-use authorization code, redeemed with the PKCE code verifier.
+	Code string `json:"code" yaml:"code"`
+
+	// State The state the native client sent on the authorize request, unchanged.
+	State string `json:"state" yaml:"state"`
+}
+
+// NativeAuthorizationPayload Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields.
+type NativeAuthorizationPayload struct {
+	// ClientName Display name of the native client.
+	ClientName string `json:"clientName" yaml:"clientName"`
+
+	// Port Port on 127.0.0.1 for the callback.
+	Port int `json:"port" yaml:"port"`
+
+	// CodeChallenge PKCE S256 code challenge.
+	CodeChallenge string `json:"codeChallenge" yaml:"codeChallenge"`
+
+	// CodeChallengeMethod PKCE challenge method.
+	CodeChallengeMethod NativeAuthorizationPayloadCodeChallengeMethod `json:"codeChallengeMethod" yaml:"codeChallengeMethod"`
+
+	// State Opaque client state returned on the callback.
+	State string `json:"state" yaml:"state"`
+}
+
+// NativeAuthorizationPayloadCodeChallengeMethod PKCE challenge method.
+type NativeAuthorizationPayloadCodeChallengeMethod string
+
+// NativeCodeExchangePayload Redeems a native client authorization code with its PKCE verifier.
+type NativeCodeExchangePayload struct {
+	// Code Single-use authorization code from the loopback callback.
+	Code string `json:"code" yaml:"code"`
+
+	// CodeVerifier PKCE code verifier (RFC 7636, 43 to 128 unreserved characters).
+	CodeVerifier string `json:"codeVerifier" yaml:"codeVerifier"`
+}
+
+// TokenCreatePayload Client-settable limits for a token created with generateToken. Every field is optional; an empty body creates an unrestricted token that never expires. The token's name and purpose are query parameters of the operation, and its id, owner and timestamps are server-generated.
+type TokenCreatePayload struct {
+	// KeychainIds IDs of the keychains the token is limited to. A non-empty list limits the token to the keys of those keychains, intersected with the owner's keys in the request's organization. An absent list creates an unrestricted token. An explicit empty list is refused with 400, so a selection that ends up empty never mints a full-access token. The server records keychainScoped from this list; clients do not set it.
+	KeychainIds *[]core.Uuid `json:"keychainIds,omitempty" yaml:"keychainIds,omitempty"`
+
+	// ExpiresAt Time after which the token is no longer accepted. Absent or null means it never expires.
+	ExpiresAt *time.Time `json:"expiresAt" yaml:"expiresAt"`
+}
+
+// TokenIntrospection Describes an access token introspectToken accepted, using the RFC 7662 member names where they are single words and their camelCase form where they are not (clientId, tokenType).
+type TokenIntrospection struct {
+	// Active Always true; a token that is not active is answered with 401 instead.
+	Active bool `json:"active" yaml:"active"`
+
+	// Aud The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for.
+	Aud []string `json:"aud" yaml:"aud"`
+
+	// Sub The subject the token was issued for.
+	Sub *string `json:"sub,omitempty" yaml:"sub,omitempty"`
+
+	// ClientId The OAuth client the token was issued to.
+	ClientId *string `json:"clientId,omitempty" yaml:"clientId,omitempty"`
+
+	// Scope Space-separated scopes granted to the token.
+	Scope *string `json:"scope,omitempty" yaml:"scope,omitempty"`
+
+	// Exp Expiry, in seconds since the Unix epoch. Absent for a token that does not expire.
+	Exp *int64 `json:"exp,omitempty" yaml:"exp,omitempty"`
+
+	// Iat Issue time, in seconds since the Unix epoch.
+	Iat *int64 `json:"iat,omitempty" yaml:"iat,omitempty"`
+
+	// Nbf Not-before time, in seconds since the Unix epoch.
+	Nbf *int64 `json:"nbf,omitempty" yaml:"nbf,omitempty"`
+
+	// Iss The issuer of the token.
+	Iss *string `json:"iss,omitempty" yaml:"iss,omitempty"`
+
+	// TokenType Always "Bearer".
+	TokenType *string `json:"tokenType,omitempty" yaml:"tokenType,omitempty"`
+}
+
+// TokenIntrospectionPayload Carries the token that introspectToken checks, and the protected resource asking.
+type TokenIntrospectionPayload struct {
+	// Token The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
+	Token string `json:"token" yaml:"token"`
+
+	// Resource RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target".
+	Resource *string `json:"resource,omitempty" yaml:"resource,omitempty"`
+}
 
 // TokenPage A paginated list of tokens.
 type TokenPage struct {
@@ -24,7 +125,28 @@ type TokenPage struct {
 	PageSize int `json:"pageSize" yaml:"pageSize"`
 }
 
-// UserToken Represents a user-owned API token or OAuth session.
+// TokenPayload Carries the token that revokeToken revokes.
+type TokenPayload struct {
+	// Token The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
+	Token string `json:"token" yaml:"token"`
+}
+
+// TokenStanding Server-side read result of looking up one presented token by its ID (the token's `jti`) in the token store. It is not a request or response body: the server reads it before any handler runs to decide whether the token is accepted and whether its keys are narrowed to its keychains. The server reports `keychainScoped` true when the stored flag is true or the token has any keychain mapping, so a consumer deciding from this result fails closed. See docs/token-scoping-contract.md.
+type TokenStanding struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	TokenID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// Revoked Whether the stored token has been retired (deleted).
+	Revoked bool `db:"revoked" json:"revoked" yaml:"revoked"`
+
+	// Expired Whether the stored token's `expiresAt` is at or before the time of the lookup, evaluated by the store. A token with no `expiresAt` never expires.
+	Expired bool `db:"expired" json:"expired" yaml:"expired"`
+
+	// KeychainScoped True when the token's stored `keychainScoped` flag is true or the token has any keychain mapping. When true the token is limited to the keys of its keychains, and holds no keys if every one of them has been deleted. The lookup's `keychain_scoped` result column is a computed alias for this value (the stored flag OR any keychain mapping), so a query-mapping consumer does not read the raw stored flag.
+	KeychainScoped bool `db:"keychain_scoped" json:"keychainScoped" yaml:"keychainScoped"`
+}
+
+// UserToken Represents a user-owned API token or OAuth session. A token may carry two optional limits. `keychainIds` restricts which keys it may use, and `expiresAt` ends its life. A token with neither is unrestricted and never expires, which is what every token issued before these fields existed is. A token with neither limit set is unrestricted only when keychainScoped is false or absent. `keychainScoped` is the server's stored record of whether the token is limited to its keychains' keys. See the token scoping contract in docs/token-scoping-contract.md.
 type UserToken struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID core.Uuid `db:"id" json:"id" yaml:"id"`
@@ -55,6 +177,15 @@ type UserToken struct {
 
 	// UpdatedAt Timestamp when the token was last updated.
 	UpdatedAt time.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+
+	// KeychainIds IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created.
+	KeychainIds []core.Uuid `db:"-" json:"keychainIds,omitempty" yaml:"keychainIds,omitempty"`
+
+	// ExpiresAt Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards.
+	ExpiresAt *core.NullTime `db:"expires_at" json:"expiresAt,omitempty" yaml:"expiresAt,omitempty"`
+
+	// KeychainScoped Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list.
+	KeychainScoped bool `db:"keychain_scoped" json:"keychainScoped,omitempty" yaml:"keychainScoped,omitempty"`
 }
 
 // IsOauth defines model for isOauth.
@@ -62,6 +193,24 @@ type IsOauth = bool
 
 // Name defines model for name.
 type Name = string
+
+// NativeClient Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.
+type NativeClient = provider_capabilityv1beta3.ClientName
+
+// NativeClientVersion defines model for nativeClientVersion.
+type NativeClientVersion = string
+
+// NativeCodeChallenge defines model for nativeCodeChallenge.
+type NativeCodeChallenge = string
+
+// NativeCodeChallengeMethod defines model for nativeCodeChallengeMethod.
+type NativeCodeChallengeMethod string
+
+// NativePort defines model for nativePort.
+type NativePort = int
+
+// NativeState defines model for nativeState.
+type NativeState = string
 
 // Order defines model for order.
 type Order = string

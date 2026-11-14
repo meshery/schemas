@@ -1,0 +1,191 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: OAuth Consent Schema
+description: |
+  Server-returned OAuth consent: one OAuth client (a connected app) the
+  signed-in user has allowed to act on their behalf, with what it was granted.
+  Unique key: (user, `clientId`) among live consents (`deletedAt` null). A
+  user has at most one live consent per client, so `clientId` identifies the
+  consent among the user's own; `id` is the stored row's ID. The consent
+  names one root organization; the client acts only in that organization and
+  its descendants. Created by the authorization server's consent step and
+  soft-deleted by revoking it; there is no write payload. A re-consent by the
+  same user to a client with a live consent updates that consent in place:
+  its scopes are replaced and `updatedAt` advances, while `id` and
+  `createdAt` are kept.
+  A re-consent keeps the consent's `organizationId`. The consent moves to
+  another organization only when the user explicitly chooses that organization
+  on the consent screen. Then every existing token issued to that client for
+  that user is revoked in the same transaction, whatever its keychains, and this
+  overrides the token rules below. Tokens are never re-bound to a new
+  organization silently: the client gets a token for the new organization only
+  under the consent that names it.
+  A consent must name a keychain scope. The server refuses a first consent
+  in which no scope maps to a keychain in its scope map, with `400` and nothing
+  stored; a re-consent that names no keychain scope revokes (below). The schema cannot state this: `scopes` has minItems 1,
+  which stops only an empty list. The rule is enforced by the server against
+  the scope map, not by the schema. A scope string the scope map does not know
+  is refused with `400`, never silently dropped. Standard non-keychain scopes,
+  if the server accepts them at all (an open question), never count toward the
+  keychain-scope minimum. A token is never issued under a consent with an empty
+  keychain list, because a token limited to no keychains would hold no keys.
+  Re-consent changes the client's existing tokens, in the same transaction as
+  the consent update, by whether each token is scoped (`keychainScoped` true,
+  or a non-empty `keychainIds`). Every token matches exactly one branch:
+  - A scoped token gets `keychainIds` set to the
+    intersection of its keychains and the keychains of the new scopes. A
+    re-consent never adds keychains to a scoped token: a narrower re-consent
+    narrows it, and a broader one leaves it unchanged. A token whose
+    intersection is empty is revoked, not left with an empty list, because a
+    scoped token with no keychains holds no keys. This also holds when the token's
+    keychains were all deleted: its intersection is empty, so it is revoked,
+    and it never gains keys.
+  - An unrestricted token (`keychainScoped` false or absent and `keychainIds`
+    empty or absent) gets `keychainIds` set to
+    exactly the keychains of the new scopes, and `keychainScoped` set to true.
+  - A re-consent that names no keychain scope (only scopes
+    that map to no keychain) revokes: the consent is revoked (soft-deleted) and
+    every token issued to that client for that user is revoked, in the same
+    transaction. An unknown scope string is still refused with `400`.
+  A scope added by a re-consent takes effect only for tokens issued after that
+  consent, which is the user's fresh consent.
+type: object
+additionalProperties: false
+required:
+  - id
+  - clientId
+  - clientName
+  - scopes
+  - organizationId
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated consent ID.
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+    x-order: 1
+  clientId:
+    type: string
+    description: >-
+      OAuth client ID the consent was granted to. An identifier issued by the
+      authorization server, not a UUID. Unique per user among live consents.
+    minLength: 1
+    maxLength: 255
+    x-id-format: external
+    x-go-name: ClientID
+    x-oapi-codegen-extra-tags:
+      db: client_id
+    x-order: 2
+  clientName:
+    type: string
+    description: Display name the client registered, shown to the user as the connected app's name.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: client_name
+    x-order: 3
+  clientUri:
+    type: string
+    format: uri
+    description: Home page of the client, when it registered one. Omitted otherwise.
+    maxLength: 2048
+    x-oapi-codegen-extra-tags:
+      db: client_uri
+      json: "clientUri,omitempty"
+    x-order: 4
+  logoUri:
+    type: string
+    format: uri
+    description: Logo of the client, when it registered one. Omitted otherwise.
+    maxLength: 2048
+    x-oapi-codegen-extra-tags:
+      db: logo_uri
+      json: "logoUri,omitempty"
+    x-order: 5
+  scopes:
+    type: array
+    description: >-
+      Scopes the user granted the client, as the strings the authorization
+      server issues. A scope names one keychain, so the client's tokens are
+      limited to the keys of those keychains (see the token scoping contract).
+      At least one scope must map to a keychain in the server's scope map. The
+      server refuses (`400`, nothing stored) a first consent without one (a
+      re-consent without one revokes the consent and the client's tokens),
+      and refuses a scope string the scope map does not know; it never drops one
+      silently. Standard non-keychain scopes never count toward that minimum.
+      The schema enforces only that the list is not empty; the rule is enforced
+      by the server against the scope map. See the description of this schema.
+    minItems: 1
+    items:
+      type: string
+      minLength: 1
+      maxLength: 255
+      pattern: '^\S+$'
+    maxItems: 100
+    uniqueItems: true
+    x-go-type: pq.StringArray
+    x-go-type-import:
+      path: github.com/lib/pq
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: scopes
+    x-order: 6
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >-
+      ID of the root organization the consent names. The client acts only in
+      this organization and its descendants. A re-consent keeps it unless the
+      user explicitly chooses another organization on the consent screen; see
+      the description of this schema.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 7
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Time the user first granted the consent. A re-consent keeps it.
+    readOnly: true
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 8
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: >-
+      Time the consent was last granted or changed. Server-set: equal to
+      `createdAt` when the consent is created, and advanced when the same user
+      consents to the same live client again, which replaces `scopes`.
+    readOnly: true
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 9
+  lastUsedAt:
+    type: string
+    format: date-time
+    description: >-
+      Time the client last used a token issued under this consent. Null when
+      the client has not used it yet or the server does not record use.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: last_used_at
+      json: "lastUsedAt,omitempty"
+    x-order: 10
+  deletedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/NullTime
+    description: >-
+      Time the consent was revoked (soft-deleted). Null while the consent is
+      live. getOauthConsents returns live consents only.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 11

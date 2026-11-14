@@ -693,9 +693,38 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Organization_Organizations"],
       }),
+      getChildOrgs: build.query<GetChildOrgsApiResponse, GetChildOrgsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      createChildOrg: build.mutation<CreateChildOrgApiResponse, CreateChildOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
         providesTags: ["Organization_Organizations"],
+      }),
+      patchOrgPreferences: build.mutation<PatchOrgPreferencesApiResponse, PatchOrgPreferencesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/preferences`,
+          method: "PATCH",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
+        invalidatesTags: ["Organization_Organizations"],
       }),
       addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
         query: (queryArg) => ({
@@ -768,7 +797,14 @@ const injectedRtkApi = api
         providesTags: ["Connection_API_Connections"],
       }),
       registerConnection: build.mutation<RegisterConnectionApiResponse, RegisterConnectionApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/connections`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/integrations/connections`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       processConnectionRegistration: build.mutation<
@@ -904,6 +940,7 @@ const injectedRtkApi = api
             pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             orgId: queryArg?.orgId,
+            purpose: queryArg?.purpose,
           },
         }),
         providesTags: ["Environment_environments"],
@@ -2007,6 +2044,8 @@ export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluat
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -3003,6 +3042,8 @@ export type EvaluateRelationshipsApiArg = {
             updated_at?: string;
             /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            organizationId?: string;
             /** Associated environments for this connection */
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -3956,6 +3997,9 @@ export type GetRegistryModelsApiResponse = /** status 200 Paginated list of regi
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -4242,6 +4286,9 @@ export type GetRegistryModelsByNameApiResponse = /** status 200 Paginated list o
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -4542,6 +4589,9 @@ export type GetRegistryComponentsByModelApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -5086,6 +5136,9 @@ export type GetRegistryComponentsByModelAndNameApiResponse = /** status 200 Pagi
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -5849,6 +5902,9 @@ export type GetRegistryModelsByCategoryApiResponse = /** status 200 Paginated li
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -6130,6 +6186,9 @@ export type GetRegistryModelsByCategoryAndModelApiResponse =
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -6426,6 +6485,9 @@ export type GetRegistryComponentsByCategoryAndModelApiResponse = /** status 200 
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -6973,6 +7035,9 @@ export type GetRegistryComponentsByCategoryAndModelAndNameApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -7522,6 +7587,9 @@ export type GetRegistryComponentsByCategoryApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -8067,6 +8135,9 @@ export type GetRegistryComponentsByCategoryAndNameApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -8613,6 +8684,9 @@ export type GetRegistryComponentsApiResponse = /** status 200 Paginated list of 
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -9096,7 +9170,7 @@ export type RegisterRegistryComponentApiArg = {
       type: string;
       /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
       subType: string;
-      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
       kind: string;
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
       modelReference?: {
@@ -9320,6 +9394,9 @@ export type RegisterRegistryComponentApiArg = {
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+       */
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -9342,6 +9419,16 @@ export type RegisterRegistryComponentApiArg = {
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                
+                Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                
+                At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                
+                Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                
+                The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+        purpose?: "user" | "administrative";
       }[];
       /** Specifies the version of the schema used for the definition. */
       schemaVersion: string;
@@ -9430,6 +9517,9 @@ export type GetRegistryComponentsByNameApiResponse = /** status 200 Paginated li
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -9944,7 +10034,7 @@ export type RegisterRegistryRelationshipApiArg = {
       type: string;
       /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
       subType: string;
-      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
       kind: string;
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
       modelReference?: {
@@ -10168,6 +10258,9 @@ export type RegisterRegistryRelationshipApiArg = {
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+       */
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -10190,6 +10283,16 @@ export type RegisterRegistryRelationshipApiArg = {
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                
+                Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                
+                At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                
+                Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                
+                The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+        purpose?: "user" | "administrative";
       }[];
       /** Specifies the version of the schema used for the definition. */
       schemaVersion: string;
@@ -10244,6 +10347,9 @@ export type GetRegistryRegistrantsApiResponse = /** status 200 Paginated list of
     updated_at?: string;
     /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
+    /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+     */
+    organizationId?: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -10437,6 +10543,9 @@ export type GenerateRegistryComponentsApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -11292,6 +11401,8 @@ export type GetUserCredentialsApiResponse = /** status 200 Credentials response 
     name: string;
     /** UUID of the user who owns this credential. */
     userId: string;
+    /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -11329,6 +11440,8 @@ export type SaveUserCredentialApiResponse = /** status 201 Credential saved */ {
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -11348,6 +11461,8 @@ export type SaveUserCredentialApiArg = {
     name: string;
     /** UUID of the user who owns this credential. */
     userId?: string;
+    /** UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -11361,6 +11476,8 @@ export type UpdateUserCredentialApiResponse = /** status 200 Credential updated 
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -11380,6 +11497,8 @@ export type UpdateUserCredentialApiArg = {
     name: string;
     /** UUID of the user who owns this credential. */
     userId?: string;
+    /** UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -11398,6 +11517,8 @@ export type GetCredentialByIdApiResponse = /** status 200 Credential response */
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -11542,7 +11663,7 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -11552,9 +11673,29 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
           support?: {
             [key: string]: string;
           };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
+          };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -11667,7 +11808,7 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -11677,9 +11818,29 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
           support?: {
             [key: string]: string;
           };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
+          };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -11768,7 +11929,7 @@ export type CreateOrgApiArg = {
           answer: string;
         }[];
       };
-      /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
       links?: {
         /** URL of the organization's Terms of Service page. */
         termsOfService?: string;
@@ -11778,9 +11939,25 @@ export type CreateOrgApiArg = {
         support?: {
           [key: string]: string;
         };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
+        };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -11902,7 +12079,7 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -11912,9 +12089,29 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
           support?: {
             [key: string]: string;
           };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
+          };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -12024,7 +12221,7 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -12034,9 +12231,29 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
           support?: {
             [key: string]: string;
           };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
+          };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -12127,7 +12344,7 @@ export type UpdateOrgApiArg = {
           answer: string;
         }[];
       };
-      /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
       links?: {
         /** URL of the organization's Terms of Service page. */
         termsOfService?: string;
@@ -12137,9 +12354,304 @@ export type UpdateOrgApiArg = {
         support?: {
           [key: string]: string;
         };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
+        };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
+    };
+  };
+};
+export type GetChildOrgsApiResponse = /** status 200 Direct child organizations of the parent organization */ {
+  /** Direct child organizations in this page. */
+  organizations: {
+    /** Organization ID of the child. */
+    id: string;
+    /** Name of the child organization. */
+    name: string;
+    /** Description of the child organization. */
+    description?: string;
+    /** Country of the child organization. */
+    country?: string;
+    /** Region of the child organization. */
+    region?: string;
+    /** Custom domain assigned to the child organization, when configured. */
+    domain?: string;
+    /** ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns. */
+    parentId?: string;
+    /** Timestamp when the child organization was created. */
+    createdAt: string;
+    /** Timestamp when the child organization was last updated. */
+    updatedAt: string;
+  }[];
+  /** Total number of live direct children across all pages. */
+  totalCount: number;
+};
+export type GetChildOrgsApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Zero-based index of the result page to return. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+};
+export type CreateChildOrgApiResponse =
+  /** status 201 Single-organization page response for the created child organization */ {
+    /** Zero-based page index returned in this response. */
+    page?: number;
+    /** Maximum number of items returned on each page. */
+    pageSize?: number;
+    /** Total number of items across all pages. */
+    totalCount?: number;
+    /** Organizations returned in this single-item page wrapper. */
+    organizations?: {
+      /** Organization ID. */
+      id?: string;
+      /** Name of the organization. */
+      name?: string;
+      /** Description of the organization. */
+      description?: string;
+      /** Country of the organization. */
+      country?: string;
+      /** Region of the organization. */
+      region?: string;
+      /** Custom domain assigned to the organization, when configured. */
+      domain?: string;
+      /** Display name of the organization owner. */
+      owner?: string;
+      /** Free-form metadata associated with an organization, including preferences. */
+      metadata?: {
+        /** Organization-level user experience preferences. */
+        preferences: {
+          /** UI theme configured for an organization. */
+          theme: {
+            /** Theme identifier. */
+            id: string;
+            /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+            logo: {
+              /** Image asset anchored to a named location within an organization theme. */
+              desktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              mobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkDesktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkMobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+            };
+            /** Arbitrary theme variables keyed by name. */
+            vars?: {
+              [key: string]: any;
+            };
+          };
+          /** Preferences specific to dashboard behavior. */
+          dashboard: {
+            [key: string]: any;
+          };
+          /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+          authBranding?: {
+            /** Ordered slides rendered in the auth-page feature carousel. */
+            carousel?: {
+              /** URL of the slide image asset. */
+              imageUrl: string;
+              /** Slide title. */
+              title: string;
+              /** Slide description text. */
+              description: string;
+            }[];
+            /** FAQ entries rendered on the auth pages. */
+            faqs?: {
+              /** The question text. */
+              question: string;
+              /** The answer text. */
+              answer: string;
+            }[];
+          };
+          /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+          links?: {
+            /** URL of the organization's Terms of Service page. */
+            termsOfService?: string;
+            /** URL of the organization's Privacy Policy page. */
+            privacy?: string;
+            /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+            support?: {
+              [key: string]: string;
+            };
+            /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+            social?: {
+              /** URL of the organization's LinkedIn profile. */
+              linkedin?: string;
+              /** URL of the organization's X (formerly Twitter) profile. */
+              x?: string;
+              /** URL of the organization's YouTube channel. */
+              youtube?: string;
+            };
+          };
+          /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+          showAuthCarousel?: boolean;
+          /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+          schedulePause?: {
+            /** Whether every schedule in the organization is paused. */
+            paused?: boolean;
+            /** Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+            /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedAt?: string;
+            /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedBy?: string;
+          };
+        };
+      };
+      /** Timestamp when the organization was created. */
+      createdAt?: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the organization was soft-deleted. */
+      deletedAt?: string;
+    }[];
+  };
+export type CreateChildOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Body for creating or updating an organization */
+  body: {
+    /** Name of the organization. */
+    name?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Indicates whether organization members should be notified of this update. */
+    notifyOrgUpdate?: boolean;
+    /** Organization-level user experience preferences. */
+    preferences?: {
+      /** UI theme configured for an organization. */
+      theme: {
+        /** Theme identifier. */
+        id: string;
+        /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** Image asset anchored to a named location within an organization theme. */
+          desktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+        };
+        /** Arbitrary theme variables keyed by name. */
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior. */
+      dashboard: {
+        [key: string]: any;
+      };
+      /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+      authBranding?: {
+        /** Ordered slides rendered in the auth-page feature carousel. */
+        carousel?: {
+          /** URL of the slide image asset. */
+          imageUrl: string;
+          /** Slide title. */
+          title: string;
+          /** Slide description text. */
+          description: string;
+        }[];
+        /** FAQ entries rendered on the auth pages. */
+        faqs?: {
+          /** The question text. */
+          question: string;
+          /** The answer text. */
+          answer: string;
+        }[];
+      };
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /** URL of the organization's Terms of Service page. */
+        termsOfService?: string;
+        /** URL of the organization's Privacy Policy page. */
+        privacy?: string;
+        /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: {
+          [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
+        };
+      };
+      /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+      showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -12209,7 +12721,7 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
         answer: string;
       }[];
     };
-    /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
     links?: {
       /** URL of the organization's Terms of Service page. */
       termsOfService?: string;
@@ -12219,14 +12731,235 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
       support?: {
         [key: string]: string;
       };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
   };
 };
 export type GetOrgPreferencesApiArg = {
   /** Organization ID. */
   orgId: string;
+};
+export type PatchOrgPreferencesApiResponse = /** status 200 Organization metadata with the merged preferences */ {
+  /** Organization-level user experience preferences. */
+  preferences: {
+    /** UI theme configured for an organization. */
+    theme: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard: {
+      [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
+    };
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+    showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
+  };
+};
+export type PatchOrgPreferencesApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Entity tag of the organization's preferences as last read, from the `ETag` header of getOrgPreferences or patchOrgPreferences. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
+  body: {
+    /** UI theme configured for an organization. */
+    theme?: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard?: {
+      [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
+    };
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
+    showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+    };
+  };
 };
 export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
   | {
@@ -12286,7 +13019,7 @@ export type AddTeamToOrgApiArg = {
   orgId: string;
   /** Team ID. */
   teamId: string;
-  body: {
+  body?: {
     /** Internal action to perform on the team resource. */
     action?: "delete";
   };
@@ -12461,59 +13194,63 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   }[];
 };
@@ -12650,59 +13387,63 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: {
-      /** Unique identifier of the team. */
-      id: string;
-      /** Name of the team. */
-      name: string;
-      /** Human readable description of the team. */
-      description?: string;
-      /** Identifier of the team owner. */
-      owner?: string;
-      /** Free-form metadata associated with the team. */
-      metadata?: {
-        [key: string]: any;
-      };
-      /** Timestamp when the team was created. */
-      createdAt?: string;
-      /** Timestamp when the team was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the team was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
+    /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    teamsWithRoles?:
+      | {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: {
-      /** Unique identifier of the organization. */
-      id: string;
-      /** Name of the organization. */
-      name: string;
-      /** Human readable description of the organization. */
-      description?: string;
-      /** Country associated with the organization. */
-      country?: string;
-      /** Region associated with the organization. */
-      region?: string;
-      /** Identifier of the organization owner. */
-      owner?: string;
-      /** Timestamp when the organization was created. */
-      createdAt?: string;
-      /** Timestamp when the organization was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the organization was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
+    /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    organizationsWithRoles?:
+      | {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
 };
 export type GetUserProfileByIdApiArg = {
@@ -12826,59 +13567,63 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: {
-      /** Unique identifier of the team. */
-      id: string;
-      /** Name of the team. */
-      name: string;
-      /** Human readable description of the team. */
-      description?: string;
-      /** Identifier of the team owner. */
-      owner?: string;
-      /** Free-form metadata associated with the team. */
-      metadata?: {
-        [key: string]: any;
-      };
-      /** Timestamp when the team was created. */
-      createdAt?: string;
-      /** Timestamp when the team was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the team was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
+    /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    teamsWithRoles?:
+      | {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: {
-      /** Unique identifier of the organization. */
-      id: string;
-      /** Name of the organization. */
-      name: string;
-      /** Human readable description of the organization. */
-      description?: string;
-      /** Country associated with the organization. */
-      country?: string;
-      /** Region associated with the organization. */
-      region?: string;
-      /** Identifier of the organization owner. */
-      owner?: string;
-      /** Timestamp when the organization was created. */
-      createdAt?: string;
-      /** Timestamp when the organization was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the organization was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
+    /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    organizationsWithRoles?:
+      | {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
 };
 export type GetUserApiArg = void;
@@ -12921,7 +13666,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     type: string;
     /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
     subType: string;
-    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
     kind: string;
     /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
     modelReference?: {
@@ -13145,6 +13890,9 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+     */
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -13167,6 +13915,16 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -13213,225 +13971,213 @@ export type GetConnectionsApiArg = {
   /** Filter by connection name (partial match supported) */
   name?: string;
 };
-export type RegisterConnectionApiResponse = /** status 201 Connection registered */ {
-  /** Connection ID */
-  id: string;
-  /** Connection Name */
-  name: string;
-  /** Human-readable description of the connection and its purpose. */
-  description?: string;
-  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
-  url?: string;
-  /** Associated Credential ID */
-  credentialId?: string;
-  /** Connection Type (platform, telemetry, collaboration) */
-  type: string;
-  /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-  subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-  kind: string;
-  /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-  modelReference?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** The unique name for the model within the scope of a registrant. */
-    name: string;
-    /** Version of the model definition. */
-    version: string;
-    /** Human-readable name for the model. */
-    displayName: string;
-    /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-    model: {
-      /** Version of the model as defined by the registrant. */
-      version: string;
-    };
-    registrant: {
-      /** Kind of the registrant. */
+export type RegisterConnectionApiResponse = /** status 200 Existing desktop connection for this machine updated */
+  | {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Human-readable description of the connection and its purpose. */
+      description?: string;
+      /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+      url?: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
       kind: string;
-    };
-  };
-  /** Additional connection metadata */
-  metadata?: object;
-  /** Schema for the credential Associated with the connection */
-  credentialSchema?: object;
-  /** Schema for the connection */
-  connectionSchema?: object;
-  /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
-  styles?: {
-    /** Primary color of the component used for UI representation. */
-    primaryColor: string;
-    /** Secondary color of the entity used for UI representation. */
-    secondaryColor?: string;
-    /** White SVG of the entity used for UI representation on dark background. */
-    svgWhite: string;
-    /** Colored SVG of the entity used for UI representation on light background. */
-    svgColor: string;
-    /** Complete SVG of the entity used for UI representation, often inclusive of background. */
-    svgComplete: string;
-    /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-    color?: string;
-    /** The opacity of the label text, including its outline. */
-    textOpacity?: number;
-    /** A comma-separated list of font names to use on the label text. */
-    fontFamily?: string;
-    /** The size of the label text. */
-    fontSize?: string;
-    /** A CSS font style to be applied to the label text. */
-    fontStyle?: string;
-    /** A CSS font weight to be applied to the label text. */
-    fontWeight?: string;
-    /** A transformation to apply to the label text */
-    textTransform?: "none" | "uppercase" | "lowercase";
-    /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-    opacity?: number;
-    /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-    zIndex?: number;
-    /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-    label?: string;
-    /** The animation to apply to the element. example ripple,bounce,etc */
-    animation?: object;
-    [key: string]: any;
-  } & {
-    /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
-    shape:
-      | "ellipse"
-      | "triangle"
-      | "round-triangle"
-      | "rectangle"
-      | "round-rectangle"
-      | "bottom-round-rectangle"
-      | "cut-rectangle"
-      | "barrel"
-      | "rhomboid"
-      | "diamond"
-      | "round-diamond"
-      | "pentagon"
-      | "round-pentagon"
-      | "hexagon"
-      | "round-hexagon"
-      | "concave-hexagon"
-      | "heptagon"
-      | "round-heptagon"
-      | "octagon"
-      | "round-octagon"
-      | "star"
-      | "tag"
-      | "round-tag"
-      | "vee"
-      | "polygon";
-    /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
-    position?: {
-      /** The x-coordinate of the node. */
-      x: number;
-      /** The y-coordinate of the node. */
-      y: number;
-    };
-    /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
-    bodyText?: string;
-    /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
-    bodyTextWrap?: "none" | "wrap" | "ellipsis";
-    /** The maximum width for wrapping text in the node. */
-    bodyTextMaxWidth?: string;
-    /** The opacity of the node's body text, including its outline. */
-    bodyTextOpacity?: number;
-    /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
-    bodyTextBackgroundColor?: string;
-    /** The size of the node's body text. */
-    bodyTextFontSize?: number;
-    /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
-    bodyTextColor?: string;
-    /** A CSS font weight to be applied to the node's body text. */
-    bodyTextFontWeight?: string;
-    /** A CSS horizontal alignment to be applied to the node's body text. */
-    bodyTextHorizontalAlign?: string;
-    /** A CSS text decoration to be applied to the node's body text. */
-    bodyTextDecoration?: string;
-    /** A CSS vertical alignment to be applied to the node's body text. */
-    bodyTextVerticalAlign?: string;
-    /** The width of the node's body or the width of an edge's line. */
-    width?: number;
-    /** The height of the node's body */
-    height?: number;
-    /** The URL that points to the image to show in the node. */
-    backgroundImage?: string;
-    /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
-    backgroundColor?: string;
-    /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
-    backgroundBlacken?: number;
-    /** The opacity level of the node's background colour */
-    backgroundOpacity?: number;
-    /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundPositionX?: string;
-    /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundPositionY?: string;
-    /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundOffsetX?: string;
-    /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundOffsetY?: string;
-    /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
-    backgroundFit?: "none" | "contain" | "cover";
-    /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
-    backgroundClip?: "none" | "node" | "node-border";
-    /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
-    backgroundWidthRelativeTo?: "none" | "inner" | "outer";
-    /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
-    backgroundHeightRelativeTo?: "none" | "inner" | "outer";
-    /** The size of the node's border. */
-    borderWidth?: number;
-    /** The style of the node's border */
-    borderStyle?: "solid" | "dotted" | "dashed" | "double";
-    /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
-    borderColor?: string;
-    /** The opacity of the node's border */
-    borderOpacity?: number;
-    /** The amount of padding around all sides of the node. */
-    padding?: number;
-    /** The horizontal alignment of a node's label */
-    textHalign?: "left" | "center" | "right";
-    /** The vertical alignment of a node's label */
-    textValign?: "top" | "center" | "bottom";
-    /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
-    ghost?: "yes" | "no";
-    /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    activeBgColor?: string;
-    /** The opacity of the active background indicator. Selector needs to be *core*. */
-    activeBgOpacity?: string;
-    /** The opacity of the active background indicator. Selector needs to be *core*. */
-    activeBgSize?: string;
-    /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    selectionBoxColor?: string;
-    /** The size of the border on the selection box. Selector needs to be *core* */
-    selectionBoxBorderWidth?: number;
-    /** The opacity of the selection box. Selector needs to be *core* */
-    selectionBoxOpacity?: number;
-    /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    outsideTextureBgColor?: string;
-    /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
-    outsideTextureBgOpacity?: number;
-    /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
-    shapePolygonPoints?: string;
-    /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-    menuBackgroundColor?: string;
-    /** The opacity of the background of the component menu. */
-    menuBackgroundOpacity?: number;
-    /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-    menuForgroundColor?: string;
-  };
-  /** Connection Status */
-  status:
-    | "discovered"
-    | "registered"
-    | "connected"
-    | "ignored"
-    | "maintenance"
-    | "disconnected"
-    | "deleted"
-    | "not found";
-  /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
-  transitionMap?: {
-    [key: string]: {
-      /** Connection Status Value */
-      nextState:
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Schema for the credential Associated with the connection */
+      credentialSchema?: object;
+      /** Schema for the connection */
+      connectionSchema?: object;
+      /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Connection Status */
+      status:
         | "discovered"
         | "registered"
         | "connected"
@@ -13440,45 +14186,352 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
         | "disconnected"
         | "deleted"
         | "not found";
-      /** Human-readable explanation of when or why this transition occurs. */
+      /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+      transitionMap?: {
+        [key: string]: {
+          /** Connection Status Value */
+          nextState:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** Human-readable explanation of when or why this transition occurs. */
+          description?: string;
+        }[];
+      };
+      /** User ID who owns this connection */
+      owner?: string;
+      /** Timestamp when the connection was created. */
+      createdAt?: string;
+      /** Timestamp when the connection was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the connection was soft-deleted, if applicable. */
+      deletedAt?: string | null;
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+       */
+      organizationId: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organizationId: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the environment was created. */
+        createdAt?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the environment was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deletedAt?: string | null;
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+        purpose?: "user" | "administrative";
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    }
+  | /** status 201 Connection registered */ {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Human-readable description of the connection and its purpose. */
       description?: string;
-    }[];
-  };
-  /** User ID who owns this connection */
-  owner?: string;
-  /** Timestamp when the connection was created. */
-  createdAt?: string;
-  /** Timestamp when the connection was last updated. */
-  updatedAt?: string;
-  /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string | null;
-  /** Associated environments for this connection */
-  environments?: {
-    /** ID */
-    id: string;
-    /** Specifies the version of the schema to which the environment conforms. */
-    schemaVersion: string;
-    /** Environment name */
-    name: string;
-    /** Environment description */
-    description: string;
-    /** Environment organization ID */
-    organizationId: string;
-    /** Environment owner */
-    owner?: string;
-    /** Timestamp when the environment was created. */
-    createdAt?: string;
-    /** Additional metadata associated with the environment. */
-    metadata?: object;
-    /** Timestamp when the environment was last updated. */
-    updatedAt?: string;
-    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
-    deletedAt?: string | null;
-  }[];
-  /** Specifies the version of the schema used for the definition. */
-  schemaVersion: string;
-};
+      /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+      url?: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+      kind: string;
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Schema for the credential Associated with the connection */
+      credentialSchema?: object;
+      /** Schema for the connection */
+      connectionSchema?: object;
+      /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Connection Status */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+      transitionMap?: {
+        [key: string]: {
+          /** Connection Status Value */
+          nextState:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** Human-readable explanation of when or why this transition occurs. */
+          description?: string;
+        }[];
+      };
+      /** User ID who owns this connection */
+      owner?: string;
+      /** Timestamp when the connection was created. */
+      createdAt?: string;
+      /** Timestamp when the connection was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the connection was soft-deleted, if applicable. */
+      deletedAt?: string | null;
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+       */
+      organizationId: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organizationId: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the environment was created. */
+        createdAt?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the environment was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deletedAt?: string | null;
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+        purpose?: "user" | "administrative";
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    };
 export type RegisterConnectionApiArg = {
+  /** Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400.
+   */
+  "X-Current-Orgid"?: string;
   body: {
     /** Connection ID */
     id?: string;
@@ -13726,7 +14779,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   type: string;
   /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
   subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
   kind: string;
   /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
   modelReference?: {
@@ -13950,6 +15003,9 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+   */
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -13972,6 +15028,16 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -13995,7 +15061,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   type: string;
   /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
   subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
   kind: string;
   /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
   modelReference?: {
@@ -14219,6 +15285,9 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+   */
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -14241,6 +15310,16 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -14451,7 +15530,7 @@ export type PerformConnectionActionApiResponse =
     type: string;
     /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
     subType: string;
-    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
     kind: string;
     /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
     modelReference?: {
@@ -14675,6 +15754,9 @@ export type PerformConnectionActionApiResponse =
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+     */
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -14697,6 +15779,16 @@ export type PerformConnectionActionApiResponse =
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -15291,8 +16383,8 @@ export type ImportDesignApiResponse =
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -15310,10 +16402,13 @@ export type ImportDesignApiResponse =
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -15433,62 +16528,67 @@ export type ImportDesignApiResponse =
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
-    /** Optional structured location metadata (branch, host, path, ...). */
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
     location?: {
       [key: string]: string;
     };
@@ -15562,6 +16662,16 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+    
+    Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+    
+    At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+    
+    Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    
+    The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+  purpose?: "user" | "administrative";
 };
 export type CreateEnvironmentApiArg = {
   /** Body for creating environment */
@@ -15572,6 +16682,12 @@ export type CreateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
+    /** Free-form settings stored with the environment. */
+    metadata?: {
+      [key: string]: any;
+    };
+    /** The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    purpose?: "user";
   };
 };
 export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
@@ -15603,6 +16719,16 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentsApiArg = {
@@ -15618,6 +16744,8 @@ export type GetEnvironmentsApiArg = {
   pagesize?: number;
   /** User's organization ID */
   orgId: string;
+  /** Return only environments with this purpose; absent returns every purpose the caller may see. The filter only narrows the environments the caller can already list and grants no visibility - a caller who cannot see administrative environments receives an empty page for purpose=administrative. */
+  purpose?: "user" | "administrative";
 };
 export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
   /** Zero-based page index returned in this response. */
@@ -15648,6 +16776,16 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentByIdApiArg = {
@@ -15685,6 +16823,16 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type UpdateEnvironmentApiArg = {
@@ -15698,6 +16846,12 @@ export type UpdateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
+    /** Free-form settings stored with the environment. */
+    metadata?: {
+      [key: string]: any;
+    };
+    /** The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    purpose?: "user";
   };
 };
 export type DeleteEnvironmentApiResponse = unknown;
@@ -15712,9 +16866,284 @@ export type GetEnvironmentConnectionsApiResponse = /** status 200 Environment co
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** The connections of the environmentconnectionspage. */
+  /** Connections associated with the environment, using the canonical Connection response schema. */
   connections?: {
-    [key: string]: any;
+    /** Connection ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** Associated Credential ID */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** The connection state reachable from the current state. */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** User ID who owns this connection */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string | null;
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+     */
+    organizationId: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
   }[];
 };
 export type GetEnvironmentConnectionsApiArg = {
@@ -15776,17 +17205,196 @@ export type UpdateEventStatusApiArg = {
     status: string;
   };
 };
-export type CreateEventApiResponse = unknown;
+export type CreateEventApiResponse =
+  /** status 200 The event the create resolved to. When no new event was recorded, that is the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged) or, for a call that identifies a user, the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`). A call that identifies no user records a new event instead, with the correlation fields stored exactly as sent. A server MAY also answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `Event-Disposition: created`, returning the event it just recorded, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read `Event-Disposition` rather than the status code to tell created from replayed.
+     */
+    | {
+        /** Event ID. */
+        id: string;
+        /** ID of the entity on which the event was performed. */
+        actedUpon: string;
+        /** Action taken on the resource, for example `import`. */
+        action: string;
+        /** Resource kind the operation was invoked on, for example `pattern`. */
+        category: string;
+        /** Human-readable summary of what happened. */
+        description: string;
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+         */
+        metadata: {
+          [key: string]: any;
+        } | null;
+        /** ID correlating the events one operation emitted. */
+        operationId: string;
+        /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+         */
+        severity: string;
+        /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+         */
+        status: string;
+        /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+         */
+        systemId: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
+        /** Timestamp when the event was recorded. */
+        createdAt: string;
+        /** Timestamp when the event was last updated. */
+        updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
+        /** Timestamp when the event was soft-deleted; omitted when it was not. */
+        deletedAt?: string | null;
+        /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+         */
+        correlationKey?: string;
+        /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+         */
+        occurrenceCount?: number;
+        /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+         */
+        firstSeenAt?: string;
+        /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+         */
+        lastSeenAt?: string;
+        /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+         */
+        resolvedAt?: string;
+        /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+         */
+        source?: string;
+        /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+         */
+        type?: string;
+        /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+        specversion?: "1.0";
+        /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+         */
+        traceId?: string;
+        /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+         */
+        parentId?: string;
+      }
+    | /** status 201 A new event was recorded (`Event-Disposition: created`). A call that identifies no user stores the correlation fields exactly as sent. For a call that identifies a user and carries a `correlationKey`, the event opens a condition, or records one already resolved when the payload carries `resolvedAt`. An already resolved insert uses `occurrenceCount` 1 when omitted, and `firstSeenAt` and `lastSeenAt` from the payload, else `resolvedAt`.
+     */ {
+        /** Event ID. */
+        id: string;
+        /** ID of the entity on which the event was performed. */
+        actedUpon: string;
+        /** Action taken on the resource, for example `import`. */
+        action: string;
+        /** Resource kind the operation was invoked on, for example `pattern`. */
+        category: string;
+        /** Human-readable summary of what happened. */
+        description: string;
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
+         */
+        metadata: {
+          [key: string]: any;
+        } | null;
+        /** ID correlating the events one operation emitted. */
+        operationId: string;
+        /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+         */
+        severity: string;
+        /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+         */
+        status: string;
+        /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+         */
+        systemId: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
+        /** Timestamp when the event was recorded. */
+        createdAt: string;
+        /** Timestamp when the event was last updated. */
+        updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
+        /** Timestamp when the event was soft-deleted; omitted when it was not. */
+        deletedAt?: string | null;
+        /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+         */
+        correlationKey?: string;
+        /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+         */
+        occurrenceCount?: number;
+        /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+         */
+        firstSeenAt?: string;
+        /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+         */
+        lastSeenAt?: string;
+        /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+         */
+        resolvedAt?: string;
+        /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+         */
+        source?: string;
+        /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+         */
+        type?: string;
+        /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+        specversion?: "1.0";
+        /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+         */
+        traceId?: string;
+        /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+         */
+        parentId?: string;
+      };
 export type CreateEventApiArg = {
   body: {
     /** UUID of the user associated with the event. */
     owner?: string;
     /** The category of the event. */
     category?: string;
+    /** Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed. */
+    visibility?: "private" | "public";
     /** The action of the event. */
     action?: string;
     /** Description of the event. */
     description?: string;
+    /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+     */
+    severity?: string;
+    /** Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
+     */
+    idempotencyKey?: string;
+    /** Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates.
+     */
+    correlationKey?: string;
+    /** Number of occurrences this create reports, for a producer that counted repeats locally before sending. A create without a `correlationKey`, and a call that identifies no user, stores this value exactly as sent, including when it is omitted. For a call that identifies a user and carries a `correlationKey`, omitted means 1. An opening create stores that count, counting an open condition adds it, and an already-resolved insert stores it. A resolving create on that open event does not add it.
+     */
+    occurrenceCount?: number;
+    /** When the producer first saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `lastSeenAt`, or the time of receipt, and omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when that create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
+     */
+    firstSeenAt?: string;
+    /** When the producer last saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition, or while closing one, means the time of receipt; and omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
+     */
+    lastSeenAt?: string;
+    /** When the condition named by `correlationKey` cleared. A call that identifies no user stores this value exactly as sent and does not match an open event. For a call that identifies a user, a create that carries it is a resolution: it closes that caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+     */
+    resolvedAt?: string;
+    /** Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
+     */
+    source?: string;
+    /** CloudEvents-compatible `type`: a reverse-DNS name of the kind of occurrence, for example `io.meshery.user.signup`. It does not replace `category` and `action`, which stay two free strings; `type` is for CloudEvents-aware consumers.
+     */
+    type?: string;
+    /** The CloudEvents specification version the event's `source`, `type` and `id` are compatible with, when the producer sets them as CloudEvents attributes. A Meshery event is CloudEvents compatible; it is not a CloudEvent.
+     */
+    specversion?: "1.0";
+    /** W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time.
+     */
+    traceId?: string;
+    /** W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.
+     */
+    parentId?: string;
     [key: string]: any;
   };
 };
@@ -16387,9 +17995,12 @@ export type DeleteWorkspaceApiArg = {
   workspaceId: string;
 };
 export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
+  /** Current page number of the result set. */
   page?: number;
-  page_size?: number;
-  total_count?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
   /** The teams of the teampage. */
   teams?: {
     /** Team ID */
@@ -16402,10 +18013,12 @@ export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
     owner?: string;
     /** Additional metadata for the team */
     metadata?: object;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the team was created. */
+    createdAt: string;
+    /** Timestamp when the team was last updated. */
+    updatedAt: string;
+    /** Timestamp when the team was soft-deleted, if applicable. */
+    deletedAt?: string;
   }[];
 };
 export type GetTeamsOfWorkspaceApiArg = {
@@ -16488,6 +18101,16 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentsOfWorkspaceApiArg = {
@@ -16553,14 +18176,14 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
-      pattern_caveats: string;
+      patternCaveats: string;
       /** Purpose of the design along with its intended and unintended uses. */
-      pattern_info: string;
+      patternInfo: string;
       /** Categorization of the type of design or operational flow depicted in this design. */
       type:
         | "Deployment"
@@ -16572,10 +18195,13 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     created_at?: string;
     user_id?: string;
+    /** The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId?: string;
     location?: {
       [key: string]: string;
     };
@@ -16675,6 +18301,8 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             updated_at?: string;
             /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            organizationId?: string;
             /** Associated environments for this connection */
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -17797,8 +19425,12 @@ export const {
   useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
+  useGetChildOrgsQuery,
+  useLazyGetChildOrgsQuery,
+  useCreateChildOrgMutation,
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
+  usePatchOrgPreferencesMutation,
   useAddTeamToOrgMutation,
   useRemoveTeamFromOrgMutation,
   useAddUserToOrgMutation,

@@ -169,10 +169,24 @@ const CredentialSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
+                          "orgOwner": {
+                            "description": "UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.",
+                            "x-order": 4,
+                            "x-go-name": "OrgOwner",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "org_owner"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
                           "type": {
                             "type": "string",
                             "description": "Credential type (e.g. token, basic, AWS).",
-                            "x-order": 4,
+                            "x-order": 5,
                             "x-oapi-codegen-extra-tags": {
                               "db": "type"
                             },
@@ -181,7 +195,7 @@ const CredentialSchema: Record<string, unknown> = {
                           "secret": {
                             "type": "object",
                             "description": "Key-value pairs containing the sensitive credential data.",
-                            "x-order": 5,
+                            "x-order": 6,
                             "x-go-type": "core.Map",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core"
@@ -197,7 +211,7 @@ const CredentialSchema: Record<string, unknown> = {
                             "description": "Timestamp when the credential was created.",
                             "x-go-type": "time.Time",
                             "x-go-type-skip-optional-pointer": true,
-                            "x-order": 6,
+                            "x-order": 7,
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at"
                             }
@@ -208,7 +222,7 @@ const CredentialSchema: Record<string, unknown> = {
                             "description": "Timestamp when the credential was last updated.",
                             "x-go-type": "time.Time",
                             "x-go-type-skip-optional-pointer": true,
-                            "x-order": 7,
+                            "x-order": 8,
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at"
                             }
@@ -222,7 +236,7 @@ const CredentialSchema: Record<string, unknown> = {
                               "path": "github.com/meshery/schemas/models/core"
                             },
                             "x-go-type-skip-optional-pointer": true,
-                            "x-order": 8,
+                            "x-order": 9,
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at"
                             }
@@ -333,16 +347,30 @@ const CredentialSchema: Record<string, unknown> = {
                       "path": "github.com/gofrs/uuid"
                     }
                   },
+                  "orgOwner": {
+                    "description": "UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization.",
+                    "x-order": 4,
+                    "x-go-name": "OrgOwner",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "orgOwner,omitempty"
+                    },
+                    "type": "string",
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
                   "type": {
                     "type": "string",
                     "description": "Credential type (e.g. token, basic, AWS).",
-                    "x-order": 4,
+                    "x-order": 5,
                     "maxLength": 255
                   },
                   "secret": {
                     "type": "object",
                     "description": "Key-value pairs containing the sensitive credential data.",
-                    "x-order": 5,
+                    "x-order": 6,
                     "x-go-type": "core.Map",
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core"
@@ -408,10 +436,24 @@ const CredentialSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
+                    "orgOwner": {
+                      "description": "UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.",
+                      "x-order": 4,
+                      "x-go-name": "OrgOwner",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
                     "type": {
                       "type": "string",
                       "description": "Credential type (e.g. token, basic, AWS).",
-                      "x-order": 4,
+                      "x-order": 5,
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
                       },
@@ -420,7 +462,7 @@ const CredentialSchema: Record<string, unknown> = {
                     "secret": {
                       "type": "object",
                       "description": "Key-value pairs containing the sensitive credential data.",
-                      "x-order": 5,
+                      "x-order": 6,
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
@@ -436,7 +478,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "description": "Timestamp when the credential was created.",
                       "x-go-type": "time.Time",
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 6,
+                      "x-order": 7,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       }
@@ -447,7 +489,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "description": "Timestamp when the credential was last updated.",
                       "x-go-type": "time.Time",
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 7,
+                      "x-order": 8,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       }
@@ -461,7 +503,7 @@ const CredentialSchema: Record<string, unknown> = {
                         "path": "github.com/meshery/schemas/models/core"
                       },
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 8,
+                      "x-order": 9,
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       }
@@ -559,16 +601,30 @@ const CredentialSchema: Record<string, unknown> = {
                       "path": "github.com/gofrs/uuid"
                     }
                   },
+                  "orgOwner": {
+                    "description": "UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization.",
+                    "x-order": 4,
+                    "x-go-name": "OrgOwner",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "orgOwner,omitempty"
+                    },
+                    "type": "string",
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
                   "type": {
                     "type": "string",
                     "description": "Credential type (e.g. token, basic, AWS).",
-                    "x-order": 4,
+                    "x-order": 5,
                     "maxLength": 255
                   },
                   "secret": {
                     "type": "object",
                     "description": "Key-value pairs containing the sensitive credential data.",
-                    "x-order": 5,
+                    "x-order": 6,
                     "x-go-type": "core.Map",
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core"
@@ -634,10 +690,24 @@ const CredentialSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
+                    "orgOwner": {
+                      "description": "UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.",
+                      "x-order": 4,
+                      "x-go-name": "OrgOwner",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
                     "type": {
                       "type": "string",
                       "description": "Credential type (e.g. token, basic, AWS).",
-                      "x-order": 4,
+                      "x-order": 5,
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
                       },
@@ -646,7 +716,7 @@ const CredentialSchema: Record<string, unknown> = {
                     "secret": {
                       "type": "object",
                       "description": "Key-value pairs containing the sensitive credential data.",
-                      "x-order": 5,
+                      "x-order": 6,
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
@@ -662,7 +732,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "description": "Timestamp when the credential was created.",
                       "x-go-type": "time.Time",
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 6,
+                      "x-order": 7,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       }
@@ -673,7 +743,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "description": "Timestamp when the credential was last updated.",
                       "x-go-type": "time.Time",
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 7,
+                      "x-order": 8,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       }
@@ -687,7 +757,7 @@ const CredentialSchema: Record<string, unknown> = {
                         "path": "github.com/meshery/schemas/models/core"
                       },
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 8,
+                      "x-order": 9,
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       }
@@ -897,10 +967,24 @@ const CredentialSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
+                    "orgOwner": {
+                      "description": "UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.",
+                      "x-order": 4,
+                      "x-go-name": "OrgOwner",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
                     "type": {
                       "type": "string",
                       "description": "Credential type (e.g. token, basic, AWS).",
-                      "x-order": 4,
+                      "x-order": 5,
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
                       },
@@ -909,7 +993,7 @@ const CredentialSchema: Record<string, unknown> = {
                     "secret": {
                       "type": "object",
                       "description": "Key-value pairs containing the sensitive credential data.",
-                      "x-order": 5,
+                      "x-order": 6,
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
@@ -925,7 +1009,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "description": "Timestamp when the credential was created.",
                       "x-go-type": "time.Time",
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 6,
+                      "x-order": 7,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       }
@@ -936,7 +1020,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "description": "Timestamp when the credential was last updated.",
                       "x-go-type": "time.Time",
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 7,
+                      "x-order": 8,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       }
@@ -950,7 +1034,7 @@ const CredentialSchema: Record<string, unknown> = {
                         "path": "github.com/meshery/schemas/models/core"
                       },
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 8,
+                      "x-order": 9,
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       }
@@ -962,6 +1046,244 @@ const CredentialSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/credentials/{credentialId}/transfer": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "credentials"
+        ],
+        "summary": "Transfer credential ownership",
+        "operationId": "transferCredentialOwnership",
+        "description": "Transfers ownership of a credential to another user. The authenticated user must be the current owner or have the appropriate RBAC permission. This intentionally bypasses the userId-pinning guard applied to normal credential updates.\n",
+        "parameters": [
+          {
+            "name": "credentialId",
+            "in": "path",
+            "description": "Credential ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Request body for transferring ownership of a resource to another user. Used uniformly across all ownable resource constructs.\n",
+                "required": [
+                  "newOwnerId"
+                ],
+                "properties": {
+                  "newOwnerId": {
+                    "description": "UUID of the user to whom ownership will be transferred.",
+                    "type": "string",
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Credential ownership transferred successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "userId",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Unique identifier for the credential.",
+                      "x-order": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Human-readable name for the credential.",
+                      "x-order": 2,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name"
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "userId": {
+                      "description": "UUID of the user who owns this credential.",
+                      "x-order": 3,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "orgOwner": {
+                      "description": "UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.",
+                      "x-order": 4,
+                      "x-go-name": "OrgOwner",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Credential type (e.g. token, basic, AWS).",
+                      "x-order": 5,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "type"
+                      },
+                      "maxLength": 255
+                    },
+                    "secret": {
+                      "type": "object",
+                      "description": "Key-value pairs containing the sensitive credential data.",
+                      "x-order": 6,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "secret"
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp when the credential was created.",
+                      "x-go-type": "time.Time",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-order": 7,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      }
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp when the credential was last updated.",
+                      "x-go-type": "time.Time",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-order": 8,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      }
+                    },
+                    "deletedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp when the credential was soft-deleted.",
+                      "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-order": 9,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1015,6 +1337,16 @@ const CredentialSchema: Record<string, unknown> = {
       },
       "401": {
         "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
         "content": {
           "text/plain": {
             "schema": {
@@ -1169,10 +1501,24 @@ const CredentialSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
+          "orgOwner": {
+            "description": "UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.",
+            "x-order": 4,
+            "x-go-name": "OrgOwner",
+            "x-oapi-codegen-extra-tags": {
+              "db": "org_owner"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
           "type": {
             "type": "string",
             "description": "Credential type (e.g. token, basic, AWS).",
-            "x-order": 4,
+            "x-order": 5,
             "x-oapi-codegen-extra-tags": {
               "db": "type"
             },
@@ -1181,7 +1527,7 @@ const CredentialSchema: Record<string, unknown> = {
           "secret": {
             "type": "object",
             "description": "Key-value pairs containing the sensitive credential data.",
-            "x-order": 5,
+            "x-order": 6,
             "x-go-type": "core.Map",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core"
@@ -1197,7 +1543,7 @@ const CredentialSchema: Record<string, unknown> = {
             "description": "Timestamp when the credential was created.",
             "x-go-type": "time.Time",
             "x-go-type-skip-optional-pointer": true,
-            "x-order": 6,
+            "x-order": 7,
             "x-oapi-codegen-extra-tags": {
               "db": "created_at"
             }
@@ -1208,7 +1554,7 @@ const CredentialSchema: Record<string, unknown> = {
             "description": "Timestamp when the credential was last updated.",
             "x-go-type": "time.Time",
             "x-go-type-skip-optional-pointer": true,
-            "x-order": 7,
+            "x-order": 8,
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at"
             }
@@ -1222,7 +1568,7 @@ const CredentialSchema: Record<string, unknown> = {
               "path": "github.com/meshery/schemas/models/core"
             },
             "x-go-type-skip-optional-pointer": true,
-            "x-order": 8,
+            "x-order": 9,
             "x-oapi-codegen-extra-tags": {
               "db": "deleted_at"
             }
@@ -1270,16 +1616,30 @@ const CredentialSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
+          "orgOwner": {
+            "description": "UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization.",
+            "x-order": 4,
+            "x-go-name": "OrgOwner",
+            "x-oapi-codegen-extra-tags": {
+              "json": "orgOwner,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
           "type": {
             "type": "string",
             "description": "Credential type (e.g. token, basic, AWS).",
-            "x-order": 4,
+            "x-order": 5,
             "maxLength": 255
           },
           "secret": {
             "type": "object",
             "description": "Key-value pairs containing the sensitive credential data.",
-            "x-order": 5,
+            "x-order": 6,
             "x-go-type": "core.Map",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core"
@@ -1350,10 +1710,24 @@ const CredentialSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
+                "orgOwner": {
+                  "description": "UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.",
+                  "x-order": 4,
+                  "x-go-name": "OrgOwner",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "org_owner"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
                 "type": {
                   "type": "string",
                   "description": "Credential type (e.g. token, basic, AWS).",
-                  "x-order": 4,
+                  "x-order": 5,
                   "x-oapi-codegen-extra-tags": {
                     "db": "type"
                   },
@@ -1362,7 +1736,7 @@ const CredentialSchema: Record<string, unknown> = {
                 "secret": {
                   "type": "object",
                   "description": "Key-value pairs containing the sensitive credential data.",
-                  "x-order": 5,
+                  "x-order": 6,
                   "x-go-type": "core.Map",
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core"
@@ -1378,7 +1752,7 @@ const CredentialSchema: Record<string, unknown> = {
                   "description": "Timestamp when the credential was created.",
                   "x-go-type": "time.Time",
                   "x-go-type-skip-optional-pointer": true,
-                  "x-order": 6,
+                  "x-order": 7,
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at"
                   }
@@ -1389,7 +1763,7 @@ const CredentialSchema: Record<string, unknown> = {
                   "description": "Timestamp when the credential was last updated.",
                   "x-go-type": "time.Time",
                   "x-go-type-skip-optional-pointer": true,
-                  "x-order": 7,
+                  "x-order": 8,
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at"
                   }
@@ -1403,7 +1777,7 @@ const CredentialSchema: Record<string, unknown> = {
                     "path": "github.com/meshery/schemas/models/core"
                   },
                   "x-go-type-skip-optional-pointer": true,
-                  "x-order": 8,
+                  "x-order": 9,
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at"
                   }

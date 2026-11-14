@@ -76,6 +76,7 @@ export interface components {
          *       "schemaVersion": "environments.meshery.io/v1beta3",
          *       "name": "Production Environment",
          *       "description": "Connections and credentials for the production cluster.",
+         *       "purpose": "user",
          *       "organizationId": "00000000-0000-0000-0000-000000000000",
          *       "owner": "00000000-0000-0000-0000-000000000000",
          *       "createdAt": "0001-01-01T00:00:00Z",
@@ -134,6 +135,19 @@ export interface components {
              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
              */
             deletedAt?: string | null;
+            /**
+             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+             *
+             *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+             *
+             *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+             *
+             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+             *
+             *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
+             * @enum {string}
+             */
+            purpose?: "user" | "administrative";
         };
         /** @description Junction record linking an environment to a connection. */
         EnvironmentConnectionMapping: {
@@ -168,7 +182,7 @@ export interface components {
              */
             deletedAt?: string;
         };
-        /** @description Payload for creating or updating an environment. */
+        /** @description Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them. `purpose` is present but limited to the non-privileged values, because permission to create an environment must not confer the ability to designate it administrative. Limiting it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse a privileged value on input whatever surface it arrives on. Do not widen `EnvironmentPayloadPurpose` to a privileged value - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
         EnvironmentPayload: {
             /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
             name: string;
@@ -179,7 +193,21 @@ export interface components {
              * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
              */
             organizationId: string;
+            /** @description Free-form settings stored with the environment. */
+            metadata?: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
+             * @enum {string}
+             */
+            purpose?: "user";
         };
+        /**
+         * @description The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
+         * @enum {string}
+         */
+        EnvironmentPayloadPurpose: "user";
         /** @description Paginated list of environments. */
         EnvironmentPage: {
             /** @description Zero-based page index returned in this response. */
@@ -239,6 +267,19 @@ export interface components {
                  * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                  */
                 deletedAt?: string | null;
+                /**
+                 * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                 *
+                 *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                 *
+                 *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                 *
+                 *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                 *
+                 *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
+                 * @enum {string}
+                 */
+                purpose?: "user" | "administrative";
             }[];
         };
         /** @description Paginated list of connections associated with an environment. */
@@ -249,9 +290,362 @@ export interface components {
             pageSize?: number;
             /** @description Total number of items available. */
             totalCount?: number;
-            /** @description The connections of the environmentconnectionspage. */
+            /** @description Connections associated with the environment, using the canonical Connection response schema. */
             connections?: {
-                [key: string]: unknown;
+                /**
+                 * Format: uuid
+                 * @description Connection ID
+                 */
+                id: string;
+                /** @description Connection Name */
+                name: string;
+                /** @description Human-readable description of the connection and its purpose. */
+                description?: string;
+                /**
+                 * Format: uri
+                 * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+                 */
+                url?: string;
+                /**
+                 * Format: uuid
+                 * @description Associated Credential ID
+                 */
+                credentialId?: string;
+                /** @description Connection Type (platform, telemetry, collaboration) */
+                type: string;
+                /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                subType: string;
+                /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+                kind: string;
+                /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+                modelReference?: {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id: string;
+                    /**
+                     * @description The unique name for the model within the scope of a registrant.
+                     * @example cert-manager
+                     */
+                    name: string;
+                    /** @description Version of the model definition. */
+                    version: string;
+                    /**
+                     * @description Human-readable name for the model.
+                     * @example Cert Manager
+                     */
+                    displayName: string;
+                    /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                    model: {
+                        /** @description Version of the model as defined by the registrant. */
+                        version: string;
+                    };
+                    registrant: {
+                        /** @description Kind of the registrant. */
+                        kind: string;
+                    };
+                };
+                /** @description Additional connection metadata */
+                metadata?: Record<string, never>;
+                /** @description Schema for the credential Associated with the connection */
+                credentialSchema?: Record<string, never>;
+                /** @description Schema for the connection */
+                connectionSchema?: Record<string, never>;
+                /** @description Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+                styles?: ({
+                    /** @description Primary color of the component used for UI representation. */
+                    primaryColor: string;
+                    /** @description Secondary color of the entity used for UI representation. */
+                    secondaryColor?: string;
+                    /** @description White SVG of the entity used for UI representation on dark background. */
+                    svgWhite: string;
+                    /** @description Colored SVG of the entity used for UI representation on light background. */
+                    svgColor: string;
+                    /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                    svgComplete: string;
+                    /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                    color?: string;
+                    /** @description The opacity of the label text, including its outline. */
+                    textOpacity?: number;
+                    /** @description A comma-separated list of font names to use on the label text. */
+                    fontFamily?: string;
+                    /** @description The size of the label text. */
+                    fontSize?: string;
+                    /** @description A CSS font style to be applied to the label text. */
+                    fontStyle?: string;
+                    /** @description A CSS font weight to be applied to the label text. */
+                    fontWeight?: string;
+                    /**
+                     * @description A transformation to apply to the label text
+                     * @enum {string}
+                     */
+                    textTransform?: "none" | "uppercase" | "lowercase";
+                    /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+                    opacity?: number;
+                    /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                    zIndex?: number;
+                    /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                    label?: string;
+                    /** @description The animation to apply to the element. example ripple,bounce,etc */
+                    animation?: Record<string, never>;
+                } & {
+                    [key: string]: unknown;
+                }) & {
+                    /**
+                     * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                     * @enum {string}
+                     */
+                    shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                    /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+                    position?: {
+                        /** @description The x-coordinate of the node. */
+                        x: number;
+                        /** @description The y-coordinate of the node. */
+                        y: number;
+                    };
+                    /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+                    bodyText?: string;
+                    /**
+                     * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+                     * @enum {string}
+                     */
+                    bodyTextWrap?: "none" | "wrap" | "ellipsis";
+                    /** @description The maximum width for wrapping text in the node. */
+                    bodyTextMaxWidth?: string;
+                    /** @description The opacity of the node's body text, including its outline. */
+                    bodyTextOpacity?: number;
+                    /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+                    bodyTextBackgroundColor?: string;
+                    /** @description The size of the node's body text. */
+                    bodyTextFontSize?: number;
+                    /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+                    bodyTextColor?: string;
+                    /** @description A CSS font weight to be applied to the node's body text. */
+                    bodyTextFontWeight?: string;
+                    /** @description A CSS horizontal alignment to be applied to the node's body text. */
+                    bodyTextHorizontalAlign?: string;
+                    /** @description A CSS text decoration to be applied to the node's body text. */
+                    bodyTextDecoration?: string;
+                    /** @description A CSS vertical alignment to be applied to the node's body text. */
+                    bodyTextVerticalAlign?: string;
+                    /** @description The width of the node's body or the width of an edge's line. */
+                    width?: number;
+                    /** @description The height of the node's body */
+                    height?: number;
+                    /**
+                     * Format: uri
+                     * @description The URL that points to the image to show in the node.
+                     */
+                    backgroundImage?: string;
+                    /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+                    backgroundColor?: string;
+                    /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+                    backgroundBlacken?: number;
+                    /** @description The opacity level of the node's background colour */
+                    backgroundOpacity?: number;
+                    /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                    backgroundPositionX?: string;
+                    /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                    backgroundPositionY?: string;
+                    /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                    backgroundOffsetX?: string;
+                    /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                    backgroundOffsetY?: string;
+                    /**
+                     * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+                     * @enum {string}
+                     */
+                    backgroundFit?: "none" | "contain" | "cover";
+                    /**
+                     * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+                     * @enum {string}
+                     */
+                    backgroundClip?: "none" | "node" | "node-border";
+                    /**
+                     * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+                     * @enum {string}
+                     */
+                    backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+                    /**
+                     * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+                     * @enum {string}
+                     */
+                    backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+                    /** @description The size of the node's border. */
+                    borderWidth?: number;
+                    /**
+                     * @description The style of the node's border
+                     * @enum {string}
+                     */
+                    borderStyle?: "solid" | "dotted" | "dashed" | "double";
+                    /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+                    borderColor?: string;
+                    /** @description The opacity of the node's border */
+                    borderOpacity?: number;
+                    /** @description The amount of padding around all sides of the node. */
+                    padding?: number;
+                    /**
+                     * @description The horizontal alignment of a node's label
+                     * @enum {string}
+                     */
+                    textHalign?: "left" | "center" | "right";
+                    /**
+                     * @description The vertical alignment of a node's label
+                     * @enum {string}
+                     */
+                    textValign?: "top" | "center" | "bottom";
+                    /**
+                     * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+                     * @default no
+                     * @enum {string}
+                     */
+                    ghost: "yes" | "no";
+                    /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                    activeBgColor?: string;
+                    /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                    activeBgOpacity?: string;
+                    /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                    activeBgSize?: string;
+                    /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                    selectionBoxColor?: string;
+                    /** @description The size of the border on the selection box. Selector needs to be *core* */
+                    selectionBoxBorderWidth?: number;
+                    /** @description The opacity of the selection box. Selector needs to be *core* */
+                    selectionBoxOpacity?: number;
+                    /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                    outsideTextureBgColor?: string;
+                    /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+                    outsideTextureBgOpacity?: number;
+                    /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+                    shapePolygonPoints?: string;
+                    /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                    menuBackgroundColor?: string;
+                    /** @description The opacity of the background of the component menu. */
+                    menuBackgroundOpacity?: number;
+                    /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                    menuForgroundColor?: string;
+                };
+                /**
+                 * @description Connection Status
+                 * @enum {string}
+                 */
+                status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                /** @description Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+                transitionMap?: {
+                    [key: string]: {
+                        /**
+                         * @description The connection state reachable from the current state.
+                         * @enum {string}
+                         */
+                        nextState: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                        /** @description Human-readable explanation of when or why this transition occurs. */
+                        description?: string;
+                    }[];
+                };
+                /**
+                 * Format: uuid
+                 * @description User ID who owns this connection
+                 */
+                owner?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the connection was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the connection was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the connection was soft-deleted, if applicable.
+                 */
+                deletedAt?: string | null;
+                /**
+                 * Format: uuid
+                 * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+                 */
+                organizationId: string;
+                /** @description Associated environments for this connection */
+                environments?: {
+                    /**
+                     * Format: uuid
+                     * @description ID
+                     */
+                    id: string;
+                    /**
+                     * @description Specifies the version of the schema to which the environment conforms.
+                     * @default environments.meshery.io/v1beta3
+                     * @example [
+                     *       "v1",
+                     *       "v1alpha1",
+                     *       "v2beta3",
+                     *       "v1.custom-suffix",
+                     *       "models.meshery.io/v1beta1",
+                     *       "capability.meshery.io/v1alpha1"
+                     *     ]
+                     */
+                    schemaVersion: string;
+                    /** @description Environment name */
+                    name: string;
+                    /** @description Environment description */
+                    description: string;
+                    /**
+                     * Format: uuid
+                     * @description Environment organization ID
+                     */
+                    organizationId: string;
+                    /**
+                     * Format: uuid
+                     * @description Environment owner
+                     */
+                    owner?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the environment was created.
+                     */
+                    createdAt?: string;
+                    /** @description Additional metadata associated with the environment. */
+                    metadata?: Record<string, never>;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the environment was last updated.
+                     */
+                    updatedAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                     */
+                    deletedAt?: string | null;
+                    /**
+                     * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                     *
+                     *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                     *
+                     *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                     *
+                     *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                     *
+                     *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
+                     * @enum {string}
+                     */
+                    purpose?: "user" | "administrative";
+                }[];
+                /**
+                 * @description Specifies the version of the schema used for the definition.
+                 * @default connections.meshery.io/v1beta3
+                 * @example [
+                 *       "v1",
+                 *       "v1alpha1",
+                 *       "v2beta3",
+                 *       "v1.custom-suffix",
+                 *       "models.meshery.io/v1beta1",
+                 *       "capability.meshery.io/v1alpha1"
+                 *     ]
+                 */
+                schemaVersion: string;
             }[];
         };
         /** @description Paginated list of environment-to-connection mapping records, returned when a connection is assigned to or unassigned from an environment. Distinct from EnvironmentConnectionsPage, which lists the connections themselves rather than the junction records. */
@@ -377,6 +771,15 @@ export interface components {
                      * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
                      */
                     organizationId: string;
+                    /** @description Free-form settings stored with the environment. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * @description The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
+                     * @enum {string}
+                     */
+                    purpose?: "user";
                 };
             };
         };
@@ -404,6 +807,8 @@ export interface operations {
                 pagesize?: number;
                 /** @description User's organization ID */
                 orgId: string;
+                /** @description Return only environments with this purpose; absent returns every purpose the caller may see. The filter only narrows the environments the caller can already list and grants no visibility - a caller who cannot see administrative environments receives an empty page for purpose=administrative. */
+                purpose?: "user" | "administrative";
             };
             header?: never;
             path?: never;
@@ -475,6 +880,19 @@ export interface operations {
                              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                              */
                             deletedAt?: string | null;
+                            /**
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                             *
+                             *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                             *
+                             *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                             *
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
+                             * @enum {string}
+                             */
+                            purpose?: "user" | "administrative";
                         }[];
                     };
                 };
@@ -519,6 +937,15 @@ export interface operations {
                      * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
                      */
                     organizationId: string;
+                    /** @description Free-form settings stored with the environment. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * @description The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
+                     * @enum {string}
+                     */
+                    purpose?: "user";
                 };
             };
         };
@@ -579,6 +1006,19 @@ export interface operations {
                          * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                          */
                         deletedAt?: string | null;
+                        /**
+                         * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                         *
+                         *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                         *
+                         *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                         *
+                         *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                         *
+                         *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
+                         * @enum {string}
+                         */
+                        purpose?: "user" | "administrative";
                     };
                 };
             };
@@ -690,6 +1130,19 @@ export interface operations {
                              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                              */
                             deletedAt?: string | null;
+                            /**
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                             *
+                             *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                             *
+                             *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                             *
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
+                             * @enum {string}
+                             */
+                            purpose?: "user" | "administrative";
                         }[];
                     };
                 };
@@ -755,6 +1208,15 @@ export interface operations {
                      * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
                      */
                     organizationId: string;
+                    /** @description Free-form settings stored with the environment. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * @description The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
+                     * @enum {string}
+                     */
+                    purpose?: "user";
                 };
             };
         };
@@ -823,6 +1285,19 @@ export interface operations {
                              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                              */
                             deletedAt?: string | null;
+                            /**
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                             *
+                             *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                             *
+                             *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                             *
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
+                             * @enum {string}
+                             */
+                            purpose?: "user" | "administrative";
                         }[];
                     };
                 };
@@ -963,9 +1438,362 @@ export interface operations {
                         pageSize?: number;
                         /** @description Total number of items available. */
                         totalCount?: number;
-                        /** @description The connections of the environmentconnectionspage. */
+                        /** @description Connections associated with the environment, using the canonical Connection response schema. */
                         connections?: {
-                            [key: string]: unknown;
+                            /**
+                             * Format: uuid
+                             * @description Connection ID
+                             */
+                            id: string;
+                            /** @description Connection Name */
+                            name: string;
+                            /** @description Human-readable description of the connection and its purpose. */
+                            description?: string;
+                            /**
+                             * Format: uri
+                             * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+                             */
+                            url?: string;
+                            /**
+                             * Format: uuid
+                             * @description Associated Credential ID
+                             */
+                            credentialId?: string;
+                            /** @description Connection Type (platform, telemetry, collaboration) */
+                            type: string;
+                            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                            subType: string;
+                            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+                            kind: string;
+                            /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+                            modelReference?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /**
+                                 * @description The unique name for the model within the scope of a registrant.
+                                 * @example cert-manager
+                                 */
+                                name: string;
+                                /** @description Version of the model definition. */
+                                version: string;
+                                /**
+                                 * @description Human-readable name for the model.
+                                 * @example Cert Manager
+                                 */
+                                displayName: string;
+                                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                                model: {
+                                    /** @description Version of the model as defined by the registrant. */
+                                    version: string;
+                                };
+                                registrant: {
+                                    /** @description Kind of the registrant. */
+                                    kind: string;
+                                };
+                            };
+                            /** @description Additional connection metadata */
+                            metadata?: Record<string, never>;
+                            /** @description Schema for the credential Associated with the connection */
+                            credentialSchema?: Record<string, never>;
+                            /** @description Schema for the connection */
+                            connectionSchema?: Record<string, never>;
+                            /** @description Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+                            styles?: ({
+                                /** @description Primary color of the component used for UI representation. */
+                                primaryColor: string;
+                                /** @description Secondary color of the entity used for UI representation. */
+                                secondaryColor?: string;
+                                /** @description White SVG of the entity used for UI representation on dark background. */
+                                svgWhite: string;
+                                /** @description Colored SVG of the entity used for UI representation on light background. */
+                                svgColor: string;
+                                /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                                svgComplete: string;
+                                /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                                color?: string;
+                                /** @description The opacity of the label text, including its outline. */
+                                textOpacity?: number;
+                                /** @description A comma-separated list of font names to use on the label text. */
+                                fontFamily?: string;
+                                /** @description The size of the label text. */
+                                fontSize?: string;
+                                /** @description A CSS font style to be applied to the label text. */
+                                fontStyle?: string;
+                                /** @description A CSS font weight to be applied to the label text. */
+                                fontWeight?: string;
+                                /**
+                                 * @description A transformation to apply to the label text
+                                 * @enum {string}
+                                 */
+                                textTransform?: "none" | "uppercase" | "lowercase";
+                                /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+                                opacity?: number;
+                                /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                                zIndex?: number;
+                                /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                                label?: string;
+                                /** @description The animation to apply to the element. example ripple,bounce,etc */
+                                animation?: Record<string, never>;
+                            } & {
+                                [key: string]: unknown;
+                            }) & {
+                                /**
+                                 * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                                 * @enum {string}
+                                 */
+                                shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                                /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+                                position?: {
+                                    /** @description The x-coordinate of the node. */
+                                    x: number;
+                                    /** @description The y-coordinate of the node. */
+                                    y: number;
+                                };
+                                /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+                                bodyText?: string;
+                                /**
+                                 * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+                                 * @enum {string}
+                                 */
+                                bodyTextWrap?: "none" | "wrap" | "ellipsis";
+                                /** @description The maximum width for wrapping text in the node. */
+                                bodyTextMaxWidth?: string;
+                                /** @description The opacity of the node's body text, including its outline. */
+                                bodyTextOpacity?: number;
+                                /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+                                bodyTextBackgroundColor?: string;
+                                /** @description The size of the node's body text. */
+                                bodyTextFontSize?: number;
+                                /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+                                bodyTextColor?: string;
+                                /** @description A CSS font weight to be applied to the node's body text. */
+                                bodyTextFontWeight?: string;
+                                /** @description A CSS horizontal alignment to be applied to the node's body text. */
+                                bodyTextHorizontalAlign?: string;
+                                /** @description A CSS text decoration to be applied to the node's body text. */
+                                bodyTextDecoration?: string;
+                                /** @description A CSS vertical alignment to be applied to the node's body text. */
+                                bodyTextVerticalAlign?: string;
+                                /** @description The width of the node's body or the width of an edge's line. */
+                                width?: number;
+                                /** @description The height of the node's body */
+                                height?: number;
+                                /**
+                                 * Format: uri
+                                 * @description The URL that points to the image to show in the node.
+                                 */
+                                backgroundImage?: string;
+                                /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+                                backgroundColor?: string;
+                                /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+                                backgroundBlacken?: number;
+                                /** @description The opacity level of the node's background colour */
+                                backgroundOpacity?: number;
+                                /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                                backgroundPositionX?: string;
+                                /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                                backgroundPositionY?: string;
+                                /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                                backgroundOffsetX?: string;
+                                /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                                backgroundOffsetY?: string;
+                                /**
+                                 * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+                                 * @enum {string}
+                                 */
+                                backgroundFit?: "none" | "contain" | "cover";
+                                /**
+                                 * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+                                 * @enum {string}
+                                 */
+                                backgroundClip?: "none" | "node" | "node-border";
+                                /**
+                                 * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+                                 * @enum {string}
+                                 */
+                                backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+                                /**
+                                 * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+                                 * @enum {string}
+                                 */
+                                backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+                                /** @description The size of the node's border. */
+                                borderWidth?: number;
+                                /**
+                                 * @description The style of the node's border
+                                 * @enum {string}
+                                 */
+                                borderStyle?: "solid" | "dotted" | "dashed" | "double";
+                                /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+                                borderColor?: string;
+                                /** @description The opacity of the node's border */
+                                borderOpacity?: number;
+                                /** @description The amount of padding around all sides of the node. */
+                                padding?: number;
+                                /**
+                                 * @description The horizontal alignment of a node's label
+                                 * @enum {string}
+                                 */
+                                textHalign?: "left" | "center" | "right";
+                                /**
+                                 * @description The vertical alignment of a node's label
+                                 * @enum {string}
+                                 */
+                                textValign?: "top" | "center" | "bottom";
+                                /**
+                                 * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+                                 * @default no
+                                 * @enum {string}
+                                 */
+                                ghost: "yes" | "no";
+                                /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                                activeBgColor?: string;
+                                /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                                activeBgOpacity?: string;
+                                /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                                activeBgSize?: string;
+                                /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                                selectionBoxColor?: string;
+                                /** @description The size of the border on the selection box. Selector needs to be *core* */
+                                selectionBoxBorderWidth?: number;
+                                /** @description The opacity of the selection box. Selector needs to be *core* */
+                                selectionBoxOpacity?: number;
+                                /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                                outsideTextureBgColor?: string;
+                                /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+                                outsideTextureBgOpacity?: number;
+                                /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+                                shapePolygonPoints?: string;
+                                /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                                menuBackgroundColor?: string;
+                                /** @description The opacity of the background of the component menu. */
+                                menuBackgroundOpacity?: number;
+                                /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                                menuForgroundColor?: string;
+                            };
+                            /**
+                             * @description Connection Status
+                             * @enum {string}
+                             */
+                            status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                            /** @description Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+                            transitionMap?: {
+                                [key: string]: {
+                                    /**
+                                     * @description The connection state reachable from the current state.
+                                     * @enum {string}
+                                     */
+                                    nextState: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                                    /** @description Human-readable explanation of when or why this transition occurs. */
+                                    description?: string;
+                                }[];
+                            };
+                            /**
+                             * Format: uuid
+                             * @description User ID who owns this connection
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the connection was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the connection was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the connection was soft-deleted, if applicable.
+                             */
+                            deletedAt?: string | null;
+                            /**
+                             * Format: uuid
+                             * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+                             */
+                            organizationId: string;
+                            /** @description Associated environments for this connection */
+                            environments?: {
+                                /**
+                                 * Format: uuid
+                                 * @description ID
+                                 */
+                                id: string;
+                                /**
+                                 * @description Specifies the version of the schema to which the environment conforms.
+                                 * @default environments.meshery.io/v1beta3
+                                 * @example [
+                                 *       "v1",
+                                 *       "v1alpha1",
+                                 *       "v2beta3",
+                                 *       "v1.custom-suffix",
+                                 *       "models.meshery.io/v1beta1",
+                                 *       "capability.meshery.io/v1alpha1"
+                                 *     ]
+                                 */
+                                schemaVersion: string;
+                                /** @description Environment name */
+                                name: string;
+                                /** @description Environment description */
+                                description: string;
+                                /**
+                                 * Format: uuid
+                                 * @description Environment organization ID
+                                 */
+                                organizationId: string;
+                                /**
+                                 * Format: uuid
+                                 * @description Environment owner
+                                 */
+                                owner?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the environment was created.
+                                 */
+                                createdAt?: string;
+                                /** @description Additional metadata associated with the environment. */
+                                metadata?: Record<string, never>;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the environment was last updated.
+                                 */
+                                updatedAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                                 */
+                                deletedAt?: string | null;
+                                /**
+                                 * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+                                 *
+                                 *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                                 *
+                                 *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+                                 *
+                                 *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                                 *
+                                 *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
+                                 * @enum {string}
+                                 */
+                                purpose?: "user" | "administrative";
+                            }[];
+                            /**
+                             * @description Specifies the version of the schema used for the definition.
+                             * @default connections.meshery.io/v1beta3
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
                         }[];
                     };
                 };

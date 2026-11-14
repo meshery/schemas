@@ -50,6 +50,98 @@ properties:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
 ```
 
+### Event-metadata constructs have no server-generated fields
+
+Some constructs name the shape of an `Event`'s `metadata` rather than a table
+row the server owns: `follower_metrics`, `follower_demographics`,
+`content_metrics`, `activity_metrics`. They have no endpoints (`paths: {}`).
+A producer records a row with a create-event call, and the events service
+stores and returns `metadata` verbatim. The `Event` envelope carries `id`,
+`created_at` and the actor; the metadata itself has no server-generated
+fields. So, for this class only:
+
+- The entity `.yaml` declares no `id`, `created_at`, `updated_at` or
+  `deleted_at`. Adding them would invent fields no server ever writes.
+- The `{Construct}Payload` carries the same field set, the same `required`
+  list and the same `x-go-name` per property as the entity, because nothing
+  is server-owned. It is still a separate schema, so the two can diverge if
+  the construct ever gains endpoints.
+- A field the producer writes on every row belongs in `required` on both:
+  a `boolean` such as `matched`, a string whose empty value is itself
+  meaningful (`sourceFile`), and the row's key. The key fields are the only
+  record of whose reading it is, so they are load-bearing in the sense of
+  [Common Mistake 29](schema-review-checklist.md) (like its
+  `testSessionId`): keep them required. Make a field optional and nullable
+  when the producer can legitimately lack it.
+- `required` binds producers through their generated types. The events
+  service does not validate `metadata`, so a hand-built producer can still
+  omit a required field, and a Go reader then sees the zero value. State
+  this in the construct's description when it matters.
+- The row's natural key (for example organization, platform, subject and
+  reading date) is what makes readings a time series, so state it in the
+  description. The events service appends and enforces no uniqueness, so
+  also state how a reader resolves two events with the same key.
+- The template uses `null` for every nullable property. A blank source cell
+  is `null`, never `0` or `""`, and the template is the example instance
+  producers copy.
+
+`validation/event_metadata_constructs_test.go` pins the payload-entity
+agreement and the template nulls for every construct in this class. Add a
+new event-metadata construct to its list.
+
+A metadata shape that is a sub-shape of `Event.metadata` inside the event
+construct itself, rather than a construct with its own directory, is declared
+once with no `*Payload` twin: the design event metadata shapes are the worked
+example (see [design-event-metadata-contract.md](design-event-metadata-contract.md)).
+
+A construct with its own endpoints is not in this class, even if its rows
+are also mirrored into events. It follows Rule 1 as written.
+
+### Read-through constructs have no stored row
+
+Some constructs have endpoints but no row the server owns: every call reads
+the object from another system, or computes it, and answers it. The
+`oauth_consent_request` construct is the worked example: the server reads
+each pending consent request from the identity provider on every call
+([contract](oauth-consent-request-contract.md#no-stored-row)). The provider
+capabilities document (`provider_capability`) is computed per request the
+same way. For this class only:
+
+- The entity `.yaml` declares no `id`, `created_at`, `updated_at` or
+  `deleted_at`, because no server ever writes them. It still sets
+  `additionalProperties: false`. The object's own key (for example
+  `consentChallenge`) is a required field, not an `id`.
+- Writes, if any, still take a `{Construct}Payload` per Rule 2 and Rule 3.
+- State in the construct's description that nothing is stored, and what a
+  `503` from the upstream system means for each operation.
+
+A construct the server persists, even partly, is not in this class. It
+follows Rule 1 as written.
+
+### Definition constructs have neither endpoints nor a stored row
+
+Some constructs describe a document that components publish as files, not
+anything a server stores or serves. The `error` construct is the worked
+example: an error code's definition is declared in the owning component's
+source, exported by MeshKit's `errorutil`, and published by the docs build
+([contract](error-definition-contract.md)). For this class only:
+
+- `api.yml` has `paths: {}`.
+- The entity `.yaml` declares no `id`, `createdAt`, `updatedAt` or
+  `deletedAt`. Its natural key (for example `code`) is a required field. It
+  still sets `additionalProperties: false`.
+- There is no `{Construct}Payload`, because nothing writes it over HTTP.
+- Cross-field rules JSON Schema cannot state belong in a hand-written helper
+  in the generated Go package (`<construct>_helper.go`) and, when the
+  TypeScript package ships one, a mirror under `typescript/`, each with tests
+  against the construct's templates.
+
+When the construct's directory name is a Go predeclared identifier or would
+shadow one in importers (`error`), set its Go package name in
+`packageNameOverrides` (`build/lib/config.js`): the error construct's Go
+models are `models/v1beta3/errorcode`. The override names the generated
+TypeScript output too (`typescript/generated/v1beta3/errorcode/Errorcode.ts`).
+
 ### Rule 2 example: `{Construct}Payload` schema in `api.yml`
 
 ```yaml
@@ -94,6 +186,55 @@ post:
         schema:
           $ref: "#/components/schemas/KeychainPayload"
 ```
+
+## Server-owned properties
+
+A *server-generated* field (`id`, `createdAt`) is one the server fills in. A
+*server-owned* field is stronger: one the client must not be able to influence at
+all, because the value carries authority. `Environment.purpose` is the worked
+example - its privileged values designate an environment administrative, and
+resolvers of organization-level configuration trust that designation. Its
+non-privileged value, `user`, is client-settable.
+
+Express it two ways, because each covers a different surface:
+
+1. **Limit the `*Payload` schema to non-privileged values.** This is the
+   load-bearing one. The payload is what every `POST`/`PUT` `requestBody`
+   references, so the generated Go, TypeScript and RTK clients can only spell
+   the non-privileged values, and a privileged value is refused. The
+   environment payload does this with a separate `EnvironmentPayloadPurpose`
+   enum; see `schemas/constructs/v1beta3/environment/api.yml`.
+2. **Leave privileged values out of the construct's RJSF form schema**, so no UI
+   control offers them.
+
+Then say so in the property `description`, which is the only part that travels
+into every generated artifact and into the published OpenAPI docs - and write a
+test that fails if either restriction is undone (see
+`validation/environment_purpose_test.go`). Without one, widening the payload
+enum to a privileged value out of symmetry with the entity is a one-line edit
+that reviews cleanly.
+
+**Do not reach for `readOnly: true`.** It is the natural annotation and it
+corrupts the generated RTK client: `oazapfts` propagates `readOnly` up through
+inlined subschemas and then drops every request-body property whose subtree
+contains one, deleting unrelated - possibly required - fields from published
+endpoints with no build or validation failure.
+`tests/readonly-request-body.test.js` holds that line repo-wide; the full
+mechanism is in
+[`environment-purpose-contract.md`](environment-purpose-contract.md#readonly-true).
+The payload exclusion is stronger anyway: it removes the field from generated
+clients rather than asking a client not to send it.
+
+**None of that is access control.** `readOnly` stops nothing at runtime, and a
+server that decodes a request body straight into the entity struct bypasses the
+payload exclusion entirely. The schema's job is to make the guarantee legible and
+its loss noisy; each consumer still has to refuse the write on its own side.
+State that obligation in the property description, and name the specific place
+each consumer enforces it - a reader who only sees `readOnly` will assume the
+schema is doing the work.
+
+Full worked contract, including the uniqueness invariant and the migration path:
+[`environment-purpose-contract.md`](environment-purpose-contract.md).
 
 ## Per-Property Validation Constraints
 

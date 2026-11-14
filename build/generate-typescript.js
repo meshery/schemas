@@ -36,6 +36,7 @@ const { execSync } = require("child_process");
 const logger = require("./lib/logger");
 const config = require("./lib/config");
 const paths = require("./lib/paths");
+const generatedOutputs = require("./lib/generated-outputs");
 
 /**
  * Convert string to PascalCase
@@ -156,7 +157,22 @@ async function main() {
     checkPrerequisites();
 
     // Discover packages dynamically
-    const schemaPackages = config.getSchemaPackages();
+    const packageFilter = process.env.SCHEMA_PACKAGE
+      ? new Set(
+          process.env.SCHEMA_PACKAGE.split(",")
+            .map((value) => value.trim())
+            .filter(Boolean),
+        )
+      : null;
+    let schemaPackages = config.getSchemaPackages();
+    if (packageFilter) {
+      schemaPackages = schemaPackages.filter(
+        (pkg) =>
+          packageFilter.has(pkg.name) ||
+          packageFilter.has(pkg.dirName) ||
+          packageFilter.has(`${pkg.version}/${pkg.dirName}`),
+      );
+    }
     logger.info(`Discovered ${schemaPackages.length} schema packages`);
 
     if (schemaPackages.length === 0) {
@@ -167,6 +183,12 @@ async function main() {
     // Generate TypeScript types for all packages
     for (const pkg of schemaPackages) {
       await generateTypescriptTypes(pkg);
+    }
+
+    if (!packageFilter) {
+      for (const dir of generatedOutputs.pruneOrphanedTypescriptOutputs(paths.getProjectRoot())) {
+        logger.info(`Removed output of removed construct: ${dir}`);
+      }
     }
 
     // Summary

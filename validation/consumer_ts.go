@@ -629,7 +629,7 @@ func normalizeTSURL(raw string) string {
 	return s
 }
 
-// stripQuotes peels leading/trailing `"` / `'` / `` ` `` from a raw URL
+// stripQuotes peels leading/trailing `"` / `'` / “ ` “ from a raw URL
 // expression. Mismatched delimiters yield the input unchanged so the
 // caller can decide how to treat it.
 func stripQuotes(s string) string {

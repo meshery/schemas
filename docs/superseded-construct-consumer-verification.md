@@ -149,6 +149,30 @@ in meshery-cloud, `models/v1beta2/*` resolves to badge, credential, key, keychai
 organization, role, team, user - all successor uses, and none of the four superseded
 constructs appear.
 
+## Removing a construct removes its generated output
+
+Once the predicates above come back clean, deleting the construct directory under
+`schemas/constructs/` is not the whole removal. The generators write one output directory
+per construct (`models/<version>/<package>/`, `typescript/generated/<version>/<package>/`),
+and the artifacts workflow only adds and rewrites files. Before
+`build/lib/generated-outputs.js` existed, nothing deleted them: `blowhorn_destination` and
+`blowhorn_run` were removed in #1250 but still shipped in the Go module, and tsup (which
+globs `typescript/generated/`) kept publishing them as
+`@meshery/schemas/constructs/v1beta3/blowhorn_*`. So a consumer could still reach a construct
+that no longer existed in this repository.
+
+- `generate-golang.js` (full runs only, never a `SCHEMA_PACKAGE`-filtered one) and
+  `generate-typescript.js` prune any output directory whose construct directory has no
+  `api.yml`. Constructs in `excludePackages` still count as present, so their published
+  output is kept.
+- The Go prune deletes only files whose header carries `Code generated ... DO NOT EDIT`. A
+  hand-written file (`helpers.go`, `*_helper.go`) left in a removed package fails the run
+  and is named in the error. Delete or move it in the same change.
+- `make test-generated-outputs` (run by the `schema-audit` workflow) fails while any
+  orphaned output directory is committed. Run `make build` in the PR that removes the
+  construct and commit the deletions. Revert the regenerated *modifications* (for example
+  `typescript/rtk/*.ts`), which the artifacts workflow owns.
+
 ## Maintaining this document
 
 Refresh the result table when `x-superseded-by` is added to further constructs. The

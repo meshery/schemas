@@ -49,7 +49,7 @@ make validate-schemas-strict
 make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud EXTENSIONS_REPO=../meshery-extensions
 ```
 
-`make test-rtk` is the only Node regression test wired into the `Makefile`; the other `.test.js` files under `tests/` are run directly with `node --test`.
+The `Makefile` wires several Node regression tests (`make site-data-test`, `make test-enums-ts`, `make test-rtk`, `make test-gofmt`); the other `.test.js` files under `tests/` are run directly with `node --test`.
 
 ## High-level architecture
 

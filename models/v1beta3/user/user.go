@@ -6,10 +6,11 @@ package user
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
+	"github.com/oapi-codegen/nullable"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for UserStatus.
@@ -95,6 +96,9 @@ type Panel = map[string]interface{}
 
 // Preference defines model for Preference.
 type Preference struct {
+	// AgentsActWithoutApproval Interim rule (temporary): until the upstream platform, workspace and profile policies exist, inherit (including absent) resolves to required. During the interim this field is stored and writable but is not consulted by approval resolution; it becomes the profile-level source once the hierarchy places that level (the hierarchy proposal is https://github.com/layer5io/meshery-cloud/issues/6365, and the interim does not wait on it). Target model, once the hierarchy places the profile level: one profile-level source in the approval hierarchy (platform, workspace, profile; hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Each activity carries an approvalPolicy (required, not_required or inherit; no schema default, and absent behaves like inherit). An explicit required or not_required on the activity always wins and never consults this field. This field is consulted only for an activity whose approvalPolicy is inherit or absent, only when it was written by an AI app, and only if no level that the hierarchy places ahead of the profile has already decided. For such an activity: true means not_required, false means required, and absent sets nothing. If nothing sets a value, approval is required (fail closed; this fallback is open for confirmation in https://github.com/layer5io/meshery-cloud/issues/6365). AI apps never set approved; approvalPolicy only says whether approval is needed. No schema default is declared, so absence stays distinguishable from false. Typed replacement for the free-form remoteProviderPreferences.<provider>.agentsActWithoutApproval. The server keeps a write-once marker per preference, which is not part of this schema: the first accepted write that names this field (true, false, or null) sets the marker, and nothing clears it. Only a write from the signed-in session can set the marker; a token-authenticated write that names this field never sets it. Once the marker is set, the free-form value is never read again, and null means inherit, not the free-form value. While the marker is unset, the free-form value is not shown as the preference and never changes approval resolution: during the interim inherit resolves to required whatever it says, as the migration section of docs/agent-approval-preference.md describes. On read, absent means not set (inherit); the stored value is never null. An API token, of any kind, cannot change this field: a token-authenticated request that names it, with any value including null, is answered 403. Only a request authenticated by the signed-in session can set it. See PreferencePayload.agentsActWithoutApproval and docs/agent-approval-preference.md.
+	AgentsActWithoutApproval *bool `json:"agentsActWithoutApproval,omitempty" yaml:"agentsActWithoutApproval,omitempty"`
+
 	// AnonymousPerfResults The anonymous perf results of the preference.
 	AnonymousPerfResults bool `json:"anonymousPerfResults" yaml:"anonymousPerfResults"`
 
@@ -110,7 +114,7 @@ type Preference struct {
 	MeshAdapters *[]Adapter  `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
 	Prometheus   *Prometheus `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
 
-	// RemoteProviderPreferences The remote provider preferences of the preference.
+	// RemoteProviderPreferences The remote provider preferences of the preference. Free-form, keyed by provider. A provider's `agentsActWithoutApproval` entry is deprecated in favor of the typed `agentsActWithoutApproval` field, and it is never read once the typed field has been written (see Preference.agentsActWithoutApproval). A token-authenticated request that would change the stored state of that entry (a different value, adding it where absent, or removing it where present) is answered 403, as for the typed field. Writing back the stored entry unchanged is accepted. See docs/agent-approval-preference.md (Migration from the free-form value).
 	RemoteProviderPreferences map[string]interface{} `json:"remoteProviderPreferences" yaml:"remoteProviderPreferences"`
 
 	// SelectedOrganizationId ID of the associated selectedOrganization.
@@ -119,11 +123,50 @@ type Preference struct {
 	// SelectedWorkspaceForOrganizations The selected workspace for organizations of the preference.
 	SelectedWorkspaceForOrganizations map[string]string `json:"selectedWorkspaceForOrganizations" yaml:"selectedWorkspaceForOrganizations"`
 
+	// ShareActivityPublicly Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten.
+	ShareActivityPublicly *bool `json:"shareActivityPublicly,omitempty" yaml:"shareActivityPublicly,omitempty"`
+
 	// UpdatedAt Timestamp of when the resource was last updated.
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 
 	// UsersExtensionPreferences The users extension preferences of the preference.
 	UsersExtensionPreferences map[string]interface{} `json:"usersExtensionPreferences" yaml:"usersExtensionPreferences"`
+}
+
+// PreferencePayload The v1beta3 request body of updateUserPreferences (PUT /api/identity/users/preferences), and the client-settable fields of Preference. Every field is optional: the server merges the ones present onto the stored preferences and keeps the rest. Setting selectedOrganizationId switches the organization the user's session has selected. Badges are server-owned and are never changed through this body. updatedAt is server-recorded and is not settable. See docs/agent-approval-preference.md for who may write agentsActWithoutApproval.
+type PreferencePayload struct {
+	// AgentsActWithoutApproval Interim rule (temporary): until the upstream platform, workspace and profile policies exist, inherit (including absent) resolves to required, and this field is stored but not consulted by approval resolution (see Preference.agentsActWithoutApproval; the hierarchy proposal is https://github.com/layer5io/meshery-cloud/issues/6365). Target model, once the hierarchy places the profile level: one profile-level source for agent writes, consulted only for an AI-app activity whose approvalPolicy is inherit or absent, and only when no higher-level setting (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365) has decided (see Preference.agentsActWithoutApproval): true means not_required, false means required, and absent sets nothing. Three states on write: true or false stores that value; null clears the stored value back to absent (inherit); omitted keeps the stored value. No schema default is declared. An API token, of any kind, cannot set this field: a token-authenticated request whose payload names this field, with any value including null and whatever the stored state is, is answered 403 and no part of the payload is applied. Only a request authenticated by the signed-in session can set it. A token client doing read-modify-write must omit this field: echoing the value it read, or null, answers 403 for the whole payload. See docs/agent-approval-preference.md.
+	AgentsActWithoutApproval nullable.Nullable[bool] `json:"agentsActWithoutApproval,omitempty" yaml:"agentsActWithoutApproval,omitempty"`
+
+	// AnonymousPerfResults The anonymous perf results of the preference.
+	AnonymousPerfResults *bool `json:"anonymousPerfResults,omitempty" yaml:"anonymousPerfResults,omitempty"`
+
+	// AnonymousUsageStats The anonymous usage stats of the preference.
+	AnonymousUsageStats *bool `json:"anonymousUsageStats,omitempty" yaml:"anonymousUsageStats,omitempty"`
+
+	// DashboardPreferences The dashboard preferences of the preference.
+	DashboardPreferences *map[string]interface{} `json:"dashboardPreferences,omitempty" yaml:"dashboardPreferences,omitempty"`
+	Grafana              *Grafana                `json:"grafana,omitempty" yaml:"grafana,omitempty"`
+	LoadTestPrefs        *LoadTestPreferences    `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
+
+	// MeshAdapters The mesh adapters of the preference.
+	MeshAdapters *[]Adapter  `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
+	Prometheus   *Prometheus `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
+
+	// RemoteProviderPreferences The remote provider preferences of the preference. Writers set the typed agentsActWithoutApproval field, not a provider's free-form agentsActWithoutApproval entry. A token-authenticated request that would change the stored state of a provider's agentsActWithoutApproval entry (a different value, adding it where absent, or removing it where present) is answered 403, and no part of the payload is applied. Writing back the stored entry unchanged is accepted. Once the typed field has been written, the entry is never read again (see Preference.agentsActWithoutApproval).
+	RemoteProviderPreferences *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
+
+	// SelectedOrganizationId ID of the organization to make the session's selected organization.
+	SelectedOrganizationId *uuid.UUID `json:"selectedOrganizationId,omitempty" yaml:"selectedOrganizationId,omitempty"`
+
+	// SelectedWorkspaceForOrganizations The selected workspace for organizations of the preference.
+	SelectedWorkspaceForOrganizations *map[string]string `json:"selectedWorkspaceForOrganizations,omitempty" yaml:"selectedWorkspaceForOrganizations,omitempty"`
+
+	// ShareActivityPublicly Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten.
+	ShareActivityPublicly *bool `json:"shareActivityPublicly,omitempty" yaml:"shareActivityPublicly,omitempty"`
+
+	// UsersExtensionPreferences The users extension preferences of the preference.
+	UsersExtensionPreferences *map[string]interface{} `json:"usersExtensionPreferences,omitempty" yaml:"usersExtensionPreferences,omitempty"`
 }
 
 // Prometheus defines model for Prometheus.
@@ -243,7 +286,7 @@ type TeamWithRoles struct {
 	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 
 	// Metadata Free-form metadata associated with the team.
-	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Metadata  core.Map  `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	CreatedAt core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
@@ -265,7 +308,7 @@ type User struct {
 	Bio *string `db:"bio" json:"bio" yaml:"bio"`
 
 	// Country User's country information stored as JSONB
-	Country   core.Map          `db:"country" json:"country" yaml:"country"`
+	Country   core.Map  `db:"country" json:"country" yaml:"country"`
 	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
 	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
@@ -273,7 +316,7 @@ type User struct {
 
 	// Email User's email address
 	Email          openapi_types.Email `db:"email" json:"email" yaml:"email"`
-	FirstLoginTime core.Time   `db:"first_login_time" json:"firstLoginTime" yaml:"firstLoginTime,omitempty"`
+	FirstLoginTime core.Time           `db:"first_login_time" json:"firstLoginTime" yaml:"firstLoginTime,omitempty"`
 
 	// FirstName User's first name
 	FirstName string `db:"first_name" json:"firstName" yaml:"firstName"`
@@ -287,10 +330,10 @@ type User struct {
 
 	// Organizations Organizations the user belongs to with role information
 	Organizations *struct {
-		// OrganizationsWithRoles Organization memberships for the user with their assigned roles.
+		// OrganizationsWithRoles Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.
 		OrganizationsWithRoles *[]OrganizationWithRoles `db:"organizations_with_roles" json:"organizationsWithRoles" yaml:"organizationsWithRoles"`
 
-		// TotalCount Total number of organization memberships returned for the user.
+		// TotalCount Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"organizations" json:"organizations" yaml:"organizations"`
 	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences,omitempty"`
@@ -312,10 +355,10 @@ type User struct {
 
 	// Teams Teams the user belongs to with role information
 	Teams *struct {
-		// TeamsWithRoles Team memberships for the user with their assigned roles.
+		// TeamsWithRoles Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.
 		TeamsWithRoles *[]TeamWithRoles `db:"teams_with_roles" json:"teamsWithRoles" yaml:"teamsWithRoles"`
 
-		// TotalCount Total number of team memberships returned for the user.
+		// TotalCount Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"teams" json:"teams" yaml:"teams"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
@@ -342,7 +385,7 @@ type UserEmailAddress struct {
 
 	// Source How this address became associated with the account
 	Source    UserEmailAddressSource `db:"source" json:"source" yaml:"source"`
-	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+	UpdatedAt core.Time              `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserID core.Uuid `db:"owner" json:"userId" yaml:"userId"`

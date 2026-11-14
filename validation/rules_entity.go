@@ -57,7 +57,7 @@ func checkRule18(relDir, constructDir, constructName string, _ AuditOptions) []V
 	for _, e := range entries {
 		if strings.Contains(e.Name(), "_template") {
 			out = append(out, Violation{File: relDir,
-				Message: fmt.Sprintf(`Construct %q has template file(s) at root level: %s. Move to templates/ subdirectory.`, constructName, e.Name()),
+				Message:  fmt.Sprintf(`Construct %q has template file(s) at root level: %s. Move to templates/ subdirectory.`, constructName, e.Name()),
 				Severity: SeverityBlocking, RuleNumber: 18})
 		}
 	}
@@ -233,6 +233,22 @@ func entityRawPropGormColumn(entity *entitySchema, propName string) string {
 	return ""
 }
 
+// entityPropIsDBBacked reports whether an entity-schema property mirrors a
+// database column, determined solely from its x-oapi-codegen-extra-tags
+// annotations (`db:` or `gorm:`) - the entity-path counterpart of
+// IsDBBackedProperty, which operates on kin-openapi SchemaRefs.
+func entityPropIsDBBacked(entity *entitySchema, propName string) bool {
+	tags := entityRawPropExtraTags(entity, propName)
+	if tags == nil {
+		return false
+	}
+	if _, ok := tags["db"]; ok {
+		return true
+	}
+	_, ok := tags["gorm"]
+	return ok
+}
+
 // --- Rule 6 for entity schemas: property name casing ---
 //
 // See checkRule6ForAPI for the Rule 6 docstring. Behaviour is identical for
@@ -264,7 +280,7 @@ func checkRule6ForEntity(filePath string, entity *entitySchema, opts AuditOption
 			if suggestion != "" {
 				msg += fmt.Sprintf(` Use: %q.`, suggestion)
 			}
-			msg += schemaPropertyDBContext(propName)
+			msg += schemaPropertyDBContext(propName, entityPropIsDBBacked(entity, propName))
 			msg += ` See docs/casing-rules.md.`
 			out = append(out, Violation{File: filePath, Message: msg, Severity: *sev, RuleNumber: 6})
 		}

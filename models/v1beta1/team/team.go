@@ -22,7 +22,7 @@ type Team struct {
 	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
 
 	// Metadata Additional metadata for the team
-	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
+	Metadata  core.Map  `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
 	CreatedAt core.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
 	UpdatedAt core.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
 
@@ -54,7 +54,7 @@ type TeamPage struct {
 	PageSize core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 
 	// Teams The teams of the teampage.
-	Teams      []Team              `json:"teams,omitempty" yaml:"teams,omitempty"`
+	Teams      []Team      `json:"teams,omitempty" yaml:"teams,omitempty"`
 	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
@@ -94,7 +94,7 @@ type TeamsUsersMappingPage struct {
 
 	// TeamsUsersMapping The teams users mapping of the teamsusersmappingpage.
 	TeamsUsersMapping []TeamsUsersMapping `json:"teamsUsersMapping,omitempty" yaml:"teamsUsersMapping,omitempty"`
-	TotalCount        core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	TotalCount        core.Number         `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // Order defines model for order.
