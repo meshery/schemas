@@ -17349,11 +17349,12 @@ export type GetEventFeedApiResponse = /** status 200 Event feed page */ {
     line: string;
     /** Networks from ScheduleCompletedEventMetadata, when present. */
     networks?: string[];
-    /** Public username, never a real name; present only for a public profile. */
+    /** The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.
+     */
     displayName?: string;
-    /** Public avatar URL; present only for a public profile. */
+    /** Public avatar URL; resolved for every served owner, omitted when empty. */
     avatarUrl?: string;
-    /** Public organization name; present only for a public profile. */
+    /** Public organization name; omitted when organization memberships are not public to an anonymous caller. */
     organizationName?: string;
     /** HTTPS URL of the user's public profile. */
     publicProfileUrl?: string;
@@ -21737,11 +21738,12 @@ export type GetPublicActivityFeedApiResponse = /** status 200 Public activity fe
     completedAt: string;
     /** Always `public` in this feed. */
     visibility: "public";
-    /** Public username; present only when the user's profile is public. */
+    /** The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.
+     */
     displayName?: string;
-    /** Public avatar URL; present only when the user's profile is public. */
+    /** Public avatar URL; resolved for every served owner, omitted when empty. */
     avatarUrl?: string;
-    /** Public organization name; present only when the user's profile is public. */
+    /** Public organization name; omitted when organization memberships are not public to an anonymous caller. */
     organizationName?: string;
     /** HTTPS URL of the user's public profile. */
     publicProfileUrl?: string;

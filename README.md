@@ -784,6 +784,16 @@ export const store = configureStore({
 setupListeners(store.dispatch);
 ```
 
+### Organization Scope
+
+The Cloud client sends the `X-Current-Orgid` header on every request, taken from `state.organization.value.id` in your store. An endpoint that declares the header as an argument (`registerConnection`, `deregisterDesktopConnection`, `getProviderCapabilities`) sends the value you pass instead, for example `all` to deregister an install from every organization:
+
+```javascript
+deregisterDesktopConnection({ installationId, "X-Current-Orgid": "all" });
+```
+
+Omit the argument to use the selected organization. With no organization selected and no argument, the header is not sent.
+
 ## Using API Hooks
 
 After configuring your store, you can import and use the generated hooks:
