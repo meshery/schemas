@@ -366,6 +366,7 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		checkRule36,
 		checkRule42, checkRule43, checkRule44,
 		checkRule45ForAPI, checkRule47,
+		checkRule48, checkRule49,
 	}
 
 	for _, check := range ruleChecks {

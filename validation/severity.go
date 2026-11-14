@@ -27,7 +27,7 @@ func classifyStyleIssue(opts AuditOptions) *Severity {
 }
 
 // classifyDesignIssue determines the severity for API design pattern issues
-// (Rules 23, 24, 25, 26, 30, 31, 36, 37).
+// (Rules 23, 24, 25, 26, 30, 31, 36, 37, 48, 49).
 func classifyDesignIssue(opts AuditOptions) Severity {
 	if opts.Strict {
 		return SeverityBlocking
