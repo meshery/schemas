@@ -232,6 +232,7 @@ components:
             $ref: ../connection/connection.yaml
           description: Connections associated with the environment, using the canonical Connection response schema.
 
+
     EnvironmentConnectionMappingPage:
       type: object
       description: >-
