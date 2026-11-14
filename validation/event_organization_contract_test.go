@@ -3,6 +3,7 @@ package validation
 import (
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -117,6 +118,61 @@ func TestGetEventsScope(t *testing.T) {
 	}
 	if ref, _ := mappingValue(mustLookup(t, op, "responses", "403"), "$ref"); ref != "#/components/responses/MeshkitError403" {
 		t.Errorf("getEvents 403 $ref = %v, want MeshkitError403", ref)
+	}
+}
+
+// TestMarkAllEventsReadContract pins the operation's authentication, inputs,
+// responses, and closed success-response shape.
+func TestMarkAllEventsReadContract(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), "schemas/constructs/v1beta3/event/api.yml"))
+	pathItem := mustLookup(t, doc, "paths", "/api/events/mark-all-read")
+	op := mustLookup(t, pathItem, "post")
+
+	if got := mustValue(op, "operationId"); got != "markAllEventsRead" {
+		t.Errorf("operationId = %v, want markAllEventsRead", got)
+	}
+	if got := sequenceStrings(mustValue(op, "x-internal")); !reflect.DeepEqual(got, []string{"cloud", "meshery"}) {
+		t.Errorf("markAllEventsRead x-internal = %v, want [cloud meshery]", got)
+	}
+	security := mustValue(op, "security")
+	securityRequirements, ok := security.([]any)
+	if !ok || len(securityRequirements) != 1 {
+		t.Fatalf("markAllEventsRead security = %#v, want one jwt requirement", security)
+	}
+	if scopes, has := mappingValue(securityRequirements[0], "jwt"); !has || !reflect.DeepEqual(sequenceStrings(scopes), []string{}) {
+		t.Errorf("markAllEventsRead security = %#v, want jwt with no scopes", security)
+	}
+	if _, has := mappingValue(op, "requestBody"); has {
+		t.Error("markAllEventsRead must derive the caller from the session, not accept a request body")
+	}
+	if _, has := mappingValue(op, "parameters"); has {
+		t.Error("markAllEventsRead must not declare operation-level parameters")
+	}
+	if _, has := mappingValue(pathItem, "parameters"); has {
+		t.Error("/api/events/mark-all-read must not declare path-level parameters")
+	}
+
+	responses := mustValue(op, "responses")
+	gotStatuses := mappingKeys(responses)
+	sort.Strings(gotStatuses)
+	wantStatuses := []string{"200", "400", "401", "429", "500"}
+	if !reflect.DeepEqual(gotStatuses, wantStatuses) {
+		t.Errorf("markAllEventsRead response codes = %v, want exactly %v", gotStatuses, wantStatuses)
+	}
+	responseSchema := mustLookup(t, op, "responses", "200", "content", "application/json", "schema")
+	if got := mustValue(responseSchema, "$ref"); got != "#/components/schemas/MarkAllEventsReadResponse" {
+		t.Errorf("markAllEventsRead 200 response schema = %v, want MarkAllEventsReadResponse", got)
+	}
+
+	response := mustLookup(t, doc, "components", "schemas", "MarkAllEventsReadResponse")
+	if got := mustValue(response, "additionalProperties"); got != false {
+		t.Errorf("MarkAllEventsReadResponse additionalProperties = %v, want false", got)
+	}
+	if got := sequenceStrings(mustValue(response, "required")); !reflect.DeepEqual(got, []string{"message"}) {
+		t.Errorf("MarkAllEventsReadResponse required = %v, want [message]", got)
+	}
+	if got := mustLookup(t, response, "properties", "message", "type"); got != "string" {
+		t.Errorf("MarkAllEventsReadResponse.message type = %v, want string", got)
 	}
 }
 

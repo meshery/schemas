@@ -1,9 +1,9 @@
 # Event organization contract
 
 `schemas/constructs/v1beta3/event` is the wire contract for a recorded event
-(`event_trackers`) and for listing those events. `organizationId` says which
-organization an event belongs to. `getEvents` `scope` says whose events a
-caller is allowed to list.
+(`event_trackers`), listing those events, and marking the caller's events as
+read. `organizationId` says which organization an event belongs to. `getEvents`
+`scope` says whose events a caller is allowed to list.
 
 ## `organizationId`
 
@@ -53,3 +53,14 @@ without them still validates. (#1353)
 
 The `403` uses `MeshkitError403`, the same response `getEventsAggregate`
 uses. Omitting `scope` is `user`.
+
+## Mark all events as read
+
+`POST /api/events/mark-all-read` (`markAllEventsRead`) marks every unread event
+owned by the authenticated caller as read. The server derives the caller from
+the authenticated session; the operation accepts neither a request body nor a
+user ID parameter. System-owned events are unchanged.
+
+The operation returns `200`, `400`, `401`, `429`, or `500`. Its `200` body is a
+closed `MarkAllEventsReadResponse` object whose required `message` property is
+a human-readable status string.
