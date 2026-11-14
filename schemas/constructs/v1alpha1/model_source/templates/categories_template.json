@@ -1,0 +1,12 @@
+{
+  "name": "Security & Compliance",
+  "type": "security",
+  "subCategories": [
+    {
+      "name": "Key Management",
+      "svgColor": "./svg/key-management.svg",
+      "svgWhite": "./svg/key-management-white.svg"
+    }
+  ],
+  "metadata": {}
+}

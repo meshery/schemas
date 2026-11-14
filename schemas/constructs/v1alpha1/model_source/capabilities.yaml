@@ -1,0 +1,73 @@
+$id: https://schemas.meshery.io/capabilities.yaml
+$schema: http://json-schema.org/draft-07/schema#
+title: Capability
+description: Schema for models/_meta/capabilities.yaml capability definitions.
+additionalProperties: false
+type: object
+required:
+  - key
+  - displayName
+  - description
+  - kind
+  - type
+  - subType
+  - entityState
+  - status
+properties:
+  key:
+    type: string
+    description: Key that uniquely backs the capability.
+    minLength: 1
+    maxLength: 100
+  displayName:
+    type: string
+    description: Human-readable name of the capability.
+    minLength: 1
+    maxLength: 100
+  description:
+    type: string
+    description: A written representation of the purpose and characteristics of the capability.
+    minLength: 1
+    maxLength: 2000
+  kind:
+    type: string
+    description: Top-level categorization of the capability.
+    minLength: 1
+    maxLength: 100
+    enum:
+      - action
+      - mutate
+      - view
+      - interaction
+  type:
+    type: string
+    description: Classification of capabilities grouping similar behaviors.
+    minLength: 1
+    maxLength: 100
+  subType:
+    type: string
+    description: Most granular unit of capability classification.
+    minLength: 1
+    maxLength: 100
+  entityState:
+    type: array
+    description: State of the entity in which the capability is applicable.
+    items:
+      type: string
+      description: Lifecycle state of the entity.
+      enum:
+        - declaration
+        - instance
+    x-go-type-skip-optional-pointer: true
+  status:
+    type: string
+    description: Status of the capability.
+    default: enabled
+    enum:
+      - enabled
+      - disabled
+  metadata:
+    type: object
+    description: Additional metadata associated with the capability.
+    additionalProperties: true
+    x-go-type-skip-optional-pointer: true

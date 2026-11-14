@@ -1,0 +1,31 @@
+$id: https://schemas.meshery.io/categories.yaml
+$schema: http://json-schema.org/draft-07/schema#
+title: Category
+description: Schema for models/_meta/categories.yaml category definitions.
+additionalProperties: false
+type: object
+required:
+  - name
+  - type
+properties:
+  name:
+    type: string
+    description: Name of the category that determines the main grouping.
+    minLength: 1
+    maxLength: 100
+  type:
+    type: string
+    description: Classification type of the category.
+    minLength: 1
+    maxLength: 100
+  subCategories:
+    type: array
+    description: List of subcategories belonging to this category.
+    items:
+      $ref: "./api.yml#/components/schemas/SubCategory"
+    x-go-type-skip-optional-pointer: true
+  metadata:
+    type: object
+    description: Additional metadata associated with the category.
+    additionalProperties: true
+    x-go-type-skip-optional-pointer: true
