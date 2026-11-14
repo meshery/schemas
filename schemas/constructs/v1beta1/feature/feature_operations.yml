@@ -30,9 +30,21 @@ organizationCollection:
     tags:
       - Features
     summary: Get the active features entitled to an organization through its subscriptions
+    description: >
+      Returns the features the organization's active subscriptions entitle it to.
+      When `X-Current-Orgid` is also sent, it must name the same organization as
+      `orgId`; a mismatch is refused with a 400 (the organization selector in
+      docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, `orgId`
+      must name the organization the call acts in (the session's selected
+      organization); a mismatch is refused with a 403.
     operationId: getFeaturesByOrganization
+    x-mcp:
+      expose: true
+      title: Get the features of an organization
+      scope: account:read
     parameters:
       - $ref: "./api.yml#/components/parameters/orgId"
+      - $ref: "./api.yml#/components/parameters/currentOrgId"
     responses:
       "200":
         description: Features response
@@ -44,6 +56,8 @@ organizationCollection:
         $ref: "../core/api.yml#/components/responses/400"
       "401":
         $ref: "../core/api.yml#/components/responses/401"
+      "403":
+        $ref: "../../v1beta2/core/api.yml#/components/responses/403"
       "404":
         $ref: "../core/api.yml#/components/responses/404"
       "500":

@@ -339,7 +339,14 @@ paths:
       tags:
       - events
       operationId: getEvents
+      x-mcp:
+        expose: true
+        title: Get events
+        scope: events:read
       summary: Get events list
+      description: >
+        Returns a page of events. An `X-Current-Orgid` that is not a UUID
+        answers 400.
       parameters:
       - $ref: '#/components/parameters/page'
       - $ref: '#/components/parameters/pagesize'
@@ -347,6 +354,7 @@ paths:
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/eventsFilter'
       - $ref: '#/components/parameters/eventsScope'
+      - $ref: '#/components/parameters/currentOrgId'
       responses:
         '200':
           description: Events page
@@ -354,6 +362,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventsPage'
+        '400':
+          $ref: '#/components/responses/400'
         '401':
           description: Unauthorized
         '403':
@@ -507,6 +517,8 @@ components:
           - incremented
           - resolved
   parameters:
+    currentOrgId:
+      $ref: '../../v1beta2/core/api.yml#/components/parameters/currentOrgId'
     eventId:
       name: eventId
       in: path
