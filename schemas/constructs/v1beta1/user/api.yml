@@ -94,6 +94,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "301":
+          description: Merged-away user ID; redirects to the surviving canonical account's equivalent profile path
         "400":
           $ref: "#/components/responses/400"
         "401":
