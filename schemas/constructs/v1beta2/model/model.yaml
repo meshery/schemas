@@ -202,6 +202,7 @@ properties:
     x-order: 12
   relationships:
     type: array
+    items: {}
     x-go-type: interface{}
     x-oapi-codegen-extra-tags:
       gorm: "-"
@@ -209,6 +210,7 @@ properties:
     description: The relationships of the model.
   components:
     type: array
+    items: {}
     x-go-type: interface{}
     x-oapi-codegen-extra-tags:
       gorm: "-"
