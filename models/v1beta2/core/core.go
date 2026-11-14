@@ -690,6 +690,12 @@ type OperationID = uuid.UUID
 // OrganizationId defines model for OrganizationId.
 type OrganizationId = uuid.UUID
 
+// OwnershipTransferPayload Request body for transferring ownership of a resource to another user. Used uniformly across all ownable resource constructs.
+type OwnershipTransferPayload struct {
+	// NewOwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	NewOwnerId Uuid `json:"newOwnerId" yaml:"newOwnerId"`
+}
+
 // Price defines model for Price.
 type Price = int32
 

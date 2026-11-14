@@ -80,7 +80,7 @@ type MediaAsset struct {
 	// CreatedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	CreatedBy *core.Uuid `db:"created_by" json:"createdBy,omitempty" yaml:"createdBy,omitempty"`
 
-	// Backend Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.
+	// Backend Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. Neither is a default: a provider states the ones it serves in `MediaAssetQuota.backends`, and a create names one of them. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.
 	Backend MediaAssetBackend `db:"backend" json:"backend" yaml:"backend"`
 
 	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -126,7 +126,7 @@ type MediaAsset struct {
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 }
 
-// MediaAssetBackend Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.
+// MediaAssetBackend Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. Neither is a default: a provider states the ones it serves in `MediaAssetQuota.backends`, and a create names one of them. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.
 type MediaAssetBackend string
 
 // MediaAssetContentType Media type of the file, from a closed allowlist. The server sniffs the stored bytes on completion and rejects an upload whose real type differs. A provider may accept fewer types than this list (`MediaAssetQuota.contentTypes`).
@@ -156,8 +156,8 @@ type MediaAssetPage struct {
 // `rejectionReason`, `externalId`, `completedAt`, `expiresAt` and the
 // timestamps are server-owned and not accepted.
 type MediaAssetPayload struct {
-	// Backend Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.
-	Backend *MediaAssetBackend `json:"backend,omitempty" yaml:"backend,omitempty"`
+	// Backend Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. Neither is a default: a provider states the ones it serves in `MediaAssetQuota.backends`, and a create names one of them. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.
+	Backend MediaAssetBackend `json:"backend" yaml:"backend"`
 
 	// Bytes Size of the file in bytes. Must not exceed the quota's limit for its kind.
 	Bytes int64 `json:"bytes" yaml:"bytes"`
@@ -183,7 +183,7 @@ type MediaAssetPayload struct {
 
 // MediaAssetQuota The media asset limits of the session organization and its current storage use.
 type MediaAssetQuota struct {
-	// Backends Backends this provider serves for the organization. A create naming another is refused with 400.
+	// Backends Backends this provider serves for the organization, and the only statement of what it serves. A create must name one of them in `backend` (there is no default); naming another is refused with 400.
 	Backends []MediaAssetBackend `json:"backends" yaml:"backends"`
 
 	// BytesLimit Total bytes the organization's live `pending` and `ready` assets may hold. Null when the organization has no storage limit.

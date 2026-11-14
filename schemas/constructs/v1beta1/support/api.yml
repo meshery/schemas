@@ -63,7 +63,7 @@ paths:
         the organization attached. A request carrying neither is a 401. The email address is only ever sent when the person types
         it in, and diagnosticId links this report to the automatic failure
         diagnostic submitted for the same incident, when one exists.
-        Served by Layer5 Cloud; see Blowhorn issue #771.
+        Served by Layer5 Cloud; see the downstream desktop diagnostics issue #771.
       operationId: submitAnonymousSupportRequest
       security:
         - clientKey: []

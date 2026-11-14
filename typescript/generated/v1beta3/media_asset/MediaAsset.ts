@@ -312,7 +312,7 @@ export interface components {
             deletedAt?: string | null;
         };
         /**
-         * @description Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.
+         * @description Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. Neither is a default: a provider states the ones it serves in `MediaAssetQuota.backends`, and a create names one of them. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.
          * @enum {string}
          */
         MediaAssetBackend: "r2" | "gdrive";
@@ -361,10 +361,10 @@ export interface components {
             /** @description Whether the client removed location metadata (EXIF and XMP GPS, maker notes, device serial numbers) from the file before hashing and uploading it. Recorded as sent. */
             locationStripped: boolean;
             /**
-             * @description Where to store the file. Omitted, the server stores it in `r2`.
+             * @description Where to store the file. Required, with no default: the client picks one of the backends `getMediaAssetQuota` lists in `backends`, and a create naming any other answers `400`.
              * @enum {string}
              */
-            backend?: "r2" | "gdrive";
+            backend: "r2" | "gdrive";
             /**
              * Format: uuid
              * @description The caller's own live Google Drive connection in the session organization. Required when `backend` is `gdrive`, refused otherwise.
@@ -541,7 +541,7 @@ export interface components {
         };
         /** @description The media asset limits of the session organization and its current storage use. */
         MediaAssetQuota: {
-            /** @description Backends this provider serves for the organization. A create naming another is refused with 400. */
+            /** @description Backends this provider serves for the organization, and the only statement of what it serves. A create must name one of them in `backend` (there is no default); naming another is refused with 400. */
             backends: ("r2" | "gdrive")[];
             /** @description Content types this provider accepts. */
             contentTypes: ("image/png" | "image/jpeg" | "image/gif" | "image/webp" | "image/heic" | "video/mp4" | "video/quicktime" | "video/webm")[];
@@ -1021,10 +1021,10 @@ export interface operations {
                     /** @description Whether the client removed location metadata (EXIF and XMP GPS, maker notes, device serial numbers) from the file before hashing and uploading it. Recorded as sent. */
                     locationStripped: boolean;
                     /**
-                     * @description Where to store the file. Omitted, the server stores it in `r2`.
+                     * @description Where to store the file. Required, with no default: the client picks one of the backends `getMediaAssetQuota` lists in `backends`, and a create naming any other answers `400`.
                      * @enum {string}
                      */
-                    backend?: "r2" | "gdrive";
+                    backend: "r2" | "gdrive";
                     /**
                      * Format: uuid
                      * @description The caller's own live Google Drive connection in the session organization. Required when `backend` is `gdrive`, refused otherwise.
@@ -1299,7 +1299,7 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        /** @description Backends this provider serves for the organization. A create naming another is refused with 400. */
+                        /** @description Backends this provider serves for the organization, and the only statement of what it serves. A create must name one of them in `backend` (there is no default); naming another is refused with 400. */
                         backends: ("r2" | "gdrive")[];
                         /** @description Content types this provider accepts. */
                         contentTypes: ("image/png" | "image/jpeg" | "image/gif" | "image/webp" | "image/heic" | "video/mp4" | "video/quicktime" | "video/webm")[];

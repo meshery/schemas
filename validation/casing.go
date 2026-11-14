@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
+
+	"github.com/getkin/kin-openapi/openapi3"
 )
 
 // Casing validation helpers — ported from build/validate-schemas.js lines 238–381.
@@ -67,28 +69,52 @@ var (
 // docs/schema-tooling.md.
 var knownLowercaseSuffixViolations = map[string]bool{}
 
-// dbMirroredFields enumerates known snake_case property names that originated
-// as DB column mirrors in pre-canonical-contract schemas.
+// dbBackedExtraTags reports whether an x-oapi-codegen-extra-tags map marks
+// the property as DB-backed, i.e. it carries a `db:` or `gorm:` tag.
+func dbBackedExtraTags(tags map[string]any) bool {
+	if tags == nil {
+		return false
+	}
+	if _, ok := tags["db"]; ok {
+		return true
+	}
+	_, ok := tags["gorm"]
+	return ok
+}
+
+// extraTagsOf extracts the x-oapi-codegen-extra-tags map from an extension
+// map, returning nil when absent or malformed.
+func extraTagsOf(exts map[string]any) map[string]any {
+	raw, ok := exts["x-oapi-codegen-extra-tags"]
+	if !ok {
+		return nil
+	}
+	tags, _ := raw.(map[string]any)
+	return tags
+}
+
+// IsDBBackedProperty reports whether a schema property mirrors a database
+// column, determined solely from its x-oapi-codegen-extra-tags annotations
+// (`db:` or `gorm:`). This replaces the retired hardcoded dbMirroredFields
+// name allowlist (meshery/schemas#724): DB-backed-ness is a property of the
+// schema annotations, not of the property name.
 //
-// Under the canonical identifier-naming contract (see
-// docs/casing-rules.md), wire tags are
-// camelCase regardless of DB backing — so these names are no longer treated
-// as an exception to Rule 6. They surface as Rule 6 violations and are
-// routed through the same `--style-debt` severity path as every other
-// legacy snake_case violation. The set remains defined because
-// matcher.go still uses it to distinguish server-generated / DB-mirrored
-// fields from request-side client input when diffing consumer Go types
-// against schema shapes.
-var dbMirroredFields = map[string]bool{
-	"created_at": true, "updated_at": true, "deleted_at": true,
-	"user_id": true, "org_id": true, "organization_id": true,
-	"environment_id": true, "workspace_id": true, "team_id": true,
-	"design_id": true, "credential_id": true, "connection_id": true,
-	"system_id": true, "operation_id": true, "view_id": true,
-	"general_id": true, "invite_id": true, "content_id": true,
-	"badge_id": true, "plan_id": true, "access_expires_at": true,
-	"avatar_url": true, "accepted_terms_at": true,
-	"page_size": true, "total_count": true,
+// Both locations are checked because kin-openapi keeps $ref-sibling
+// extensions on the SchemaRef itself (3.0 documents never merge siblings
+// into the resolved target), while inline properties and shared core
+// targets (e.g. ../core/api.yml#/components/schemas/created_at) carry the
+// tags on the resolved Schema value.
+func IsDBBackedProperty(ref *openapi3.SchemaRef) bool {
+	if ref == nil {
+		return false
+	}
+	if dbBackedExtraTags(extraTagsOf(ref.Extensions)) {
+		return true
+	}
+	if ref.Value != nil && dbBackedExtraTags(extraTagsOf(ref.Value.Extensions)) {
+		return true
+	}
+	return false
 }
 
 // serverGeneratedFields are fields that should never be required in write
@@ -191,9 +217,9 @@ type CasingIssue struct {
 // (docs/casing-rules.md), wire names are
 // camelCase regardless of DB backing — the snake_case DB column name lives
 // only in `x-oapi-codegen-extra-tags.db`, not on the wire. Accordingly this
-// checker is unconditional: there is no DB-mirroring exception. The
-// legacy-DB-mirrored field set (dbMirroredFields) remains defined for use
-// by matcher.go's consumer-type diff, but it is no longer an exception.
+// checker is unconditional: there is no DB-mirroring exception. Whether a
+// property is DB-backed is determined from its schema annotations via
+// IsDBBackedProperty (see casing.go), never from a hardcoded name list.
 //
 // The returned issue descriptions are context-agnostic — each caller
 // (Rule 6 for schema/entity properties, Rule 9 for query/header

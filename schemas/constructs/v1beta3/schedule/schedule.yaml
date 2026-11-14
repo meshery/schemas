@@ -28,6 +28,7 @@ required:
   - status
   - retryCount
   - maxRetries
+  - visibility
   - createdAt
   - updatedAt
 properties:
@@ -281,3 +282,14 @@ properties:
       db: posture
       json: "posture,omitempty"
     x-order: 28
+  visibility:
+    $ref: ./api.yml#/components/schemas/ScheduleVisibility
+    description: |
+      Visibility of the schedule: `public` (the default) allows completed runs
+      to appear on the unauthenticated public activity feed (subject to user
+      preferences), `org` restricts visibility to members of the schedule's
+      organization, and `private` restricts it to the schedule owner.
+    default: public
+    x-oapi-codegen-extra-tags:
+      db: visibility
+    x-order: 29

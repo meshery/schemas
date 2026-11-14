@@ -17,7 +17,7 @@ description: |
   were true as of. `matched` records whether the row's link resolved to a
   stored content activity at import (through `content.promotion_link`,
   per-profile entries of an `all` row included); an unmatched row is kept,
-  not dropped - the post was made outside Blowhorn and is still the page's
+  not dropped - the post was made outside the posting client and is still the page's
   reception. Every figure is nullable: a blank figure in the source export
   is not a zero.
 type: object

@@ -9,7 +9,7 @@ import (
 
 // This test pins the Blowhorn issue #771 schema step: the v1beta1/support
 // drift decision, the AnonymousSupportRequest shape, and the exact
-// FailureDiagnostic field list the Cloud and Blowhorn workers build
+// FailureDiagnostic field list the Cloud and desktop workers build
 // against. Field names, required-vs-optional, and closed objects are the
 // contract; a widening edit here breaks a worker silently, so any change
 // to these lists must be a deliberate, reviewed contract change, not a
@@ -274,7 +274,7 @@ func resolveResponse(t *testing.T, doc map[string]any, resp map[string]any) map[
 }
 
 // TestFailureDiagnosticExactFieldList pins the field list the Cloud and
-// Blowhorn workers were briefed with. Only installId is optional; every
+// desktop workers were briefed with. Only installId is optional; every
 // object is closed.
 func TestFailureDiagnosticExactFieldList(t *testing.T) {
 	doc := loadYAMLMap(t, diagnosticsSpecPath)
@@ -302,7 +302,7 @@ func TestFailureDiagnosticExactFieldList(t *testing.T) {
 		t.Errorf("count minimum = %v, want 1", prop(t, props, "count")["minimum"])
 	}
 	// installId is optional, and it IS format uuid: the per-install id
-	// is a uuid4 minted once per install (Blowhorn's installationId,
+	// is a uuid4 minted once per install (the client's installationId,
 	// written beside cloud.yaml and reused), never a hardware id.
 	if prop(t, props, "installId")["format"] != "uuid" {
 		t.Errorf("installId format = %v, want uuid", prop(t, props, "installId")["format"])

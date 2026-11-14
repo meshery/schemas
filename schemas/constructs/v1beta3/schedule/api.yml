@@ -96,7 +96,8 @@ paths:
         `scheduled` when the schedule has a due time and `pending` otherwise.
         `nextRunAt` defaults to `runAt`. A `targetId` must name a live
         resource of `targetType` in the organization, else 400. Send
-        `paused: true` to create the schedule already paused.
+        `paused: true` to create the schedule already paused. `visibility`
+        defaults to `public`.
       requestBody:
         required: true
         content:
@@ -319,6 +320,60 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/public/activity-feed:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Get public activity feed
+      operationId: getPublicActivityFeed
+      description: |
+        Returns a paginated, unauthenticated feed of completed schedule runs
+        whose visibility is `public` and whose owner's `shareActivityPublicly`
+        preference is on at read time. Results are ordered newest first by
+        `completedAt`. Rate limited per client IP; an over-limit client
+        receives 429 with `Retry-After`. Responses carry
+        `Cache-Control: public, max-age=N` where N is at most 30 seconds.
+        Browsers may call this route cross-origin (CORS-enabled GET/OPTIONS
+        only, without credentials).
+      security: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: Number of items per page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        "200":
+          description: Public activity feed page
+          headers:
+            Cache-Control:
+              description: "`public, max-age=N` with N from 0 to 30; max-age never exceeds 30 seconds."
+              required: true
+              schema:
+                type: string
+                pattern: "^public, max-age=([0-9]|[12][0-9]|30)$"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicActivityFeedPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   securitySchemes:
     jwt:
@@ -467,6 +522,18 @@ components:
       minLength: 1
       maxLength: 64
 
+    ScheduleVisibility:
+      type: string
+      description: |
+        Visibility of the schedule: `public` allows completed runs to appear on
+        the unauthenticated public activity feed (subject to user preferences),
+        `org` restricts visibility to members of the owning organization, and
+        `private` restricts it to the schedule owner.
+      enum:
+        - public
+        - org
+        - private
+
     SchedulePayload:
       type: object
       additionalProperties: false
@@ -587,6 +654,14 @@ components:
             default resolves to, exactly as before.
           x-oapi-codegen-extra-tags:
             json: "posture,omitempty"
+        visibility:
+          $ref: "#/components/schemas/ScheduleVisibility"
+          description: |
+            Visibility of the schedule: `public`, `org`, or `private`.
+            Defaults to `public` on creation. Omitted on update, the existing
+            visibility is preserved.
+          x-oapi-codegen-extra-tags:
+            json: "visibility,omitempty"
 
     SchedulePage:
       type: object
@@ -615,3 +690,120 @@ components:
             $ref: "#/components/schemas/Schedule"
             x-go-type: Schedule
           description: Schedules included on this page of results.
+
+    PublicActivityFeedItem:
+      type: object
+      additionalProperties: false
+      description: |
+        A completed schedule run projected into the public feed. Never includes
+        email addresses, real names, or raw metadata. Public profile fields are
+        resolved at read time for every served owner (live, active, and
+        shareActivityPublicly on).
+      required:
+        - userId
+        - platform
+        - roleResult
+        - completedAt
+        - visibility
+      properties:
+        userId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Cloud user ID of the schedule owner.
+          x-go-name: UserID
+          x-order: 1
+        platform:
+          type: string
+          description: Social platform the schedule ran on.
+          enum:
+            - linkedin
+            - x
+            - reddit
+            - hacker-news
+            - slack
+            - bluesky
+            - github
+          x-order: 2
+        roleResult:
+          type: string
+          description: One-line role and result summary from the completed run.
+          minLength: 3
+          maxLength: 120
+          x-order: 3
+        completedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Time the schedule run completed; feed is ordered newest first.
+          x-order: 4
+        visibility:
+          type: string
+          description: Always `public` in this feed.
+          enum:
+            - public
+          default: public
+          x-order: 5
+        displayName:
+          type: string
+          description: >
+            The same value PublicUser.username carries for the owner. Never
+            email. Resolved for every served owner; omitted when empty.
+          maxLength: 200
+          x-oapi-codegen-extra-tags:
+            json: "displayName,omitempty"
+          x-order: 6
+        avatarUrl:
+          type: string
+          format: uri
+          description: Public avatar URL; resolved for every served owner, omitted when empty.
+          maxLength: 500
+          x-go-name: AvatarURL
+          x-oapi-codegen-extra-tags:
+            json: "avatarUrl,omitempty"
+          x-order: 7
+        organizationName:
+          type: string
+          description: Public organization name; omitted when organization memberships are not public to an anonymous caller.
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "organizationName,omitempty"
+          x-order: 8
+        publicProfileUrl:
+          type: string
+          format: uri
+          description: HTTPS URL of the user's public profile.
+          pattern: "^https://"
+          maxLength: 2048
+          x-go-name: PublicProfileURL
+          x-oapi-codegen-extra-tags:
+            json: "publicProfileUrl,omitempty"
+          x-order: 9
+
+    PublicActivityFeedPage:
+      type: object
+      additionalProperties: false
+      description: One page of public activity feed items, newest first.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - data
+      properties:
+        page:
+          type: integer
+          description: Current page number.
+          minimum: 1
+        pageSize:
+          type: integer
+          description: Number of items per page; maximum 50.
+          minimum: 1
+          maximum: 50
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        data:
+          type: array
+          description: Feed items included on this page, newest first.
+          items:
+            $ref: "#/components/schemas/PublicActivityFeedItem"
+
+    PublicActivityFeed:
+      $ref: "#/components/schemas/PublicActivityFeedPage"

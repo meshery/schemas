@@ -84,6 +84,10 @@ const python = {
  */
 const packageNameOverrides = {
   "v1beta1/design": "pattern",
+  // A Go package named `error` would shadow the predeclared `error` type in
+  // every file that imports it, so the error construct's Go models live in
+  // models/v1beta3/errorcode.
+  "v1beta3/error": "errorcode",
 };
 
 /**

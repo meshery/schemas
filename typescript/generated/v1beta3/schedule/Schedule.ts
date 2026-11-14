@@ -27,7 +27,8 @@ export interface paths {
          *     `scheduled` when the schedule has a due time and `pending` otherwise.
          *     `nextRunAt` defaults to `runAt`. A `targetId` must name a live
          *     resource of `targetType` in the organization, else 400. Send
-         *     `paused: true` to create the schedule already paused.
+         *     `paused: true` to create the schedule already paused. `visibility`
+         *     defaults to `public`.
          */
         post: operations["createSchedule"];
         delete?: never;
@@ -119,6 +120,33 @@ export interface paths {
          *     kept. A schedule that is not linked to this workspace answers 404.
          */
         delete: operations["unassignScheduleFromWorkspace"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/activity-feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get public activity feed
+         * @description Returns a paginated, unauthenticated feed of completed schedule runs
+         *     whose visibility is `public` and whose owner's `shareActivityPublicly`
+         *     preference is on at read time. Results are ordered newest first by
+         *     `completedAt`. Rate limited per client IP; an over-limit client
+         *     receives 429 with `Retry-After`. Responses carry
+         *     `Cache-Control: public, max-age=N` where N is at most 30 seconds.
+         *     Browsers may call this route cross-origin (CORS-enabled GET/OPTIONS
+         *     only, without credentials).
+         */
+        get: operations["getPublicActivityFeed"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -379,6 +407,15 @@ export interface components {
              * @enum {string}
              */
             posture?: "cautious" | "standard" | "brisk";
+            /**
+             * @description Visibility of the schedule: `public` (the default) allows completed runs
+             *     to appear on the unauthenticated public activity feed (subject to user
+             *     preferences), `org` restricts visibility to members of the schedule's
+             *     organization, and `private` restricts it to the schedule owner.
+             * @default public
+             * @enum {string}
+             */
+            visibility: "public" | "org" | "private";
         };
         /**
          * @description Lifecycle status of a schedule. `pending`: created, not yet
@@ -421,6 +458,14 @@ export interface components {
          *     not at all.
          */
         ScheduleTargetType: string;
+        /**
+         * @description Visibility of the schedule: `public` allows completed runs to appear on
+         *     the unauthenticated public activity feed (subject to user preferences),
+         *     `org` restricts visibility to members of the owning organization, and
+         *     `private` restricts it to the schedule owner.
+         * @enum {string}
+         */
+        ScheduleVisibility: "public" | "org" | "private";
         /**
          * @description Payload for creating or updating a schedule. Contains only
          *     client-settable fields; the owning `organizationId`, `createdBy`, the
@@ -539,6 +584,13 @@ export interface components {
              * @enum {string}
              */
             posture?: "cautious" | "standard" | "brisk";
+            /**
+             * @description Visibility of the schedule: `public`, `org`, or `private`.
+             *     Defaults to `public` on creation. Omitted on update, the existing
+             *     visibility is preserved.
+             * @enum {string}
+             */
+            visibility?: "public" | "org" | "private";
         };
         /** @description Paginated collection of schedules. */
         SchedulePage: {
@@ -782,6 +834,158 @@ export interface components {
                  * @enum {string}
                  */
                 posture?: "cautious" | "standard" | "brisk";
+                /**
+                 * @description Visibility of the schedule: `public` (the default) allows completed runs
+                 *     to appear on the unauthenticated public activity feed (subject to user
+                 *     preferences), `org` restricts visibility to members of the schedule's
+                 *     organization, and `private` restricts it to the schedule owner.
+                 * @default public
+                 * @enum {string}
+                 */
+                visibility: "public" | "org" | "private";
+            }[];
+        };
+        /**
+         * @description A completed schedule run projected into the public feed. Never includes
+         *     email addresses, real names, or raw metadata. Public profile fields are
+         *     resolved at read time for every served owner (live, active, and
+         *     shareActivityPublicly on).
+         */
+        PublicActivityFeedItem: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId: string;
+            /**
+             * @description Social platform the schedule ran on.
+             * @enum {string}
+             */
+            platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+            /** @description One-line role and result summary from the completed run. */
+            roleResult: string;
+            /**
+             * Format: date-time
+             * @description Time the schedule run completed; feed is ordered newest first.
+             */
+            completedAt: string;
+            /**
+             * @description Always `public` in this feed.
+             * @default public
+             * @enum {string}
+             */
+            visibility: "public";
+            /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
+            displayName?: string;
+            /**
+             * Format: uri
+             * @description Public avatar URL; resolved for every served owner, omitted when empty.
+             */
+            avatarUrl?: string;
+            /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
+            organizationName?: string;
+            /**
+             * Format: uri
+             * @description HTTPS URL of the user's public profile.
+             */
+            publicProfileUrl?: string;
+        };
+        /** @description One page of public activity feed items, newest first. */
+        PublicActivityFeedPage: {
+            /** @description Current page number. */
+            page: number;
+            /** @description Number of items per page; maximum 50. */
+            pageSize: number;
+            /** @description Total number of items available. */
+            totalCount: number;
+            /** @description Feed items included on this page, newest first. */
+            data: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                userId: string;
+                /**
+                 * @description Social platform the schedule ran on.
+                 * @enum {string}
+                 */
+                platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+                /** @description One-line role and result summary from the completed run. */
+                roleResult: string;
+                /**
+                 * Format: date-time
+                 * @description Time the schedule run completed; feed is ordered newest first.
+                 */
+                completedAt: string;
+                /**
+                 * @description Always `public` in this feed.
+                 * @default public
+                 * @enum {string}
+                 */
+                visibility: "public";
+                /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
+                displayName?: string;
+                /**
+                 * Format: uri
+                 * @description Public avatar URL; resolved for every served owner, omitted when empty.
+                 */
+                avatarUrl?: string;
+                /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
+                organizationName?: string;
+                /**
+                 * Format: uri
+                 * @description HTTPS URL of the user's public profile.
+                 */
+                publicProfileUrl?: string;
+            }[];
+        };
+        /** @description One page of public activity feed items, newest first. */
+        PublicActivityFeed: {
+            /** @description Current page number. */
+            page: number;
+            /** @description Number of items per page; maximum 50. */
+            pageSize: number;
+            /** @description Total number of items available. */
+            totalCount: number;
+            /** @description Feed items included on this page, newest first. */
+            data: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                userId: string;
+                /**
+                 * @description Social platform the schedule ran on.
+                 * @enum {string}
+                 */
+                platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+                /** @description One-line role and result summary from the completed run. */
+                roleResult: string;
+                /**
+                 * Format: date-time
+                 * @description Time the schedule run completed; feed is ordered newest first.
+                 */
+                completedAt: string;
+                /**
+                 * @description Always `public` in this feed.
+                 * @default public
+                 * @enum {string}
+                 */
+                visibility: "public";
+                /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
+                displayName?: string;
+                /**
+                 * Format: uri
+                 * @description Public avatar URL; resolved for every served owner, omitted when empty.
+                 */
+                avatarUrl?: string;
+                /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
+                organizationName?: string;
+                /**
+                 * Format: uri
+                 * @description HTTPS URL of the user's public profile.
+                 */
+                publicProfileUrl?: string;
             }[];
         };
     };
@@ -1146,6 +1350,15 @@ export interface operations {
                              * @enum {string}
                              */
                             posture?: "cautious" | "standard" | "brisk";
+                            /**
+                             * @description Visibility of the schedule: `public` (the default) allows completed runs
+                             *     to appear on the unauthenticated public activity feed (subject to user
+                             *     preferences), `org` restricts visibility to members of the schedule's
+                             *     organization, and `private` restricts it to the schedule owner.
+                             * @default public
+                             * @enum {string}
+                             */
+                            visibility: "public" | "org" | "private";
                         }[];
                     };
                 };
@@ -1330,6 +1543,13 @@ export interface operations {
                      * @enum {string}
                      */
                     posture?: "cautious" | "standard" | "brisk";
+                    /**
+                     * @description Visibility of the schedule: `public`, `org`, or `private`.
+                     *     Defaults to `public` on creation. Omitted on update, the existing
+                     *     visibility is preserved.
+                     * @enum {string}
+                     */
+                    visibility?: "public" | "org" | "private";
                 };
             };
         };
@@ -1575,6 +1795,15 @@ export interface operations {
                          * @enum {string}
                          */
                         posture?: "cautious" | "standard" | "brisk";
+                        /**
+                         * @description Visibility of the schedule: `public` (the default) allows completed runs
+                         *     to appear on the unauthenticated public activity feed (subject to user
+                         *     preferences), `org` restricts visibility to members of the schedule's
+                         *     organization, and `private` restricts it to the schedule owner.
+                         * @default public
+                         * @enum {string}
+                         */
+                        visibility: "public" | "org" | "private";
                     };
                 };
             };
@@ -1894,6 +2123,15 @@ export interface operations {
                          * @enum {string}
                          */
                         posture?: "cautious" | "standard" | "brisk";
+                        /**
+                         * @description Visibility of the schedule: `public` (the default) allows completed runs
+                         *     to appear on the unauthenticated public activity feed (subject to user
+                         *     preferences), `org` restricts visibility to members of the schedule's
+                         *     organization, and `private` restricts it to the schedule owner.
+                         * @default public
+                         * @enum {string}
+                         */
+                        visibility: "public" | "org" | "private";
                     };
                 };
             };
@@ -2074,6 +2312,13 @@ export interface operations {
                      * @enum {string}
                      */
                     posture?: "cautious" | "standard" | "brisk";
+                    /**
+                     * @description Visibility of the schedule: `public`, `org`, or `private`.
+                     *     Defaults to `public` on creation. Omitted on update, the existing
+                     *     visibility is preserved.
+                     * @enum {string}
+                     */
+                    visibility?: "public" | "org" | "private";
                 };
             };
         };
@@ -2319,6 +2564,15 @@ export interface operations {
                          * @enum {string}
                          */
                         posture?: "cautious" | "standard" | "brisk";
+                        /**
+                         * @description Visibility of the schedule: `public` (the default) allows completed runs
+                         *     to appear on the unauthenticated public activity feed (subject to user
+                         *     preferences), `org` restricts visibility to members of the schedule's
+                         *     organization, and `private` restricts it to the schedule owner.
+                         * @default public
+                         * @enum {string}
+                         */
+                        visibility: "public" | "org" | "private";
                     };
                 };
             };
@@ -2735,6 +2989,15 @@ export interface operations {
                              * @enum {string}
                              */
                             posture?: "cautious" | "standard" | "brisk";
+                            /**
+                             * @description Visibility of the schedule: `public` (the default) allows completed runs
+                             *     to appear on the unauthenticated public activity feed (subject to user
+                             *     preferences), `org` restricts visibility to members of the schedule's
+                             *     organization, and `private` restricts it to the schedule owner.
+                             * @default public
+                             * @enum {string}
+                             */
+                            visibility: "public" | "org" | "private";
                         }[];
                     };
                 };
@@ -3055,6 +3318,15 @@ export interface operations {
                          * @enum {string}
                          */
                         posture?: "cautious" | "standard" | "brisk";
+                        /**
+                         * @description Visibility of the schedule: `public` (the default) allows completed runs
+                         *     to appear on the unauthenticated public activity feed (subject to user
+                         *     preferences), `org` restricts visibility to members of the schedule's
+                         *     organization, and `private` restricts it to the schedule owner.
+                         * @default public
+                         * @enum {string}
+                         */
+                        visibility: "public" | "org" | "private";
                     };
                 };
             };
@@ -3153,6 +3425,123 @@ export interface operations {
             };
             /** @description Result not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getPublicActivityFeed: {
+        parameters: {
+            query?: {
+                /** @description Page number. */
+                page?: number;
+                /** @description Number of items per page. */
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Public activity feed page */
+            200: {
+                headers: {
+                    /** @description `public, max-age=N` with N from 0 to 30; max-age never exceeds 30 seconds. */
+                    "Cache-Control": string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number. */
+                        page: number;
+                        /** @description Number of items per page; maximum 50. */
+                        pageSize: number;
+                        /** @description Total number of items available. */
+                        totalCount: number;
+                        /** @description Feed items included on this page, newest first. */
+                        data: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            userId: string;
+                            /**
+                             * @description Social platform the schedule ran on.
+                             * @enum {string}
+                             */
+                            platform: "linkedin" | "x" | "reddit" | "hacker-news" | "slack" | "bluesky" | "github";
+                            /** @description One-line role and result summary from the completed run. */
+                            roleResult: string;
+                            /**
+                             * Format: date-time
+                             * @description Time the schedule run completed; feed is ordered newest first.
+                             */
+                            completedAt: string;
+                            /**
+                             * @description Always `public` in this feed.
+                             * @default public
+                             * @enum {string}
+                             */
+                            visibility: "public";
+                            /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
+                            displayName?: string;
+                            /**
+                             * Format: uri
+                             * @description Public avatar URL; resolved for every served owner, omitted when empty.
+                             */
+                            avatarUrl?: string;
+                            /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
+                            organizationName?: string;
+                            /**
+                             * Format: uri
+                             * @description HTTPS URL of the user's public profile.
+                             */
+                            publicProfileUrl?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

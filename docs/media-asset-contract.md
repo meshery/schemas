@@ -2,14 +2,15 @@
 
 `schemas/constructs/v1beta3/media_asset` holds image and video files that an
 organization uploads so a content item can post a file with no link. A
-content item refers to an asset by its `id` and never by a URL. A download
+content item refers to an asset by its `id` and never by a URL: content
+items list their assets in `mediaAssetIds`. A download
 URL is minted only when the file is about to be used, and it is never stored.
 
 ## Upload flow
 
 1. `createMediaAsset` (`POST /api/media-assets`) takes `MediaAssetPayload`:
-   `contentType`, `bytes`, `sha256`, `locationStripped`, plus optional `name`,
-   `backend`, `connectionId` and `retainUntil`. It answers `201` with
+   `contentType`, `bytes`, `sha256`, `locationStripped` and `backend`, plus
+   optional `name`, `connectionId` and `retainUntil`. It answers `201` with
    `MediaAssetUpload`, which holds the new `pending` asset and an `upload`
    `MediaAssetTransfer` (`method` `PUT`, `url`, `headers`, `expiresAt`).
 2. The client sends the bytes to `upload.url` in one request, carrying exactly
@@ -34,7 +35,7 @@ deduplicated by `sha256`: every create is a new asset.
 
 | `backend` | Bytes live in | Upload URL | Download URL |
 | --- | --- | --- | --- |
-| `r2` (the default) | The provider's private object storage | A signed `PUT` for that one object | A signed `GET` for that one object |
+| `r2` | The provider's private object storage | A signed `PUT` for that one object | A signed `GET` for that one object |
 | `gdrive` | The uploading person's Google Drive, through their Google Drive connection (`connectionId`) | A Drive resumable-upload session for that one file | A signed `getMediaAssetContent` URL on the provider, which relays the bytes from Drive |
 
 - No request or response carries a storage credential, an access token, a
@@ -50,8 +51,12 @@ deduplicated by `sha256`: every create is a new asset.
   query parameters are the whole grant, so no Google token leaves the
   provider. A bad or lapsed signature answers `403`, and a Drive file that is
   gone or whose grant was revoked answers `502`.
-- `MediaAssetQuota.backends` lists the backends a provider serves. A create
-  that names any other backend answers `400`.
+- Neither backend is a default. `backend` is required on create, and
+  `MediaAssetQuota.backends` is the only statement of which backends a
+  provider serves: the client reads it and picks one. A create that names any
+  other backend answers `400`. A provider may serve only one (for example
+  `backends: [gdrive]`); `r2` stays a valid value for a provider that serves
+  it.
 
 ## Limits
 
@@ -117,8 +122,7 @@ example a video whose location the client could not remove.
   update, and Delete Content Item covers delete.
 - A `connectionId` that is not the caller's own live Google Drive connection
   in the session organization answers `404`.
-- Every operation declares `429` (`MeshkitError429`), as the other Blowhorn
-  route families do.
+- Every operation declares `429` (`MeshkitError429`), as the other posting-client route families do.
 
 `validation/media_asset_contract_test.go` pins the absence of credential
 and URL fields, the payload's server-owned exclusions, each operation's

@@ -1,0 +1,8 @@
+consentChallenge: ''
+client:
+  clientId: ''
+  clientName: ''
+  redirectHosts: []
+  appSchemes: []
+  verified: false
+requestedScopes: []

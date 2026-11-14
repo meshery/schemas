@@ -2,6 +2,8 @@ package validation
 
 import (
 	"testing"
+
+	"github.com/getkin/kin-openapi/openapi3"
 )
 
 func TestIsCamelCase(t *testing.T) {
@@ -221,5 +223,84 @@ func TestSuggestPathParam(t *testing.T) {
 				t.Errorf("SuggestPathParam(%q) = %q, want %q", tt.input, got, tt.want)
 			}
 		})
+	}
+}
+
+// ---------------------------------------------------------------------------
+// IsDBBackedProperty: annotation-based DB-backed detection (meshery/schemas#724)
+// ---------------------------------------------------------------------------
+
+func TestIsDBBackedProperty(t *testing.T) {
+	mkRef := func(refExt, valExt map[string]any) *openapi3.SchemaRef {
+		r := &openapi3.SchemaRef{Extensions: refExt}
+		if valExt != nil {
+			r.Value = &openapi3.Schema{Extensions: valExt}
+		}
+		return r
+	}
+	dbTags := map[string]any{"x-oapi-codegen-extra-tags": map[string]any{"db": "user_id"}}
+	gormTags := map[string]any{"x-oapi-codegen-extra-tags": map[string]any{"gorm": "column:user_id"}}
+	jsonOnly := map[string]any{"x-oapi-codegen-extra-tags": map[string]any{"json": "userId"}}
+
+	tests := []struct {
+		name string
+		ref  *openapi3.SchemaRef
+		want bool
+	}{
+		{"nil ref", nil, false},
+		{"db tag on $ref sibling extensions", mkRef(dbTags, nil), true},
+		{"db tag on resolved value extensions", mkRef(nil, dbTags), true},
+		{"gorm tag on $ref sibling extensions", mkRef(gormTags, nil), true},
+		{"json-only tags are not DB-backed", mkRef(jsonOnly, jsonOnly), false},
+		{"no extensions", mkRef(nil, nil), false},
+		{"empty extensions", mkRef(map[string]any{}, map[string]any{}), false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsDBBackedProperty(tt.ref); got != tt.want {
+				t.Errorf("IsDBBackedProperty() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSchemaPropertyDBContext(t *testing.T) {
+	if got := schemaPropertyDBContext("created_at", true); !contains(got, "legacy DB-mirrored") {
+		t.Errorf("expected legacy DB-mirrored hint for DB-backed property, got %q", got)
+	}
+	if got := schemaPropertyDBContext("some_field", false); !contains(got, "db: tag only") {
+		t.Errorf("expected generic db-tag hint for non-DB snake_case property, got %q", got)
+	}
+	if got := schemaPropertyDBContext("camelCase", false); got != "" {
+		t.Errorf("expected empty context for camelCase property, got %q", got)
+	}
+	// A hardcoded legacy name WITHOUT annotations must not get the migration
+	// hint: DB-backed-ness comes from annotations, not the name.
+	if got := schemaPropertyDBContext("user_id", false); contains(got, "legacy DB-mirrored") {
+		t.Errorf("unannotated user_id must not get the legacy hint, got %q", got)
+	}
+}
+
+func TestEntityPropIsDBBacked(t *testing.T) {
+	entity := &entitySchema{
+		raw: map[string]any{
+			"properties": map[string]any{
+				"user_id": map[string]any{
+					"x-oapi-codegen-extra-tags": map[string]any{"db": "user_id"},
+				},
+				"role": map[string]any{
+					"x-oapi-codegen-extra-tags": map[string]any{"gorm": "column:role"},
+				},
+				"name": map[string]any{"type": "string"},
+			},
+		},
+	}
+	for prop, want := range map[string]bool{"user_id": true, "role": true, "name": false, "missing": false} {
+		if got := entityPropIsDBBacked(entity, prop); got != want {
+			t.Errorf("entityPropIsDBBacked(%q) = %v, want %v", prop, got, want)
+		}
+	}
+	if entityPropIsDBBacked(nil, "user_id") {
+		t.Error("entityPropIsDBBacked(nil, ...) must be false")
 	}
 }

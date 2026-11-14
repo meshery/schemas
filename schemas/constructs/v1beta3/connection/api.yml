@@ -128,6 +128,10 @@ paths:
         that token when the connection is deregistered or deleted. When a
         later registration of the same connection authenticates with a
         different token, the server revokes the token previously linked to it.
+        One sign-in can back one install's connections in several
+        organizations, so a token is revoked only once no live connection of
+        the same owner still links it: removing or superseding one
+        organization's connection must not sign the install out of another.
         Registrations beyond the organization's device limit are accepted;
         the organization is flagged through the capabilities document's
         `session.deviceUsage` instead.
@@ -315,7 +319,7 @@ paths:
         - Connections
       operationId: deleteConnection
       summary: Delete a connection
-      description: Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token.
+      description: Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token, unless another live connection of the same owner still links it.
       parameters:
         - $ref: "#/components/parameters/connectionId"
       responses:
@@ -443,13 +447,41 @@ paths:
         sign-out or uninstall.
         Servers implementing this contract must scope the deletion to the
         caller: a connection registered by another user is not found.
+        An install registers one connection per organization, so with
+        `X-Current-Orgid` naming an organization the server must delete only
+        the install's connection in that organization and leave its
+        connections in other organizations live; this is how an install
+        releases the organization it is leaving when it switches to another.
+        Without the header (or with the all-organizations value `all`) the
+        server deletes the install's connections in every organization.
+        When nothing matches, the server answers 404 and revokes nothing.
         Servers must revoke the API token linked to each deleted connection
-        (`metadata.tokenId`).
+        (`metadata.tokenId`) unless a live connection of the same owner still
+        links it: the token still authenticates that connection.
       parameters:
         - $ref: "#/components/parameters/installationId"
+        - name: X-Current-Orgid
+          in: header
+          required: false
+          description: >
+            Organization whose connection for this install is deleted. Absent,
+            or `all`, deletes the install's connections in every organization.
+            A value that is neither an organization id nor `all` is refused
+            with 400. An organization id where the caller has no connection
+            for this install deletes nothing and is 404. Membership is not
+            checked: a non-member with no connection there gets the same 404,
+            so the response does not disclose membership, and a connection
+            the caller still owns in an organization it has left is deleted
+            (204).
+            The schema is a plain string, not `format: uuid` as on
+            `registerConnection`, because `all` is a legal value here.
+          schema:
+            type: string
       responses:
         "204":
           description: Desktop connection deleted
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -1297,7 +1329,8 @@ components:
           description: >
             Server-written id of the API token that authenticated the latest
             registration. Deregistering or deleting the connection revokes
-            this token. A value sent by the client is ignored.
+            this token, unless another live connection of the same owner
+            still links it. A value sent by the client is ignored.
         lastSeenAt:
           type: string
           format: date-time

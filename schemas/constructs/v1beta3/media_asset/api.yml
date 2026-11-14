@@ -15,7 +15,8 @@ info:
     Storage: `backend` `r2` stores the bytes in the provider's own private
     object storage; `gdrive` stores them in the uploading person's Google
     Drive, through their Google Drive connection. The quota names the
-    backends a provider serves. No request or response carries a storage
+    backends a provider serves, and a create names one of them: neither
+    is a default. No request or response carries a storage
     credential, an access token, a bucket name or an object key: an upload
     or download URL is the only grant, it covers one transfer of one file,
     and it lapses at its `expiresAt`.
@@ -496,9 +497,11 @@ components:
       description: >
         Where the asset's bytes are stored. `r2` is the provider's own
         private object storage; `gdrive` is the uploading person's Google
-        Drive, reached through their Google Drive connection. A reader never
-        branches on it: `getMediaAssetDownload` answers the same shape for
-        both.
+        Drive, reached through their Google Drive connection. Neither is a
+        default: a provider states the ones it serves in
+        `MediaAssetQuota.backends`, and a create names one of them. A reader
+        never branches on it: `getMediaAssetDownload` answers the same shape
+        for both.
       enum:
         - r2
         - gdrive
@@ -595,6 +598,7 @@ components:
         - bytes
         - sha256
         - locationStripped
+        - backend
       properties:
         contentType:
           $ref: "#/components/schemas/MediaAssetContentType"
@@ -623,9 +627,10 @@ components:
             hashing and uploading it. Recorded as sent.
         backend:
           $ref: "#/components/schemas/MediaAssetBackend"
-          description: Where to store the file. Omitted, the server stores it in `r2`.
-          x-oapi-codegen-extra-tags:
-            json: "backend,omitempty"
+          description: >
+            Where to store the file. Required, with no default: the client
+            picks one of the backends `getMediaAssetQuota` lists in
+            `backends`, and a create naming any other answers `400`.
         connectionId:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
           description: >
@@ -730,7 +735,11 @@ components:
       properties:
         backends:
           type: array
-          description: Backends this provider serves for the organization. A create naming another is refused with 400.
+          description: >
+            Backends this provider serves for the organization, and the only
+            statement of what it serves. A create must name one of them in
+            `backend` (there is no default); naming another is refused with
+            400.
           items:
             $ref: "#/components/schemas/MediaAssetBackend"
         contentTypes:

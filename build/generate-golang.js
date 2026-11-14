@@ -1566,8 +1566,8 @@ async function main() {
     process.chdir(paths.getProjectRoot());
 
     // Add Go bin to PATH
-    const goPath = process.env.GOPATH || `${process.env.HOME}/go`;
-    process.env.PATH = `${goPath}/bin:${process.env.PATH}`;
+    const goPath = process.env.GOPATH || `${process.env.HOME || process.env.USERPROFILE}/go`;
+    process.env.PATH = `${path.join(goPath, "bin")}${path.delimiter}${process.env.PATH}`;
 
     logger.header("🔧 Starting Go code generation...");
 

@@ -1,7 +1,7 @@
 # Diagnostics and anonymous support contract
 
-Schema-side contract for Blowhorn issue #771 (schema step, first in the
-issue's sequence). The Cloud and Blowhorn workers build against this
+Schema-side contract for the downstream desktop diagnostics issue #771 (schema step, first in the
+issue's sequence). The Cloud and desktop workers build against this
 document plus the specs; where they disagree, the specs win and this
 document is updated.
 
@@ -70,7 +70,7 @@ header of whole seconds (at least 1), which is declared on the response.
   closed enum would make the server reject reports carrying a cause it
   does not know yet. Consumers must treat an unknown cause as opaque,
   never as an error. The description lists the known causes today (the
-  Blowhorn engine's `StoreUnavailable.cause` names).
+  desktop engine's `StoreUnavailable.cause` names).
 - `failure.message` is redacted, max 500 characters: only the cause
   sentence survives.
 - `failure.code` is a string so numeric and symbolic codes both fit;
@@ -81,7 +81,7 @@ header of whole seconds (at least 1), which is declared on the response.
 - `compat` carries `requiresSchema` and `contractVersion` as strings, so
   dotted versions and plain numbers both fit.
 - `installId` is optional and `format: uuid`: the per-install id is a
-  uuid4 minted once per install (Blowhorn's `installationId`, written
+  uuid4 minted once per install (the client's `installationId`, written
   beside `cloud.yaml` and reused), never a hardware id, and it is
   omitted entirely when the person has opted out of failure reports.
 

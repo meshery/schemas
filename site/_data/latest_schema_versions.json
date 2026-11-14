@@ -146,6 +146,13 @@
     "extension": true
   },
   {
+    "construct": "error",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/error/error.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "evaluation",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/evaluation/api.yml",
@@ -230,10 +237,31 @@
     "extension": true
   },
   {
+    "construct": "mention_alias",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/mention_alias/mention_alias.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "model",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/model/model.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/models",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "oauth_consent",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/oauth_consent/oauth_consent.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "oauth_consent_request",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/oauth_consent_request/oauth_consent_request.yaml",
     "core": false,
     "extension": true
   },
