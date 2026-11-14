@@ -2224,9 +2224,9 @@ export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluat
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -3222,9 +3222,9 @@ export type EvaluateRelationshipsApiArg = {
             version: string;
           };
           /** The relationships of the model. */
-          relationships: any;
+          relationships: any[];
           /** The components of the model. */
-          components: any;
+          components: any[];
           /** Number of components associated with the model. */
           componentsCount: number;
           /** Number of relationships associated with the model. */
@@ -4178,9 +4178,9 @@ export type GetRegistryModelsApiResponse = /** status 200 Paginated list of regi
       version: string;
     };
     /** The relationships of the model. */
-    relationships: any;
+    relationships: any[];
     /** The components of the model. */
-    components: any;
+    components: any[];
     /** Number of components associated with the model. */
     componentsCount: number;
     /** Number of relationships associated with the model. */
@@ -4467,9 +4467,9 @@ export type GetRegistryModelsByNameApiResponse = /** status 200 Paginated list o
       version: string;
     };
     /** The relationships of the model. */
-    relationships: any;
+    relationships: any[];
     /** The components of the model. */
-    components: any;
+    components: any[];
     /** Number of components associated with the model. */
     componentsCount: number;
     /** Number of relationships associated with the model. */
@@ -4770,9 +4770,9 @@ export type GetRegistryComponentsByModelApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -5317,9 +5317,9 @@ export type GetRegistryComponentsByModelAndNameApiResponse = /** status 200 Pagi
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -6083,9 +6083,9 @@ export type GetRegistryModelsByCategoryApiResponse = /** status 200 Paginated li
       version: string;
     };
     /** The relationships of the model. */
-    relationships: any;
+    relationships: any[];
     /** The components of the model. */
-    components: any;
+    components: any[];
     /** Number of components associated with the model. */
     componentsCount: number;
     /** Number of relationships associated with the model. */
@@ -6367,9 +6367,9 @@ export type GetRegistryModelsByCategoryAndModelApiResponse =
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -6666,9 +6666,9 @@ export type GetRegistryComponentsByCategoryAndModelApiResponse = /** status 200 
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -7216,9 +7216,9 @@ export type GetRegistryComponentsByCategoryAndModelAndNameApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -7768,9 +7768,9 @@ export type GetRegistryComponentsByCategoryApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -8316,9 +8316,9 @@ export type GetRegistryComponentsByCategoryAndNameApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -8865,9 +8865,9 @@ export type GetRegistryComponentsApiResponse = /** status 200 Paginated list of 
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -9698,9 +9698,9 @@ export type GetRegistryComponentsByNameApiResponse = /** status 200 Paginated li
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -10724,9 +10724,9 @@ export type GenerateRegistryComponentsApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -18481,9 +18481,9 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             version: string;
           };
           /** The relationships of the model. */
-          relationships: any;
+          relationships: any[];
           /** The components of the model. */
-          components: any;
+          components: any[];
           /** Number of components associated with the model. */
           componentsCount: number;
           /** Number of relationships associated with the model. */
