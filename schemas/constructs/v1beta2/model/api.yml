@@ -19,6 +19,36 @@ tags:
     description: Operations related to mesh models
 
 paths:
+  /api/registry/models/preflight:
+    post:
+      x-internal: ["meshery"]
+      tags: [Models]
+      operationId: previewModelImport
+      summary: Preview a model import source
+      description: >-
+        Checks public GitHub and Artifact Hub sources without downloading packages,
+        generating components, or persisting registry entities. Metadata is advisory;
+        availability and generator-selected versions may change before generation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelImportPreflightPayload'
+      responses:
+        '200':
+          description: Source validation result, including failures and warnings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelImportPreflight'
+        '400':
+          description: Malformed or oversized request.
+        '401':
+          description: Authentication required.
+        '403':
+          description: Provider access denied.
+
   # The Meshery Server import operation formerly documented here as
   # `POST /api/meshmodels/register` (operationId `registerMeshmodels`) now
   # lives in the registry construct as `POST /api/registry/register`
@@ -83,6 +113,67 @@ components:
       bearerFormat: JWT
 
   schemas:
+    ModelImportPreflightPayload:
+      type: object
+      additionalProperties: false
+      description: Source information to validate before model generation.
+      required: [source, url, modelName]
+      properties:
+        source:
+          type: string
+          description: Canonical source registrant.
+          enum: [github, artifacthub]
+          maxLength: 32
+        url:
+          x-go-name: URL
+          type: string
+          description: Public source URL entered in the Create Model wizard.
+          minLength: 1
+          maxLength: 2048
+        modelName:
+          type: string
+          description: Model name used by the Artifact Hub generator's package search.
+          minLength: 1
+          maxLength: 255
+
+    ModelImportPreflight:
+      type: object
+      additionalProperties: false
+      description: Advisory metadata and blocking validation errors for an import source.
+      required: [valid, source, name, version, errors, warnings]
+      properties:
+        valid:
+          type: boolean
+          description: Whether the source check passed without blocking errors.
+        source:
+          type: string
+          description: Canonical registrant, or the unsupported input when validation fails.
+          maxLength: 32
+        name:
+          type: string
+          description: Detected package name or repository full name; empty when unavailable.
+          maxLength: 255
+        version:
+          type: string
+          description: Detected package version; empty when unavailable. Not a version pin.
+          maxLength: 255
+        errors:
+          type: array
+          description: Blocking errors that must be corrected before generation.
+          maxItems: 10
+          items:
+            type: string
+            description: Actionable source validation error.
+            maxLength: 1024
+        warnings:
+          type: array
+          description: Non-blocking limitations of the metadata check.
+          maxItems: 10
+          items:
+            type: string
+            description: Advisory source validation warning.
+            maxLength: 1024
+
     Model:
       type: object
       description: "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)."
