@@ -7752,7 +7752,7 @@ export type RegisterToAcademyContentApiResponse = /** status 201 registered cont
   /** Timestamp when the resource was deleted. */
   deletedAt?: string;
   /** Issued certificate for completing the curricula under registration */
-  certificate: {
+  certificate?: {
     /** Unique identifier for the certificate */
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -7780,7 +7780,7 @@ export type RegisterToAcademyContentApiResponse = /** status 201 registered cont
     expirationDate?: string;
     /** Number of months after which the certificate expires */
     expiresIn?: number;
-  };
+  } | null;
   /** Additional metadata about the registration */
   metadata: {
     [key: string]: any;
@@ -7813,7 +7813,7 @@ export type WithdrawFromAcademyContentApiResponse = /** status 200 registered co
   /** Timestamp when the resource was deleted. */
   deletedAt?: string;
   /** Issued certificate for completing the curricula under registration */
-  certificate: {
+  certificate?: {
     /** Unique identifier for the certificate */
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -7841,7 +7841,7 @@ export type WithdrawFromAcademyContentApiResponse = /** status 200 registered co
     expirationDate?: string;
     /** Number of months after which the certificate expires */
     expiresIn?: number;
-  };
+  } | null;
   /** Additional metadata about the registration */
   metadata: {
     [key: string]: any;
@@ -8227,7 +8227,7 @@ export type GetApiAcademyRegistrationsByContentIdApiResponse =
     /** Timestamp when the resource was deleted. */
     deletedAt?: string;
     /** Issued certificate for completing the curricula under registration */
-    certificate: {
+    certificate?: {
       /** Unique identifier for the certificate */
       id: string;
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -8255,7 +8255,7 @@ export type GetApiAcademyRegistrationsByContentIdApiResponse =
       expirationDate?: string;
       /** Number of months after which the certificate expires */
       expiresIn?: number;
-    };
+    } | null;
     /** Additional metadata about the registration */
     metadata: {
       [key: string]: any;
@@ -8783,7 +8783,7 @@ export type GetAllTestSessionsForRegistrationApiResponse =
     attemptedAt: string;
     /** The attempts of the quizevaluationresult. */
     attempts: number;
-  }[][];
+  }[];
 export type GetAllTestSessionsForRegistrationApiArg = {
   /** The ID of the registration to retrieve tests for */
   id: string;
