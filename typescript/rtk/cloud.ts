@@ -4093,9 +4093,9 @@ export type GetMeshModelModelsApiResponse = /** status 200 Model and capabilitie
       version: string;
     };
     /** The relationships of the model. */
-    relationships: any;
+    relationships: any[];
     /** The components of the model. */
-    components: any;
+    components: any[];
     /** Number of components associated with the model. */
     componentsCount: number;
     /** Number of relationships associated with the model. */
@@ -23130,9 +23130,9 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             version: string;
           };
           /** The relationships of the model. */
-          relationships: any;
+          relationships: any[];
           /** The components of the model. */
-          components: any;
+          components: any[];
           /** Number of components associated with the model. */
           componentsCount: number;
           /** Number of relationships associated with the model. */
