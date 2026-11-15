@@ -43,7 +43,7 @@ properties:
   rowNumber:
     type: integer
     description: Row number of the content item, unique across the live content items of the organization.
-    minimum: 0
+    minimum: 1
     x-oapi-codegen-extra-tags:
       db: row_number
     x-order: 4

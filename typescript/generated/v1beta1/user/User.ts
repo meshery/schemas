@@ -1964,6 +1964,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Merged-away user ID; redirects to the surviving canonical account's equivalent profile path */
+            301: {
+                headers: {
+                    /** @description URL of the surviving canonical account's equivalent profile path */
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Invalid request body or request param */
             400: {
                 headers: {

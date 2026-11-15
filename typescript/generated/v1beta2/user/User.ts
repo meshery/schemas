@@ -107,7 +107,7 @@ export interface paths {
         };
         /**
          * Get recent activity for a user's public profile
-         * @description Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges.
+         * @description Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges. A retired account is not served: an id with no recorded successor answers 404, and a merged-away id redirects (301) to the surviving canonical account's equivalent path.
          */
         get: operations["getUserRecentActivities"];
         put?: never;
@@ -2282,6 +2282,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Merged-away user ID; redirects to the surviving canonical account's equivalent profile path */
+            301: {
+                headers: {
+                    /** @description URL of the surviving canonical account's equivalent profile path */
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Invalid request body or request param */
             400: {
                 headers: {
@@ -2865,8 +2874,26 @@ export interface operations {
                     };
                 };
             };
+            /** @description Merged-away user ID; redirects to the surviving canonical account's equivalent activity path */
+            301: {
+                headers: {
+                    /** @description URL of the surviving canonical account's equivalent activity path */
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Invalid request body or request param */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -114,6 +114,12 @@ func TestContentItemRulesOfEngagementAndThreads(t *testing.T) {
 	if got := mustLookup(t, entity, "properties", "threadIndex", "minimum"); got != 1 {
 		t.Errorf("ContentItem.threadIndex minimum = %v, want 1 (the root counts as 0)", got)
 	}
+	if got := mustLookup(t, entity, "properties", "rowNumber", "minimum"); got != 1 {
+		t.Errorf("ContentItem.rowNumber minimum = %v, want 1 (row numbers start at 1)", got)
+	}
+	if got := mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", "rowNumber", "minimum"); got != 1 {
+		t.Errorf("ContentItemPayload.rowNumber minimum = %v, want 1 (row numbers start at 1)", got)
+	}
 
 	if required["mediaAssetIds"] {
 		t.Error("ContentItem.mediaAssetIds must stay optional")
