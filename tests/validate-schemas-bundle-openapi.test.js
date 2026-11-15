@@ -3,7 +3,12 @@ const assert = require("node:assert/strict");
 const path = require("node:path");
 
 const config = require("../build/lib/config");
-const { dereferenceOpenapiSpec, mergeOpenapiSpec, mergeOpenapiSpecs } = require("../build/bundle-openapi");
+const {
+  bundleConstructSpec,
+  dereferenceOpenapiSpec,
+  mergeOpenapiSpec,
+  mergeOpenapiSpecs,
+} = require("../build/bundle-openapi");
 const { filterOpenapiByTag } = require("../build/filterOpenapiByTag");
 
 test("mergeOpenapiSpec prefixes tags, components, refs, and security requirements", () => {
@@ -169,6 +174,48 @@ test("dereferenceOpenapiSpec resolves a construct api.yml in-process", async () 
   assert.equal(document.info.title, "Key");
   assert.equal(document.paths["/api/auth/keys"].get.tags[0], "Key");
   assert.ok(document.components.schemas.KeyPage);
+});
+
+test("controllers-config keeps shared component refs through the Meshery filtered bundle", async () => {
+  const projectRoot = config.getProjectRoot();
+  const inputPath = path.join(projectRoot, "schemas/constructs/v1alpha1/controllers_config/api.yml");
+  const constructSpec = await bundleConstructSpec(inputPath, {
+    version: "v1alpha1",
+    dirName: "controllers_config",
+  });
+  const baseMesherySpec = {
+    openapi: "3.0.0",
+    info: { title: "Meshery Server", version: "v0.0.0" },
+    servers: [{ url: "https://meshery.example.test" }],
+    tags: [],
+    paths: {},
+    components: {},
+  };
+  const mergedSpec = mergeOpenapiSpec(JSON.parse(JSON.stringify(baseMesherySpec)), constructSpec);
+  const mesherySpec = filterOpenapiByTag(mergedSpec, "meshery", baseMesherySpec);
+  const route = "/api/integrations/connections/{connectionId}/controllers/config";
+  const responseSchemas = ["get", "put"].map(
+    (method) => mesherySpec.paths[route][method].responses["200"].content["application/json"].schema.$ref,
+  );
+
+  assert.equal(responseSchemas[0], responseSchemas[1]);
+
+  const resolveComponent = (ref) => {
+    const match = ref.match(/^#\/components\/schemas\/([^/]+)$/);
+    assert.ok(match, `expected a local schema ref, received ${ref}`);
+    const component = mesherySpec.components.schemas[match[1]];
+    assert.ok(component, `expected component ${match[1]} to exist`);
+    return component;
+  };
+  const connectionConfig = resolveComponent(responseSchemas[0]);
+  const configRefs = ["override", "default", "effective"].map((layer) => connectionConfig.properties[layer].$ref);
+  assert.equal(new Set(configRefs).size, 1);
+
+  const effectiveConfig = resolveComponent(configRefs[2]);
+  const operatorConfig = resolveComponent(effectiveConfig.properties.operator.$ref);
+
+  assert.equal(operatorConfig.type, "object");
+  assert.equal(operatorConfig.properties.deploymentMode.enum.join(","), "operator,embedded");
 });
 
 test("clonePattern declares a request body for generated clients", async () => {
