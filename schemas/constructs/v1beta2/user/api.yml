@@ -73,6 +73,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "301":
+          description: Merged-away user ID; redirects to the surviving canonical account's equivalent profile path
+          headers:
+            Location:
+              description: URL of the surviving canonical account's equivalent profile path
+              schema:
+                type: string
+                format: uri
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -170,7 +178,10 @@ paths:
         Accessible without authentication; sensitive event categories are
         filtered out and email addresses are redacted unless the caller is a
         provider admin or is viewing their own profile. Pagination beyond the
-        first page requires provider-admin privileges.
+        first page requires provider-admin privileges. A retired account is
+        not served: an id with no recorded successor answers 404, and a
+        merged-away id redirects (301) to the surviving canonical account's
+        equivalent path.
       security: []
       parameters:
         - $ref: "#/components/parameters/userId"
@@ -204,8 +215,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecentActivityPage"
+        "301":
+          description: Merged-away user ID; redirects to the surviving canonical account's equivalent activity path
+          headers:
+            Location:
+              description: URL of the surviving canonical account's equivalent activity path
+              schema:
+                type: string
+                format: uri
         "400":
           $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 

@@ -1228,6 +1228,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -1237,6 +1238,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -2509,6 +2511,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -2518,6 +2521,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -3946,6 +3950,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -3956,6 +3961,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -6407,6 +6413,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -6417,6 +6424,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -24584,6 +24592,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -24593,6 +24602,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -25874,6 +25884,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -25883,6 +25894,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -27280,6 +27292,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -27290,6 +27303,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -29751,6 +29765,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -29761,6 +29776,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -32202,6 +32218,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -32212,6 +32229,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -34663,6 +34681,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -34673,6 +34692,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -37105,6 +37125,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -37115,6 +37136,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -40669,6 +40691,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -40679,6 +40702,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -52533,6 +52557,7 @@ const RegistrySchema: Record<string, unknown> = {
                                 },
                                 "relationships": {
                                   "type": "array",
+                                  "items": {},
                                   "x-go-type": "interface{}",
                                   "x-oapi-codegen-extra-tags": {
                                     "gorm": "-",
@@ -52543,6 +52568,7 @@ const RegistrySchema: Record<string, unknown> = {
                                 },
                                 "components": {
                                   "type": "array",
+                                  "items": {},
                                   "x-go-type": "interface{}",
                                   "x-oapi-codegen-extra-tags": {
                                     "gorm": "-",
@@ -55219,6 +55245,7 @@ const RegistrySchema: Record<string, unknown> = {
               },
               "relationships": {
                 "type": "array",
+                "items": {},
                 "x-go-type": "interface{}",
                 "x-oapi-codegen-extra-tags": {
                   "gorm": "-",
@@ -55228,6 +55255,7 @@ const RegistrySchema: Record<string, unknown> = {
               },
               "components": {
                 "type": "array",
+                "items": {},
                 "x-go-type": "interface{}",
                 "x-oapi-codegen-extra-tags": {
                   "gorm": "-",
@@ -56441,6 +56469,7 @@ const RegistrySchema: Record<string, unknown> = {
                   },
                   "relationships": {
                     "type": "array",
+                    "items": {},
                     "x-go-type": "interface{}",
                     "x-oapi-codegen-extra-tags": {
                       "gorm": "-",
@@ -56451,6 +56480,7 @@ const RegistrySchema: Record<string, unknown> = {
                   },
                   "components": {
                     "type": "array",
+                    "items": {},
                     "x-go-type": "interface{}",
                     "x-oapi-codegen-extra-tags": {
                       "gorm": "-",
@@ -58643,6 +58673,7 @@ const RegistrySchema: Record<string, unknown> = {
                         },
                         "relationships": {
                           "type": "array",
+                          "items": {},
                           "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-",
@@ -58652,6 +58683,7 @@ const RegistrySchema: Record<string, unknown> = {
                         },
                         "components": {
                           "type": "array",
+                          "items": {},
                           "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-",
@@ -59912,6 +59944,7 @@ const RegistrySchema: Record<string, unknown> = {
                             },
                             "relationships": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -59922,6 +59955,7 @@ const RegistrySchema: Record<string, unknown> = {
                             },
                             "components": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -72078,6 +72112,7 @@ const RegistrySchema: Record<string, unknown> = {
                     },
                     "relationships": {
                       "type": "array",
+                      "items": {},
                       "x-go-type": "interface{}",
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "-",
@@ -72088,6 +72123,7 @@ const RegistrySchema: Record<string, unknown> = {
                     },
                     "components": {
                       "type": "array",
+                      "items": {},
                       "x-go-type": "interface{}",
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "-",

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { withMeshkitErrorTransform } from "./meshkitError";
+import { prepareCloudHeaders } from "./currentOrgHeader";
 
 // The MeshKit error surface lives in ./meshkitError so it can be unit-tested
 // without loading the React-coupled RTK runtime this module pulls in (see the
@@ -11,18 +12,9 @@ export {
   type MeshkitFetchBaseQueryError,
 } from "./meshkitError";
 
-// RootState interface for proper typing
-interface RootState {
-  organization: {
-    value: {
-      id?: string;
-    } | null;
-  };
-}
-
 export const SUPPORTED_SOCIAL_ACCOUNTS = ["github", "google"];
 
-export const CURRENT_ORG_KEY = "X-Current-Orgid";
+export { CURRENT_ORG_KEY } from "./currentOrgHeader";
 export const DEFAULT_DESIGN_VERSION = "0.0.1";
 export const MESHERY_PROD_URL = "https://playground.meshery.io/";
 
@@ -33,15 +25,7 @@ const MESHERY_BASE_URL = process.env.RTK_MESHERY_ENDPOINT_PREFIX ?? "";
 const baseQueryCloud = fetchBaseQuery({
   baseUrl: CLOUD_BASE_URL,
   credentials: "include",
-  prepareHeaders: (headers: Headers, { getState }: { getState: () => unknown }) => {
-    const state = getState() as RootState;
-    const currentOrg = state.organization?.value;
-    const orgId = currentOrg?.id;
-    if (orgId) {
-      headers.set(CURRENT_ORG_KEY, orgId);
-    }
-    return headers;
-  }
+  prepareHeaders: prepareCloudHeaders,
 });
 
 // Wrap with MeshKit error transform so endpoint consumers can read
