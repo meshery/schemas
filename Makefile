@@ -116,7 +116,7 @@ test-python: bundle-openapi
 	python3 -m pip install ./python/generated
 	python3 -m pytest python/tests -q
 
-## Run TypeScript unit tests (node --test with native type-stripping; needs Node >= 22.6)
+## Run TypeScript unit tests (node --test with native type-stripping; needs Node >= 22.18, where it is on by default)
 test-ts:
 	npm test
 

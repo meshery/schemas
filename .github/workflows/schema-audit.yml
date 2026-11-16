@@ -60,7 +60,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          # >= 22.6 for `node --test` native TypeScript type-stripping.
+          # >= 22.18 for `node --test` type stripping without a flag.
           node-version: '22'
 
       - name: Install Node dependencies
