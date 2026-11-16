@@ -126,7 +126,7 @@ golang-generate: generate-golang
 #-----------------------------------------------------------------------------
 # Permissions
 #-----------------------------------------------------------------------------
-.PHONY: generate-permissions generate-permissions-go generate-permissions-ts test-golang
+.PHONY: generate-permissions generate-permissions-go generate-permissions-ts test-oauth-scopes test-golang
 
 ## Generate Go permission key constants from permissions.csv
 generate-permissions-go:
@@ -138,6 +138,11 @@ generate-permissions-ts:
 
 ## Generate both Go and TypeScript permission key constants
 generate-permissions: generate-permissions-go generate-permissions-ts
+	$(MAKE) --no-print-directory test-oauth-scopes
+
+## Run OAuth scope map regression tests (scope -> keychain -> permission keys)
+test-oauth-scopes:
+	node --test tests/oauth-scopes.test.js
 
 ## Run Go tests
 test-golang:
