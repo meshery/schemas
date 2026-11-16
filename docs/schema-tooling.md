@@ -61,6 +61,12 @@ rejected invalid IDs, names, statuses, and unknown properties. Running
 `node --test tests/environment-connections-response.test.js` directly needs the
 bundled specs built first.
 
+## TypeScript unit tests
+
+`make test-ts` (`npm test`) runs every `typescript/**/*.test.ts` under Node's native test runner (Node 22.6 or later, for type stripping). The `blocking-validation` job in `.github/workflows/schema-audit.yml` runs it on every pull request that touches `typescript/`, `schemas/`, `package.json` or `package-lock.json`, right after `npm ci`, and `generate-artifacts-from-schemas.yml` runs it again on `master` after `make build`.
+
+The pull-request run happens before any build, so a test reads schema YAML from source and imports generated output only with `import type`, which is erased at runtime. A test that needs runtime generated code would read the committed output, which is stale on a schema change until `master` regenerates it. Keep that kind of test in `generate-artifacts-from-schemas.yml`.
+
 ## Consumer audit
 
 The consumer audit joins the schemas endpoint index against the routers and RTK Query clients of the downstream repos, producing a per-endpoint coverage and drift report. Three parsers are registered:
