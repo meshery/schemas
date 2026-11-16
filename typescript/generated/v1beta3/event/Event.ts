@@ -14,7 +14,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Delete a single event */
+        /**
+         * Delete a single event
+         * @description Servers implementing this contract must change only an event the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. An event the caller may not change, like one that does not exist or is already deleted, is 404, so the response does not disclose another tenant's event. An event id alone is never authorization.
+         */
         delete: operations["deleteEvent"];
         options?: never;
         head?: never;
@@ -30,7 +33,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Bulk delete events */
+        /**
+         * Bulk delete events
+         * @description Servers implementing this contract must change only the events among `ids` the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. The response lists only the ids that were changed; an id the caller may not change, like one that does not exist, is left out rather than refused, so the response does not disclose another tenant's event.
+         */
         post: operations["bulkDeleteEvents"];
         delete?: never;
         options?: never;
@@ -66,7 +72,10 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Bulk update event status */
+        /**
+         * Bulk update event status
+         * @description Servers implementing this contract must change only the events among `ids` the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. The response lists only the ids that were changed; an id the caller may not change, like one that does not exist, is left out rather than refused, so the response does not disclose another tenant's event.
+         */
         put: operations["bulkUpdateEventStatus"];
         post?: never;
         delete?: never;
@@ -83,7 +92,10 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update status of a single event */
+        /**
+         * Update status of a single event
+         * @description Servers implementing this contract must change only an event the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. An event the caller may not change, like one that does not exist or is already deleted, is 404, so the response does not disclose another tenant's event. An event id alone is never authorization.
+         */
         put: operations["updateEventStatus"];
         post?: never;
         delete?: never;

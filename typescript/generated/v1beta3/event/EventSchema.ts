@@ -37,6 +37,7 @@ const EventSchema: Record<string, unknown> = {
         ],
         "operationId": "deleteEvent",
         "summary": "Delete a single event",
+        "description": "Servers implementing this contract must change only an event the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. An event the caller may not change, like one that does not exist or is already deleted, is 404, so the response does not disclose another tenant's event. An event id alone is never authorization.\n",
         "parameters": [
           {
             "name": "eventId",
@@ -168,6 +169,7 @@ const EventSchema: Record<string, unknown> = {
         ],
         "operationId": "bulkDeleteEvents",
         "summary": "Bulk delete events",
+        "description": "Servers implementing this contract must change only the events among `ids` the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. The response lists only the ids that were changed; an id the caller may not change, like one that does not exist, is left out rather than refused, so the response does not disclose another tenant's event.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -458,6 +460,7 @@ const EventSchema: Record<string, unknown> = {
         ],
         "operationId": "bulkUpdateEventStatus",
         "summary": "Bulk update event status",
+        "description": "Servers implementing this contract must change only the events among `ids` the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. The response lists only the ids that were changed; an id the caller may not change, like one that does not exist, is left out rather than refused, so the response does not disclose another tenant's event.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -621,6 +624,7 @@ const EventSchema: Record<string, unknown> = {
         ],
         "operationId": "updateEventStatus",
         "summary": "Update status of a single event",
+        "description": "Servers implementing this contract must change only an event the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. An event the caller may not change, like one that does not exist or is already deleted, is 404, so the response does not disclose another tenant's event. An event id alone is never authorization.\n",
         "parameters": [
           {
             "name": "eventId",
