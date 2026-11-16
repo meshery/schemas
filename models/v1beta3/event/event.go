@@ -562,6 +562,12 @@ type EventsPage struct {
 	TotalCount core.Number    `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
+// MarkAllEventsReadResponse Response returned after marking the caller's unread events as read.
+type MarkAllEventsReadResponse struct {
+	// Message Human-readable status message.
+	Message string `json:"message" yaml:"message"`
+}
+
 // RelationshipEvaluationEventMetadata Metadata of a relationship evaluation event (category `relationship`, action `evaluation`): the design's identity fields (DesignEventIdentity) plus counts of what the evaluation changed. It summarizes the evaluation; it does not carry it. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
 type RelationshipEvaluationEventMetadata struct {
 	// DesignID ID of the design the event is about.

@@ -992,6 +992,10 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/events/delete`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
+      markAllEventsRead: build.mutation<MarkAllEventsReadApiResponse, MarkAllEventsReadApiArg>({
+        query: () => ({ url: `/api/events/mark-all-read`, method: "POST" }),
+        invalidatesTags: ["Events_events"],
+      }),
       bulkUpdateEventStatus: build.mutation<BulkUpdateEventStatusApiResponse, BulkUpdateEventStatusApiArg>({
         query: (queryArg) => ({ url: `/api/events/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
@@ -16563,6 +16567,11 @@ export type BulkDeleteEventsApiArg = {
     ids: string[];
   };
 };
+export type MarkAllEventsReadApiResponse = /** status 200 All of the caller's unread events were marked as read */ {
+  /** Human-readable status message. */
+  message: string;
+};
+export type MarkAllEventsReadApiArg = void;
 export type BulkUpdateEventStatusApiResponse = /** status 200 Events updated */ {
   /** UUIDs of events whose status was updated. */
   updated?: string[];
@@ -18947,6 +18956,7 @@ export const {
   useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
   useBulkDeleteEventsMutation,
+  useMarkAllEventsReadMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
   useCreateEventMutation,

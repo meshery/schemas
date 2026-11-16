@@ -313,6 +313,140 @@ const EventSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/events/mark-all-read": {
+      "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
+        "tags": [
+          "events"
+        ],
+        "operationId": "markAllEventsRead",
+        "summary": "Mark all events as read",
+        "description": "Marks every unread event owned by the authenticated caller as read. System-owned events are not changed. The caller is determined from the authenticated session; clients do not send a user ID.\n",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All of the caller's unread events were marked as read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Response returned after marking the caller's unread events as read.",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable status message.",
+                      "maxLength": 500
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/events/status": {
       "put": {
         "x-internal": [
@@ -4037,6 +4171,21 @@ const EventSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Updated status of the event.",
             "maxLength": 255
+          }
+        }
+      },
+      "MarkAllEventsReadResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Response returned after marking the caller's unread events as read.",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable status message.",
+            "maxLength": 500
           }
         }
       },
