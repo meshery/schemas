@@ -256,7 +256,7 @@ type Preferences struct {
 	// Links Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.
 	Links *Links `json:"links,omitempty" yaml:"links,omitempty"`
 
-	// SchedulePause Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed unless the claim carries the operator override `ignorePause` (v1beta3 schedule). Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.
+	// SchedulePause Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.
 	SchedulePause *SchedulePause `json:"schedulePause,omitempty" yaml:"schedulePause,omitempty"`
 
 	// ShowAuthCarousel Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
@@ -308,7 +308,7 @@ type PreferencesPayload struct {
 	Theme Theme `json:"theme" yaml:"theme"`
 }
 
-// SchedulePause Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed unless the claim carries the operator override `ignorePause` (v1beta3 schedule). Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.
+// SchedulePause Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.
 type SchedulePause struct {
 	// Paused Whether every schedule in the organization is paused.
 	Paused *bool `json:"paused,omitempty" yaml:"paused,omitempty"`

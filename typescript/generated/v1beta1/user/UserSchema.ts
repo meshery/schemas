@@ -2349,6 +2349,18 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "301": {
+            "description": "Merged-away user ID; redirects to the surviving canonical account's equivalent profile path",
+            "headers": {
+              "Location": {
+                "description": "URL of the surviving canonical account's equivalent profile path",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request body or request param",
             "content": {

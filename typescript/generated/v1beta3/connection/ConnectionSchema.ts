@@ -194,7 +194,8 @@ const ConnectionSchema: Record<string, unknown> = {
                           "type",
                           "subType",
                           "kind",
-                          "status"
+                          "status",
+                          "organizationId"
                         ],
                         "properties": {
                           "id": {
@@ -224,7 +225,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "description": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "description",
-                              "json": "description"
+                              "json": "description,omitempty"
                             },
                             "x-order": 3,
                             "type": "string",
@@ -234,7 +235,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "url": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "url",
-                              "json": "url"
+                              "json": "url,omitempty"
                             },
                             "x-order": 4,
                             "type": "string",
@@ -1001,12 +1002,13 @@ const ConnectionSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "organizationId": {
-                            "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                            "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
-                              "json": "organizationId,omitempty"
+                              "json": "organizationId"
                             },
-                            "x-go-type-skip-optional-pointer": false,
                             "x-order": 19,
                             "type": "string",
                             "format": "uuid",
@@ -1192,16 +1194,14 @@ const ConnectionSchema: Record<string, unknown> = {
                                 },
                                 "purpose": {
                                   "type": "string",
-                                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                                   "enum": [
                                     "user",
-                                    "administrative",
-                                    "profile"
+                                    "administrative"
                                   ],
                                   "x-enum-varnames": [
                                     "EnvironmentPurposeUser",
-                                    "EnvironmentPurposeAdministrative",
-                                    "EnvironmentPurposeProfile"
+                                    "EnvironmentPurposeAdministrative"
                                   ],
                                   "x-go-type-skip-optional-pointer": true,
                                   "x-oapi-codegen-extra-tags": {
@@ -1318,13 +1318,13 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "registerConnection",
         "summary": "Register a new connection",
-        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on sign-in with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.machineId`): registering the same machine again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `machineId` is refused with `400`. The kind names the connection type, never the product that runs on the machine.\n",
+        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nEvery connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body. When the session names none, the server may use the caller's only organization (Meshery Cloud: the only live organization the caller belongs to, else the only one of those the caller owns); it must not guess between several, and answers 400 instead.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. One sign-in can back one install's connections in several organizations, so a token is revoked only once no live connection of the same owner still links it: removing or superseding one organization's connection must not sign the install out of another. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
         "parameters": [
           {
             "name": "X-Current-Orgid",
             "in": "header",
             "required": false,
-            "description": "Organization the connection is registered in. Required for kind `desktop`; ignored for other kinds.\n",
+            "description": "Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400.\n",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1337,7 +1337,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -1902,7 +1902,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -1932,7 +1933,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -1942,7 +1943,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -2709,12 +2710,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -2900,16 +2902,14 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
-                              "administrative",
-                              "profile"
+                              "administrative"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
-                              "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeProfile"
+                              "EnvironmentPurposeAdministrative"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
@@ -2971,7 +2971,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -3001,7 +3002,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -3011,7 +3012,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -3778,12 +3779,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -3969,16 +3971,14 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
-                              "administrative",
-                              "profile"
+                              "administrative"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
-                              "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeProfile"
+                              "EnvironmentPurposeAdministrative"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
@@ -4059,7 +4059,134 @@ const ConnectionSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "The client's version is below the provider's minimum for that client. The client must update before it can register or keep a connection alive; the body names the minimum and where to get an update.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Body of a 426 answer: a MeshKit error sentence plus the client's compatibility, so the client can show the minimum and where to update.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "error",
+                    "compatibility"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code allocated by the emitting service; not a stable part of this contract."
+                    },
+                    "compatibility": {
+                      "type": "object",
+                      "description": "Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.\n",
+                      "additionalProperties": false,
+                      "required": [
+                        "clientName",
+                        "clientVersion",
+                        "compatible"
+                      ],
+                      "properties": {
+                        "clientName": {
+                          "type": "string",
+                          "description": "Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.\n",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        },
+                        "clientVersion": {
+                          "type": "string",
+                          "description": "The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`.",
+                          "maxLength": 64
+                        },
+                        "minimumVersion": {
+                          "type": "string",
+                          "description": "Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.",
+                          "maxLength": 64
+                        },
+                        "compatible": {
+                          "type": "boolean",
+                          "description": "True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum."
+                        },
+                        "upgradeUrl": {
+                          "type": "string",
+                          "description": "Where the client can get an update, when the provider knows one.",
+                          "maxLength": 2048
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -4433,7 +4560,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -4463,7 +4591,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -4473,7 +4601,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -5240,12 +5368,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -5431,16 +5560,14 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
-                              "administrative",
-                              "profile"
+                              "administrative"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
-                              "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeProfile"
+                              "EnvironmentPurposeAdministrative"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
@@ -5527,7 +5654,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "updateConnection",
         "summary": "Update a connection",
-        "description": "Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct.\n",
+        "description": "Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct. `organizationId` is not in the body. The server keeps the organization assigned at registration.\n",
         "parameters": [
           {
             "name": "connectionId",
@@ -5546,7 +5673,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -6111,7 +6238,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -6141,7 +6269,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -6151,7 +6279,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -6918,12 +7046,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -7109,16 +7238,14 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
-                              "administrative",
-                              "profile"
+                              "administrative"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
-                              "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeProfile"
+                              "EnvironmentPurposeAdministrative"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
@@ -7199,7 +7326,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -7266,7 +7393,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "deleteConnection",
         "summary": "Delete a connection",
-        "description": "Delete a specific connection",
+        "description": "Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token, unless another live connection of the same owner still links it.",
         "parameters": [
           {
             "name": "connectionId",
@@ -7395,7 +7522,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -7425,7 +7553,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -7435,7 +7563,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -8202,12 +8330,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -8393,16 +8522,14 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
-                              "administrative",
-                              "profile"
+                              "administrative"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
-                              "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeProfile"
+                              "EnvironmentPurposeAdministrative"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
@@ -8551,37 +8678,196 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/integrations/connections/desktop/{machineId}": {
-      "delete": {
+    "/api/integrations/connections/desktop": {
+      "get": {
         "x-internal": [
           "cloud"
         ],
         "tags": [
           "Connections"
         ],
-        "operationId": "deregisterDesktopConnection",
-        "summary": "Deregister a desktop app install",
-        "description": "Delete the caller's `desktop` connection whose `metadata.machineId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found.\n",
+        "operationId": "getDesktopConnectionsOfOrganization",
+        "summary": "List the organization's desktop connections",
+        "description": "Returns every live `desktop` connection in the session organization, whoever registered it, as a summary: `id`, `name`, `kind`, `owner`, `status`, `organizationId` and `lastSeenAt` only. Any live member of the organization may read it, so members can see which computers share its work; a guest session cannot. Servers must never include the connection's credential, metadata (beyond `lastSeenAt`), URL or description here: the full connection stays readable only by its owner through `getConnections`. `status` follows the heartbeat rule of `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes reads `disconnected`). A caller who is not a live member of the session organization receives `404`.\n",
         "parameters": [
           {
-            "name": "machineId",
-            "in": "path",
-            "description": "Stable per-install machine identifier from `metadata.machineId`.",
-            "required": true,
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            }
+          },
+          {
+            "name": "owner",
+            "in": "query",
+            "required": false,
+            "description": "Only connections registered by this user.",
             "schema": {
               "type": "string",
-              "description": "Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key and the `machineId` path parameter.",
-              "minLength": 1,
-              "maxLength": 255
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Desktop connection deleted"
+          "200": {
+            "description": "Desktop connections of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Page of connection summaries.",
+                  "additionalProperties": false,
+                  "required": [
+                    "connections",
+                    "totalCount",
+                    "page",
+                    "pageSize"
+                  ],
+                  "properties": {
+                    "connections": {
+                      "type": "array",
+                      "description": "Connection summaries on this page.",
+                      "items": {
+                        "x-go-type": "ConnectionSummary",
+                        "type": "object",
+                        "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "name",
+                          "kind",
+                          "status",
+                          "organizationId"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-order": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Connection name.",
+                            "maxLength": 255,
+                            "x-order": 2
+                          },
+                          "kind": {
+                            "type": "string",
+                            "description": "Connection kind, for example `desktop`.",
+                            "maxLength": 255,
+                            "x-order": 3
+                          },
+                          "owner": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "owner,omitempty"
+                            },
+                            "x-order": 4
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Connection status as read, for example `connected` or `disconnected`.",
+                            "maxLength": 255,
+                            "x-order": 5
+                          },
+                          "lastSeenAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+                            "nullable": true,
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-order": 6
+                          },
+                          "organizationId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "organizationId"
+                            },
+                            "x-order": 7
+                          }
+                        }
+                      },
+                      "x-order": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of connections on all pages.",
+                      "minimum": 0,
+                      "x-order": 2
+                    },
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number.",
+                      "minimum": 0,
+                      "x-order": 3
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of elements per page.",
+                      "minimum": 1,
+                      "x-order": 4
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -8613,6 +8899,148 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/integrations/connections/desktop/{installationId}": {
+      "delete": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "operationId": "deregisterDesktopConnection",
+        "summary": "Deregister a desktop app install",
+        "description": "Delete the caller's `desktop` connection whose `metadata.installationId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. An install registers one connection per organization, so with `X-Current-Orgid` naming an organization the server must delete only the install's connection in that organization and leave its connections in other organizations live; this is how an install releases the organization it is leaving when it switches to another. Without the header (or with the all-organizations value `all`) the server deletes the install's connections in every organization. When nothing matches, the server answers 404 and revokes nothing. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`) unless a live connection of the same owner still links it: the token still authenticates that connection.\n",
+        "parameters": [
+          {
+            "name": "installationId",
+            "in": "path",
+            "description": "Installation identifier from `metadata.installationId`.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+              "minLength": 1,
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization whose connection for this install is deleted. Absent, or `all`, deletes the install's connections in every organization. A value that is neither an organization id nor `all` is refused with 400. An organization id where the caller has no connection for this install deletes nothing and is 404. Membership is not checked: a non-member with no connection there gets the same 404, so the response does not disclose membership, and a connection the caller still owns in an organization it has left is deleted (204). The schema is a plain string, not `format: uuid` as on `registerConnection`, because `all` is a legal value here.\n",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Desktop connection deleted"
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/integrations/connections/{connectionId}/heartbeat": {
       "post": {
         "x-internal": [
@@ -8623,7 +9051,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "recordConnectionHeartbeat",
         "summary": "Record a connection heartbeat",
-        "description": "Mark the caller's connection as alive. Servers implementing this contract must set `metadata.lastSeenAt` to the current time and, when the connection is `disconnected`, set its status back to `connected`. Servers must report a connection whose `metadata.lastSeenAt` is older than 3 minutes as `disconnected` until its next heartbeat. The request has no body, so a heartbeat cannot change anything else about the connection.\n",
+        "description": "Mark the caller's connection as alive. Servers implementing this contract must set `metadata.lastSeenAt` to the current time and, when the connection is `disconnected`, set its status back to `connected`. Servers must report a connection whose `metadata.lastSeenAt` is older than 3 minutes as `disconnected` until its next heartbeat. The request has no body, so a heartbeat cannot change anything else about the connection. When the connection's `metadata.clientName` and `metadata.appVersion`, as stored by the latest registration (which every connect makes before its first heartbeat), fall below the server's minimum version for that client, servers must answer `426` with a `ClientUpgradeRequiredError` body and set the connection to `maintenance` instead of recording the heartbeat.\n",
         "parameters": [
           {
             "name": "connectionId",
@@ -8654,7 +9082,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -8684,7 +9113,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -8694,7 +9123,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -9461,12 +9890,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -9652,16 +10082,14 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
-                              "administrative",
-                              "profile"
+                              "administrative"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
-                              "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeProfile"
+                              "EnvironmentPurposeAdministrative"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
@@ -9722,6 +10150,133 @@ const ConnectionSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "The client's version is below the provider's minimum for that client. The client must update before it can register or keep a connection alive; the body names the minimum and where to get an update.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Body of a 426 answer: a MeshKit error sentence plus the client's compatibility, so the client can show the minimum and where to update.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "error",
+                    "compatibility"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code allocated by the emitting service; not a stable part of this contract."
+                    },
+                    "compatibility": {
+                      "type": "object",
+                      "description": "Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.\n",
+                      "additionalProperties": false,
+                      "required": [
+                        "clientName",
+                        "clientVersion",
+                        "compatible"
+                      ],
+                      "properties": {
+                        "clientName": {
+                          "type": "string",
+                          "description": "Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.\n",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        },
+                        "clientVersion": {
+                          "type": "string",
+                          "description": "The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`.",
+                          "maxLength": 64
+                        },
+                        "minimumVersion": {
+                          "type": "string",
+                          "description": "Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.",
+                          "maxLength": 64
+                        },
+                        "compatible": {
+                          "type": "boolean",
+                          "description": "True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum."
+                        },
+                        "upgradeUrl": {
+                          "type": "string",
+                          "description": "Where the client can get an update, when the provider knows one.",
+                          "maxLength": 2048
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -12109,13 +12664,74 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         }
       },
+      "MeshkitError429": {
+        "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+        "headers": {
+          "Retry-After": {
+            "description": "Number of seconds the caller must wait before retrying.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "MeshkitError409": {
         "description": "Conflict",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
-              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
               "required": [
                 "error"
               ],
@@ -12261,14 +12877,14 @@ const ConnectionSchema: Record<string, unknown> = {
           "maxLength": 500
         }
       },
-      "machineId": {
-        "name": "machineId",
+      "installationId": {
+        "name": "installationId",
         "in": "path",
-        "description": "Stable per-install machine identifier from `metadata.machineId`.",
+        "description": "Installation identifier from `metadata.installationId`.",
         "required": true,
         "schema": {
           "type": "string",
-          "description": "Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key and the `machineId` path parameter.",
+          "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
           "minLength": 1,
           "maxLength": 255
         }
@@ -12298,7 +12914,8 @@ const ConnectionSchema: Record<string, unknown> = {
           "type",
           "subType",
           "kind",
-          "status"
+          "status",
+          "organizationId"
         ],
         "properties": {
           "id": {
@@ -12328,7 +12945,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "description": {
             "x-oapi-codegen-extra-tags": {
               "db": "description",
-              "json": "description"
+              "json": "description,omitempty"
             },
             "x-order": 3,
             "type": "string",
@@ -12338,7 +12955,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "url": {
             "x-oapi-codegen-extra-tags": {
               "db": "url",
-              "json": "url"
+              "json": "url,omitempty"
             },
             "x-order": 4,
             "type": "string",
@@ -13105,12 +13722,13 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true
           },
           "organizationId": {
-            "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+            "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
-              "json": "organizationId,omitempty"
+              "json": "organizationId"
             },
-            "x-go-type-skip-optional-pointer": false,
             "x-order": 19,
             "type": "string",
             "format": "uuid",
@@ -13296,16 +13914,14 @@ const ConnectionSchema: Record<string, unknown> = {
                 },
                 "purpose": {
                   "type": "string",
-                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                   "enum": [
                     "user",
-                    "administrative",
-                    "profile"
+                    "administrative"
                   ],
                   "x-enum-varnames": [
                     "EnvironmentPurposeUser",
-                    "EnvironmentPurposeAdministrative",
-                    "EnvironmentPurposeProfile"
+                    "EnvironmentPurposeAdministrative"
                   ],
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
@@ -14181,6 +14797,209 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         }
       },
+      "ConnectionSummary": {
+        "type": "object",
+        "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "status",
+          "organizationId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-order": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Connection name.",
+            "maxLength": 255,
+            "x-order": 2
+          },
+          "kind": {
+            "type": "string",
+            "description": "Connection kind, for example `desktop`.",
+            "maxLength": 255,
+            "x-order": 3
+          },
+          "owner": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "owner,omitempty"
+            },
+            "x-order": 4
+          },
+          "status": {
+            "type": "string",
+            "description": "Connection status as read, for example `connected` or `disconnected`.",
+            "maxLength": 255,
+            "x-order": 5
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+            "nullable": true,
+            "x-go-type": "core.NullTime",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            },
+            "x-order": 6
+          },
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "readOnly": true,
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "organizationId"
+            },
+            "x-order": 7
+          }
+        }
+      },
+      "ConnectionSummaryPage": {
+        "type": "object",
+        "description": "Page of connection summaries.",
+        "additionalProperties": false,
+        "required": [
+          "connections",
+          "totalCount",
+          "page",
+          "pageSize"
+        ],
+        "properties": {
+          "connections": {
+            "type": "array",
+            "description": "Connection summaries on this page.",
+            "items": {
+              "x-go-type": "ConnectionSummary",
+              "type": "object",
+              "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name",
+                "kind",
+                "status",
+                "organizationId"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-order": 1
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Connection name.",
+                  "maxLength": 255,
+                  "x-order": 2
+                },
+                "kind": {
+                  "type": "string",
+                  "description": "Connection kind, for example `desktop`.",
+                  "maxLength": 255,
+                  "x-order": 3
+                },
+                "owner": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "owner,omitempty"
+                  },
+                  "x-order": 4
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Connection status as read, for example `connected` or `disconnected`.",
+                  "maxLength": 255,
+                  "x-order": 5
+                },
+                "lastSeenAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+                  "nullable": true,
+                  "x-go-type": "core.NullTime",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
+                  },
+                  "x-order": 6
+                },
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "organizationId"
+                  },
+                  "x-order": 7
+                }
+              }
+            },
+            "x-order": 1
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of connections on all pages.",
+            "minimum": 0,
+            "x-order": 2
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "minimum": 0,
+            "x-order": 3
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of elements per page.",
+            "minimum": 1,
+            "x-order": 4
+          }
+        }
+      },
       "ConnectionPage": {
         "description": "Represents a page of connections with meta information about connections count",
         "additionalProperties": false,
@@ -14209,7 +15028,8 @@ const ConnectionSchema: Record<string, unknown> = {
                 "type",
                 "subType",
                 "kind",
-                "status"
+                "status",
+                "organizationId"
               ],
               "properties": {
                 "id": {
@@ -14239,7 +15059,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "description": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "description",
-                    "json": "description"
+                    "json": "description,omitempty"
                   },
                   "x-order": 3,
                   "type": "string",
@@ -14249,7 +15069,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "url": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "url",
-                    "json": "url"
+                    "json": "url,omitempty"
                   },
                   "x-order": 4,
                   "type": "string",
@@ -15016,12 +15836,13 @@ const ConnectionSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "organizationId": {
-                  "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                  "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "organization_id",
-                    "json": "organizationId,omitempty"
+                    "json": "organizationId"
                   },
-                  "x-go-type-skip-optional-pointer": false,
                   "x-order": 19,
                   "type": "string",
                   "format": "uuid",
@@ -15207,16 +16028,14 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "purpose": {
                         "type": "string",
-                        "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                        "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                         "enum": [
                           "user",
-                          "administrative",
-                          "profile"
+                          "administrative"
                         ],
                         "x-enum-varnames": [
                           "EnvironmentPurposeUser",
-                          "EnvironmentPurposeAdministrative",
-                          "EnvironmentPurposeProfile"
+                          "EnvironmentPurposeAdministrative"
                         ],
                         "x-go-type-skip-optional-pointer": true,
                         "x-oapi-codegen-extra-tags": {
@@ -15298,25 +16117,30 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         }
       },
-      "DesktopMachineId": {
+      "DesktopInstallationId": {
         "type": "string",
-        "description": "Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key and the `machineId` path parameter.",
+        "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
         "minLength": 1,
         "maxLength": 255
       },
       "DesktopConnectionMetadata": {
         "type": "object",
-        "description": "Metadata of a `desktop` connection: a desktop app install that registered itself on sign-in. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `machineId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.\n",
+        "description": "Metadata of a `desktop` connection: a desktop app install that registered itself on every connect to Cloud. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `installationId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.\n",
         "required": [
-          "machineId"
+          "installationId"
         ],
         "additionalProperties": false,
         "properties": {
-          "machineId": {
+          "installationId": {
             "type": "string",
-            "description": "Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key.",
+            "description": "Stable identifier of a desktop app install: generated once on the install's first launch (a UUID is recommended), kept with the app's local state, and never derived from the host name, a process id or a hardware identifier. A reinstall that discards local state is a new install. It is the install part of the deduplication key.\n",
             "minLength": 1,
             "maxLength": 255
+          },
+          "computerId": {
+            "type": "string",
+            "description": "Stable identifier of the computer the install runs on, shared by every install on that computer whoever signs in: the lowercase hex SHA-256 digest of a fixed, client-defined salt followed by the operating system's hardware identifier (for example the platform UUID on macOS). Clients must send only this digest, never the raw hardware identifier or a serial number. Absent when the client cannot read a hardware identifier.\n",
+            "pattern": "^[0-9a-f]{64}$"
           },
           "hostname": {
             "type": "string",
@@ -15330,8 +16154,31 @@ const ConnectionSchema: Record<string, unknown> = {
           },
           "appVersion": {
             "type": "string",
-            "description": "Version of the desktop app.",
+            "description": "Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`.",
+            "maxLength": 64,
+            "pattern": "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+          },
+          "clientName": {
+            "type": "string",
+            "description": "Identifier of the desktop app, for example its product name, lowercase. A value, never a kind: it selects the server's minimum version for this client.\n",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "buildSha": {
+            "type": "string",
+            "description": "Source revision the desktop app was built from.",
             "maxLength": 64
+          },
+          "osVersion": {
+            "type": "string",
+            "description": "Operating system version, for example `26.0.1`.",
+            "maxLength": 64
+          },
+          "tokenId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token, unless another live connection of the same owner still links it. A value sent by the client is ignored.\n"
           },
           "lastSeenAt": {
             "type": "string",
@@ -15423,7 +16270,7 @@ const ConnectionSchema: Record<string, unknown> = {
       },
       "ConnectionPayload": {
         "type": "object",
-        "description": "Payload for creating or updating a connection",
+        "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
         "properties": {
           "id": {
             "type": "string",

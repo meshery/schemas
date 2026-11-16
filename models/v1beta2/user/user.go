@@ -229,6 +229,36 @@ type Preference struct {
 	UsersExtensionPreferences map[string]interface{} `json:"usersExtensionPreferences" yaml:"usersExtensionPreferences"`
 }
 
+// PreferencePayload The client-settable fields of Preference for updateUserPreferences. Every field is optional: the server merges the ones present onto the stored preferences and keeps the rest. updatedAt is server-recorded and is not settable.
+type PreferencePayload struct {
+	// AnonymousPerfResults The anonymous perf results of the preference.
+	AnonymousPerfResults *bool `json:"anonymousPerfResults,omitempty" yaml:"anonymousPerfResults,omitempty"`
+
+	// AnonymousUsageStats The anonymous usage stats of the preference.
+	AnonymousUsageStats *bool `json:"anonymousUsageStats,omitempty" yaml:"anonymousUsageStats,omitempty"`
+
+	// DashboardPreferences The dashboard preferences of the preference.
+	DashboardPreferences *map[string]interface{} `json:"dashboardPreferences,omitempty" yaml:"dashboardPreferences,omitempty"`
+	Grafana              *Grafana                `json:"grafana,omitempty" yaml:"grafana,omitempty"`
+	LoadTestPrefs        *LoadTestPreferences    `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
+
+	// MeshAdapters The mesh adapters of the preference.
+	MeshAdapters *[]Adapter  `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
+	Prometheus   *Prometheus `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
+
+	// RemoteProviderPreferences The remote provider preferences of the preference.
+	RemoteProviderPreferences *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
+
+	// SelectedOrganizationId ID of the organization to make the session's selected organization.
+	SelectedOrganizationId *uuid.UUID `json:"selectedOrganizationId,omitempty" yaml:"selectedOrganizationId,omitempty"`
+
+	// SelectedWorkspaceForOrganizations The selected workspace for organizations of the preference.
+	SelectedWorkspaceForOrganizations *map[string]string `json:"selectedWorkspaceForOrganizations,omitempty" yaml:"selectedWorkspaceForOrganizations,omitempty"`
+
+	// UsersExtensionPreferences The users extension preferences of the preference.
+	UsersExtensionPreferences *map[string]interface{} `json:"usersExtensionPreferences,omitempty" yaml:"usersExtensionPreferences,omitempty"`
+}
+
 // ProfileOverview Aggregate counts shown on the current user's profile overview.
 type ProfileOverview struct {
 	// KubernetesContexts Number of Kubernetes contexts owned by the user.

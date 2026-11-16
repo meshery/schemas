@@ -594,6 +594,22 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "format": "date-time",
                                           "x-go-type-skip-optional-pointer": true
                                         },
+                                        "organizationId": {
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          },
+                                          "x-go-name": "OrganizationID",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "organization_id",
+                                            "json": "organizationId,omitempty",
+                                            "yaml": "organizationId"
+                                          },
+                                          "x-order": 15
+                                        },
                                         "environments": {
                                           "type": "array",
                                           "description": "Associated environments for this connection",
@@ -716,16 +732,16 @@ const EvaluationSchema: Record<string, unknown> = {
                                                 "x-order": 6
                                               },
                                               "created_at": {
+                                                "x-oapi-codegen-extra-tags": {
+                                                  "db": "created_at",
+                                                  "yaml": "created_at"
+                                                },
                                                 "x-order": 7,
                                                 "description": "Timestamp when the resource was created.",
                                                 "x-go-type": "time.Time",
                                                 "type": "string",
                                                 "format": "date-time",
                                                 "x-go-name": "CreatedAt",
-                                                "x-oapi-codegen-extra-tags": {
-                                                  "db": "created_at",
-                                                  "yaml": "created_at"
-                                                },
                                                 "x-go-type-skip-optional-pointer": true
                                               },
                                               "metadata": {
@@ -740,16 +756,16 @@ const EvaluationSchema: Record<string, unknown> = {
                                                 "type": "object"
                                               },
                                               "updated_at": {
+                                                "x-oapi-codegen-extra-tags": {
+                                                  "db": "updated_at",
+                                                  "yaml": "updated_at"
+                                                },
                                                 "x-order": 9,
                                                 "description": "Timestamp when the resource was updated.",
                                                 "x-go-type": "time.Time",
                                                 "type": "string",
                                                 "format": "date-time",
                                                 "x-go-name": "UpdatedAt",
-                                                "x-oapi-codegen-extra-tags": {
-                                                  "db": "updated_at",
-                                                  "yaml": "updated_at"
-                                                },
                                                 "x-go-type-skip-optional-pointer": true
                                               },
                                               "deleted_at": {
@@ -1309,6 +1325,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                     },
                                     "relationships": {
                                       "type": "array",
+                                      "items": {},
                                       "x-go-type": "interface{}",
                                       "x-oapi-codegen-extra-tags": {
                                         "gorm": "-",
@@ -1319,6 +1336,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                     },
                                     "components": {
                                       "type": "array",
+                                      "items": {},
                                       "x-go-type": "interface{}",
                                       "x-oapi-codegen-extra-tags": {
                                         "gorm": "-",
@@ -1352,29 +1370,29 @@ const EvaluationSchema: Record<string, unknown> = {
                                       "minimum": 0
                                     },
                                     "created_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "yaml": "created_at"
+                                      },
                                       "x-order": 14,
                                       "description": "Timestamp when the resource was created.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "CreatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "created_at",
-                                        "yaml": "created_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     },
                                     "updated_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "yaml": "updated_at"
+                                      },
                                       "x-order": 15,
                                       "description": "Timestamp when the resource was updated.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "UpdatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "updated_at",
-                                        "yaml": "updated_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     }
                                   },
@@ -2318,29 +2336,29 @@ const EvaluationSchema: Record<string, unknown> = {
                                   ]
                                 },
                                 "created_at": {
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "created_at",
+                                    "yaml": "created_at"
+                                  },
                                   "x-order": 14,
                                   "description": "Timestamp when the resource was created.",
                                   "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-name": "CreatedAt",
-                                  "x-oapi-codegen-extra-tags": {
-                                    "db": "created_at",
-                                    "yaml": "created_at"
-                                  },
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "updated_at": {
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "updated_at",
+                                    "yaml": "updated_at"
+                                  },
                                   "x-order": 15,
                                   "description": "Timestamp when the resource was updated.",
                                   "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-name": "UpdatedAt",
-                                  "x-oapi-codegen-extra-tags": {
-                                    "db": "updated_at",
-                                    "yaml": "updated_at"
-                                  },
                                   "x-go-type-skip-optional-pointer": true
                                 }
                               },
@@ -5264,6 +5282,22 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            },
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -5386,16 +5420,16 @@ const EvaluationSchema: Record<string, unknown> = {
                                                   "x-order": 6
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -5410,16 +5444,16 @@ const EvaluationSchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -5979,6 +6013,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -5989,6 +6024,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -6022,29 +6058,29 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -6988,29 +7024,29 @@ const EvaluationSchema: Record<string, unknown> = {
                                     ]
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -9989,6 +10025,22 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 },
+                                "organizationId": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  },
+                                  "x-go-name": "OrganizationID",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "organization_id",
+                                    "json": "organizationId,omitempty",
+                                    "yaml": "organizationId"
+                                  },
+                                  "x-order": 15
+                                },
                                 "environments": {
                                   "type": "array",
                                   "description": "Associated environments for this connection",
@@ -10111,16 +10163,16 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "x-order": 6
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 7,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "metadata": {
@@ -10135,16 +10187,16 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "type": "object"
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 9,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "deleted_at": {
@@ -10704,6 +10756,7 @@ const EvaluationSchema: Record<string, unknown> = {
                             },
                             "relationships": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -10714,6 +10767,7 @@ const EvaluationSchema: Record<string, unknown> = {
                             },
                             "components": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -10747,29 +10801,29 @@ const EvaluationSchema: Record<string, unknown> = {
                               "minimum": 0
                             },
                             "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
                               "x-order": 14,
                               "description": "Timestamp when the resource was created.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "CreatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "created_at",
-                                "yaml": "created_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
                               "x-order": 15,
                               "description": "Timestamp when the resource was updated.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "UpdatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "updated_at",
-                                "yaml": "updated_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             }
                           },
@@ -11713,29 +11767,29 @@ const EvaluationSchema: Record<string, unknown> = {
                           ]
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
                           "x-order": 14,
                           "description": "Timestamp when the resource was created.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "CreatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "yaml": "created_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
                           "x-order": 15,
                           "description": "Timestamp when the resource was updated.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "UpdatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "yaml": "updated_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         }
                       },
@@ -14651,6 +14705,22 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 },
+                                "organizationId": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  },
+                                  "x-go-name": "OrganizationID",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "organization_id",
+                                    "json": "organizationId,omitempty",
+                                    "yaml": "organizationId"
+                                  },
+                                  "x-order": 15
+                                },
                                 "environments": {
                                   "type": "array",
                                   "description": "Associated environments for this connection",
@@ -14773,16 +14843,16 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "x-order": 6
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 7,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "metadata": {
@@ -14797,16 +14867,16 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "type": "object"
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 9,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "deleted_at": {
@@ -15366,6 +15436,7 @@ const EvaluationSchema: Record<string, unknown> = {
                             },
                             "relationships": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -15376,6 +15447,7 @@ const EvaluationSchema: Record<string, unknown> = {
                             },
                             "components": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -15409,29 +15481,29 @@ const EvaluationSchema: Record<string, unknown> = {
                               "minimum": 0
                             },
                             "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
                               "x-order": 14,
                               "description": "Timestamp when the resource was created.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "CreatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "created_at",
-                                "yaml": "created_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
                               "x-order": 15,
                               "description": "Timestamp when the resource was updated.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "UpdatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "updated_at",
-                                "yaml": "updated_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             }
                           },
@@ -16375,29 +16447,29 @@ const EvaluationSchema: Record<string, unknown> = {
                           ]
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
                           "x-order": 14,
                           "description": "Timestamp when the resource was created.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "CreatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "yaml": "created_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
                           "x-order": 15,
                           "description": "Timestamp when the resource was updated.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "UpdatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "yaml": "updated_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         }
                       },

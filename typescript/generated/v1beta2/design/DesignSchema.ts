@@ -175,8 +175,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -188,8 +188,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -236,7 +236,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -822,6 +822,22 @@ const DesignSchema: Record<string, unknown> = {
                                                   "format": "date-time",
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
+                                                "organizationId": {
+                                                  "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                                  "x-go-name": "OrganizationID",
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "organization_id",
+                                                    "json": "organizationId,omitempty",
+                                                    "yaml": "organizationId"
+                                                  },
+                                                  "x-order": 15,
+                                                  "type": "string",
+                                                  "format": "uuid",
+                                                  "x-go-type": "uuid.UUID",
+                                                  "x-go-type-import": {
+                                                    "path": "github.com/gofrs/uuid"
+                                                  }
+                                                },
                                                 "environments": {
                                                   "type": "array",
                                                   "description": "Associated environments for this connection",
@@ -944,16 +960,16 @@ const DesignSchema: Record<string, unknown> = {
                                                         }
                                                       },
                                                       "created_at": {
+                                                        "x-oapi-codegen-extra-tags": {
+                                                          "db": "created_at",
+                                                          "yaml": "created_at"
+                                                        },
                                                         "x-order": 7,
                                                         "description": "Timestamp when the resource was created.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "x-go-name": "CreatedAt",
-                                                        "x-oapi-codegen-extra-tags": {
-                                                          "db": "created_at",
-                                                          "yaml": "created_at"
-                                                        },
                                                         "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "metadata": {
@@ -968,16 +984,16 @@ const DesignSchema: Record<string, unknown> = {
                                                         "type": "object"
                                                       },
                                                       "updated_at": {
+                                                        "x-oapi-codegen-extra-tags": {
+                                                          "db": "updated_at",
+                                                          "yaml": "updated_at"
+                                                        },
                                                         "x-order": 9,
                                                         "description": "Timestamp when the resource was updated.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "x-go-name": "UpdatedAt",
-                                                        "x-oapi-codegen-extra-tags": {
-                                                          "db": "updated_at",
-                                                          "yaml": "updated_at"
-                                                        },
                                                         "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "deleted_at": {
@@ -1537,6 +1553,7 @@ const DesignSchema: Record<string, unknown> = {
                                             },
                                             "relationships": {
                                               "type": "array",
+                                              "items": {},
                                               "x-go-type": "interface{}",
                                               "x-oapi-codegen-extra-tags": {
                                                 "gorm": "-",
@@ -1547,6 +1564,7 @@ const DesignSchema: Record<string, unknown> = {
                                             },
                                             "components": {
                                               "type": "array",
+                                              "items": {},
                                               "x-go-type": "interface{}",
                                               "x-oapi-codegen-extra-tags": {
                                                 "gorm": "-",
@@ -1580,29 +1598,29 @@ const DesignSchema: Record<string, unknown> = {
                                               "minimum": 0
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 14,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 15,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             }
                                           },
@@ -2620,29 +2638,29 @@ const DesignSchema: Record<string, unknown> = {
                                           ]
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         }
                                       },
@@ -5041,8 +5059,8 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 500
                           },
-                          "class": {
-                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "contentClass": {
+                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                             "type": "string",
                             "oneOf": [
                               {
@@ -5054,8 +5072,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                               },
                               {
-                                "const": "reference architecture",
-                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                "const": "community",
+                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                               }
                             ],
                             "maxLength": 500
@@ -5102,7 +5120,7 @@ const DesignSchema: Record<string, unknown> = {
                             "default": "Deployment",
                             "description": "Categorization of the type of design or operational flow depicted in this design."
                           },
-                          "snapshotURL": {
+                          "imageURL": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -5688,6 +5706,22 @@ const DesignSchema: Record<string, unknown> = {
                                               "format": "date-time",
                                               "x-go-type-skip-optional-pointer": true
                                             },
+                                            "organizationId": {
+                                              "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                              "x-go-name": "OrganizationID",
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "organization_id",
+                                                "json": "organizationId,omitempty",
+                                                "yaml": "organizationId"
+                                              },
+                                              "x-order": 15,
+                                              "type": "string",
+                                              "format": "uuid",
+                                              "x-go-type": "uuid.UUID",
+                                              "x-go-type-import": {
+                                                "path": "github.com/gofrs/uuid"
+                                              }
+                                            },
                                             "environments": {
                                               "type": "array",
                                               "description": "Associated environments for this connection",
@@ -5810,16 +5844,16 @@ const DesignSchema: Record<string, unknown> = {
                                                     }
                                                   },
                                                   "created_at": {
+                                                    "x-oapi-codegen-extra-tags": {
+                                                      "db": "created_at",
+                                                      "yaml": "created_at"
+                                                    },
                                                     "x-order": 7,
                                                     "description": "Timestamp when the resource was created.",
                                                     "x-go-type": "time.Time",
                                                     "type": "string",
                                                     "format": "date-time",
                                                     "x-go-name": "CreatedAt",
-                                                    "x-oapi-codegen-extra-tags": {
-                                                      "db": "created_at",
-                                                      "yaml": "created_at"
-                                                    },
                                                     "x-go-type-skip-optional-pointer": true
                                                   },
                                                   "metadata": {
@@ -5834,16 +5868,16 @@ const DesignSchema: Record<string, unknown> = {
                                                     "type": "object"
                                                   },
                                                   "updated_at": {
+                                                    "x-oapi-codegen-extra-tags": {
+                                                      "db": "updated_at",
+                                                      "yaml": "updated_at"
+                                                    },
                                                     "x-order": 9,
                                                     "description": "Timestamp when the resource was updated.",
                                                     "x-go-type": "time.Time",
                                                     "type": "string",
                                                     "format": "date-time",
                                                     "x-go-name": "UpdatedAt",
-                                                    "x-oapi-codegen-extra-tags": {
-                                                      "db": "updated_at",
-                                                      "yaml": "updated_at"
-                                                    },
                                                     "x-go-type-skip-optional-pointer": true
                                                   },
                                                   "deleted_at": {
@@ -6403,6 +6437,7 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "relationships": {
                                           "type": "array",
+                                          "items": {},
                                           "x-go-type": "interface{}",
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "-",
@@ -6413,6 +6448,7 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "components": {
                                           "type": "array",
+                                          "items": {},
                                           "x-go-type": "interface{}",
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "-",
@@ -6446,29 +6482,29 @@ const DesignSchema: Record<string, unknown> = {
                                           "minimum": 0
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         }
                                       },
@@ -7486,29 +7522,29 @@ const DesignSchema: Record<string, unknown> = {
                                       ]
                                     },
                                     "created_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "yaml": "created_at"
+                                      },
                                       "x-order": 14,
                                       "description": "Timestamp when the resource was created.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "CreatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "created_at",
-                                        "yaml": "created_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     },
                                     "updated_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "yaml": "updated_at"
+                                      },
                                       "x-order": 15,
                                       "description": "Timestamp when the resource was updated.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "UpdatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "updated_at",
-                                        "yaml": "updated_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     }
                                   },
@@ -9873,8 +9909,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -9886,8 +9922,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -9934,7 +9970,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -10520,6 +10556,22 @@ const DesignSchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -10642,16 +10694,16 @@ const DesignSchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -10666,16 +10718,16 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -11235,6 +11287,7 @@ const DesignSchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -11245,6 +11298,7 @@ const DesignSchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -11278,29 +11332,29 @@ const DesignSchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -12318,29 +12372,29 @@ const DesignSchema: Record<string, unknown> = {
                                     ]
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -15074,8 +15128,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -15087,8 +15141,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -15135,7 +15189,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -15721,6 +15775,22 @@ const DesignSchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -15843,16 +15913,16 @@ const DesignSchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -15867,16 +15937,16 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -16436,6 +16506,7 @@ const DesignSchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -16446,6 +16517,7 @@ const DesignSchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -16479,29 +16551,29 @@ const DesignSchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -17519,29 +17591,29 @@ const DesignSchema: Record<string, unknown> = {
                                     ]
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -20010,8 +20082,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -20023,8 +20095,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -20071,7 +20143,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -20657,6 +20729,22 @@ const DesignSchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -20779,16 +20867,16 @@ const DesignSchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -20803,16 +20891,16 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -21372,6 +21460,7 @@ const DesignSchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -21382,6 +21471,7 @@ const DesignSchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -21415,29 +21505,29 @@ const DesignSchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -22455,29 +22545,29 @@ const DesignSchema: Record<string, unknown> = {
                                     ]
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -25102,8 +25192,8 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 500
                           },
-                          "class": {
-                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "contentClass": {
+                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                             "type": "string",
                             "oneOf": [
                               {
@@ -25115,8 +25205,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                               },
                               {
-                                "const": "reference architecture",
-                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                "const": "community",
+                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                               }
                             ],
                             "maxLength": 500
@@ -25163,7 +25253,7 @@ const DesignSchema: Record<string, unknown> = {
                             "default": "Deployment",
                             "description": "Categorization of the type of design or operational flow depicted in this design."
                           },
-                          "snapshotURL": {
+                          "imageURL": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -25749,6 +25839,22 @@ const DesignSchema: Record<string, unknown> = {
                                               "format": "date-time",
                                               "x-go-type-skip-optional-pointer": true
                                             },
+                                            "organizationId": {
+                                              "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                              "x-go-name": "OrganizationID",
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "organization_id",
+                                                "json": "organizationId,omitempty",
+                                                "yaml": "organizationId"
+                                              },
+                                              "x-order": 15,
+                                              "type": "string",
+                                              "format": "uuid",
+                                              "x-go-type": "uuid.UUID",
+                                              "x-go-type-import": {
+                                                "path": "github.com/gofrs/uuid"
+                                              }
+                                            },
                                             "environments": {
                                               "type": "array",
                                               "description": "Associated environments for this connection",
@@ -25871,16 +25977,16 @@ const DesignSchema: Record<string, unknown> = {
                                                     }
                                                   },
                                                   "created_at": {
+                                                    "x-oapi-codegen-extra-tags": {
+                                                      "db": "created_at",
+                                                      "yaml": "created_at"
+                                                    },
                                                     "x-order": 7,
                                                     "description": "Timestamp when the resource was created.",
                                                     "x-go-type": "time.Time",
                                                     "type": "string",
                                                     "format": "date-time",
                                                     "x-go-name": "CreatedAt",
-                                                    "x-oapi-codegen-extra-tags": {
-                                                      "db": "created_at",
-                                                      "yaml": "created_at"
-                                                    },
                                                     "x-go-type-skip-optional-pointer": true
                                                   },
                                                   "metadata": {
@@ -25895,16 +26001,16 @@ const DesignSchema: Record<string, unknown> = {
                                                     "type": "object"
                                                   },
                                                   "updated_at": {
+                                                    "x-oapi-codegen-extra-tags": {
+                                                      "db": "updated_at",
+                                                      "yaml": "updated_at"
+                                                    },
                                                     "x-order": 9,
                                                     "description": "Timestamp when the resource was updated.",
                                                     "x-go-type": "time.Time",
                                                     "type": "string",
                                                     "format": "date-time",
                                                     "x-go-name": "UpdatedAt",
-                                                    "x-oapi-codegen-extra-tags": {
-                                                      "db": "updated_at",
-                                                      "yaml": "updated_at"
-                                                    },
                                                     "x-go-type-skip-optional-pointer": true
                                                   },
                                                   "deleted_at": {
@@ -26464,6 +26570,7 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "relationships": {
                                           "type": "array",
+                                          "items": {},
                                           "x-go-type": "interface{}",
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "-",
@@ -26474,6 +26581,7 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "components": {
                                           "type": "array",
+                                          "items": {},
                                           "x-go-type": "interface{}",
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "-",
@@ -26507,29 +26615,29 @@ const DesignSchema: Record<string, unknown> = {
                                           "minimum": 0
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         }
                                       },
@@ -27547,29 +27655,29 @@ const DesignSchema: Record<string, unknown> = {
                                       ]
                                     },
                                     "created_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "yaml": "created_at"
+                                      },
                                       "x-order": 14,
                                       "description": "Timestamp when the resource was created.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "CreatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "created_at",
-                                        "yaml": "created_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     },
                                     "updated_at": {
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "yaml": "updated_at"
+                                      },
                                       "x-order": 15,
                                       "description": "Timestamp when the resource was updated.",
                                       "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-name": "UpdatedAt",
-                                      "x-oapi-codegen-extra-tags": {
-                                        "db": "updated_at",
-                                        "yaml": "updated_at"
-                                      },
                                       "x-go-type-skip-optional-pointer": true
                                     }
                                   },
@@ -30081,8 +30189,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -30094,8 +30202,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -30142,7 +30250,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -30728,6 +30836,22 @@ const DesignSchema: Record<string, unknown> = {
                                                   "format": "date-time",
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
+                                                "organizationId": {
+                                                  "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                                  "x-go-name": "OrganizationID",
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "organization_id",
+                                                    "json": "organizationId,omitempty",
+                                                    "yaml": "organizationId"
+                                                  },
+                                                  "x-order": 15,
+                                                  "type": "string",
+                                                  "format": "uuid",
+                                                  "x-go-type": "uuid.UUID",
+                                                  "x-go-type-import": {
+                                                    "path": "github.com/gofrs/uuid"
+                                                  }
+                                                },
                                                 "environments": {
                                                   "type": "array",
                                                   "description": "Associated environments for this connection",
@@ -30850,16 +30974,16 @@ const DesignSchema: Record<string, unknown> = {
                                                         }
                                                       },
                                                       "created_at": {
+                                                        "x-oapi-codegen-extra-tags": {
+                                                          "db": "created_at",
+                                                          "yaml": "created_at"
+                                                        },
                                                         "x-order": 7,
                                                         "description": "Timestamp when the resource was created.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "x-go-name": "CreatedAt",
-                                                        "x-oapi-codegen-extra-tags": {
-                                                          "db": "created_at",
-                                                          "yaml": "created_at"
-                                                        },
                                                         "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "metadata": {
@@ -30874,16 +30998,16 @@ const DesignSchema: Record<string, unknown> = {
                                                         "type": "object"
                                                       },
                                                       "updated_at": {
+                                                        "x-oapi-codegen-extra-tags": {
+                                                          "db": "updated_at",
+                                                          "yaml": "updated_at"
+                                                        },
                                                         "x-order": 9,
                                                         "description": "Timestamp when the resource was updated.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "x-go-name": "UpdatedAt",
-                                                        "x-oapi-codegen-extra-tags": {
-                                                          "db": "updated_at",
-                                                          "yaml": "updated_at"
-                                                        },
                                                         "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "deleted_at": {
@@ -31443,6 +31567,7 @@ const DesignSchema: Record<string, unknown> = {
                                             },
                                             "relationships": {
                                               "type": "array",
+                                              "items": {},
                                               "x-go-type": "interface{}",
                                               "x-oapi-codegen-extra-tags": {
                                                 "gorm": "-",
@@ -31453,6 +31578,7 @@ const DesignSchema: Record<string, unknown> = {
                                             },
                                             "components": {
                                               "type": "array",
+                                              "items": {},
                                               "x-go-type": "interface{}",
                                               "x-oapi-codegen-extra-tags": {
                                                 "gorm": "-",
@@ -31486,29 +31612,29 @@ const DesignSchema: Record<string, unknown> = {
                                               "minimum": 0
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 14,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 15,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             }
                                           },
@@ -32526,29 +32652,29 @@ const DesignSchema: Record<string, unknown> = {
                                           ]
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         }
                                       },
@@ -36561,6 +36687,22 @@ const DesignSchema: Record<string, unknown> = {
                               "format": "date-time",
                               "x-go-type-skip-optional-pointer": true
                             },
+                            "organizationId": {
+                              "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                              "x-go-name": "OrganizationID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organization_id",
+                                "json": "organizationId,omitempty",
+                                "yaml": "organizationId"
+                              },
+                              "x-order": 15,
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
                             "environments": {
                               "type": "array",
                               "description": "Associated environments for this connection",
@@ -36683,16 +36825,16 @@ const DesignSchema: Record<string, unknown> = {
                                     }
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 7,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "metadata": {
@@ -36707,16 +36849,16 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "object"
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 9,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "deleted_at": {
@@ -37276,6 +37418,7 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "relationships": {
                           "type": "array",
+                          "items": {},
                           "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-",
@@ -37286,6 +37429,7 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "components": {
                           "type": "array",
+                          "items": {},
                           "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-",
@@ -37319,29 +37463,29 @@ const DesignSchema: Record<string, unknown> = {
                           "minimum": 0
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
                           "x-order": 14,
                           "description": "Timestamp when the resource was created.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "CreatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "yaml": "created_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
                           "x-order": 15,
                           "description": "Timestamp when the resource was updated.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "UpdatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "yaml": "updated_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         }
                       },
@@ -38359,29 +38503,29 @@ const DesignSchema: Record<string, unknown> = {
                       ]
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-order": 14,
                       "description": "Timestamp when the resource was created.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-order": 15,
                       "description": "Timestamp when the resource was updated.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     }
                   },
@@ -40699,8 +40843,8 @@ const DesignSchema: Record<string, unknown> = {
                 "type": "string",
                 "maxLength": 500
               },
-              "class": {
-                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+              "contentClass": {
+                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                 "type": "string",
                 "oneOf": [
                   {
@@ -40712,8 +40856,8 @@ const DesignSchema: Record<string, unknown> = {
                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                   },
                   {
-                    "const": "reference architecture",
-                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                    "const": "community",
+                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                   }
                 ],
                 "maxLength": 500
@@ -40760,7 +40904,7 @@ const DesignSchema: Record<string, unknown> = {
                 "default": "Deployment",
                 "description": "Categorization of the type of design or operational flow depicted in this design."
               },
-              "snapshotURL": {
+              "imageURL": {
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -41346,6 +41490,22 @@ const DesignSchema: Record<string, unknown> = {
                                   "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 },
+                                "organizationId": {
+                                  "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                  "x-go-name": "OrganizationID",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "organization_id",
+                                    "json": "organizationId,omitempty",
+                                    "yaml": "organizationId"
+                                  },
+                                  "x-order": 15,
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
+                                },
                                 "environments": {
                                   "type": "array",
                                   "description": "Associated environments for this connection",
@@ -41468,16 +41628,16 @@ const DesignSchema: Record<string, unknown> = {
                                         }
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 7,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "metadata": {
@@ -41492,16 +41652,16 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "object"
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 9,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "deleted_at": {
@@ -42061,6 +42221,7 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "relationships": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -42071,6 +42232,7 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "components": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -42104,29 +42266,29 @@ const DesignSchema: Record<string, unknown> = {
                               "minimum": 0
                             },
                             "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
                               "x-order": 14,
                               "description": "Timestamp when the resource was created.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "CreatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "created_at",
-                                "yaml": "created_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
                               "x-order": 15,
                               "description": "Timestamp when the resource was updated.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "UpdatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "updated_at",
-                                "yaml": "updated_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             }
                           },
@@ -43144,29 +43306,29 @@ const DesignSchema: Record<string, unknown> = {
                           ]
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
                           "x-order": 14,
                           "description": "Timestamp when the resource was created.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "CreatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "yaml": "created_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
                           "x-order": 15,
                           "description": "Timestamp when the resource was updated.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "UpdatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "yaml": "updated_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         }
                       },
@@ -45520,8 +45682,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -45533,8 +45695,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -45581,7 +45743,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -46167,6 +46329,22 @@ const DesignSchema: Record<string, unknown> = {
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
+                                      },
                                       "environments": {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
@@ -46289,16 +46467,16 @@ const DesignSchema: Record<string, unknown> = {
                                               }
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
@@ -46313,16 +46491,16 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
@@ -46882,6 +47060,7 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -46892,6 +47071,7 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -46925,29 +47105,29 @@ const DesignSchema: Record<string, unknown> = {
                                     "minimum": 0
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -47965,29 +48145,29 @@ const DesignSchema: Record<string, unknown> = {
                                 ]
                               },
                               "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "yaml": "created_at"
+                                },
                                 "x-order": 14,
                                 "description": "Timestamp when the resource was created.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "CreatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "created_at",
-                                  "yaml": "created_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "yaml": "updated_at"
+                                },
                                 "x-order": 15,
                                 "description": "Timestamp when the resource was updated.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "UpdatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "updated_at",
-                                  "yaml": "updated_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               }
                             },
@@ -50375,8 +50555,8 @@ const DesignSchema: Record<string, unknown> = {
                     "type": "string",
                     "maxLength": 500
                   },
-                  "class": {
-                    "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                  "contentClass": {
+                    "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                     "type": "string",
                     "oneOf": [
                       {
@@ -50388,8 +50568,8 @@ const DesignSchema: Record<string, unknown> = {
                         "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                       },
                       {
-                        "const": "reference architecture",
-                        "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                        "const": "community",
+                        "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                       }
                     ],
                     "maxLength": 500
@@ -50436,7 +50616,7 @@ const DesignSchema: Record<string, unknown> = {
                     "default": "Deployment",
                     "description": "Categorization of the type of design or operational flow depicted in this design."
                   },
-                  "snapshotURL": {
+                  "imageURL": {
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -51022,6 +51202,22 @@ const DesignSchema: Record<string, unknown> = {
                                       "format": "date-time",
                                       "x-go-type-skip-optional-pointer": true
                                     },
+                                    "organizationId": {
+                                      "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                      "x-go-name": "OrganizationID",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "organization_id",
+                                        "json": "organizationId,omitempty",
+                                        "yaml": "organizationId"
+                                      },
+                                      "x-order": 15,
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
                                     "environments": {
                                       "type": "array",
                                       "description": "Associated environments for this connection",
@@ -51144,16 +51340,16 @@ const DesignSchema: Record<string, unknown> = {
                                             }
                                           },
                                           "created_at": {
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "created_at",
+                                              "yaml": "created_at"
+                                            },
                                             "x-order": 7,
                                             "description": "Timestamp when the resource was created.",
                                             "x-go-type": "time.Time",
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-name": "CreatedAt",
-                                            "x-oapi-codegen-extra-tags": {
-                                              "db": "created_at",
-                                              "yaml": "created_at"
-                                            },
                                             "x-go-type-skip-optional-pointer": true
                                           },
                                           "metadata": {
@@ -51168,16 +51364,16 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "object"
                                           },
                                           "updated_at": {
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "updated_at",
+                                              "yaml": "updated_at"
+                                            },
                                             "x-order": 9,
                                             "description": "Timestamp when the resource was updated.",
                                             "x-go-type": "time.Time",
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-name": "UpdatedAt",
-                                            "x-oapi-codegen-extra-tags": {
-                                              "db": "updated_at",
-                                              "yaml": "updated_at"
-                                            },
                                             "x-go-type-skip-optional-pointer": true
                                           },
                                           "deleted_at": {
@@ -51737,6 +51933,7 @@ const DesignSchema: Record<string, unknown> = {
                                 },
                                 "relationships": {
                                   "type": "array",
+                                  "items": {},
                                   "x-go-type": "interface{}",
                                   "x-oapi-codegen-extra-tags": {
                                     "gorm": "-",
@@ -51747,6 +51944,7 @@ const DesignSchema: Record<string, unknown> = {
                                 },
                                 "components": {
                                   "type": "array",
+                                  "items": {},
                                   "x-go-type": "interface{}",
                                   "x-oapi-codegen-extra-tags": {
                                     "gorm": "-",
@@ -51780,29 +51978,29 @@ const DesignSchema: Record<string, unknown> = {
                                   "minimum": 0
                                 },
                                 "created_at": {
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "created_at",
+                                    "yaml": "created_at"
+                                  },
                                   "x-order": 14,
                                   "description": "Timestamp when the resource was created.",
                                   "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-name": "CreatedAt",
-                                  "x-oapi-codegen-extra-tags": {
-                                    "db": "created_at",
-                                    "yaml": "created_at"
-                                  },
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "updated_at": {
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "updated_at",
+                                    "yaml": "updated_at"
+                                  },
                                   "x-order": 15,
                                   "description": "Timestamp when the resource was updated.",
                                   "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-name": "UpdatedAt",
-                                  "x-oapi-codegen-extra-tags": {
-                                    "db": "updated_at",
-                                    "yaml": "updated_at"
-                                  },
                                   "x-go-type-skip-optional-pointer": true
                                 }
                               },
@@ -52820,29 +53018,29 @@ const DesignSchema: Record<string, unknown> = {
                               ]
                             },
                             "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
                               "x-order": 14,
                               "description": "Timestamp when the resource was created.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "CreatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "created_at",
-                                "yaml": "created_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
                               "x-order": 15,
                               "description": "Timestamp when the resource was updated.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "UpdatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "updated_at",
-                                "yaml": "updated_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             }
                           },
@@ -55342,8 +55540,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -55355,8 +55553,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -55403,7 +55601,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -55989,6 +56187,22 @@ const DesignSchema: Record<string, unknown> = {
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
+                                      },
                                       "environments": {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
@@ -56111,16 +56325,16 @@ const DesignSchema: Record<string, unknown> = {
                                               }
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
@@ -56135,16 +56349,16 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
@@ -56704,6 +56918,7 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -56714,6 +56929,7 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -56747,29 +56963,29 @@ const DesignSchema: Record<string, unknown> = {
                                     "minimum": 0
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 },
@@ -57787,29 +58003,29 @@ const DesignSchema: Record<string, unknown> = {
                                 ]
                               },
                               "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "yaml": "created_at"
+                                },
                                 "x-order": 14,
                                 "description": "Timestamp when the resource was created.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "CreatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "created_at",
-                                  "yaml": "created_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "yaml": "updated_at"
+                                },
                                 "x-order": 15,
                                 "description": "Timestamp when the resource was updated.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "UpdatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "updated_at",
-                                  "yaml": "updated_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               }
                             },

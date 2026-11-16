@@ -38,7 +38,7 @@ const ActivityResultSchema: Record<string, unknown> = {
         "properties": {
           "activityId": {
             "type": "string",
-            "description": "Identifier of the activity the result describes (for a content piece, its row number as a string).",
+            "description": "Identifier of the activity the result describes (for a content item, its row number as a string).",
             "minLength": 1,
             "maxLength": 255,
             "x-order": 1

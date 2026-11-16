@@ -512,7 +512,7 @@ export interface components {
                 pausedBy?: string;
             };
         };
-        /** @description Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed unless the claim carries the operator override `ignorePause` (v1beta3 schedule). Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity. */
+        /** @description Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity. */
         SchedulePause: {
             /** @description Whether every schedule in the organization is paused. */
             paused?: boolean;

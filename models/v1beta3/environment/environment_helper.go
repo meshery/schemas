@@ -47,7 +47,7 @@ func (e Environment) EffectivePurpose() EnvironmentPurpose {
 // empty, unrecognised or privileged value answers false. A server must refuse
 // a payload whose Purpose is set and not client-settable.
 func (p EnvironmentPayloadPurpose) IsClientSettable() bool {
-	return p == EnvironmentPayloadPurposeUser || p == EnvironmentPayloadPurposeProfile
+	return p == EnvironmentPayloadPurposeUser
 }
 
 // UnmarshalJSON refuses any purpose that is not client-settable at decode time,

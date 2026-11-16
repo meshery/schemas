@@ -152,7 +152,7 @@ components:
           format: uuid
         metadata:
           type: object
-          description: Free-form settings stored with the environment, for example a profile's settings.
+          description: Free-form settings stored with the environment.
           additionalProperties: true
           x-go-type: core.Map
           x-go-type-import:
@@ -164,18 +164,17 @@ components:
     EnvironmentPayloadPurpose:
       type: string
       description: >-
-        The purposes a client may give an environment on create or update:
-        `user` (an ordinary environment) or `profile` (an ordinary environment
-        holding one profile's settings and accounts). Omitted means `user` on
+        The purpose a client may give an environment on create or update:
+        `user` (an ordinary environment). Profiles are not environments; they
+        are their own construct at `/api/profiles`, assigned to workspaces.
+        Omitted means `user` on
         create and unchanged on update. A server refuses any other value with
         400, and never lets this field change an environment that already
         carries a privileged purpose.
       enum:
         - user
-        - profile
       x-enum-varnames:
         - EnvironmentPayloadPurposeUser
-        - EnvironmentPayloadPurposeProfile
     EnvironmentPage:
       type: object
       description: Paginated list of environments.
@@ -226,10 +225,12 @@ components:
             json: totalCount
         connections:
           type: array
+          # Connection already imports Environment. Preserve the Go representation
+          # to avoid a package cycle while generating typed TypeScript items.
+          x-go-type: "[]map[string]interface{}"
           items:
-            type: object
-            additionalProperties: true
-          description: The connections of the environmentconnectionspage.
+            $ref: ../connection/connection.yaml
+          description: Connections associated with the environment, using the canonical Connection response schema.
 
     EnvironmentConnectionMappingPage:
       type: object

@@ -36,7 +36,11 @@ const injectedRtkApi = api
         UpdateControllersDefaultConfigApiResponse,
         UpdateControllersDefaultConfigApiArg
       >({
-        query: (queryArg) => ({ url: `/api/system/controllers/config`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/system/controllers/config`,
+          method: "PUT",
+          body: queryArg.mesheryControllersConfigurationMesheryControllersConfigPayload,
+        }),
         invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
       }),
       getConnectionControllersConfig: build.query<
@@ -53,7 +57,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/integrations/connections/${queryArg.connectionId}/controllers/config`,
           method: "PUT",
-          body: queryArg.body,
+          body: queryArg.mesheryControllersConfigurationMesheryControllersConfigPayload,
         }),
         invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
       }),
@@ -1243,646 +1247,28 @@ const injectedRtkApi = api
     overrideExisting: false,
   });
 export { injectedRtkApi as mesheryApi, injectedRtkApi };
-export type GetControllersDefaultConfigApiResponse = /** status 200 Server-wide controllers configuration defaults */ {
-  /** Specifies the version of the schema used for this configuration document. */
-  schemaVersion: string;
-  /** Configuration for the Meshery Operator on the managed cluster. */
-  operator?: {
-    /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-    deploymentMode?: "operator" | "embedded";
-    /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-    version?: string;
-  };
-  /** Configuration for the MeshSync agent on the managed cluster. */
-  meshsync?: {
-    /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-    version?: string;
-    /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-    replicas?: number;
-    /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-    watchList?: {
-      /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-      whitelist?: {
-        /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-        resource: string;
-        /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-        events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-      }[];
-      /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-      blacklist?: string[];
-    };
-    /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-    outputNamespaces?: string[];
-    /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-    outputResources?: string[];
-    /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-    redactSecrets?: boolean;
-    /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-    brokerContentDedup?: boolean;
-    /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-    debugLogging?: boolean;
-  };
-  /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-  broker?: {
-    /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-    version?: string;
-    /** Number of NATS server replicas (Broker custom resource spec.size). */
-    replicas?: number;
-    /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-    service?: {
-      /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-      type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-      /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-      annotations?: {
-        [key: string]: string;
-      };
-      /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-      loadBalancerClass?: string;
-      /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-      loadBalancerSourceRanges?: string[];
-      /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-      externalEndpointOverride?: string;
-    };
-  };
-};
+export type GetControllersDefaultConfigApiResponse =
+  /** status 200 Server-wide controllers configuration defaults */ MesheryControllersConfig;
 export type GetControllersDefaultConfigApiArg = void;
 export type UpdateControllersDefaultConfigApiResponse =
-  /** status 200 Persisted server-wide controllers configuration defaults */ {
-    /** Specifies the version of the schema used for this configuration document. */
-    schemaVersion: string;
-    /** Configuration for the Meshery Operator on the managed cluster. */
-    operator?: {
-      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-      deploymentMode?: "operator" | "embedded";
-      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-      version?: string;
-    };
-    /** Configuration for the MeshSync agent on the managed cluster. */
-    meshsync?: {
-      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-      version?: string;
-      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-      replicas?: number;
-      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-      watchList?: {
-        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-        whitelist?: {
-          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-          resource: string;
-          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-        }[];
-        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-        blacklist?: string[];
-      };
-      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-      outputNamespaces?: string[];
-      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-      outputResources?: string[];
-      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-      redactSecrets?: boolean;
-      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-      brokerContentDedup?: boolean;
-      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-      debugLogging?: boolean;
-    };
-    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-    broker?: {
-      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-      version?: string;
-      /** Number of NATS server replicas (Broker custom resource spec.size). */
-      replicas?: number;
-      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-      service?: {
-        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-        annotations?: {
-          [key: string]: string;
-        };
-        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-        loadBalancerClass?: string;
-        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-        loadBalancerSourceRanges?: string[];
-        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-        externalEndpointOverride?: string;
-      };
-    };
-  };
+  /** status 200 Persisted server-wide controllers configuration defaults */ MesheryControllersConfig;
 export type UpdateControllersDefaultConfigApiArg = {
   /** Controllers configuration document. Absent fields inherit from the next precedence layer. */
-  body: {
-    /** Configuration for the Meshery Operator on the managed cluster. */
-    operator?: {
-      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-      deploymentMode?: "operator" | "embedded";
-      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-      version?: string;
-    };
-    /** Configuration for the MeshSync agent on the managed cluster. */
-    meshsync?: {
-      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-      version?: string;
-      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-      replicas?: number;
-      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-      watchList?: {
-        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-        whitelist?: {
-          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-          resource: string;
-          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-        }[];
-        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-        blacklist?: string[];
-      };
-      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-      outputNamespaces?: string[];
-      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-      outputResources?: string[];
-      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-      redactSecrets?: boolean;
-      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-      brokerContentDedup?: boolean;
-      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-      debugLogging?: boolean;
-    };
-    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-    broker?: {
-      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-      version?: string;
-      /** Number of NATS server replicas (Broker custom resource spec.size). */
-      replicas?: number;
-      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-      service?: {
-        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-        annotations?: {
-          [key: string]: string;
-        };
-        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-        loadBalancerClass?: string;
-        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-        loadBalancerSourceRanges?: string[];
-        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-        externalEndpointOverride?: string;
-      };
-    };
-  };
+  mesheryControllersConfigurationMesheryControllersConfigPayload: MesheryControllersConfigurationMesheryControllersConfigPayload;
 };
-export type GetConnectionControllersConfigApiResponse = /** status 200 Controllers configuration for the connection */ {
-  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
-  override?: {
-    /** Specifies the version of the schema used for this configuration document. */
-    schemaVersion: string;
-    /** Configuration for the Meshery Operator on the managed cluster. */
-    operator?: {
-      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-      deploymentMode?: "operator" | "embedded";
-      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-      version?: string;
-    };
-    /** Configuration for the MeshSync agent on the managed cluster. */
-    meshsync?: {
-      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-      version?: string;
-      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-      replicas?: number;
-      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-      watchList?: {
-        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-        whitelist?: {
-          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-          resource: string;
-          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-        }[];
-        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-        blacklist?: string[];
-      };
-      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-      outputNamespaces?: string[];
-      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-      outputResources?: string[];
-      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-      redactSecrets?: boolean;
-      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-      brokerContentDedup?: boolean;
-      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-      debugLogging?: boolean;
-    };
-    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-    broker?: {
-      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-      version?: string;
-      /** Number of NATS server replicas (Broker custom resource spec.size). */
-      replicas?: number;
-      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-      service?: {
-        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-        annotations?: {
-          [key: string]: string;
-        };
-        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-        loadBalancerClass?: string;
-        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-        loadBalancerSourceRanges?: string[];
-        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-        externalEndpointOverride?: string;
-      };
-    };
-  };
-  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
-  default?: {
-    /** Specifies the version of the schema used for this configuration document. */
-    schemaVersion: string;
-    /** Configuration for the Meshery Operator on the managed cluster. */
-    operator?: {
-      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-      deploymentMode?: "operator" | "embedded";
-      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-      version?: string;
-    };
-    /** Configuration for the MeshSync agent on the managed cluster. */
-    meshsync?: {
-      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-      version?: string;
-      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-      replicas?: number;
-      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-      watchList?: {
-        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-        whitelist?: {
-          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-          resource: string;
-          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-        }[];
-        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-        blacklist?: string[];
-      };
-      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-      outputNamespaces?: string[];
-      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-      outputResources?: string[];
-      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-      redactSecrets?: boolean;
-      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-      brokerContentDedup?: boolean;
-      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-      debugLogging?: boolean;
-    };
-    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-    broker?: {
-      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-      version?: string;
-      /** Number of NATS server replicas (Broker custom resource spec.size). */
-      replicas?: number;
-      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-      service?: {
-        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-        annotations?: {
-          [key: string]: string;
-        };
-        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-        loadBalancerClass?: string;
-        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-        loadBalancerSourceRanges?: string[];
-        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-        externalEndpointOverride?: string;
-      };
-    };
-  };
-  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
-  effective: {
-    /** Specifies the version of the schema used for this configuration document. */
-    schemaVersion: string;
-    /** Configuration for the Meshery Operator on the managed cluster. */
-    operator?: {
-      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-      deploymentMode?: "operator" | "embedded";
-      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-      version?: string;
-    };
-    /** Configuration for the MeshSync agent on the managed cluster. */
-    meshsync?: {
-      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-      version?: string;
-      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-      replicas?: number;
-      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-      watchList?: {
-        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-        whitelist?: {
-          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-          resource: string;
-          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-        }[];
-        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-        blacklist?: string[];
-      };
-      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-      outputNamespaces?: string[];
-      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-      outputResources?: string[];
-      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-      redactSecrets?: boolean;
-      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-      brokerContentDedup?: boolean;
-      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-      debugLogging?: boolean;
-    };
-    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-    broker?: {
-      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-      version?: string;
-      /** Number of NATS server replicas (Broker custom resource spec.size). */
-      replicas?: number;
-      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-      service?: {
-        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-        annotations?: {
-          [key: string]: string;
-        };
-        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-        loadBalancerClass?: string;
-        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-        loadBalancerSourceRanges?: string[];
-        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-        externalEndpointOverride?: string;
-      };
-    };
-  };
-};
+export type GetConnectionControllersConfigApiResponse =
+  /** status 200 Controllers configuration for the connection */ MesheryControllersConfigurationConnectionControllersConfig;
 export type GetConnectionControllersConfigApiArg = {
   /** Kubernetes connection ID. */
   connectionId: string;
 };
 export type UpdateConnectionControllersConfigApiResponse =
-  /** status 200 Updated controllers configuration for the connection */ {
-    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
-    override?: {
-      /** Specifies the version of the schema used for this configuration document. */
-      schemaVersion: string;
-      /** Configuration for the Meshery Operator on the managed cluster. */
-      operator?: {
-        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-        deploymentMode?: "operator" | "embedded";
-        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-        version?: string;
-      };
-      /** Configuration for the MeshSync agent on the managed cluster. */
-      meshsync?: {
-        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-        version?: string;
-        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-        replicas?: number;
-        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-        watchList?: {
-          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-          whitelist?: {
-            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-            resource: string;
-            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-          }[];
-          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-          blacklist?: string[];
-        };
-        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-        outputNamespaces?: string[];
-        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-        outputResources?: string[];
-        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-        redactSecrets?: boolean;
-        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-        brokerContentDedup?: boolean;
-        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-        debugLogging?: boolean;
-      };
-      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-      broker?: {
-        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-        version?: string;
-        /** Number of NATS server replicas (Broker custom resource spec.size). */
-        replicas?: number;
-        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-        service?: {
-          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-          annotations?: {
-            [key: string]: string;
-          };
-          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-          loadBalancerClass?: string;
-          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-          loadBalancerSourceRanges?: string[];
-          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-          externalEndpointOverride?: string;
-        };
-      };
-    };
-    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
-    default?: {
-      /** Specifies the version of the schema used for this configuration document. */
-      schemaVersion: string;
-      /** Configuration for the Meshery Operator on the managed cluster. */
-      operator?: {
-        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-        deploymentMode?: "operator" | "embedded";
-        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-        version?: string;
-      };
-      /** Configuration for the MeshSync agent on the managed cluster. */
-      meshsync?: {
-        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-        version?: string;
-        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-        replicas?: number;
-        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-        watchList?: {
-          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-          whitelist?: {
-            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-            resource: string;
-            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-          }[];
-          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-          blacklist?: string[];
-        };
-        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-        outputNamespaces?: string[];
-        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-        outputResources?: string[];
-        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-        redactSecrets?: boolean;
-        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-        brokerContentDedup?: boolean;
-        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-        debugLogging?: boolean;
-      };
-      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-      broker?: {
-        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-        version?: string;
-        /** Number of NATS server replicas (Broker custom resource spec.size). */
-        replicas?: number;
-        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-        service?: {
-          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-          annotations?: {
-            [key: string]: string;
-          };
-          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-          loadBalancerClass?: string;
-          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-          loadBalancerSourceRanges?: string[];
-          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-          externalEndpointOverride?: string;
-        };
-      };
-    };
-    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
-    effective: {
-      /** Specifies the version of the schema used for this configuration document. */
-      schemaVersion: string;
-      /** Configuration for the Meshery Operator on the managed cluster. */
-      operator?: {
-        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-        deploymentMode?: "operator" | "embedded";
-        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-        version?: string;
-      };
-      /** Configuration for the MeshSync agent on the managed cluster. */
-      meshsync?: {
-        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-        version?: string;
-        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-        replicas?: number;
-        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-        watchList?: {
-          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-          whitelist?: {
-            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-            resource: string;
-            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-          }[];
-          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-          blacklist?: string[];
-        };
-        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-        outputNamespaces?: string[];
-        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-        outputResources?: string[];
-        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-        redactSecrets?: boolean;
-        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-        brokerContentDedup?: boolean;
-        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-        debugLogging?: boolean;
-      };
-      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-      broker?: {
-        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-        version?: string;
-        /** Number of NATS server replicas (Broker custom resource spec.size). */
-        replicas?: number;
-        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-        service?: {
-          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-          annotations?: {
-            [key: string]: string;
-          };
-          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-          loadBalancerClass?: string;
-          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-          loadBalancerSourceRanges?: string[];
-          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-          externalEndpointOverride?: string;
-        };
-      };
-    };
-  };
+  /** status 200 Updated controllers configuration for the connection */ MesheryControllersConfigurationConnectionControllersConfig;
 export type UpdateConnectionControllersConfigApiArg = {
   /** Kubernetes connection ID. */
   connectionId: string;
   /** Controllers configuration document. Absent fields inherit from the next precedence layer. */
-  body: {
-    /** Configuration for the Meshery Operator on the managed cluster. */
-    operator?: {
-      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
-      deploymentMode?: "operator" | "embedded";
-      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
-      version?: string;
-    };
-    /** Configuration for the MeshSync agent on the managed cluster. */
-    meshsync?: {
-      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
-      version?: string;
-      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
-      replicas?: number;
-      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
-      watchList?: {
-        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
-        whitelist?: {
-          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
-          resource: string;
-          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
-          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
-        }[];
-        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
-        blacklist?: string[];
-      };
-      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
-      outputNamespaces?: string[];
-      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
-      outputResources?: string[];
-      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
-      redactSecrets?: boolean;
-      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
-      brokerContentDedup?: boolean;
-      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
-      debugLogging?: boolean;
-    };
-    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
-    broker?: {
-      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
-      version?: string;
-      /** Number of NATS server replicas (Broker custom resource spec.size). */
-      replicas?: number;
-      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
-      service?: {
-        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
-        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
-        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
-        annotations?: {
-          [key: string]: string;
-        };
-        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
-        loadBalancerClass?: string;
-        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
-        loadBalancerSourceRanges?: string[];
-        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
-        externalEndpointOverride?: string;
-      };
-    };
-  };
+  mesheryControllersConfigurationMesheryControllersConfigPayload: MesheryControllersConfigurationMesheryControllersConfigPayload;
 };
 export type GetConsoleCapabilitiesApiResponse = /** status 200 The console kinds the target admits. */ {
   /** Whether an interactive terminal can be opened. */
@@ -2044,6 +1430,8 @@ export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluat
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -2222,9 +1610,9 @@ export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluat
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -3040,6 +2428,8 @@ export type EvaluateRelationshipsApiArg = {
             updated_at?: string;
             /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            organizationId?: string;
             /** Associated environments for this connection */
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -3218,9 +2608,9 @@ export type EvaluateRelationshipsApiArg = {
             version: string;
           };
           /** The relationships of the model. */
-          relationships: any;
+          relationships: any[];
           /** The components of the model. */
-          components: any;
+          components: any[];
           /** Number of components associated with the model. */
           componentsCount: number;
           /** Number of relationships associated with the model. */
@@ -3993,6 +3383,9 @@ export type GetRegistryModelsApiResponse = /** status 200 Paginated list of regi
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -4171,9 +3564,9 @@ export type GetRegistryModelsApiResponse = /** status 200 Paginated list of regi
       version: string;
     };
     /** The relationships of the model. */
-    relationships: any;
+    relationships: any[];
     /** The components of the model. */
-    components: any;
+    components: any[];
     /** Number of components associated with the model. */
     componentsCount: number;
     /** Number of relationships associated with the model. */
@@ -4279,6 +3672,9 @@ export type GetRegistryModelsByNameApiResponse = /** status 200 Paginated list o
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -4457,9 +3853,9 @@ export type GetRegistryModelsByNameApiResponse = /** status 200 Paginated list o
       version: string;
     };
     /** The relationships of the model. */
-    relationships: any;
+    relationships: any[];
     /** The components of the model. */
-    components: any;
+    components: any[];
     /** Number of components associated with the model. */
     componentsCount: number;
     /** Number of relationships associated with the model. */
@@ -4579,6 +3975,9 @@ export type GetRegistryComponentsByModelApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -4757,9 +4156,9 @@ export type GetRegistryComponentsByModelApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -5123,6 +4522,9 @@ export type GetRegistryComponentsByModelAndNameApiResponse = /** status 200 Pagi
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -5301,9 +4703,9 @@ export type GetRegistryComponentsByModelAndNameApiResponse = /** status 200 Pagi
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -5886,6 +5288,9 @@ export type GetRegistryModelsByCategoryApiResponse = /** status 200 Paginated li
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -6064,9 +5469,9 @@ export type GetRegistryModelsByCategoryApiResponse = /** status 200 Paginated li
       version: string;
     };
     /** The relationships of the model. */
-    relationships: any;
+    relationships: any[];
     /** The components of the model. */
-    components: any;
+    components: any[];
     /** Number of components associated with the model. */
     componentsCount: number;
     /** Number of relationships associated with the model. */
@@ -6167,6 +5572,9 @@ export type GetRegistryModelsByCategoryAndModelApiResponse =
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -6345,9 +5753,9 @@ export type GetRegistryModelsByCategoryAndModelApiResponse =
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -6463,6 +5871,9 @@ export type GetRegistryComponentsByCategoryAndModelApiResponse = /** status 200 
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -6641,9 +6052,9 @@ export type GetRegistryComponentsByCategoryAndModelApiResponse = /** status 200 
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -7010,6 +6421,9 @@ export type GetRegistryComponentsByCategoryAndModelAndNameApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -7188,9 +6602,9 @@ export type GetRegistryComponentsByCategoryAndModelAndNameApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -7559,6 +6973,9 @@ export type GetRegistryComponentsByCategoryApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -7737,9 +7154,9 @@ export type GetRegistryComponentsByCategoryApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -8104,6 +7521,9 @@ export type GetRegistryComponentsByCategoryAndNameApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -8282,9 +7702,9 @@ export type GetRegistryComponentsByCategoryAndNameApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -8650,6 +8070,9 @@ export type GetRegistryComponentsApiResponse = /** status 200 Paginated list of 
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -8828,9 +8251,9 @@ export type GetRegistryComponentsApiResponse = /** status 200 Paginated list of 
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -9357,9 +8780,9 @@ export type RegisterRegistryComponentApiArg = {
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId?: string;
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -9382,16 +8805,16 @@ export type RegisterRegistryComponentApiArg = {
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
-        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                 
                 Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                 
                 At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                 
-                Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                 
                 The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-        purpose?: "user" | "administrative" | "profile";
+        purpose?: "user" | "administrative";
       }[];
       /** Specifies the version of the schema used for the definition. */
       schemaVersion: string;
@@ -9480,6 +8903,9 @@ export type GetRegistryComponentsByNameApiResponse = /** status 200 Paginated li
         updated_at?: string;
         /** SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
+        /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+         */
+        organizationId?: string;
         /** Associated environments for this connection */
         environments?: {
           /** ID */
@@ -9658,9 +9084,9 @@ export type GetRegistryComponentsByNameApiResponse = /** status 200 Paginated li
         version: string;
       };
       /** The relationships of the model. */
-      relationships: any;
+      relationships: any[];
       /** The components of the model. */
-      components: any;
+      components: any[];
       /** Number of components associated with the model. */
       componentsCount: number;
       /** Number of relationships associated with the model. */
@@ -10218,9 +9644,9 @@ export type RegisterRegistryRelationshipApiArg = {
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId?: string;
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -10243,16 +9669,16 @@ export type RegisterRegistryRelationshipApiArg = {
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
-        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                 
                 Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                 
                 At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                 
-                Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                 
                 The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-        purpose?: "user" | "administrative" | "profile";
+        purpose?: "user" | "administrative";
       }[];
       /** Specifies the version of the schema used for the definition. */
       schemaVersion: string;
@@ -10307,6 +9733,9 @@ export type GetRegistryRegistrantsApiResponse = /** status 200 Paginated list of
     updated_at?: string;
     /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
+    /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+     */
+    organizationId?: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -10500,6 +9929,9 @@ export type GenerateRegistryComponentsApiResponse =
           updated_at?: string;
           /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
+          /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+           */
+          organizationId?: string;
           /** Associated environments for this connection */
           environments?: {
             /** ID */
@@ -10678,9 +10110,9 @@ export type GenerateRegistryComponentsApiResponse =
           version: string;
         };
         /** The relationships of the model. */
-        relationships: any;
+        relationships: any[];
         /** The components of the model. */
-        components: any;
+        components: any[];
         /** Number of components associated with the model. */
         componentsCount: number;
         /** Number of relationships associated with the model. */
@@ -12973,7 +12405,7 @@ export type AddTeamToOrgApiArg = {
   orgId: string;
   /** Team ID. */
   teamId: string;
-  body: {
+  body?: {
     /** Internal action to perform on the team resource. */
     action?: "delete";
   };
@@ -13844,9 +13276,9 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
-    /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
      */
-    organizationId?: string;
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -13869,16 +13301,16 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
-      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
             
             Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
             
             At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
             
-            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
             
             The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-      purpose?: "user" | "administrative" | "profile";
+      purpose?: "user" | "administrative";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -14165,9 +13597,9 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId?: string;
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -14190,16 +13622,16 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
-        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-        purpose?: "user" | "administrative" | "profile";
+        purpose?: "user" | "administrative";
       }[];
       /** Specifies the version of the schema used for the definition. */
       schemaVersion: string;
@@ -14443,9 +13875,9 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId?: string;
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -14468,22 +13900,22 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
-        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-        purpose?: "user" | "administrative" | "profile";
+        purpose?: "user" | "administrative";
       }[];
       /** Specifies the version of the schema used for the definition. */
       schemaVersion: string;
     };
 export type RegisterConnectionApiArg = {
-  /** Organization the connection is registered in. Required for kind `desktop`; ignored for other kinds.
+  /** Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400.
    */
   "X-Current-Orgid"?: string;
   body: {
@@ -14957,9 +14389,9 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId?: string;
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -14982,16 +14414,16 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative" | "profile";
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -15239,9 +14671,9 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId?: string;
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -15264,16 +14696,16 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative" | "profile";
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -15708,9 +15140,9 @@ export type PerformConnectionActionApiResponse =
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
-    /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
      */
-    organizationId?: string;
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -15733,16 +15165,16 @@ export type PerformConnectionActionApiResponse =
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
-      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-      purpose?: "user" | "administrative" | "profile";
+      purpose?: "user" | "administrative";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -16337,8 +15769,8 @@ export type ImportDesignApiResponse =
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -16356,10 +15788,13 @@ export type ImportDesignApiResponse =
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -16613,16 +16048,16 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
-  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
     
-    Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
     
     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-  purpose?: "user" | "administrative" | "profile";
+  purpose?: "user" | "administrative";
 };
 export type CreateEnvironmentApiArg = {
   /** Body for creating environment */
@@ -16633,12 +16068,12 @@ export type CreateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
-    /** Free-form settings stored with the environment, for example a profile's settings. */
+    /** Free-form settings stored with the environment. */
     metadata?: {
       [key: string]: any;
     };
-    /** The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
-    purpose?: "user" | "profile";
+    /** The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    purpose?: "user";
   };
 };
 export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
@@ -16670,16 +16105,16 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative" | "profile";
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentsApiArg = {
@@ -16696,7 +16131,7 @@ export type GetEnvironmentsApiArg = {
   /** User's organization ID */
   orgId: string;
   /** Return only environments with this purpose; absent returns every purpose the caller may see. The filter only narrows the environments the caller can already list and grants no visibility - a caller who cannot see administrative environments receives an empty page for purpose=administrative. */
-  purpose?: "user" | "administrative" | "profile";
+  purpose?: "user" | "administrative";
 };
 export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
   /** Zero-based page index returned in this response. */
@@ -16727,16 +16162,16 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative" | "profile";
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentByIdApiArg = {
@@ -16774,16 +16209,16 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative" | "profile";
+    purpose?: "user" | "administrative";
   }[];
 };
 export type UpdateEnvironmentApiArg = {
@@ -16797,12 +16232,12 @@ export type UpdateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
-    /** Free-form settings stored with the environment, for example a profile's settings. */
+    /** Free-form settings stored with the environment. */
     metadata?: {
       [key: string]: any;
     };
-    /** The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
-    purpose?: "user" | "profile";
+    /** The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    purpose?: "user";
   };
 };
 export type DeleteEnvironmentApiResponse = unknown;
@@ -16817,9 +16252,284 @@ export type GetEnvironmentConnectionsApiResponse = /** status 200 Environment co
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** The connections of the environmentconnectionspage. */
+  /** Connections associated with the environment, using the canonical Connection response schema. */
   connections?: {
-    [key: string]: any;
+    /** Connection ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** Associated Credential ID */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** The connection state reachable from the current state. */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** User ID who owns this connection */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string | null;
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+     */
+    organizationId: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
   }[];
 };
 export type GetEnvironmentConnectionsApiArg = {
@@ -16882,7 +16592,7 @@ export type UpdateEventStatusApiArg = {
   };
 };
 export type CreateEventApiResponse =
-  /** status 200 An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded.
+  /** status 200 The event the create resolved to. When no new event was recorded, that is the one already recorded under this caller's `idempotencyKey` (`replayed`, unchanged) or, for a call that identifies a user, the open event of this `correlationKey` with the occurrence counted (`incremented`), or that event closed by the payload's `resolvedAt`, with its `severity` and `description` replaced by the payload's when the payload carries them (an omitted field keeps the stored value) and its `lastSeenAt` brought forward (`resolved`). A call that identifies no user records a new event instead, with the correlation fields stored exactly as sent. A server MAY also answer a legacy create, one carrying neither `correlationKey` nor `idempotencyKey`, with 200 and `Event-Disposition: created`, returning the event it just recorded, for compatibility with released Meshery Servers that treat any non-200 answer as failure. Clients accept any 2xx and read `Event-Disposition` rather than the status code to tell created from replayed.
      */
     | {
         /** Event ID. */
@@ -16895,7 +16605,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16908,18 +16618,53 @@ export type CreateEventApiResponse =
         /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
          */
         status: string;
-        /** ID of the system instance that emitted the event. */
+        /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+         */
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
         /** Timestamp when the event was recorded. */
         createdAt: string;
         /** Timestamp when the event was last updated. */
         updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
         /** Timestamp when the event was soft-deleted; omitted when it was not. */
         deletedAt?: string | null;
+        /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+         */
+        correlationKey?: string;
+        /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+         */
+        occurrenceCount?: number;
+        /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+         */
+        firstSeenAt?: string;
+        /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+         */
+        lastSeenAt?: string;
+        /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+         */
+        resolvedAt?: string;
+        /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+         */
+        source?: string;
+        /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+         */
+        type?: string;
+        /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+        specversion?: "1.0";
+        /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+         */
+        traceId?: string;
+        /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+         */
+        parentId?: string;
       }
-    | /** status 201 Event created */ {
+    | /** status 201 A new event was recorded (`Event-Disposition: created`). A call that identifies no user stores the correlation fields exactly as sent. For a call that identifies a user and carries a `correlationKey`, the event opens a condition, or records one already resolved when the payload carries `resolvedAt`. An already resolved insert uses `occurrenceCount` 1 when omitted, and `firstSeenAt` and `lastSeenAt` from the payload, else `resolvedAt`.
+     */ {
         /** Event ID. */
         id: string;
         /** ID of the entity on which the event was performed. */
@@ -16930,7 +16675,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); ScheduleCompletedEventMetadata (category `schedule`, action `completed`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed: an EventError (the error's code, rendered descriptions, the causes and remediations that apply, `matchedCauses` and instance `details`; docs/error-definition-contract.md), except that a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Rows recorded before EventError carry MeshKit's Go field names instead (`Code`, `Severity` as a number, `ShortDescription`, `LongDescription`, `ProbableCause` and `SuggestedRemediation` as lists); readers fall back to those keys when `code` is absent and treat their flat lists as unpaired. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16943,16 +16688,50 @@ export type CreateEventApiResponse =
         /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
          */
         status: string;
-        /** ID of the system instance that emitted the event. */
+        /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+         */
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
         /** Timestamp when the event was recorded. */
         createdAt: string;
         /** Timestamp when the event was last updated. */
         updatedAt: string;
+        /** Who can see the event. Defaults to `private`. */
+        visibility: "private" | "public";
         /** Timestamp when the event was soft-deleted; omitted when it was not. */
         deletedAt?: string | null;
+        /** Key of the ongoing condition the event records (see EventPayload.correlationKey and createEvent); omitted for an event that reports no condition.
+         */
+        correlationKey?: string;
+        /** How many occurrences of the condition this event counts. A create without a `correlationKey`, and a call that identifies no user, stores the payload's value exactly as sent, so an omitted count stays omitted. For a call that identifies a user and carries a `correlationKey`, an opening create or a resolving create inserted already resolved stores the payload's `occurrenceCount` (1 when omitted). Later creates that do not resolve add their count. A resolving create on the open event does not add to it.
+         */
+        occurrenceCount?: number;
+        /** When the condition's first counted occurrence was seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `firstSeenAt`, else its `lastSeenAt`, else the time of receipt. An already-resolved insert stores the payload's `firstSeenAt`, else `resolvedAt`. A close keeps the stored time. Omitted when the payload omitted it and the create applied no default.
+         */
+        firstSeenAt?: string;
+        /** When the condition was last seen. A call that identifies no user stores the payload's value exactly as sent. For a call that identifies a user, an opening create stores the payload's `lastSeenAt`, else `firstSeenAt`. An already-resolved insert stores the payload's `lastSeenAt`, else `resolvedAt`. Counting an occurrence, or closing one, brings the stored time forward. Omitted when the payload omitted it and the create applied no default.
+         */
+        lastSeenAt?: string;
+        /** When the condition cleared. A call that identifies no user stores the payload's value exactly as sent and does not close another event. For a call that identifies a user it is omitted while the condition is open, and set by a resolution (see createEvent), which also replaces `severity` and `description` with the payload's when the payload carries them (an omitted field keeps the stored value) and brings `lastSeenAt` forward, after which a new occurrence opens a new event.
+         */
+        resolvedAt?: string;
+        /** Which surface emitted the event (CloudEvents-compatible `source`), for example `meshery-server`, `meshery-ui`, `mesheryctl` or `meshery-adapter-istio`; see EventPayload.source. Omitted when the producer did not say.
+         */
+        source?: string;
+        /** CloudEvents-compatible `type`, for example `io.meshery.user.signup`; see EventPayload.type. `category` and `action` stay the event's classification.
+         */
+        type?: string;
+        /** The CloudEvents specification version the event is compatible with; see EventPayload.specversion. */
+        specversion?: "1.0";
+        /** W3C Trace Context `trace-id` of the operation the event belongs to, as its client minted it; see EventPayload.traceId.
+         */
+        traceId?: string;
+        /** W3C Trace Context `parent-id` of the sub-operation that emitted the event; see EventPayload.parentId.
+         */
+        parentId?: string;
       };
 export type CreateEventApiArg = {
   body: {
@@ -16960,13 +16739,48 @@ export type CreateEventApiArg = {
     owner?: string;
     /** The category of the event. */
     category?: string;
+    /** Who can see the event. `private` is the default; clients may set `public` for events eligible for the unauthenticated feed. */
+    visibility?: "private" | "public";
     /** The action of the event. */
     action?: string;
     /** Description of the event. */
     description?: string;
+    /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+     */
+    severity?: string;
     /** Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
      */
     idempotencyKey?: string;
+    /** Optional key naming the ongoing condition this event reports, so repeated occurrences count on one open event instead of recording one each (see createEvent). Name the condition, not the occurrence, and qualify it by the emitting source and component plus the subject, for example `meshery-server/k8s-connection/<connectionId>/unreachable`. Never use an error code alone: codes are scoped to the component that owns them. Unlike `idempotencyKey`, which makes one create safe to retry, this key spans many creates.
+     */
+    correlationKey?: string;
+    /** Number of occurrences this create reports, for a producer that counted repeats locally before sending. A create without a `correlationKey`, and a call that identifies no user, stores this value exactly as sent, including when it is omitted. For a call that identifies a user and carries a `correlationKey`, omitted means 1. An opening create stores that count, counting an open condition adds it, and an already-resolved insert stores it. A resolving create on that open event does not add it.
+     */
+    occurrenceCount?: number;
+    /** When the producer first saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `lastSeenAt`, or the time of receipt, and omitted on a resolving create that inserts an already resolved event means `resolvedAt`. Stored when that create opens a condition or inserts one already resolved; a close of an open condition keeps the stored time.
+     */
+    firstSeenAt?: string;
+    /** When the producer last saw the occurrences this create reports. A call that identifies no user stores this value exactly as sent. For a call that identifies a user, omitted while opening a condition means `firstSeenAt`; omitted while counting an open condition, or while closing one, means the time of receipt; and omitted on a resolving create that inserts an already resolved event means `resolvedAt`.
+     */
+    lastSeenAt?: string;
+    /** When the condition named by `correlationKey` cleared. A call that identifies no user stores this value exactly as sent and does not match an open event. For a call that identifies a user, a create that carries it is a resolution: it closes that caller's open event with that key, copying this payload's `severity` and `description` onto the event when this payload carries them (an omitted field keeps the stored value) and setting `lastSeenAt` to the later of the stored time and this payload's `lastSeenAt` (the time of receipt when omitted), so the closed condition reads as cleared and the next occurrence opens a new condition (see createEvent). Give the resolution a severity and description that say what cleared, for example severity `success` and `Connection to cluster prod-1 restored`, under the condition's category.
+     */
+    resolvedAt?: string;
+    /** Which surface emitted the event, as a CloudEvents-compatible `source` (a URI reference): `meshery-server`, `meshery-ui`, `mesheryctl`, `meshery-adapter-<name>` (for example `meshery-adapter-istio`), `layer5-cloud`, or another client's name. `systemId` says which instance; `source` says which kind of client, so a failure a person caused in the UI is told apart from the same failure from the CLI. An open set: a new surface needs no schema change.
+     */
+    source?: string;
+    /** CloudEvents-compatible `type`: a reverse-DNS name of the kind of occurrence, for example `io.meshery.user.signup`. It does not replace `category` and `action`, which stay two free strings; `type` is for CloudEvents-aware consumers.
+     */
+    type?: string;
+    /** The CloudEvents specification version the event's `source`, `type` and `id` are compatible with, when the producer sets them as CloudEvents attributes. A Meshery event is CloudEvents compatible; it is not a CloudEvent.
+     */
+    specversion?: "1.0";
+    /** W3C Trace Context `trace-id` (32 lowercase hex digits, not all zeros) of the user-level operation the event belongs to, so the event joins the OpenTelemetry trace that operation recorded. The client that starts the operation mints it, and every event of the operation and its sub-operations carries it; the server never mints one at persist time.
+     */
+    traceId?: string;
+    /** W3C Trace Context `parent-id` (16 lowercase hex digits, not all zeros): the span of the sub-operation that emitted the event, so the events of one operation form its tree. Minted by the client with `traceId`, never by the server.
+     */
+    parentId?: string;
     [key: string]: any;
   };
 };
@@ -17673,16 +17487,16 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative" | "profile";
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentsOfWorkspaceApiArg = {
@@ -17748,14 +17562,14 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
-      pattern_caveats: string;
+      patternCaveats: string;
       /** Purpose of the design along with its intended and unintended uses. */
-      pattern_info: string;
+      patternInfo: string;
       /** Categorization of the type of design or operational flow depicted in this design. */
       type:
         | "Deployment"
@@ -17767,10 +17581,13 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     created_at?: string;
     user_id?: string;
+    /** The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId?: string;
     location?: {
       [key: string]: string;
     };
@@ -17870,6 +17687,8 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             updated_at?: string;
             /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            organizationId?: string;
             /** Associated environments for this connection */
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -18048,9 +17867,9 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             version: string;
           };
           /** The relationships of the model. */
-          relationships: any;
+          relationships: any[];
           /** The components of the model. */
-          components: any;
+          components: any[];
           /** Number of components associated with the model. */
           componentsCount: number;
           /** Number of relationships associated with the model. */
@@ -18889,6 +18708,90 @@ export type UnassignViewFromWorkspaceApiArg = {
   workspaceId: string;
   /** View ID */
   viewId: string;
+};
+export type MesheryControllersConfigurationMesheryOperatorConfig = {
+  /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+  deploymentMode?: "operator" | "embedded";
+  /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+  version?: string;
+};
+export type MesheryControllersConfigurationMeshSyncWatchedResource = {
+  /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+  resource: string;
+  /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+  events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+};
+export type MesheryControllersConfigurationMeshSyncWatchList = {
+  /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+  whitelist?: MesheryControllersConfigurationMeshSyncWatchedResource[];
+  /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+  blacklist?: string[];
+};
+export type MesheryControllersConfigurationMeshSyncConfig = {
+  /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+  version?: string;
+  /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+  replicas?: number;
+  /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+  watchList?: MesheryControllersConfigurationMeshSyncWatchList;
+  /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+  outputNamespaces?: string[];
+  /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+  outputResources?: string[];
+  /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+  redactSecrets?: boolean;
+  /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+  brokerContentDedup?: boolean;
+  /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+  debugLogging?: boolean;
+};
+export type MesheryControllersConfigurationMesheryBrokerServiceConfig = {
+  /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+  type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+  /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+  annotations?: {
+    [key: string]: string;
+  };
+  /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+  loadBalancerClass?: string;
+  /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+  loadBalancerSourceRanges?: string[];
+  /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+  externalEndpointOverride?: string;
+};
+export type MesheryControllersConfigurationMesheryBrokerConfig = {
+  /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+  version?: string;
+  /** Number of NATS server replicas (Broker custom resource spec.size). */
+  replicas?: number;
+  /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+  service?: MesheryControllersConfigurationMesheryBrokerServiceConfig;
+};
+export type MesheryControllersConfig = {
+  /** Specifies the version of the schema used for this configuration document. */
+  schemaVersion: string;
+  /** Configuration for the Meshery Operator on the managed cluster. */
+  operator?: MesheryControllersConfigurationMesheryOperatorConfig;
+  /** Configuration for the MeshSync agent on the managed cluster. */
+  meshsync?: MesheryControllersConfigurationMeshSyncConfig;
+  /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+  broker?: MesheryControllersConfigurationMesheryBrokerConfig;
+};
+export type MesheryControllersConfigurationMesheryControllersConfigPayload = {
+  /** Configuration for the Meshery Operator on the managed cluster. */
+  operator?: MesheryControllersConfigurationMesheryOperatorConfig;
+  /** Configuration for the MeshSync agent on the managed cluster. */
+  meshsync?: MesheryControllersConfigurationMeshSyncConfig;
+  /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+  broker?: MesheryControllersConfigurationMesheryBrokerConfig;
+};
+export type MesheryControllersConfigurationConnectionControllersConfig = {
+  /** Per-connection override stored in the connection's metadata. Absent when the connection has no override. */
+  override?: MesheryControllersConfig;
+  /** Current server-wide default configuration. Absent when no server-wide defaults have been set. */
+  default?: MesheryControllersConfig;
+  /** Resolved effective configuration for the connection (override, then server-wide default, then built-in default). */
+  effective: MesheryControllersConfig;
 };
 export const {
   useGetControllersDefaultConfigQuery,

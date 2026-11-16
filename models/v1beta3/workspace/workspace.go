@@ -192,6 +192,39 @@ type WorkspacesEnvironmentsMappingPage struct {
 	WorkspacesEnvironmentsMapping []WorkspacesEnvironmentsMapping `json:"workspacesEnvironmentsMapping,omitempty" yaml:"workspacesEnvironmentsMapping,omitempty"`
 }
 
+// WorkspacesProfilesMapping Junction record linking a workspace to a profile.
+type WorkspacesProfilesMapping struct {
+	CreatedAt core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// ProfileId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ProfileID core.Uuid `db:"profile_id" json:"profileId" yaml:"profileId"`
+	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// WorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	WorkspaceID core.Uuid `db:"workspace_id" json:"workspaceId" yaml:"workspaceId"`
+}
+
+// WorkspacesProfilesMappingPage Paginated list of workspace-profile mappings.
+type WorkspacesProfilesMappingPage struct {
+	// Page Zero-based page index returned in this response.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Maximum number of items returned on each page.
+	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
+
+	// TotalCount Total number of items across all pages.
+	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+
+	// WorkspacesProfilesMapping Workspace-profile mapping entries.
+	WorkspacesProfilesMapping []WorkspacesProfilesMapping `json:"workspacesProfilesMapping,omitempty" yaml:"workspacesProfilesMapping,omitempty"`
+}
+
 // WorkspacesTeamsMapping Junction record linking a workspace to a team.
 type WorkspacesTeamsMapping struct {
 	// CreatedAt Timestamp when the resource was created.
@@ -273,6 +306,9 @@ type PageSize = int
 
 // Pagesize defines model for pagesize.
 type Pagesize = int
+
+// ProfileId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type ProfileId = core.Uuid
 
 // Search defines model for search.
 type Search = string

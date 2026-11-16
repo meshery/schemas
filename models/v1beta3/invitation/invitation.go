@@ -42,6 +42,9 @@ type Invitation struct {
 	// ChildOrganizationBranding Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
 	ChildOrganizationBranding *InvitationChildOrganizationBranding `db:"child_organization_branding" json:"childOrganizationBranding" yaml:"childOrganizationBranding,omitempty"`
 
+	// ChildOrganizationName Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.
+	ChildOrganizationName *string `db:"child_organization_name" json:"childOrganizationName" yaml:"childOrganizationName"`
+
 	// CreatedAt Timestamp when the invitation was created.
 	CreatedAt time.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
@@ -101,6 +104,9 @@ type InvitationPayload struct {
 
 	// ChildOrganizationBranding Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
 	ChildOrganizationBranding *InvitationChildOrganizationBranding `db:"child_organization_branding" json:"childOrganizationBranding,omitempty" yaml:"childOrganizationBranding,omitempty"`
+
+	// ChildOrganizationName Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.
+	ChildOrganizationName *string `db:"child_organization_name" json:"childOrganizationName,omitempty" yaml:"childOrganizationName,omitempty"`
 
 	// Description Description of the invitation. Optional; omitting it stores an empty description.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -274,14 +280,14 @@ type SignupTaskId = string
 // SignupTaskLink defines model for signupTaskLink.
 type SignupTaskLink = string
 
-// CoreMeshkitError400 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// CoreMeshkitError400 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError400 = core.MeshkitError
 
-// CoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// CoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError403 = core.MeshkitError
 
-// CoreMeshkitError404 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// CoreMeshkitError404 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError404 = core.MeshkitError
 
-// CoreMeshkitError500 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// CoreMeshkitError500 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError500 = core.MeshkitError

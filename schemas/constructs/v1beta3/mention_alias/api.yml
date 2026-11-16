@@ -1,0 +1,328 @@
+openapi: 3.0.0
+info:
+  title: MentionAlias
+  description: |
+    OpenAPI schema for mention aliases: an organization's memory of who's who
+    across platforms. A message tags an entity as `@entity`; one message goes
+    to several platforms, and each names the same entity its own way. A
+    mention alias records one confirmed answer, the entity's form on one
+    platform, so the next message that tags the entity starts from it.
+
+    Uniqueness: an organization keeps at most one alias per (`entity`,
+    `platform`), with `entity` compared ignoring case. Writing aliases
+    (`upsertMentionAliases`) creates the alias for a new key and replaces the
+    `handle` of an existing one; it never adds a second alias for a key.
+
+    Organization scope: every operation acts only in the organization the
+    session resolved to (X-Current-Orgid, then the user's selected
+    organization), and only when the caller is a live member of it. No
+    operation takes an organization in its path or body.
+
+    Authorization: aliases describe how the organization's content items tag
+    people, so they reuse the content item keys (Catalog Management / Content
+    Items) in that organization: View Content Items for the read, Edit
+    Content Item for the write and Delete Content Item for the delete. A
+    caller without the key receives a 403 before any row is read. Past that
+    check, an id that does not name a mention alias of the organization and
+    a caller who is not a live member of it receive the same 404, so the
+    existence of another organization's aliases is never disclosed.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: mentionAliases
+    description: Operations related to mention aliases.
+
+paths:
+  /api/mention-aliases:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - mentionAliases
+      summary: List mention aliases
+      operationId: getMentionAliases
+      description: |
+        Returns a paginated list of the mention aliases of the organization
+        of the authenticated session. `entity` (repeatable) returns only the
+        aliases of those entities, each compared ignoring case, so the
+        aliases for every tag in one message come back in one read; an entity
+        with no alias contributes nothing. `platform` (repeatable) returns
+        only the aliases on those platforms. `search` matches `entity` or
+        `handle` containing the term, ignoring case. `order` sorts by
+        `entity`, `platform`, `createdAt` or `updatedAt` (`asc` or `desc`);
+        the default is `entity asc`, then `platform asc`. An organization
+        with no matching alias returns an empty page.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/entity"
+        - $ref: "#/components/parameters/platform"
+      responses:
+        "200":
+          description: Mention alias page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MentionAliasPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - mentionAliases
+      summary: Write mention aliases
+      operationId: upsertMentionAliases
+      description: |
+        Writes the confirmed aliases in `mentionAliases`, keyed by (`entity`,
+        `platform`) with `entity` compared ignoring case. A new key creates
+        the alias; an existing key replaces its `handle` and `entity` casing,
+        sets `confirmedBy` to the caller and advances `updatedAt`, even when
+        the handle is unchanged. `id`, `organizationId` and `createdAt` of an
+        existing alias never change. The write is all or nothing in one
+        transaction: a body that fails validation, or that names the same key
+        twice, is refused with a 400 and stores nothing. Answers 200 with the
+        stored aliases, one per entry and in the order of the request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MentionAliasesPayload"
+      responses:
+        "200":
+          description: The stored mention aliases, one per request entry, in request order
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MentionAlias"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/mention-aliases/{mentionAliasId}:
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - mentionAliases
+      summary: Delete a mention alias
+      operationId: deleteMentionAlias
+      description: |
+        Removes the mention alias, so the next message that tags its entity
+        on its platform starts without a confirmed answer. The row is
+        removed, not soft-deleted, and its key can be written again. An id
+        that does not name a mention alias of the session organization is a
+        404, the same answer whether it never existed or belongs to another
+        organization.
+      parameters:
+        - $ref: "#/components/parameters/mentionAliasId"
+      responses:
+        "204":
+          description: Mention alias deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/pageSize"
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+    entity:
+      name: entity
+      in: query
+      required: false
+      description: Return only the aliases of these entities (repeatable), each compared ignoring case.
+      schema:
+        type: array
+        maxItems: 100
+        items:
+          type: string
+          minLength: 1
+          maxLength: 100
+    platform:
+      name: platform
+      in: query
+      required: false
+      description: Return only the aliases on these platforms (repeatable).
+      schema:
+        type: array
+        items:
+          $ref: "#/components/schemas/MentionAliasPlatform"
+    mentionAliasId:
+      name: mentionAliasId
+      in: path
+      description: Mention alias ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+
+  schemas:
+    MentionAlias:
+      $ref: "./mention_alias.yaml"
+
+    MentionAliasPlatform:
+      type: string
+      description: >
+        A platform whose messages can tag an entity: `linkedin`, `x`,
+        `bluesky`, `reddit` or `slack`. A server refuses any other value with
+        400. A platform joins by adding a value here.
+      enum:
+        - linkedin
+        - x
+        - bluesky
+        - reddit
+        - slack
+      x-ts-const: MentionAliasPlatforms
+      # oapi-codegen would otherwise emit bare package constants such as
+      # `mention_alias.X`, which says nothing about what it is.
+      x-enum-varnames:
+        - MentionAliasPlatformLinkedin
+        - MentionAliasPlatformX
+        - MentionAliasPlatformBluesky
+        - MentionAliasPlatformReddit
+        - MentionAliasPlatformSlack
+
+    MentionAliasPage:
+      type: object
+      description: Paginated collection of mention aliases.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - mentionAliases
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        mentionAliases:
+          type: array
+          items:
+            $ref: "#/components/schemas/MentionAlias"
+            x-go-type: MentionAlias
+          description: Mention aliases included on this page of results.
+
+    MentionAliasPayload:
+      type: object
+      description: >
+        One confirmed alias to write. Contains only client-settable fields:
+        the alias is keyed by (`entity`, `platform`), so there is no `id`;
+        the owning `organizationId` comes from the session; `confirmedBy` is
+        the caller; and the timestamps are server-generated.
+      required:
+        - entity
+        - platform
+        - handle
+      properties:
+        entity:
+          type: string
+          description: >
+            The tag as written after `@`, without the `@`. Compared ignoring
+            case; the stored alias keeps this casing.
+          minLength: 1
+          maxLength: 100
+          pattern: '^[A-Za-z0-9_](?:[A-Za-z0-9_.-]*[A-Za-z0-9_])?$'
+        platform:
+          $ref: "#/components/schemas/MentionAliasPlatform"
+          description: The platform this alias names the entity on.
+        handle:
+          type: string
+          description: >
+            The entity's form on `platform`. Required, because the write
+            replaces the stored handle: an empty string is the confirmed
+            answer "send the name as plain text", never "keep what is
+            stored".
+          minLength: 0
+          maxLength: 200
+          pattern: '^(\S(.*\S)?)?$'
+
+    MentionAliasesPayload:
+      type: object
+      description: The confirmed aliases to write in one all-or-nothing request.
+      required:
+        - mentionAliases
+      properties:
+        mentionAliases:
+          type: array
+          description: >
+            Aliases to write, at most one per (`entity`, `platform`) key with
+            `entity` compared ignoring case. A key named twice refuses the
+            whole request with 400.
+          minItems: 1
+          maxItems: 250
+          items:
+            $ref: "#/components/schemas/MentionAliasPayload"
+            x-go-type: MentionAliasPayload

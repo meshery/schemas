@@ -1,0 +1,228 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Media Asset Schema
+description: |
+  Server-returned media asset: one image or video file an organization
+  uploaded so that a content item can post it without a link. A content
+  item refers to an asset by its `id`, never by a URL; a short-lived
+  download URL is minted only when the file is about to be used
+  (`getMediaAssetDownload`) and is never stored.
+  An asset is created `pending` with a short-lived upload URL, becomes
+  `ready` once `completeMediaAsset` has checked the stored bytes against
+  the declared size, type and SHA-256, or `rejected` when they do not
+  match. A `pending` asset that is never completed, and a `ready` asset
+  whose retention ended, read as `expired` from `expiresAt` on: expiry is
+  evaluated when the asset is read, so an asset never reads `pending` or
+  `ready` past its `expiresAt`.
+  No field carries a storage credential, a bucket name, an object key or a
+  signed URL. The bytes live in the backend `backend` names, under a
+  location only the server knows.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - backend
+  - kind
+  - contentType
+  - bytes
+  - sha256
+  - locationStripped
+  - status
+  - expiresAt
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated media asset ID. Reveals nothing about the file or where it is stored.
+    x-oapi-codegen-extra-tags:
+      db: id
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  createdBy:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the user whose session created the asset. Derived from the
+      authenticated session, never client-settable. Omitted when that user
+      was later purged.
+    x-go-name: CreatedBy
+    x-oapi-codegen-extra-tags:
+      db: created_by
+      json: "createdBy,omitempty"
+    x-order: 3
+  backend:
+    description: Where the bytes are stored (`r2` or `gdrive`).
+    $ref: ./api.yml#/components/schemas/MediaAssetBackend
+    x-oapi-codegen-extra-tags:
+      db: backend
+    x-order: 4
+  connectionId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the Google Drive connection (`connections.id`) the file was
+      uploaded through. Set only when `backend` is `gdrive`; omitted for
+      `r2`, and when that connection was later deleted.
+    x-go-name: ConnectionID
+    x-oapi-codegen-extra-tags:
+      db: connection_id
+      json: "connectionId,omitempty"
+    x-order: 5
+  externalId:
+    type: string
+    description: >
+      Identifier of the file in the person's own storage: the Google Drive
+      file ID when `backend` is `gdrive`. Server-written once the upload is
+      completed; omitted for `r2`, whose storage location is never on the
+      wire, and while a `gdrive` asset is `pending`.
+    x-id-format: external
+    minLength: 1
+    maxLength: 255
+    pattern: '^[A-Za-z0-9_-]+$'
+    x-oapi-codegen-extra-tags:
+      db: external_id
+      json: "externalId,omitempty"
+    x-order: 6
+  kind:
+    description: Image or video, derived by the server from `contentType`.
+    $ref: ./api.yml#/components/schemas/MediaAssetKind
+    x-oapi-codegen-extra-tags:
+      db: kind
+    x-order: 7
+  contentType:
+    description: Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion.
+    $ref: ./api.yml#/components/schemas/MediaAssetContentType
+    x-oapi-codegen-extra-tags:
+      db: content_type
+    x-order: 8
+  bytes:
+    type: integer
+    format: int64
+    description: >
+      Size of the file in bytes, as declared at create. `completeMediaAsset`
+      refuses an upload whose stored size differs.
+    minimum: 1
+    maximum: 5368709120
+    x-oapi-codegen-extra-tags:
+      db: bytes
+    x-order: 9
+  sha256:
+    type: string
+    description: >
+      Lowercase hex SHA-256 of the file's bytes as uploaded (after any
+      metadata stripping), as declared at create. `completeMediaAsset`
+      refuses an upload whose stored bytes hash differently, and a reader
+      compares the bytes it downloads against it before posting them.
+    minLength: 64
+    maxLength: 64
+    pattern: '^[0-9a-f]{64}$'
+    x-oapi-codegen-extra-tags:
+      db: sha256
+    x-order: 10
+  name:
+    type: string
+    description: >
+      Display name of the file, typically its original file name. Shown to
+      people only; the type is never inferred from it.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: name
+      json: "name,omitempty"
+    x-order: 11
+  locationStripped:
+    type: boolean
+    description: >
+      Whether the uploading client removed location metadata (EXIF and XMP
+      GPS, plus maker notes and device serial numbers) from the file before
+      uploading it. Declared by the client and recorded as sent; the server
+      does not inspect the bytes for metadata. `false` records that the
+      bytes may still carry where they were captured, for example a video
+      whose location the client could not remove.
+    x-oapi-codegen-extra-tags:
+      db: location_stripped
+    x-order: 12
+  status:
+    description: Lifecycle of the asset, evaluated when it is read.
+    $ref: ./api.yml#/components/schemas/MediaAssetStatus
+    x-oapi-codegen-extra-tags:
+      db: status
+    x-order: 13
+  rejectionReason:
+    description: Why the upload was rejected. Set only on a `rejected` asset.
+    $ref: ./api.yml#/components/schemas/MediaAssetRejectionReason
+    x-oapi-codegen-extra-tags:
+      db: rejection_reason
+      json: "rejectionReason,omitempty"
+    x-order: 14
+  retainUntil:
+    type: string
+    format: date-time
+    description: >
+      Time the client asked the asset to stay downloadable until, from the
+      create payload or the last `updateMediaAsset`. Null when the client
+      never asked, in which case the organization's default retention
+      applies once the asset is completed.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: retain_until
+    x-order: 15
+  completedAt:
+    type: string
+    format: date-time
+    description: Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: completed_at
+    x-order: 16
+  expiresAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: >
+      Time the asset stops being usable. Always set by the server. While
+      `pending` it is the end of the upload window (`uploadWindowSeconds`
+      of the quota after creation). Once `ready` it is `retainUntil` when
+      the client set one, otherwise `completedAt` plus the organization's
+      `defaultRetentionDays`. Past it the asset reads `expired`, no
+      download is minted, and the stored bytes of an `r2` asset are
+      removed.
+    x-oapi-codegen-extra-tags:
+      db: expires_at
+    x-order: 17
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of media asset creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 18
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last media asset modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 19
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the media asset was deleted. A deleted asset is never returned by the API.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 20

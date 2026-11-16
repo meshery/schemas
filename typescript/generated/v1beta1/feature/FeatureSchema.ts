@@ -268,18 +268,18 @@ const FeatureSchema: Record<string, unknown> = {
                           "WorkspacesInOrganization": "Maximum number of workspaces in an organization; 999999999999 is unlimited.",
                           "ImageSizeInDesign": "Maximum size, in bytes, of an image embedded in a design; 999999999999 is unlimited.",
                           "SizePerDesign": "Maximum size of a single design; 999999999999 is unlimited.",
-                          "BlowhornProfiles": "Maximum number of Blowhorn posting profiles the organization may hold; 999999999999 is unlimited.",
-                          "BlowhornBrowserAutomation": "Blowhorn may publish through browser automation; granted when quantity is greater than 0.",
-                          "BlowhornScheduler": "Blowhorn may run scheduled publishes; granted when quantity is greater than 0.",
-                          "BlowhornDevicesPerSeat": "Maximum number of devices one Blowhorn seat may publish from; 999999999999 is unlimited.",
-                          "BlowhornPlatformLinkedIn": "Blowhorn may publish to LinkedIn; granted when quantity is greater than 0.",
-                          "BlowhornPlatformX": "Blowhorn may publish to X; granted when quantity is greater than 0.",
-                          "BlowhornPlatformReddit": "Blowhorn may publish to Reddit; granted when quantity is greater than 0.",
-                          "BlowhornPlatformHackerNews": "Blowhorn may publish to Hacker News; granted when quantity is greater than 0.",
-                          "BlowhornPlatformSlack": "Blowhorn may publish to Slack; granted when quantity is greater than 0.",
-                          "BlowhornPlatformBluesky": "Blowhorn may publish to Bluesky; granted when quantity is greater than 0.",
-                          "BlowhornPlatformGitHub": "Blowhorn may publish to GitHub; granted when quantity is greater than 0.",
-                          "BlowhornPlatformBlog": "Blowhorn may publish to a blog; granted when quantity is greater than 0."
+                          "BlowhornProfiles": "Maximum number of posting profiles the organization may hold; 999999999999 is unlimited.",
+                          "BlowhornBrowserAutomation": "The client may publish through browser automation; granted when quantity is greater than 0.",
+                          "BlowhornScheduler": "The client may run scheduled publishes; granted when quantity is greater than 0.",
+                          "BlowhornDevicesPerSeat": "Maximum number of devices one seat may publish from; 999999999999 is unlimited.",
+                          "BlowhornPlatformLinkedIn": "The client may publish to LinkedIn; granted when quantity is greater than 0.",
+                          "BlowhornPlatformX": "The client may publish to X; granted when quantity is greater than 0.",
+                          "BlowhornPlatformReddit": "The client may publish to Reddit; granted when quantity is greater than 0.",
+                          "BlowhornPlatformHackerNews": "The client may publish to Hacker News; granted when quantity is greater than 0.",
+                          "BlowhornPlatformSlack": "The client may publish to Slack; granted when quantity is greater than 0.",
+                          "BlowhornPlatformBluesky": "The client may publish to Bluesky; granted when quantity is greater than 0.",
+                          "BlowhornPlatformGitHub": "The client may publish to GitHub; granted when quantity is greater than 0.",
+                          "BlowhornPlatformBlog": "The client may publish to a blog; granted when quantity is greater than 0."
                         }
                       },
                       "quantity": {
@@ -294,29 +294,29 @@ const FeatureSchema: Record<string, unknown> = {
                         "x-order": 5
                       },
                       "created_at": {
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "created_at",
+                          "yaml": "created_at"
+                        },
                         "x-order": 6,
                         "description": "Timestamp when the resource was created.",
                         "x-go-type": "time.Time",
                         "type": "string",
                         "format": "date-time",
                         "x-go-name": "CreatedAt",
-                        "x-oapi-codegen-extra-tags": {
-                          "db": "created_at",
-                          "yaml": "created_at"
-                        },
                         "x-go-type-skip-optional-pointer": true
                       },
                       "updated_at": {
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "updated_at",
+                          "yaml": "updated_at"
+                        },
                         "x-order": 7,
                         "description": "Timestamp when the resource was updated.",
                         "x-go-type": "time.Time",
                         "type": "string",
                         "format": "date-time",
                         "x-go-name": "UpdatedAt",
-                        "x-oapi-codegen-extra-tags": {
-                          "db": "updated_at",
-                          "yaml": "updated_at"
-                        },
                         "x-go-type-skip-optional-pointer": true
                       }
                     }
@@ -594,18 +594,18 @@ const FeatureSchema: Record<string, unknown> = {
                           "WorkspacesInOrganization": "Maximum number of workspaces in an organization; 999999999999 is unlimited.",
                           "ImageSizeInDesign": "Maximum size, in bytes, of an image embedded in a design; 999999999999 is unlimited.",
                           "SizePerDesign": "Maximum size of a single design; 999999999999 is unlimited.",
-                          "BlowhornProfiles": "Maximum number of Blowhorn posting profiles the organization may hold; 999999999999 is unlimited.",
-                          "BlowhornBrowserAutomation": "Blowhorn may publish through browser automation; granted when quantity is greater than 0.",
-                          "BlowhornScheduler": "Blowhorn may run scheduled publishes; granted when quantity is greater than 0.",
-                          "BlowhornDevicesPerSeat": "Maximum number of devices one Blowhorn seat may publish from; 999999999999 is unlimited.",
-                          "BlowhornPlatformLinkedIn": "Blowhorn may publish to LinkedIn; granted when quantity is greater than 0.",
-                          "BlowhornPlatformX": "Blowhorn may publish to X; granted when quantity is greater than 0.",
-                          "BlowhornPlatformReddit": "Blowhorn may publish to Reddit; granted when quantity is greater than 0.",
-                          "BlowhornPlatformHackerNews": "Blowhorn may publish to Hacker News; granted when quantity is greater than 0.",
-                          "BlowhornPlatformSlack": "Blowhorn may publish to Slack; granted when quantity is greater than 0.",
-                          "BlowhornPlatformBluesky": "Blowhorn may publish to Bluesky; granted when quantity is greater than 0.",
-                          "BlowhornPlatformGitHub": "Blowhorn may publish to GitHub; granted when quantity is greater than 0.",
-                          "BlowhornPlatformBlog": "Blowhorn may publish to a blog; granted when quantity is greater than 0."
+                          "BlowhornProfiles": "Maximum number of posting profiles the organization may hold; 999999999999 is unlimited.",
+                          "BlowhornBrowserAutomation": "The client may publish through browser automation; granted when quantity is greater than 0.",
+                          "BlowhornScheduler": "The client may run scheduled publishes; granted when quantity is greater than 0.",
+                          "BlowhornDevicesPerSeat": "Maximum number of devices one seat may publish from; 999999999999 is unlimited.",
+                          "BlowhornPlatformLinkedIn": "The client may publish to LinkedIn; granted when quantity is greater than 0.",
+                          "BlowhornPlatformX": "The client may publish to X; granted when quantity is greater than 0.",
+                          "BlowhornPlatformReddit": "The client may publish to Reddit; granted when quantity is greater than 0.",
+                          "BlowhornPlatformHackerNews": "The client may publish to Hacker News; granted when quantity is greater than 0.",
+                          "BlowhornPlatformSlack": "The client may publish to Slack; granted when quantity is greater than 0.",
+                          "BlowhornPlatformBluesky": "The client may publish to Bluesky; granted when quantity is greater than 0.",
+                          "BlowhornPlatformGitHub": "The client may publish to GitHub; granted when quantity is greater than 0.",
+                          "BlowhornPlatformBlog": "The client may publish to a blog; granted when quantity is greater than 0."
                         }
                       },
                       "quantity": {
@@ -620,29 +620,29 @@ const FeatureSchema: Record<string, unknown> = {
                         "x-order": 5
                       },
                       "created_at": {
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "created_at",
+                          "yaml": "created_at"
+                        },
                         "x-order": 6,
                         "description": "Timestamp when the resource was created.",
                         "x-go-type": "time.Time",
                         "type": "string",
                         "format": "date-time",
                         "x-go-name": "CreatedAt",
-                        "x-oapi-codegen-extra-tags": {
-                          "db": "created_at",
-                          "yaml": "created_at"
-                        },
                         "x-go-type-skip-optional-pointer": true
                       },
                       "updated_at": {
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "updated_at",
+                          "yaml": "updated_at"
+                        },
                         "x-order": 7,
                         "description": "Timestamp when the resource was updated.",
                         "x-go-type": "time.Time",
                         "type": "string",
                         "format": "date-time",
                         "x-go-name": "UpdatedAt",
-                        "x-oapi-codegen-extra-tags": {
-                          "db": "updated_at",
-                          "yaml": "updated_at"
-                        },
                         "x-go-type-skip-optional-pointer": true
                       }
                     }
@@ -979,18 +979,18 @@ const FeatureSchema: Record<string, unknown> = {
               "WorkspacesInOrganization": "Maximum number of workspaces in an organization; 999999999999 is unlimited.",
               "ImageSizeInDesign": "Maximum size, in bytes, of an image embedded in a design; 999999999999 is unlimited.",
               "SizePerDesign": "Maximum size of a single design; 999999999999 is unlimited.",
-              "BlowhornProfiles": "Maximum number of Blowhorn posting profiles the organization may hold; 999999999999 is unlimited.",
-              "BlowhornBrowserAutomation": "Blowhorn may publish through browser automation; granted when quantity is greater than 0.",
-              "BlowhornScheduler": "Blowhorn may run scheduled publishes; granted when quantity is greater than 0.",
-              "BlowhornDevicesPerSeat": "Maximum number of devices one Blowhorn seat may publish from; 999999999999 is unlimited.",
-              "BlowhornPlatformLinkedIn": "Blowhorn may publish to LinkedIn; granted when quantity is greater than 0.",
-              "BlowhornPlatformX": "Blowhorn may publish to X; granted when quantity is greater than 0.",
-              "BlowhornPlatformReddit": "Blowhorn may publish to Reddit; granted when quantity is greater than 0.",
-              "BlowhornPlatformHackerNews": "Blowhorn may publish to Hacker News; granted when quantity is greater than 0.",
-              "BlowhornPlatformSlack": "Blowhorn may publish to Slack; granted when quantity is greater than 0.",
-              "BlowhornPlatformBluesky": "Blowhorn may publish to Bluesky; granted when quantity is greater than 0.",
-              "BlowhornPlatformGitHub": "Blowhorn may publish to GitHub; granted when quantity is greater than 0.",
-              "BlowhornPlatformBlog": "Blowhorn may publish to a blog; granted when quantity is greater than 0."
+              "BlowhornProfiles": "Maximum number of posting profiles the organization may hold; 999999999999 is unlimited.",
+              "BlowhornBrowserAutomation": "The client may publish through browser automation; granted when quantity is greater than 0.",
+              "BlowhornScheduler": "The client may run scheduled publishes; granted when quantity is greater than 0.",
+              "BlowhornDevicesPerSeat": "Maximum number of devices one seat may publish from; 999999999999 is unlimited.",
+              "BlowhornPlatformLinkedIn": "The client may publish to LinkedIn; granted when quantity is greater than 0.",
+              "BlowhornPlatformX": "The client may publish to X; granted when quantity is greater than 0.",
+              "BlowhornPlatformReddit": "The client may publish to Reddit; granted when quantity is greater than 0.",
+              "BlowhornPlatformHackerNews": "The client may publish to Hacker News; granted when quantity is greater than 0.",
+              "BlowhornPlatformSlack": "The client may publish to Slack; granted when quantity is greater than 0.",
+              "BlowhornPlatformBluesky": "The client may publish to Bluesky; granted when quantity is greater than 0.",
+              "BlowhornPlatformGitHub": "The client may publish to GitHub; granted when quantity is greater than 0.",
+              "BlowhornPlatformBlog": "The client may publish to a blog; granted when quantity is greater than 0."
             }
           },
           "quantity": {
@@ -1005,29 +1005,29 @@ const FeatureSchema: Record<string, unknown> = {
             "x-order": 5
           },
           "created_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
             "x-order": 6,
             "description": "Timestamp when the resource was created.",
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
           "updated_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
             "x-order": 7,
             "description": "Timestamp when the resource was updated.",
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -1062,18 +1062,18 @@ const FeatureSchema: Record<string, unknown> = {
           "WorkspacesInOrganization": "Maximum number of workspaces in an organization; 999999999999 is unlimited.",
           "ImageSizeInDesign": "Maximum size, in bytes, of an image embedded in a design; 999999999999 is unlimited.",
           "SizePerDesign": "Maximum size of a single design; 999999999999 is unlimited.",
-          "BlowhornProfiles": "Maximum number of Blowhorn posting profiles the organization may hold; 999999999999 is unlimited.",
-          "BlowhornBrowserAutomation": "Blowhorn may publish through browser automation; granted when quantity is greater than 0.",
-          "BlowhornScheduler": "Blowhorn may run scheduled publishes; granted when quantity is greater than 0.",
-          "BlowhornDevicesPerSeat": "Maximum number of devices one Blowhorn seat may publish from; 999999999999 is unlimited.",
-          "BlowhornPlatformLinkedIn": "Blowhorn may publish to LinkedIn; granted when quantity is greater than 0.",
-          "BlowhornPlatformX": "Blowhorn may publish to X; granted when quantity is greater than 0.",
-          "BlowhornPlatformReddit": "Blowhorn may publish to Reddit; granted when quantity is greater than 0.",
-          "BlowhornPlatformHackerNews": "Blowhorn may publish to Hacker News; granted when quantity is greater than 0.",
-          "BlowhornPlatformSlack": "Blowhorn may publish to Slack; granted when quantity is greater than 0.",
-          "BlowhornPlatformBluesky": "Blowhorn may publish to Bluesky; granted when quantity is greater than 0.",
-          "BlowhornPlatformGitHub": "Blowhorn may publish to GitHub; granted when quantity is greater than 0.",
-          "BlowhornPlatformBlog": "Blowhorn may publish to a blog; granted when quantity is greater than 0."
+          "BlowhornProfiles": "Maximum number of posting profiles the organization may hold; 999999999999 is unlimited.",
+          "BlowhornBrowserAutomation": "The client may publish through browser automation; granted when quantity is greater than 0.",
+          "BlowhornScheduler": "The client may run scheduled publishes; granted when quantity is greater than 0.",
+          "BlowhornDevicesPerSeat": "Maximum number of devices one seat may publish from; 999999999999 is unlimited.",
+          "BlowhornPlatformLinkedIn": "The client may publish to LinkedIn; granted when quantity is greater than 0.",
+          "BlowhornPlatformX": "The client may publish to X; granted when quantity is greater than 0.",
+          "BlowhornPlatformReddit": "The client may publish to Reddit; granted when quantity is greater than 0.",
+          "BlowhornPlatformHackerNews": "The client may publish to Hacker News; granted when quantity is greater than 0.",
+          "BlowhornPlatformSlack": "The client may publish to Slack; granted when quantity is greater than 0.",
+          "BlowhornPlatformBluesky": "The client may publish to Bluesky; granted when quantity is greater than 0.",
+          "BlowhornPlatformGitHub": "The client may publish to GitHub; granted when quantity is greater than 0.",
+          "BlowhornPlatformBlog": "The client may publish to a blog; granted when quantity is greater than 0."
         },
         "description": "Enumeration of feature names that can be granted by a plan. A feature is either a cap, where `quantity` is the maximum and 999999999999 denotes unlimited, or a capability, where any `quantity` greater than 0 grants it. A feature a plan does not list is not granted."
       },
@@ -1281,18 +1281,18 @@ const FeatureSchema: Record<string, unknown> = {
                 "WorkspacesInOrganization": "Maximum number of workspaces in an organization; 999999999999 is unlimited.",
                 "ImageSizeInDesign": "Maximum size, in bytes, of an image embedded in a design; 999999999999 is unlimited.",
                 "SizePerDesign": "Maximum size of a single design; 999999999999 is unlimited.",
-                "BlowhornProfiles": "Maximum number of Blowhorn posting profiles the organization may hold; 999999999999 is unlimited.",
-                "BlowhornBrowserAutomation": "Blowhorn may publish through browser automation; granted when quantity is greater than 0.",
-                "BlowhornScheduler": "Blowhorn may run scheduled publishes; granted when quantity is greater than 0.",
-                "BlowhornDevicesPerSeat": "Maximum number of devices one Blowhorn seat may publish from; 999999999999 is unlimited.",
-                "BlowhornPlatformLinkedIn": "Blowhorn may publish to LinkedIn; granted when quantity is greater than 0.",
-                "BlowhornPlatformX": "Blowhorn may publish to X; granted when quantity is greater than 0.",
-                "BlowhornPlatformReddit": "Blowhorn may publish to Reddit; granted when quantity is greater than 0.",
-                "BlowhornPlatformHackerNews": "Blowhorn may publish to Hacker News; granted when quantity is greater than 0.",
-                "BlowhornPlatformSlack": "Blowhorn may publish to Slack; granted when quantity is greater than 0.",
-                "BlowhornPlatformBluesky": "Blowhorn may publish to Bluesky; granted when quantity is greater than 0.",
-                "BlowhornPlatformGitHub": "Blowhorn may publish to GitHub; granted when quantity is greater than 0.",
-                "BlowhornPlatformBlog": "Blowhorn may publish to a blog; granted when quantity is greater than 0."
+                "BlowhornProfiles": "Maximum number of posting profiles the organization may hold; 999999999999 is unlimited.",
+                "BlowhornBrowserAutomation": "The client may publish through browser automation; granted when quantity is greater than 0.",
+                "BlowhornScheduler": "The client may run scheduled publishes; granted when quantity is greater than 0.",
+                "BlowhornDevicesPerSeat": "Maximum number of devices one seat may publish from; 999999999999 is unlimited.",
+                "BlowhornPlatformLinkedIn": "The client may publish to LinkedIn; granted when quantity is greater than 0.",
+                "BlowhornPlatformX": "The client may publish to X; granted when quantity is greater than 0.",
+                "BlowhornPlatformReddit": "The client may publish to Reddit; granted when quantity is greater than 0.",
+                "BlowhornPlatformHackerNews": "The client may publish to Hacker News; granted when quantity is greater than 0.",
+                "BlowhornPlatformSlack": "The client may publish to Slack; granted when quantity is greater than 0.",
+                "BlowhornPlatformBluesky": "The client may publish to Bluesky; granted when quantity is greater than 0.",
+                "BlowhornPlatformGitHub": "The client may publish to GitHub; granted when quantity is greater than 0.",
+                "BlowhornPlatformBlog": "The client may publish to a blog; granted when quantity is greater than 0."
               }
             },
             "quantity": {
@@ -1307,29 +1307,29 @@ const FeatureSchema: Record<string, unknown> = {
               "x-order": 5
             },
             "created_at": {
+              "x-oapi-codegen-extra-tags": {
+                "db": "created_at",
+                "yaml": "created_at"
+              },
               "x-order": 6,
               "description": "Timestamp when the resource was created.",
               "x-go-type": "time.Time",
               "type": "string",
               "format": "date-time",
               "x-go-name": "CreatedAt",
-              "x-oapi-codegen-extra-tags": {
-                "db": "created_at",
-                "yaml": "created_at"
-              },
               "x-go-type-skip-optional-pointer": true
             },
             "updated_at": {
+              "x-oapi-codegen-extra-tags": {
+                "db": "updated_at",
+                "yaml": "updated_at"
+              },
               "x-order": 7,
               "description": "Timestamp when the resource was updated.",
               "x-go-type": "time.Time",
               "type": "string",
               "format": "date-time",
               "x-go-name": "UpdatedAt",
-              "x-oapi-codegen-extra-tags": {
-                "db": "updated_at",
-                "yaml": "updated_at"
-              },
               "x-go-type-skip-optional-pointer": true
             }
           }

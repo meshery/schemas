@@ -1,0 +1,814 @@
+openapi: 3.0.0
+info:
+  title: MediaAsset
+  description: |
+    OpenAPI schema for media assets - image and video files an organization
+    uploads so content items can post them without a link. A content item
+    refers to an asset by its ID; a download URL is minted only when the
+    file is about to be used and is never stored.
+    Upload flow: `createMediaAsset` records the declared size, type and
+    SHA-256 and answers a short-lived upload URL; the client sends the file
+    to that URL with one `PUT`; `completeMediaAsset` checks the stored bytes
+    against the declaration and makes the asset `ready` (or `rejected`).
+    `getMediaAssetDownload` then answers a short-lived download URL each
+    time the file is needed.
+    Storage: `backend` `r2` stores the bytes in the provider's own private
+    object storage; `gdrive` stores them in the uploading person's Google
+    Drive, through their Google Drive connection. The quota names the
+    backends a provider serves, and a create names one of them: neither
+    is a default. No request or response carries a storage
+    credential, an access token, a bucket name or an object key: an upload
+    or download URL is the only grant, it covers one transfer of one file,
+    and it lapses at its `expiresAt`.
+    Organization scope: every operation but `getMediaAssetContent` acts only
+    in the organization the session resolved to (X-Current-Orgid, then the
+    user's selected organization), and only when the caller is a live member
+    of it. An id that does not name a live media asset of the organization,
+    and a caller who is not a live member of it, receive the same 404, so
+    the existence of another organization's assets is never disclosed.
+    Authorization: media assets are the files of content items, so they take
+    the Content Items keys in the session organization: View Content Items
+    for the reads, the quota and downloads, Create Content Item to create
+    and complete an asset, Edit Content Item to change its retention, and
+    Delete Content Item to delete it. A caller without the key receives a
+    403 before any row is read.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: mediaAssets
+    description: Operations related to media assets.
+
+paths:
+  /api/media-assets:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: List media assets
+      operationId: listMediaAssets
+      description: |
+        Returns a paginated list of the live media assets in the
+        organization of the authenticated session, newest first unless
+        `order` names another column (`createdAt`, `expiresAt`, `bytes`).
+        `search` matches `name`, case-insensitively. Deleted assets are
+        never listed; `expired` and `rejected` assets are listed until they
+        are deleted.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: status
+          in: query
+          required: false
+          description: Filter by status, evaluated at read time (a `ready` asset past `expiresAt` matches `expired`).
+          schema:
+            $ref: "#/components/schemas/MediaAssetStatus"
+      responses:
+        "200":
+          description: Media asset page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaAssetPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: Create a media asset and its upload URL
+      operationId: createMediaAsset
+      description: |
+        Records a new `pending` asset from the declared `contentType`,
+        `bytes` and `sha256`, and answers it with a short-lived upload URL.
+        The client sends the file's bytes to `upload.url` with one request
+        using `upload.method` and exactly the `upload.headers`, before
+        `upload.expiresAt`, then calls `completeMediaAsset`. The server
+        derives `kind` from `contentType` and sets `expiresAt` to the end
+        of the upload window.
+        Refused with 400 when `contentType` is not one the provider accepts
+        (`MediaAssetQuota.contentTypes`), when `bytes` exceeds the
+        per-kind limit (`maxImageBytes`, `maxVideoBytes`), when `backend`
+        is one the provider does not serve, when `gdrive` is named without
+        a `connectionId` or `r2` with one, and when `retainUntil` is not in
+        the future or lies beyond `maxRetentionDays` from now. Refused with
+        409 when the asset would take the organization past `bytesLimit`.
+        A `connectionId` that is not the caller's own live Google Drive
+        connection in the session organization receives 404.
+        Every create is a new asset; nothing is deduplicated by `sha256`. A
+        create that is never completed is reaped when its upload window
+        ends.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MediaAssetPayload"
+      responses:
+        "201":
+          description: Media asset created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaAssetUpload"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+        "502":
+          $ref: "#/components/responses/MeshkitError502"
+
+  /api/media-assets/quota:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: Get the media asset limits and usage of the organization
+      operationId: getMediaAssetQuota
+      description: |
+        Answers the limits `createMediaAsset` and `updateMediaAsset`
+        enforce in the session organization, and how much of its storage
+        is in use. A client reads it before uploading so it refuses an
+        oversized or unsupported file by name instead of meeting a 400.
+      responses:
+        "200":
+          description: Media asset quota
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaAssetQuota"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/media-assets/{mediaAssetId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: Get a media asset by ID
+      operationId: getMediaAsset
+      parameters:
+        - $ref: "#/components/parameters/mediaAssetId"
+      responses:
+        "200":
+          description: Media asset response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaAsset"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: Change how long a media asset is kept
+      operationId: updateMediaAsset
+      description: |
+        Sets `retainUntil`, the only field of an asset that changes after
+        create, for example when the post that uses it is rescheduled. On a
+        `ready` asset `expiresAt` becomes `retainUntil`, so retention can be
+        shortened as well as extended; on a `pending` asset it is recorded
+        and applied when the asset is completed. Refused with 400 when
+        `retainUntil` is not in the future or lies beyond
+        `maxRetentionDays` from now, and with 409 when the asset is
+        `rejected` or `expired`.
+      parameters:
+        - $ref: "#/components/parameters/mediaAssetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MediaAssetUpdatePayload"
+      responses:
+        "200":
+          description: Media asset updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaAsset"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: Delete a media asset
+      operationId: deleteMediaAsset
+      description: |
+        Deletes the asset, whatever its status: from then on it answers 404
+        and no download is minted for it. The stored bytes of an `r2` asset
+        are removed. The file of a `gdrive` asset is the person's and stays
+        in their Drive. Deleting does not check whether a content item
+        still refers to the asset; a content item that does is refused by
+        name when it is posted.
+      parameters:
+        - $ref: "#/components/parameters/mediaAssetId"
+      responses:
+        "204":
+          description: Media asset deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/media-assets/{mediaAssetId}/complete:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: Complete a media asset upload
+      operationId: completeMediaAsset
+      description: |
+        Checks the stored bytes of a `pending` asset against its
+        declaration: the size must equal `bytes`, the type sniffed from the
+        bytes must be `contentType` (the extension and any declared header
+        are never trusted), and the SHA-256 must equal `sha256`. On a match
+        the asset becomes `ready`, `completedAt` is set and `expiresAt`
+        moves to the end of its retention. On a mismatch, or when nothing
+        was uploaded, the asset becomes `rejected` with a
+        `rejectionReason`, its stored bytes are removed, and the call is
+        refused with 409; the client creates a new asset to try again.
+        Completing a `ready` asset answers it unchanged, so a retried
+        completion is safe. Completing a `rejected` or `expired` asset is
+        refused with 409.
+      parameters:
+        - $ref: "#/components/parameters/mediaAssetId"
+      responses:
+        "200":
+          description: Media asset ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaAsset"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+        "502":
+          $ref: "#/components/responses/MeshkitError502"
+
+  /api/media-assets/{mediaAssetId}/download:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: Get a short-lived download URL for a media asset
+      operationId: getMediaAssetDownload
+      description: |
+        Mints a fresh download URL for a `ready` asset, valid for minutes.
+        Call it just before the file is used and never store the answer: a
+        scheduled post asks for a new URL when it runs. For `r2` the URL is
+        a signed URL on the provider's object storage; for `gdrive` it is a
+        signed `getMediaAssetContent` URL on the provider, which relays the
+        bytes from the person's Drive so that no Google token leaves the
+        provider. A `pending`, `rejected` or `expired` asset is refused
+        with 409. The reader checks the downloaded bytes against `bytes`
+        and `sha256` before using them.
+      parameters:
+        - $ref: "#/components/parameters/mediaAssetId"
+      responses:
+        "200":
+          description: Media asset download
+          headers:
+            Cache-Control:
+              description: Always `no-store`; the answer is a grant and must not be cached.
+              schema:
+                type: string
+                maxLength: 64
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaAssetTransfer"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/media-assets/{mediaAssetId}/content:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - mediaAssets
+      summary: Download the bytes of a Drive-backed media asset
+      operationId: getMediaAssetContent
+      description: |
+        Streams the bytes of a `ready` `gdrive` asset from the person's
+        Google Drive. This route is only ever reached through a URL that
+        `getMediaAssetDownload` minted: it takes no session, and the
+        `expires` and `signature` it carries are the whole grant, valid
+        for that one asset until `expires`. The response `Content-Type` is
+        the asset's `contentType`. A missing, altered or lapsed signature
+        is refused with 403; an asset that was deleted, expired or is not
+        `gdrive` since the URL was minted receives 404; a Drive file that
+        was removed, moved out of reach or whose grant was revoked is
+        refused with 502.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/mediaAssetId"
+        - name: expires
+          in: query
+          required: true
+          description: Time the grant lapses, in seconds since the Unix epoch.
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+        - name: signature
+          in: query
+          required: true
+          description: Server-computed signature over the asset ID and `expires`. Opaque to clients.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 512
+            pattern: '^[A-Za-z0-9_-]+$'
+      responses:
+        "200":
+          description: Media asset bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
+        "500":
+          $ref: "#/components/responses/500"
+        "502":
+          $ref: "#/components/responses/MeshkitError502"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    409:
+      description: >
+        Conflict - the asset is not in a status the operation accepts, the
+        uploaded bytes did not match the declared size, type or SHA-256 (or
+        nothing was uploaded), or the asset would take the organization
+        past its storage limit
+      content:
+        text/plain:
+          schema:
+            type: string
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+    MeshkitError502:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError502"
+
+  parameters:
+    mediaAssetId:
+      name: mediaAssetId
+      in: path
+      description: Media asset ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+
+  schemas:
+    MediaAsset:
+      $ref: "./media_asset.yaml"
+
+    MediaAssetBackend:
+      type: string
+      description: >
+        Where the asset's bytes are stored. `r2` is the provider's own
+        private object storage; `gdrive` is the uploading person's Google
+        Drive, reached through their Google Drive connection. Neither is a
+        default: a provider states the ones it serves in
+        `MediaAssetQuota.backends`, and a create names one of them. A reader
+        never branches on it: `getMediaAssetDownload` answers the same shape
+        for both.
+      enum:
+        - r2
+        - gdrive
+      x-enum-varnames:
+        - MediaAssetBackendR2
+        - MediaAssetBackendGdrive
+
+    MediaAssetKind:
+      type: string
+      description: Whether the asset is an image or a video. Derived by the server from `contentType`.
+      enum:
+        - image
+        - video
+      x-enum-varnames:
+        - MediaAssetKindImage
+        - MediaAssetKindVideo
+
+    MediaAssetContentType:
+      type: string
+      description: >
+        Media type of the file, from a closed allowlist. The server sniffs
+        the stored bytes on completion and rejects an upload whose real
+        type differs. A provider may accept fewer types than this list
+        (`MediaAssetQuota.contentTypes`).
+      enum:
+        - image/png
+        - image/jpeg
+        - image/gif
+        - image/webp
+        - image/heic
+        - video/mp4
+        - video/quicktime
+        - video/webm
+      x-enum-varnames:
+        - MediaAssetContentTypeImagePng
+        - MediaAssetContentTypeImageJpeg
+        - MediaAssetContentTypeImageGif
+        - MediaAssetContentTypeImageWebp
+        - MediaAssetContentTypeImageHeic
+        - MediaAssetContentTypeVideoMp4
+        - MediaAssetContentTypeVideoQuicktime
+        - MediaAssetContentTypeVideoWebm
+
+    MediaAssetStatus:
+      type: string
+      description: >
+        Lifecycle of the asset. `pending` from create until it is completed;
+        `ready` once the stored bytes matched the declaration; `rejected`
+        when they did not (see `rejectionReason`); `expired` once
+        `expiresAt` passed, whether the upload was never completed or the
+        retention of a `ready` asset ended. Evaluated when the asset is
+        read.
+      enum:
+        - pending
+        - ready
+        - rejected
+        - expired
+      x-enum-varnames:
+        - MediaAssetStatusPending
+        - MediaAssetStatusReady
+        - MediaAssetStatusRejected
+        - MediaAssetStatusExpired
+
+    MediaAssetRejectionReason:
+      type: string
+      description: >
+        Why `completeMediaAsset` rejected the upload: `missing` when no
+        bytes were stored, `size` when their size differs from `bytes`,
+        `type` when the sniffed type differs from `contentType`, `checksum`
+        when their SHA-256 differs from `sha256`. Set only on a `rejected`
+        asset.
+      enum:
+        - missing
+        - size
+        - type
+        - checksum
+      x-enum-varnames:
+        - MediaAssetRejectionReasonMissing
+        - MediaAssetRejectionReasonSize
+        - MediaAssetRejectionReasonType
+        - MediaAssetRejectionReasonChecksum
+
+    MediaAssetPayload:
+      type: object
+      description: |
+        Payload for creating a media asset. Contains only client-settable
+        fields; the owning `organizationId` and `createdBy` (from the
+        session), `kind` (derived from `contentType`), `status`,
+        `rejectionReason`, `externalId`, `completedAt`, `expiresAt` and the
+        timestamps are server-owned and not accepted.
+      additionalProperties: false
+      required:
+        - contentType
+        - bytes
+        - sha256
+        - locationStripped
+        - backend
+      properties:
+        contentType:
+          $ref: "#/components/schemas/MediaAssetContentType"
+        bytes:
+          type: integer
+          format: int64
+          description: Size of the file in bytes. Must not exceed the quota's limit for its kind.
+          minimum: 1
+          maximum: 5368709120
+        sha256:
+          type: string
+          description: Lowercase hex SHA-256 of the exact bytes that will be uploaded.
+          minLength: 64
+          maxLength: 64
+          pattern: '^[0-9a-f]{64}$'
+        name:
+          type: string
+          description: Display name of the file, typically its original file name.
+          minLength: 1
+          maxLength: 255
+        locationStripped:
+          type: boolean
+          description: >
+            Whether the client removed location metadata (EXIF and XMP GPS,
+            maker notes, device serial numbers) from the file before
+            hashing and uploading it. Recorded as sent.
+        backend:
+          $ref: "#/components/schemas/MediaAssetBackend"
+          description: >
+            Where to store the file. Required, with no default: the client
+            picks one of the backends `getMediaAssetQuota` lists in
+            `backends`, and a create naming any other answers `400`.
+        connectionId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: >
+            The caller's own live Google Drive connection in the session
+            organization. Required when `backend` is `gdrive`, refused
+            otherwise.
+          x-go-name: ConnectionID
+          x-oapi-codegen-extra-tags:
+            json: "connectionId,omitempty"
+        retainUntil:
+          type: string
+          format: date-time
+          description: >
+            Time the asset must stay downloadable until, for example a
+            little after the post that uses it is scheduled. Omitted, the
+            organization's default retention applies from completion.
+
+    MediaAssetUpdatePayload:
+      type: object
+      description: Payload for changing how long a media asset is kept. Retention is the only field that changes after create.
+      additionalProperties: false
+      required:
+        - retainUntil
+      properties:
+        retainUntil:
+          type: string
+          format: date-time
+          description: New time the asset must stay downloadable until. Must be in the future and within `maxRetentionDays` from now.
+
+    MediaAssetTransfer:
+      type: object
+      description: >
+        A short-lived grant to move one file's bytes: send one request with
+        `method` to `url` carrying exactly `headers`, before `expiresAt`.
+        The URL is the only credential, it covers this one file, and it
+        must be treated as a secret: never store it, log it or put it in a
+        content item.
+      additionalProperties: false
+      required:
+        - method
+        - url
+        - headers
+        - expiresAt
+      properties:
+        method:
+          type: string
+          description: HTTP method to use. `PUT` for an upload, `GET` for a download.
+          enum:
+            - PUT
+            - GET
+          x-enum-casing-exempt: true
+          x-enum-varnames:
+            - MediaAssetTransferMethodPut
+            - MediaAssetTransferMethodGet
+        url:
+          type: string
+          format: uri
+          description: Absolute HTTPS URL to send the request to.
+          maxLength: 4096
+        headers:
+          type: object
+          description: >
+            Headers the request must carry, verbatim (for an upload, at
+            least `Content-Type`, and any integrity header the signature
+            binds). Empty when none are needed. Never contains an
+            authorization header.
+          additionalProperties:
+            type: string
+            maxLength: 1024
+          x-go-type: map[string]string
+        expiresAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Time the URL stops working.
+
+    MediaAssetUpload:
+      type: object
+      description: "Answer to `createMediaAsset`: the new `pending` asset and the grant to upload its bytes."
+      additionalProperties: false
+      required:
+        - mediaAsset
+        - upload
+      properties:
+        mediaAsset:
+          $ref: "#/components/schemas/MediaAsset"
+        upload:
+          $ref: "#/components/schemas/MediaAssetTransfer"
+
+    MediaAssetQuota:
+      type: object
+      description: The media asset limits of the session organization and its current storage use.
+      additionalProperties: false
+      required:
+        - backends
+        - contentTypes
+        - maxImageBytes
+        - maxVideoBytes
+        - uploadWindowSeconds
+        - defaultRetentionDays
+        - maxRetentionDays
+        - bytesLimit
+        - bytesUsed
+      properties:
+        backends:
+          type: array
+          description: >
+            Backends this provider serves for the organization, and the only
+            statement of what it serves. A create must name one of them in
+            `backend` (there is no default); naming another is refused with
+            400.
+          items:
+            $ref: "#/components/schemas/MediaAssetBackend"
+        contentTypes:
+          type: array
+          description: Content types this provider accepts.
+          items:
+            $ref: "#/components/schemas/MediaAssetContentType"
+        maxImageBytes:
+          type: integer
+          format: int64
+          description: Largest image a create accepts, in bytes.
+          minimum: 1
+          maximum: 5368709120
+        maxVideoBytes:
+          type: integer
+          format: int64
+          description: Largest video a create accepts, in bytes.
+          minimum: 1
+          maximum: 5368709120
+        uploadWindowSeconds:
+          type: integer
+          description: How long a `pending` asset waits for its upload and completion before it expires, in seconds.
+          minimum: 60
+          maximum: 604800
+        defaultRetentionDays:
+          type: integer
+          description: Days a `ready` asset is kept after completion when no `retainUntil` was set.
+          minimum: 1
+          maximum: 3650
+        maxRetentionDays:
+          type: integer
+          description: Furthest `retainUntil` may lie from now, in days.
+          minimum: 1
+          maximum: 3650
+        bytesLimit:
+          type: integer
+          format: int64
+          description: Total bytes the organization's live `pending` and `ready` assets may hold. Null when the organization has no storage limit.
+          minimum: 0
+          nullable: true
+        bytesUsed:
+          type: integer
+          format: int64
+          description: >
+            Total bytes of the organization's live `pending` and `ready`
+            assets. Null when it could not be measured, which must be
+            presented as unknown; a number, including 0, is a measurement.
+          minimum: 0
+          nullable: true
+
+    MediaAssetPage:
+      type: object
+      description: Paginated collection of media assets.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        mediaAssets:
+          type: array
+          items:
+            $ref: "#/components/schemas/MediaAsset"
+            x-go-type: MediaAsset
+          description: Media assets included on this page of results.

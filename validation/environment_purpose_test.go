@@ -64,8 +64,8 @@ func TestEnvironmentPayloadPurposeIsNonPrivileged(t *testing.T) {
 		t.Fatalf("EnvironmentPayload.purpose must reference EnvironmentPayloadPurpose, got %v", ref)
 	}
 	gotEnum := stringSliceOf(mustLookup(t, doc, "components", "schemas", "EnvironmentPayloadPurpose", "enum"))
-	if strings.Join(gotEnum, ",") != "user,profile" {
-		t.Errorf("EnvironmentPayloadPurpose enum = %v, want exactly [user profile]; "+
+	if strings.Join(gotEnum, ",") != "user" {
+		t.Errorf("EnvironmentPayloadPurpose enum = %v, want exactly [user]; "+
 			"a privileged purpose must never be client-settable", gotEnum)
 	}
 }
@@ -108,7 +108,7 @@ func TestEnvironmentEntityPurposeShape(t *testing.T) {
 	}
 
 	gotEnum := stringSliceOf(mustLookup(t, purpose, "enum"))
-	wantEnum := []string{"user", "administrative", "profile"}
+	wantEnum := []string{"user", "administrative"}
 	if strings.Join(gotEnum, ",") != strings.Join(wantEnum, ",") {
 		t.Errorf("purpose enum = %v, want %v in that order - x-enum-varnames is "+
 			"positional, so reordering silently renames the generated constants",

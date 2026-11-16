@@ -581,6 +581,11 @@ export interface components {
                  * @description SQL null Timestamp to handle null values of time.
                  */
                 deleted_at?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                 */
+                organizationId?: string;
                 /** @description Associated environments for this connection */
                 environments?: {
                     /**
@@ -913,6 +918,11 @@ export interface components {
                      * @description SQL null Timestamp to handle null values of time.
                      */
                     deleted_at?: string;
+                    /**
+                     * Format: uuid
+                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                     */
+                    organizationId?: string;
                     /** @description Associated environments for this connection */
                     environments?: {
                         /**
@@ -1664,6 +1674,11 @@ export interface components {
                      * @description SQL null Timestamp to handle null values of time.
                      */
                     deleted_at?: string;
+                    /**
+                     * Format: uuid
+                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                     */
+                    organizationId?: string;
                     /** @description Associated environments for this connection */
                     environments?: {
                         /**
@@ -2016,6 +2031,11 @@ export interface components {
                          * @description SQL null Timestamp to handle null values of time.
                          */
                         deleted_at?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                         */
+                        organizationId?: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -2782,6 +2802,11 @@ export interface components {
              * @description SQL null Timestamp to handle null values of time.
              */
             deleted_at?: string;
+            /**
+             * Format: uuid
+             * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+             */
+            organizationId?: string;
             /** @description Associated environments for this connection */
             environments?: {
                 /**
@@ -2931,6 +2956,11 @@ export interface components {
                  * @description SQL null Timestamp to handle null values of time.
                  */
                 deleted_at?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                 */
+                organizationId?: string;
                 /** @description Associated environments for this connection */
                 environments?: {
                     /**
@@ -3287,9 +3317,9 @@ export interface components {
                 deletedAt?: string | null;
                 /**
                  * Format: uuid
-                 * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                 * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                  */
-                organizationId?: string;
+                organizationId: string;
                 /** @description Associated environments for this connection */
                 environments?: {
                     /**
@@ -3342,18 +3372,18 @@ export interface components {
                      */
                     deletedAt?: string | null;
                     /**
-                     * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                     * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                      *
                      *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                      *
                      *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                      *
-                     *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                     *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                      *
                      *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                      * @enum {string}
                      */
-                    purpose?: "user" | "administrative" | "profile";
+                    purpose?: "user" | "administrative";
                 }[];
                 /**
                  * @description Specifies the version of the schema used for the definition.
@@ -3594,6 +3624,11 @@ export interface components {
                          * @description SQL null Timestamp to handle null values of time.
                          */
                         deleted_at?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                         */
+                        organizationId?: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -4509,6 +4544,11 @@ export interface operations {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -4876,6 +4916,11 @@ export interface operations {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -5312,6 +5357,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -6145,6 +6195,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -7347,6 +7402,11 @@ export interface operations {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -7716,6 +7776,11 @@ export interface operations {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -8117,6 +8182,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -8952,6 +9022,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -9783,6 +9858,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -10616,6 +10696,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -11444,6 +11529,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -12383,9 +12473,9 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                          */
-                        organizationId?: string;
+                        organizationId: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -12438,18 +12528,18 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative" | "profile";
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -12676,6 +12766,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -13675,9 +13770,9 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                          */
-                        organizationId?: string;
+                        organizationId: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -13730,18 +13825,18 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative" | "profile";
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -13876,6 +13971,11 @@ export interface operations {
                              * @description SQL null Timestamp to handle null values of time.
                              */
                             deleted_at?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                             */
+                            organizationId?: string;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -14247,6 +14347,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**

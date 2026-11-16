@@ -60,6 +60,12 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
+      - name: Run generated-output guard tests
+        run: make test-generated-outputs
+
+      - name: Generate Go models
+        run: make generate-golang
+
       - name: Run schema guard tests
         run: go test ./validation/... ./models/...
 

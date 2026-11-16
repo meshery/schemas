@@ -39,6 +39,28 @@ make audit-schemas-style-full \
 
 Do not add new entries to the baseline by hand - every entry must correspond to a real audit finding that is deferred to a Phase 3 migration.
 
+## Environment connection response types
+
+`getEnvironmentConnections` (`GET /api/environments/{environmentId}/connections`)
+uses the canonical v1beta3 `Connection` response schema for each item in
+`EnvironmentConnectionsPage.connections`, matching the items returned by
+`getConnections`. Consumers can use `GetEnvironmentConnectionsApiResponse` from
+`@meshery/schemas/cloudApi` or `@meshery/schemas/mesheryApi` to read typed connection
+fields such as `id`, `name`, and the connection-status union. The pagination
+envelope retains `page`, `pageSize`, `totalCount`, and `connections`.
+
+The array's `x-go-type` preserves the existing Go map representation because the
+Go `connection` package already imports `environment`; importing it in the
+opposite direction would create a package cycle. TypeScript follows `items.$ref`.
+
+This listing is distinct from `EnvironmentConnectionMappingPage`, whose items
+describe environment-to-connection junction records for assignment operations.
+Run `make test-rtk` to bundle the OpenAPI specs and check schema
+reuse and compile a consumer of freshly generated RTK response types, including
+rejected invalid IDs, names, statuses, and unknown properties. Running
+`node --test tests/environment-connections-response.test.js` directly needs the
+bundled specs built first.
+
 ## Consumer audit
 
 The consumer audit joins the schemas endpoint index against the routers and RTK Query clients of the downstream repos, producing a per-endpoint coverage and drift report. Three parsers are registered:
@@ -100,6 +122,8 @@ If the secret is ever removed or becomes under-scoped, `actions/checkout@v7` rec
 ## Python client generation (pilot, issue #1240)
 
 Typed Python clients are generated from the already-bundled `_openapi_build` specs with [`openapi-python-client`](https://github.com/openapi-generators/openapi-python-client), pinned to an exact version in `build/lib/config.js` (`config.python`) together with the `ruff` version that runs its post-processing (fix + format), so committed output reproduces byte-for-byte. That object is the single source of truth for both pins, the pilot scope, and the warning allow-list; the CI install steps read the pins from it rather than duplicating them, and `build/generate-python.js` refuses to run against any other generator or ruff version.
+
+The full Meshery bundle preserves component references for `v1alpha1/controllers_config`. Its GET and PUT responses share `MesheryOperatorConfig`; expanding those references duplicates nested model names in `openapi-python-client` 0.29.1 and silently omits both `200` response parsers. Other construct bundles remain dereferenced because component names can overlap across versions. If another active controllers-config version is added, version-scope its components before merging it alongside these references; merged component names currently use the construct title only.
 
 - **Pilot scope:** `config.python.pilotPackages` (currently `v1beta2/key` - the current canonical-casing key construct; `v1beta1/key` is `x-deprecated` and excluded from the merged bundles, so it is not piloted). `build/generate-python.js` resolves the pilot through the shared `build/lib/config.js` discovery and requires `bundle-openapi` first, like the other generators.
 - **Layout:** one `meshery-schemas` distribution under `python/generated/` (hatchling build, `src/` layout). `pyproject.toml` and `src/meshery_schemas/__init__.py` are hand-maintained scaffolding; each pilot construct lands as a generated subpackage (`src/meshery_schemas/key/`, PEP 561 `py.typed` included). The pinned generator cannot emit a hatchling project itself, so generation runs with `--meta none` into a temp staging dir and the script assembles the tree. Never hand-edit the generated `src/meshery_schemas/<construct>/` subpackages or `.python-gen-manifest.json` - automation owns them on `master`, same as `models/` and `typescript/generated/`.

@@ -21,7 +21,11 @@ export interface paths {
          * Register a new connection
          * @description Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.
          *
-         *     Desktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on sign-in with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.machineId`): registering the same machine again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `machineId` is refused with `400`. The kind names the connection type, never the product that runs on the machine.
+         *     Every connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body. When the session names none, the server may use the caller's only organization (Meshery Cloud: the only live organization the caller belongs to, else the only one of those the caller owns); it must not guess between several, and answers 400 instead.
+         *
+         *     Desktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.
+         *
+         *     A `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. One sign-in can back one install's connections in several organizations, so a token is revoked only once no live connection of the same owner still links it: removing or superseding one organization's connection must not sign the install out of another. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.
          */
         post: operations["registerConnection"];
         delete?: never;
@@ -84,13 +88,13 @@ export interface paths {
         get: operations["getConnectionById"];
         /**
          * Update a connection
-         * @description Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct.
+         * @description Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct. `organizationId` is not in the body. The server keeps the organization assigned at registration.
          */
         put: operations["updateConnection"];
         post?: never;
         /**
          * Delete a connection
-         * @description Delete a specific connection
+         * @description Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token, unless another live connection of the same owner still links it.
          */
         delete: operations["deleteConnection"];
         options?: never;
@@ -138,7 +142,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/integrations/connections/desktop/{machineId}": {
+    "/api/integrations/connections/desktop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the organization's desktop connections
+         * @description Returns every live `desktop` connection in the session organization, whoever registered it, as a summary: `id`, `name`, `kind`, `owner`, `status`, `organizationId` and `lastSeenAt` only. Any live member of the organization may read it, so members can see which computers share its work; a guest session cannot. Servers must never include the connection's credential, metadata (beyond `lastSeenAt`), URL or description here: the full connection stays readable only by its owner through `getConnections`. `status` follows the heartbeat rule of `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes reads `disconnected`). A caller who is not a live member of the session organization receives `404`.
+         */
+        get: operations["getDesktopConnectionsOfOrganization"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/connections/desktop/{installationId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -150,7 +174,7 @@ export interface paths {
         post?: never;
         /**
          * Deregister a desktop app install
-         * @description Delete the caller's `desktop` connection whose `metadata.machineId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found.
+         * @description Delete the caller's `desktop` connection whose `metadata.installationId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. An install registers one connection per organization, so with `X-Current-Orgid` naming an organization the server must delete only the install's connection in that organization and leave its connections in other organizations live; this is how an install releases the organization it is leaving when it switches to another. Without the header (or with the all-organizations value `all`) the server deletes the install's connections in every organization. When nothing matches, the server answers 404 and revokes nothing. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`) unless a live connection of the same owner still links it: the token still authenticates that connection.
          */
         delete: operations["deregisterDesktopConnection"];
         options?: never;
@@ -169,7 +193,7 @@ export interface paths {
         put?: never;
         /**
          * Record a connection heartbeat
-         * @description Mark the caller's connection as alive. Servers implementing this contract must set `metadata.lastSeenAt` to the current time and, when the connection is `disconnected`, set its status back to `connected`. Servers must report a connection whose `metadata.lastSeenAt` is older than 3 minutes as `disconnected` until its next heartbeat. The request has no body, so a heartbeat cannot change anything else about the connection.
+         * @description Mark the caller's connection as alive. Servers implementing this contract must set `metadata.lastSeenAt` to the current time and, when the connection is `disconnected`, set its status back to `connected`. Servers must report a connection whose `metadata.lastSeenAt` is older than 3 minutes as `disconnected` until its next heartbeat. The request has no body, so a heartbeat cannot change anything else about the connection. When the connection's `metadata.clientName` and `metadata.appVersion`, as stored by the latest registration (which every connect makes before its first heartbeat), fall below the server's minimum version for that client, servers must answer `426` with a `ClientUpgradeRequiredError` body and set the connection to `maintenance` instead of recording the heartbeat.
          */
         post: operations["recordConnectionHeartbeat"];
         delete?: never;
@@ -553,9 +577,9 @@ export interface components {
             deletedAt?: string | null;
             /**
              * Format: uuid
-             * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+             * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
              */
-            organizationId?: string;
+            organizationId: string;
             /** @description Associated environments for this connection */
             environments?: {
                 /**
@@ -608,18 +632,18 @@ export interface components {
                  */
                 deletedAt?: string | null;
                 /**
-                 * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                 * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                  *
                  *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                  *
                  *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                  *
-                 *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                 *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                  *
                  *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                  * @enum {string}
                  */
-                purpose?: "user" | "administrative" | "profile";
+                purpose?: "user" | "administrative";
             }[];
             /**
              * @description Specifies the version of the schema used for the definition.
@@ -920,6 +944,73 @@ export interface components {
                 }[];
             };
         };
+        /** @description Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`. */
+        ConnectionSummary: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description Connection name. */
+            name: string;
+            /** @description Connection kind, for example `desktop`. */
+            kind: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            owner?: string;
+            /** @description Connection status as read, for example `connected` or `disconnected`. */
+            status: string;
+            /**
+             * Format: date-time
+             * @description Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+             */
+            lastSeenAt?: string | null;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            readonly organizationId: string;
+        };
+        /** @description Page of connection summaries. */
+        ConnectionSummaryPage: {
+            /** @description Connection summaries on this page. */
+            connections: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /** @description Connection name. */
+                name: string;
+                /** @description Connection kind, for example `desktop`. */
+                kind: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                owner?: string;
+                /** @description Connection status as read, for example `connected` or `disconnected`. */
+                status: string;
+                /**
+                 * Format: date-time
+                 * @description Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+                 */
+                lastSeenAt?: string | null;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                readonly organizationId: string;
+            }[];
+            /** @description Total number of connections on all pages. */
+            totalCount: number;
+            /** @description Current page number. */
+            page: number;
+            /** @description Number of elements per page. */
+            pageSize: number;
+        };
         /** @description Represents a page of connections with meta information about connections count */
         ConnectionPage: {
             /** @description List of connections on this page */
@@ -1197,9 +1288,9 @@ export interface components {
                 deletedAt?: string | null;
                 /**
                  * Format: uuid
-                 * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                 * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                  */
-                organizationId?: string;
+                organizationId: string;
                 /** @description Associated environments for this connection */
                 environments?: {
                     /**
@@ -1252,18 +1343,18 @@ export interface components {
                      */
                     deletedAt?: string | null;
                     /**
-                     * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                     * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                      *
                      *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                      *
                      *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                      *
-                     *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                     *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                      *
                      *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                      * @enum {string}
                      */
-                    purpose?: "user" | "administrative" | "profile";
+                    purpose?: "user" | "administrative";
                 }[];
                 /**
                  * @description Specifies the version of the schema used for the definition.
@@ -1290,18 +1381,31 @@ export interface components {
                 [key: string]: number;
             };
         };
-        /** @description Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key and the `machineId` path parameter. */
-        DesktopMachineId: string;
-        /** @description Metadata of a `desktop` connection: a desktop app install that registered itself on sign-in. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `machineId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins. */
+        /** @description Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+        DesktopInstallationId: string;
+        /** @description Metadata of a `desktop` connection: a desktop app install that registered itself on every connect to Cloud. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `installationId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins. */
         DesktopConnectionMetadata: {
-            /** @description Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key. */
-            machineId: string;
+            /** @description Stable identifier of a desktop app install: generated once on the install's first launch (a UUID is recommended), kept with the app's local state, and never derived from the host name, a process id or a hardware identifier. A reinstall that discards local state is a new install. It is the install part of the deduplication key. */
+            installationId: string;
+            /** @description Stable identifier of the computer the install runs on, shared by every install on that computer whoever signs in: the lowercase hex SHA-256 digest of a fixed, client-defined salt followed by the operating system's hardware identifier (for example the platform UUID on macOS). Clients must send only this digest, never the raw hardware identifier or a serial number. Absent when the client cannot read a hardware identifier. */
+            computerId?: string;
             /** @description Host name of the machine. */
             hostname?: string;
             /** @description Operating system, for example `macos`. */
             os?: string;
-            /** @description Version of the desktop app. */
+            /** @description Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`. */
             appVersion?: string;
+            /** @description Identifier of the desktop app, for example its product name, lowercase. A value, never a kind: it selects the server's minimum version for this client. */
+            clientName?: string;
+            /** @description Source revision the desktop app was built from. */
+            buildSha?: string;
+            /** @description Operating system version, for example `26.0.1`. */
+            osVersion?: string;
+            /**
+             * Format: uuid
+             * @description Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token, unless another live connection of the same owner still links it. A value sent by the client is ignored.
+             */
+            tokenId?: string;
             /**
              * Format: date-time
              * @description Server time of the last registration or heartbeat.
@@ -1336,7 +1440,7 @@ export interface components {
              */
             mode?: "operator" | "embedded";
         };
-        /** @description Payload for creating or updating a connection */
+        /** @description Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization. */
         ConnectionPayload: {
             /**
              * Format: uuid
@@ -1851,6 +1955,31 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+        MeshkitError429: {
+            headers: {
+                /** @description Number of seconds the caller must wait before retrying. */
+                "Retry-After": number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
         /** @description Conflict */
         MeshkitError409: {
             headers: {
@@ -1894,8 +2023,8 @@ export interface components {
         search: string;
         /** @description Sort order */
         order: string;
-        /** @description Stable per-install machine identifier from `metadata.machineId`. */
-        machineId: string;
+        /** @description Installation identifier from `metadata.installationId`. */
+        installationId: string;
         /** @description Organization ID to scope the request. */
         orgIdQuery: string;
     };
@@ -2217,9 +2346,9 @@ export interface operations {
                             deletedAt?: string | null;
                             /**
                              * Format: uuid
-                             * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                             * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                              */
-                            organizationId?: string;
+                            organizationId: string;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -2272,18 +2401,18 @@ export interface operations {
                                  */
                                 deletedAt?: string | null;
                                 /**
-                                 * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                                 * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                                  *
                                  *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                                  *
                                  *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                                  *
-                                 *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                                 *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                                  *
                                  *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                                  * @enum {string}
                                  */
-                                purpose?: "user" | "administrative" | "profile";
+                                purpose?: "user" | "administrative";
                             }[];
                             /**
                              * @description Specifies the version of the schema used for the definition.
@@ -2336,7 +2465,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Organization the connection is registered in. Required for kind `desktop`; ignored for other kinds. */
+                /** @description Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400. */
                 "X-Current-Orgid"?: string;
             };
             path?: never;
@@ -2827,9 +2956,9 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                          */
-                        organizationId?: string;
+                        organizationId: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -2882,18 +3011,18 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative" | "profile";
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -3191,9 +3320,9 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                          */
-                        organizationId?: string;
+                        organizationId: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -3246,18 +3375,18 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative" | "profile";
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -3305,6 +3434,58 @@ export interface operations {
             /** @description Conflict */
             409: {
                 headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description The client's version is below the provider's minimum for that client. The client must update before it can register or keep a connection alive; the body names the minimum and where to get an update. */
+            426: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code allocated by the emitting service; not a stable part of this contract. */
+                        code?: string;
+                        /** @description Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`. */
+                        compatibility: {
+                            /** @description Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it. */
+                            clientName: string;
+                            /** @description The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`. */
+                            clientVersion: string;
+                            /** @description Oldest client version the provider accepts for this client. Absent when the provider sets no minimum. */
+                            minimumVersion?: string;
+                            /** @description True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum. */
+                            compatible: boolean;
+                            /** @description Where the client can get an update, when the provider knows one. */
+                            upgradeUrl?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3754,9 +3935,9 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                          */
-                        organizationId?: string;
+                        organizationId: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -3809,18 +3990,18 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative" | "profile";
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -4362,9 +4543,9 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                          */
-                        organizationId?: string;
+                        organizationId: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -4417,18 +4598,18 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative" | "profile";
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -4862,9 +5043,9 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                          */
-                        organizationId?: string;
+                        organizationId: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -4917,18 +5098,18 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative" | "profile";
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -5032,13 +5213,115 @@ export interface operations {
             };
         };
     };
+    getDesktopConnectionsOfOrganization: {
+        parameters: {
+            query?: {
+                /** @description Page number */
+                page?: number;
+                /** @description Number of items per page */
+                pageSize?: number;
+                /** @description Only connections registered by this user. */
+                owner?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Desktop connections of the organization */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Connection summaries on this page. */
+                        connections: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /** @description Connection name. */
+                            name: string;
+                            /** @description Connection kind, for example `desktop`. */
+                            kind: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            owner?: string;
+                            /** @description Connection status as read, for example `connected` or `disconnected`. */
+                            status: string;
+                            /**
+                             * Format: date-time
+                             * @description Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+                             */
+                            lastSeenAt?: string | null;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            readonly organizationId: string;
+                        }[];
+                        /** @description Total number of connections on all pages. */
+                        totalCount: number;
+                        /** @description Current page number. */
+                        page: number;
+                        /** @description Number of elements per page. */
+                        pageSize: number;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
     deregisterDesktopConnection: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Organization whose connection for this install is deleted. Absent, or `all`, deletes the install's connections in every organization. A value that is neither an organization id nor `all` is refused with 400. An organization id where the caller has no connection for this install deletes nothing and is 404. Membership is not checked: a non-member with no connection there gets the same 404, so the response does not disclose membership, and a connection the caller still owns in an organization it has left is deleted (204). The schema is a plain string, not `format: uuid` as on `registerConnection`, because `all` is a legal value here. */
+                "X-Current-Orgid"?: string;
+            };
             path: {
-                /** @description Stable per-install machine identifier from `metadata.machineId`. */
-                machineId: string;
+                /** @description Installation identifier from `metadata.installationId`. */
+                installationId: string;
             };
             cookie?: never;
         };
@@ -5050,6 +5333,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
@@ -5067,6 +5359,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -5372,9 +5689,9 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
                          */
-                        organizationId?: string;
+                        organizationId: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -5427,18 +5744,18 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative" | "profile";
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -5472,6 +5789,58 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description The client's version is below the provider's minimum for that client. The client must update before it can register or keep a connection alive; the body names the minimum and where to get an update. */
+            426: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code allocated by the emitting service; not a stable part of this contract. */
+                        code?: string;
+                        /** @description Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`. */
+                        compatibility: {
+                            /** @description Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it. */
+                            clientName: string;
+                            /** @description The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`. */
+                            clientVersion: string;
+                            /** @description Oldest client version the provider accepts for this client. Absent when the provider sets no minimum. */
+                            minimumVersion?: string;
+                            /** @description True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum. */
+                            compatible: boolean;
+                            /** @description Where the client can get an update, when the provider knows one. */
+                            upgradeUrl?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
