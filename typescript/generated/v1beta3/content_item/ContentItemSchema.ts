@@ -195,7 +195,7 @@ const ContentItemSchema: Record<string, unknown> = {
                           "rowNumber": {
                             "type": "integer",
                             "description": "Row number of the content item, unique across the live content items of the organization.",
-                            "minimum": 0,
+                            "minimum": 1,
                             "x-oapi-codegen-extra-tags": {
                               "db": "row_number"
                             },
@@ -554,7 +554,7 @@ const ContentItemSchema: Record<string, unknown> = {
         ],
         "summary": "Insert a content item",
         "operationId": "insertContentItem",
-        "description": "Inserts a new content item. Insert-only: any supplied\n`id` and `expectedFingerprint` are ignored; existing rows change\nonly through the conditional `updateContentItem`. The\n`fingerprint` is server-computed. Row numbers are unique across\nthe live content items of the organization, whatever their\n`profile`. When `rowNumber` is omitted the server assigns the next\nrow number of the organization (one more than the highest row\nnumber the organization has used, counting soft-deleted content\nitems so a deleted item's number is not handed out again by\nassignment), atomically with the insert, so\nconcurrent inserts never receive the same number. An organization\nthat has never had a content item is assigned row number 1 first\n(an explicit `rowNumber` of 0 is still accepted). A supplied\n`rowNumber` that another live content item of the organization\nalready holds refuses the insert with a 409.\nA `rulesOfEngagement` outside its schema (an unknown preset or\ndial, or a value out of range) is refused with a 400, on insert\nand on update alike.\nEach `mediaAssetIds` entry must name a media asset of the session\norganization, else 400 (the same 400 for a missing, another\norganization's and a deleted asset), on insert and on update alike.\nThe server does not require the asset to be ready at write time:\ndeleting an asset does not check content item references, and such\nan item is refused by name when it posts, so the posting client\nchecks readiness.\nThread fields are checked against the organization's live content\nitems in the same transaction as the insert, and a violation is\nrefused with a 400: `threadId` must name a live item of the\norganization that is not itself part of a thread; `replyToId`\nrequires `threadId` and must name that root or a live item of the\nsame thread; `threadIndex` is required exactly when `threadId` is\ngiven and must exceed the position of the item `replyToId` names\n(the root counts as 0). An item of another organization, a deleted\nitem and a missing one receive the same 400. A `threadIndex` that\nanother live item of the same thread already holds refuses the\ninsert with a 409.\n",
+        "description": "Inserts a new content item. Insert-only: any supplied\n`id` and `expectedFingerprint` are ignored; existing rows change\nonly through the conditional `updateContentItem`. The\n`fingerprint` is server-computed. Row numbers are unique across\nthe live content items of the organization, whatever their\n`profile`. When `rowNumber` is omitted the server assigns the next\nrow number of the organization (one more than the highest row\nnumber the organization has used, counting soft-deleted content\nitems so a deleted item's number is not handed out again by\nassignment), atomically with the insert, so\nconcurrent inserts never receive the same number. An organization\nthat has never had a content item is assigned row number 1 first.\nA supplied\n`rowNumber` that another live content item of the organization\nalready holds refuses the insert with a 409.\nA `rulesOfEngagement` outside its schema (an unknown preset or\ndial, or a value out of range) is refused with a 400, on insert\nand on update alike.\nEach `mediaAssetIds` entry must name a media asset of the session\norganization, else 400 (the same 400 for a missing, another\norganization's and a deleted asset), on insert and on update alike.\nThe server does not require the asset to be ready at write time:\ndeleting an asset does not check content item references, and such\nan item is refused by name when it posts, so the posting client\nchecks readiness.\nThread fields are checked against the organization's live content\nitems in the same transaction as the insert, and a violation is\nrefused with a 400: `threadId` must name a live item of the\norganization that is not itself part of a thread; `replyToId`\nrequires `threadId` and must name that root or a live item of the\nsame thread; `threadIndex` is required exactly when `threadId` is\ngiven and must exceed the position of the item `replyToId` names\n(the root counts as 0). An item of another organization, a deleted\nitem and a missing one receive the same 400. A `threadIndex` that\nanother live item of the same thread already holds refuses the\ninsert with a 409.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -587,7 +587,7 @@ const ContentItemSchema: Record<string, unknown> = {
                   "rowNumber": {
                     "type": "integer",
                     "description": "Row number of the content item, unique across the live content\nitems of the organization. Optional: omitted on insert, the\nserver assigns the next row number of the organization; omitted\non update, the stored row number is kept.\n",
-                    "minimum": 0
+                    "minimum": 1
                   },
                   "data": {
                     "type": "object",
@@ -820,7 +820,7 @@ const ContentItemSchema: Record<string, unknown> = {
                     "rowNumber": {
                       "type": "integer",
                       "description": "Row number of the content item, unique across the live content items of the organization.",
-                      "minimum": 0,
+                      "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "db": "row_number"
                       },
@@ -1275,7 +1275,7 @@ const ContentItemSchema: Record<string, unknown> = {
                     "rowNumber": {
                       "type": "integer",
                       "description": "Row number of the content item, unique across the live content items of the organization.",
-                      "minimum": 0,
+                      "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "db": "row_number"
                       },
@@ -1690,7 +1690,7 @@ const ContentItemSchema: Record<string, unknown> = {
                   "rowNumber": {
                     "type": "integer",
                     "description": "Row number of the content item, unique across the live content\nitems of the organization. Optional: omitted on insert, the\nserver assigns the next row number of the organization; omitted\non update, the stored row number is kept.\n",
-                    "minimum": 0
+                    "minimum": 1
                   },
                   "data": {
                     "type": "object",
@@ -1923,7 +1923,7 @@ const ContentItemSchema: Record<string, unknown> = {
                     "rowNumber": {
                       "type": "integer",
                       "description": "Row number of the content item, unique across the live content items of the organization.",
-                      "minimum": 0,
+                      "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "db": "row_number"
                       },
@@ -2729,7 +2729,7 @@ const ContentItemSchema: Record<string, unknown> = {
           "rowNumber": {
             "type": "integer",
             "description": "Row number of the content item, unique across the live content items of the organization.",
-            "minimum": 0,
+            "minimum": 1,
             "x-oapi-codegen-extra-tags": {
               "db": "row_number"
             },
@@ -2997,7 +2997,7 @@ const ContentItemSchema: Record<string, unknown> = {
           "rowNumber": {
             "type": "integer",
             "description": "Row number of the content item, unique across the live content\nitems of the organization. Optional: omitted on insert, the\nserver assigns the next row number of the organization; omitted\non update, the stored row number is kept.\n",
-            "minimum": 0
+            "minimum": 1
           },
           "data": {
             "type": "object",
@@ -3418,7 +3418,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 "rowNumber": {
                   "type": "integer",
                   "description": "Row number of the content item, unique across the live content items of the organization.",
-                  "minimum": 0,
+                  "minimum": 1,
                   "x-oapi-codegen-extra-tags": {
                     "db": "row_number"
                   },

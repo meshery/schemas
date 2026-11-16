@@ -1713,6 +1713,18 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "301": {
+            "description": "Merged-away user ID; redirects to the surviving canonical account's equivalent profile path",
+            "headers": {
+              "Location": {
+                "description": "URL of the surviving canonical account's equivalent profile path",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request body or request param",
             "content": {
@@ -2852,7 +2864,7 @@ const UserSchema: Record<string, unknown> = {
         ],
         "operationId": "getUserRecentActivities",
         "summary": "Get recent activity for a user's public profile",
-        "description": "Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges.",
+        "description": "Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges. A retired account is not served: an id with no recorded successor answers 404, and a merged-away id redirects (301) to the surviving canonical account's equivalent path.",
         "security": [],
         "parameters": [
           {
@@ -3029,8 +3041,30 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "301": {
+            "description": "Merged-away user ID; redirects to the surviving canonical account's equivalent activity path",
+            "headers": {
+              "Location": {
+                "description": "URL of the surviving canonical account's equivalent activity path",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {

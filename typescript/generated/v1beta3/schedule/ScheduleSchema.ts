@@ -5618,7 +5618,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "items": {
                         "type": "object",
                         "additionalProperties": false,
-                        "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time and included only when the user's profile is public.\n",
+                        "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time for every served owner (live, active, and\nshareActivityPublicly on).\n",
                         "required": [
                           "userId",
                           "platform",
@@ -5677,8 +5677,8 @@ const ScheduleSchema: Record<string, unknown> = {
                           },
                           "displayName": {
                             "type": "string",
-                            "description": "Public username; present only when the user's profile is public.",
-                            "maxLength": 80,
+                            "description": "The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.\n",
+                            "maxLength": 200,
                             "x-oapi-codegen-extra-tags": {
                               "json": "displayName,omitempty"
                             },
@@ -5687,7 +5687,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "avatarUrl": {
                             "type": "string",
                             "format": "uri",
-                            "description": "Public avatar URL; present only when the user's profile is public.",
+                            "description": "Public avatar URL; resolved for every served owner, omitted when empty.",
                             "maxLength": 500,
                             "x-go-name": "AvatarURL",
                             "x-oapi-codegen-extra-tags": {
@@ -5697,7 +5697,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           },
                           "organizationName": {
                             "type": "string",
-                            "description": "Public organization name; present only when the user's profile is public.",
+                            "description": "Public organization name; omitted when organization memberships are not public to an anonymous caller.",
                             "maxLength": 255,
                             "x-oapi-codegen-extra-tags": {
                               "json": "organizationName,omitempty"
@@ -7584,7 +7584,7 @@ const ScheduleSchema: Record<string, unknown> = {
       "PublicActivityFeedItem": {
         "type": "object",
         "additionalProperties": false,
-        "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time and included only when the user's profile is public.\n",
+        "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time for every served owner (live, active, and\nshareActivityPublicly on).\n",
         "required": [
           "userId",
           "platform",
@@ -7643,8 +7643,8 @@ const ScheduleSchema: Record<string, unknown> = {
           },
           "displayName": {
             "type": "string",
-            "description": "Public username; present only when the user's profile is public.",
-            "maxLength": 80,
+            "description": "The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.\n",
+            "maxLength": 200,
             "x-oapi-codegen-extra-tags": {
               "json": "displayName,omitempty"
             },
@@ -7653,7 +7653,7 @@ const ScheduleSchema: Record<string, unknown> = {
           "avatarUrl": {
             "type": "string",
             "format": "uri",
-            "description": "Public avatar URL; present only when the user's profile is public.",
+            "description": "Public avatar URL; resolved for every served owner, omitted when empty.",
             "maxLength": 500,
             "x-go-name": "AvatarURL",
             "x-oapi-codegen-extra-tags": {
@@ -7663,7 +7663,7 @@ const ScheduleSchema: Record<string, unknown> = {
           },
           "organizationName": {
             "type": "string",
-            "description": "Public organization name; present only when the user's profile is public.",
+            "description": "Public organization name; omitted when organization memberships are not public to an anonymous caller.",
             "maxLength": 255,
             "x-oapi-codegen-extra-tags": {
               "json": "organizationName,omitempty"
@@ -7717,7 +7717,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time and included only when the user's profile is public.\n",
+              "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time for every served owner (live, active, and\nshareActivityPublicly on).\n",
               "required": [
                 "userId",
                 "platform",
@@ -7776,8 +7776,8 @@ const ScheduleSchema: Record<string, unknown> = {
                 },
                 "displayName": {
                   "type": "string",
-                  "description": "Public username; present only when the user's profile is public.",
-                  "maxLength": 80,
+                  "description": "The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.\n",
+                  "maxLength": 200,
                   "x-oapi-codegen-extra-tags": {
                     "json": "displayName,omitempty"
                   },
@@ -7786,7 +7786,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 "avatarUrl": {
                   "type": "string",
                   "format": "uri",
-                  "description": "Public avatar URL; present only when the user's profile is public.",
+                  "description": "Public avatar URL; resolved for every served owner, omitted when empty.",
                   "maxLength": 500,
                   "x-go-name": "AvatarURL",
                   "x-oapi-codegen-extra-tags": {
@@ -7796,7 +7796,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 },
                 "organizationName": {
                   "type": "string",
-                  "description": "Public organization name; present only when the user's profile is public.",
+                  "description": "Public organization name; omitted when organization memberships are not public to an anonymous caller.",
                   "maxLength": 255,
                   "x-oapi-codegen-extra-tags": {
                     "json": "organizationName,omitempty"
@@ -7853,7 +7853,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time and included only when the user's profile is public.\n",
+              "description": "A completed schedule run projected into the public feed. Never includes\nemail addresses, real names, or raw metadata. Public profile fields are\nresolved at read time for every served owner (live, active, and\nshareActivityPublicly on).\n",
               "required": [
                 "userId",
                 "platform",
@@ -7912,8 +7912,8 @@ const ScheduleSchema: Record<string, unknown> = {
                 },
                 "displayName": {
                   "type": "string",
-                  "description": "Public username; present only when the user's profile is public.",
-                  "maxLength": 80,
+                  "description": "The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.\n",
+                  "maxLength": 200,
                   "x-oapi-codegen-extra-tags": {
                     "json": "displayName,omitempty"
                   },
@@ -7922,7 +7922,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 "avatarUrl": {
                   "type": "string",
                   "format": "uri",
-                  "description": "Public avatar URL; present only when the user's profile is public.",
+                  "description": "Public avatar URL; resolved for every served owner, omitted when empty.",
                   "maxLength": 500,
                   "x-go-name": "AvatarURL",
                   "x-oapi-codegen-extra-tags": {
@@ -7932,7 +7932,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 },
                 "organizationName": {
                   "type": "string",
-                  "description": "Public organization name; present only when the user's profile is public.",
+                  "description": "Public organization name; omitted when organization memberships are not public to an anonymous caller.",
                   "maxLength": 255,
                   "x-oapi-codegen-extra-tags": {
                     "json": "organizationName,omitempty"

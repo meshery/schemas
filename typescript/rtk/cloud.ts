@@ -4093,9 +4093,9 @@ export type GetMeshModelModelsApiResponse = /** status 200 Model and capabilitie
       version: string;
     };
     /** The relationships of the model. */
-    relationships: any;
+    relationships: any[];
     /** The components of the model. */
-    components: any;
+    components: any[];
     /** Number of components associated with the model. */
     componentsCount: number;
     /** Number of relationships associated with the model. */
@@ -7085,9 +7085,25 @@ export type CreateViewApiResponse = /** status 201 Created view */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7103,11 +7119,27 @@ export type CreateViewApiArg = {
     /** Display name of the view. */
     name: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Visibility level of the view. */
     visibility?: string;
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type GetViewsApiResponse = /** status 200 Views page */ {
@@ -7125,9 +7157,25 @@ export type GetViewsApiResponse = /** status 200 Views page */ {
     /** Visibility level of the view. */
     visibility?: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
     /** ID of the user who created the view. */
     userId?: string;
     /** Name of the workspace this view belongs to. */
@@ -7194,9 +7242,25 @@ export type GetViewByIdApiResponse = /** status 200 View */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7218,9 +7282,25 @@ export type UpdateViewApiResponse = /** status 200 Updated view */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7238,11 +7318,27 @@ export type UpdateViewApiArg = {
     /** Display name of the view. */
     name: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Visibility level of the view. */
     visibility?: string;
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type DeleteViewApiResponse = unknown;
@@ -17349,11 +17445,12 @@ export type GetEventFeedApiResponse = /** status 200 Event feed page */ {
     line: string;
     /** Networks from ScheduleCompletedEventMetadata, when present. */
     networks?: string[];
-    /** Public username, never a real name; present only for a public profile. */
+    /** The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.
+     */
     displayName?: string;
-    /** Public avatar URL; present only for a public profile. */
+    /** Public avatar URL; resolved for every served owner, omitted when empty. */
     avatarUrl?: string;
-    /** Public organization name; present only for a public profile. */
+    /** Public organization name; omitted when organization memberships are not public to an anonymous caller. */
     organizationName?: string;
     /** HTTPS URL of the user's public profile. */
     publicProfileUrl?: string;
@@ -21737,11 +21834,12 @@ export type GetPublicActivityFeedApiResponse = /** status 200 Public activity fe
     completedAt: string;
     /** Always `public` in this feed. */
     visibility: "public";
-    /** Public username; present only when the user's profile is public. */
+    /** The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.
+     */
     displayName?: string;
-    /** Public avatar URL; present only when the user's profile is public. */
+    /** Public avatar URL; resolved for every served owner, omitted when empty. */
     avatarUrl?: string;
-    /** Public organization name; present only when the user's profile is public. */
+    /** Public organization name; omitted when organization memberships are not public to an anonymous caller. */
     organizationName?: string;
     /** HTTPS URL of the user's public profile. */
     publicProfileUrl?: string;
@@ -23128,9 +23226,9 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             version: string;
           };
           /** The relationships of the model. */
-          relationships: any;
+          relationships: any[];
           /** The components of the model. */
-          components: any;
+          components: any[];
           /** Number of components associated with the model. */
           componentsCount: number;
           /** Number of relationships associated with the model. */

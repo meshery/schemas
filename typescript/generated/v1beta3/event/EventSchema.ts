@@ -2955,7 +2955,7 @@ const EventSchema: Record<string, unknown> = {
                       "items": {
                         "type": "object",
                         "additionalProperties": false,
-                        "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+                        "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time for every served owner (live, active, and\nshareActivityPublicly on).\n",
                         "required": [
                           "id",
                           "userId",
@@ -3065,8 +3065,8 @@ const EventSchema: Record<string, unknown> = {
                           },
                           "displayName": {
                             "type": "string",
-                            "description": "Public username, never a real name; present only for a public profile.",
-                            "maxLength": 80,
+                            "description": "The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.\n",
+                            "maxLength": 200,
                             "x-oapi-codegen-extra-tags": {
                               "json": "displayName,omitempty"
                             },
@@ -3076,7 +3076,7 @@ const EventSchema: Record<string, unknown> = {
                             "type": "string",
                             "format": "uri",
                             "maxLength": 500,
-                            "description": "Public avatar URL; present only for a public profile.",
+                            "description": "Public avatar URL; resolved for every served owner, omitted when empty.",
                             "x-go-name": "AvatarURL",
                             "x-oapi-codegen-extra-tags": {
                               "json": "avatarUrl,omitempty"
@@ -3085,7 +3085,7 @@ const EventSchema: Record<string, unknown> = {
                           },
                           "organizationName": {
                             "type": "string",
-                            "description": "Public organization name; present only for a public profile.",
+                            "description": "Public organization name; omitted when organization memberships are not public to an anonymous caller.",
                             "maxLength": 255,
                             "x-oapi-codegen-extra-tags": {
                               "json": "organizationName,omitempty"
@@ -5108,7 +5108,7 @@ const EventSchema: Record<string, unknown> = {
       "EventFeedItem": {
         "type": "object",
         "additionalProperties": false,
-        "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+        "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time for every served owner (live, active, and\nshareActivityPublicly on).\n",
         "required": [
           "id",
           "userId",
@@ -5218,8 +5218,8 @@ const EventSchema: Record<string, unknown> = {
           },
           "displayName": {
             "type": "string",
-            "description": "Public username, never a real name; present only for a public profile.",
-            "maxLength": 80,
+            "description": "The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.\n",
+            "maxLength": 200,
             "x-oapi-codegen-extra-tags": {
               "json": "displayName,omitempty"
             },
@@ -5229,7 +5229,7 @@ const EventSchema: Record<string, unknown> = {
             "type": "string",
             "format": "uri",
             "maxLength": 500,
-            "description": "Public avatar URL; present only for a public profile.",
+            "description": "Public avatar URL; resolved for every served owner, omitted when empty.",
             "x-go-name": "AvatarURL",
             "x-oapi-codegen-extra-tags": {
               "json": "avatarUrl,omitempty"
@@ -5238,7 +5238,7 @@ const EventSchema: Record<string, unknown> = {
           },
           "organizationName": {
             "type": "string",
-            "description": "Public organization name; present only for a public profile.",
+            "description": "Public organization name; omitted when organization memberships are not public to an anonymous caller.",
             "maxLength": 255,
             "x-oapi-codegen-extra-tags": {
               "json": "organizationName,omitempty"
@@ -5292,7 +5292,7 @@ const EventSchema: Record<string, unknown> = {
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time and are included only when the user's profile is public.\n",
+              "description": "An event projected into the public feed. It never includes email,\nfirstName, lastName, description, provider or raw metadata.\n`platform`, `role`, `line` and `networks` are projected from\nScheduleCompletedEventMetadata; events without valid required\nmetadata are skipped. Public profile fields are resolved by Cloud at\nread time for every served owner (live, active, and\nshareActivityPublicly on).\n",
               "required": [
                 "id",
                 "userId",
@@ -5402,8 +5402,8 @@ const EventSchema: Record<string, unknown> = {
                 },
                 "displayName": {
                   "type": "string",
-                  "description": "Public username, never a real name; present only for a public profile.",
-                  "maxLength": 80,
+                  "description": "The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty.\n",
+                  "maxLength": 200,
                   "x-oapi-codegen-extra-tags": {
                     "json": "displayName,omitempty"
                   },
@@ -5413,7 +5413,7 @@ const EventSchema: Record<string, unknown> = {
                   "type": "string",
                   "format": "uri",
                   "maxLength": 500,
-                  "description": "Public avatar URL; present only for a public profile.",
+                  "description": "Public avatar URL; resolved for every served owner, omitted when empty.",
                   "x-go-name": "AvatarURL",
                   "x-oapi-codegen-extra-tags": {
                     "json": "avatarUrl,omitempty"
@@ -5422,7 +5422,7 @@ const EventSchema: Record<string, unknown> = {
                 },
                 "organizationName": {
                   "type": "string",
-                  "description": "Public organization name; present only for a public profile.",
+                  "description": "Public organization name; omitted when organization memberships are not public to an anonymous caller.",
                   "maxLength": 255,
                   "x-oapi-codegen-extra-tags": {
                     "json": "organizationName,omitempty"

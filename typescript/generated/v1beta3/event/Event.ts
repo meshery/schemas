@@ -669,7 +669,8 @@ export interface components {
          *     `platform`, `role`, `line` and `networks` are projected from
          *     ScheduleCompletedEventMetadata; events without valid required
          *     metadata are skipped. Public profile fields are resolved by Cloud at
-         *     read time and are included only when the user's profile is public.
+         *     read time for every served owner (live, active, and
+         *     shareActivityPublicly on).
          */
         EventFeedItem: {
             /**
@@ -708,14 +709,14 @@ export interface components {
             line: string;
             /** @description Networks from ScheduleCompletedEventMetadata, when present. */
             networks?: string[];
-            /** @description Public username, never a real name; present only for a public profile. */
+            /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
             displayName?: string;
             /**
              * Format: uri
-             * @description Public avatar URL; present only for a public profile.
+             * @description Public avatar URL; resolved for every served owner, omitted when empty.
              */
             avatarUrl?: string;
-            /** @description Public organization name; present only for a public profile. */
+            /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
             organizationName?: string;
             /**
              * Format: uri
@@ -769,14 +770,14 @@ export interface components {
                 line: string;
                 /** @description Networks from ScheduleCompletedEventMetadata, when present. */
                 networks?: string[];
-                /** @description Public username, never a real name; present only for a public profile. */
+                /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
                 displayName?: string;
                 /**
                  * Format: uri
-                 * @description Public avatar URL; present only for a public profile.
+                 * @description Public avatar URL; resolved for every served owner, omitted when empty.
                  */
                 avatarUrl?: string;
-                /** @description Public organization name; present only for a public profile. */
+                /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
                 organizationName?: string;
                 /**
                  * Format: uri
@@ -2495,14 +2496,14 @@ export interface operations {
                             line: string;
                             /** @description Networks from ScheduleCompletedEventMetadata, when present. */
                             networks?: string[];
-                            /** @description Public username, never a real name; present only for a public profile. */
+                            /** @description The same value PublicUser.username carries for the owner. Never email. Resolved for every served owner; omitted when empty. */
                             displayName?: string;
                             /**
                              * Format: uri
-                             * @description Public avatar URL; present only for a public profile.
+                             * @description Public avatar URL; resolved for every served owner, omitted when empty.
                              */
                             avatarUrl?: string;
-                            /** @description Public organization name; present only for a public profile. */
+                            /** @description Public organization name; omitted when organization memberships are not public to an anonymous caller. */
                             organizationName?: string;
                             /**
                              * Format: uri

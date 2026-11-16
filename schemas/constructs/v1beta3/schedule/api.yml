@@ -697,7 +697,8 @@ components:
       description: |
         A completed schedule run projected into the public feed. Never includes
         email addresses, real names, or raw metadata. Public profile fields are
-        resolved at read time and included only when the user's profile is public.
+        resolved at read time for every served owner (live, active, and
+        shareActivityPublicly on).
       required:
         - userId
         - platform
@@ -741,15 +742,17 @@ components:
           x-order: 5
         displayName:
           type: string
-          description: Public username; present only when the user's profile is public.
-          maxLength: 80
+          description: >
+            The same value PublicUser.username carries for the owner. Never
+            email. Resolved for every served owner; omitted when empty.
+          maxLength: 200
           x-oapi-codegen-extra-tags:
             json: "displayName,omitempty"
           x-order: 6
         avatarUrl:
           type: string
           format: uri
-          description: Public avatar URL; present only when the user's profile is public.
+          description: Public avatar URL; resolved for every served owner, omitted when empty.
           maxLength: 500
           x-go-name: AvatarURL
           x-oapi-codegen-extra-tags:
@@ -757,7 +760,7 @@ components:
           x-order: 7
         organizationName:
           type: string
-          description: Public organization name; present only when the user's profile is public.
+          description: Public organization name; omitted when organization memberships are not public to an anonymous caller.
           maxLength: 255
           x-oapi-codegen-extra-tags:
             json: "organizationName,omitempty"
