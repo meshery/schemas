@@ -84,6 +84,23 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Resource filters that define which Meshery resources this view displays. */
+        ViewFilters: {
+            /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+            k8sclusterIds?: string[];
+            /** @description Resource kinds included in the view. */
+            kinds?: string[];
+            /** @description Meshery models included in the view. */
+            models?: string[];
+            /** @description Kubernetes namespaces included in the view. */
+            namespaces?: string[];
+            /** @description Label selectors in key=value form. */
+            labels?: string[];
+            /** @description Optional text used to filter resources in the view. */
+            search?: string;
+        } & {
+            [key: string]: unknown;
+        };
         /**
          * MesheryView
          * @description A saved view with filters and metadata that defines a customized perspective of Meshery resources. Learn more at https://docs.meshery.io/concepts/logical/views
@@ -110,9 +127,26 @@ export interface components {
             /** @description Visibility level of the view. */
             visibility: string;
             /** @description Filter configuration that defines which resources this view displays. */
-            filters?: Record<string, never>;
+            filters?: {
+                /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                k8sclusterIds?: string[];
+                /** @description Resource kinds included in the view. */
+                kinds?: string[];
+                /** @description Meshery models included in the view. */
+                models?: string[];
+                /** @description Kubernetes namespaces included in the view. */
+                namespaces?: string[];
+                /** @description Label selectors in key=value form. */
+                labels?: string[];
+                /** @description Optional text used to filter resources in the view. */
+                search?: string;
+            } & {
+                [key: string]: unknown;
+            };
             /** @description Additional metadata associated with the view. */
-            metadata?: Record<string, never>;
+            metadata?: {
+                [key: string]: unknown;
+            };
             /**
              * Format: uuid
              * @description ID of the user who created the view.
@@ -143,9 +177,26 @@ export interface components {
             /** @description Visibility level of the view. */
             visibility?: string;
             /** @description Filter configuration for this view. */
-            filters?: Record<string, never>;
+            filters?: {
+                /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                k8sclusterIds?: string[];
+                /** @description Resource kinds included in the view. */
+                kinds?: string[];
+                /** @description Meshery models included in the view. */
+                models?: string[];
+                /** @description Kubernetes namespaces included in the view. */
+                namespaces?: string[];
+                /** @description Label selectors in key=value form. */
+                labels?: string[];
+                /** @description Optional text used to filter resources in the view. */
+                search?: string;
+            } & {
+                [key: string]: unknown;
+            };
             /** @description Metadata associated with the view. */
-            metadata?: Record<string, never>;
+            metadata?: {
+                [key: string]: unknown;
+            };
             /**
              * Format: uuid
              * @description ID of the user who created the view.
@@ -186,11 +237,28 @@ export interface components {
             /** @description Display name of the view. */
             name: string;
             /** @description Filter configuration for this view. */
-            filters?: Record<string, never>;
+            filters?: {
+                /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                k8sclusterIds?: string[];
+                /** @description Resource kinds included in the view. */
+                kinds?: string[];
+                /** @description Meshery models included in the view. */
+                models?: string[];
+                /** @description Kubernetes namespaces included in the view. */
+                namespaces?: string[];
+                /** @description Label selectors in key=value form. */
+                labels?: string[];
+                /** @description Optional text used to filter resources in the view. */
+                search?: string;
+            } & {
+                [key: string]: unknown;
+            };
             /** @description Visibility level of the view. */
             visibility?: string;
             /** @description Metadata associated with the view. */
-            metadata?: Record<string, never>;
+            metadata?: {
+                [key: string]: unknown;
+            };
         };
         /**
          * @description Payload for sharing a view with one or more recipients by email. The
@@ -235,9 +303,26 @@ export interface components {
                 /** @description Visibility level of the view. */
                 visibility?: string;
                 /** @description Filter configuration for this view. */
-                filters?: Record<string, never>;
+                filters?: {
+                    /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                    k8sclusterIds?: string[];
+                    /** @description Resource kinds included in the view. */
+                    kinds?: string[];
+                    /** @description Meshery models included in the view. */
+                    models?: string[];
+                    /** @description Kubernetes namespaces included in the view. */
+                    namespaces?: string[];
+                    /** @description Label selectors in key=value form. */
+                    labels?: string[];
+                    /** @description Optional text used to filter resources in the view. */
+                    search?: string;
+                } & {
+                    [key: string]: unknown;
+                };
                 /** @description Metadata associated with the view. */
-                metadata?: Record<string, never>;
+                metadata?: {
+                    [key: string]: unknown;
+                };
                 /**
                  * Format: uuid
                  * @description ID of the user who created the view.
@@ -351,11 +436,28 @@ export interface components {
                     /** @description Display name of the view. */
                     name: string;
                     /** @description Filter configuration for this view. */
-                    filters?: Record<string, never>;
+                    filters?: {
+                        /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                        k8sclusterIds?: string[];
+                        /** @description Resource kinds included in the view. */
+                        kinds?: string[];
+                        /** @description Meshery models included in the view. */
+                        models?: string[];
+                        /** @description Kubernetes namespaces included in the view. */
+                        namespaces?: string[];
+                        /** @description Label selectors in key=value form. */
+                        labels?: string[];
+                        /** @description Optional text used to filter resources in the view. */
+                        search?: string;
+                    } & {
+                        [key: string]: unknown;
+                    };
                     /** @description Visibility level of the view. */
                     visibility?: string;
                     /** @description Metadata associated with the view. */
-                    metadata?: Record<string, never>;
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -445,9 +547,26 @@ export interface operations {
                             /** @description Visibility level of the view. */
                             visibility?: string;
                             /** @description Filter configuration for this view. */
-                            filters?: Record<string, never>;
+                            filters?: {
+                                /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                                k8sclusterIds?: string[];
+                                /** @description Resource kinds included in the view. */
+                                kinds?: string[];
+                                /** @description Meshery models included in the view. */
+                                models?: string[];
+                                /** @description Kubernetes namespaces included in the view. */
+                                namespaces?: string[];
+                                /** @description Label selectors in key=value form. */
+                                labels?: string[];
+                                /** @description Optional text used to filter resources in the view. */
+                                search?: string;
+                            } & {
+                                [key: string]: unknown;
+                            };
                             /** @description Metadata associated with the view. */
-                            metadata?: Record<string, never>;
+                            metadata?: {
+                                [key: string]: unknown;
+                            };
                             /**
                              * Format: uuid
                              * @description ID of the user who created the view.
@@ -520,11 +639,28 @@ export interface operations {
                     /** @description Display name of the view. */
                     name: string;
                     /** @description Filter configuration for this view. */
-                    filters?: Record<string, never>;
+                    filters?: {
+                        /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                        k8sclusterIds?: string[];
+                        /** @description Resource kinds included in the view. */
+                        kinds?: string[];
+                        /** @description Meshery models included in the view. */
+                        models?: string[];
+                        /** @description Kubernetes namespaces included in the view. */
+                        namespaces?: string[];
+                        /** @description Label selectors in key=value form. */
+                        labels?: string[];
+                        /** @description Optional text used to filter resources in the view. */
+                        search?: string;
+                    } & {
+                        [key: string]: unknown;
+                    };
                     /** @description Visibility level of the view. */
                     visibility?: string;
                     /** @description Metadata associated with the view. */
-                    metadata?: Record<string, never>;
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -546,9 +682,26 @@ export interface operations {
                         /** @description Visibility level of the view. */
                         visibility: string;
                         /** @description Filter configuration that defines which resources this view displays. */
-                        filters?: Record<string, never>;
+                        filters?: {
+                            /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                            k8sclusterIds?: string[];
+                            /** @description Resource kinds included in the view. */
+                            kinds?: string[];
+                            /** @description Meshery models included in the view. */
+                            models?: string[];
+                            /** @description Kubernetes namespaces included in the view. */
+                            namespaces?: string[];
+                            /** @description Label selectors in key=value form. */
+                            labels?: string[];
+                            /** @description Optional text used to filter resources in the view. */
+                            search?: string;
+                        } & {
+                            [key: string]: unknown;
+                        };
                         /** @description Additional metadata associated with the view. */
-                        metadata?: Record<string, never>;
+                        metadata?: {
+                            [key: string]: unknown;
+                        };
                         /**
                          * Format: uuid
                          * @description ID of the user who created the view.
@@ -715,9 +868,26 @@ export interface operations {
                         /** @description Visibility level of the view. */
                         visibility: string;
                         /** @description Filter configuration that defines which resources this view displays. */
-                        filters?: Record<string, never>;
+                        filters?: {
+                            /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                            k8sclusterIds?: string[];
+                            /** @description Resource kinds included in the view. */
+                            kinds?: string[];
+                            /** @description Meshery models included in the view. */
+                            models?: string[];
+                            /** @description Kubernetes namespaces included in the view. */
+                            namespaces?: string[];
+                            /** @description Label selectors in key=value form. */
+                            labels?: string[];
+                            /** @description Optional text used to filter resources in the view. */
+                            search?: string;
+                        } & {
+                            [key: string]: unknown;
+                        };
                         /** @description Additional metadata associated with the view. */
-                        metadata?: Record<string, never>;
+                        metadata?: {
+                            [key: string]: unknown;
+                        };
                         /**
                          * Format: uuid
                          * @description ID of the user who created the view.
@@ -796,11 +966,28 @@ export interface operations {
                     /** @description Display name of the view. */
                     name: string;
                     /** @description Filter configuration for this view. */
-                    filters?: Record<string, never>;
+                    filters?: {
+                        /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                        k8sclusterIds?: string[];
+                        /** @description Resource kinds included in the view. */
+                        kinds?: string[];
+                        /** @description Meshery models included in the view. */
+                        models?: string[];
+                        /** @description Kubernetes namespaces included in the view. */
+                        namespaces?: string[];
+                        /** @description Label selectors in key=value form. */
+                        labels?: string[];
+                        /** @description Optional text used to filter resources in the view. */
+                        search?: string;
+                    } & {
+                        [key: string]: unknown;
+                    };
                     /** @description Visibility level of the view. */
                     visibility?: string;
                     /** @description Metadata associated with the view. */
-                    metadata?: Record<string, never>;
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -822,9 +1009,26 @@ export interface operations {
                         /** @description Visibility level of the view. */
                         visibility: string;
                         /** @description Filter configuration that defines which resources this view displays. */
-                        filters?: Record<string, never>;
+                        filters?: {
+                            /** @description Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+                            k8sclusterIds?: string[];
+                            /** @description Resource kinds included in the view. */
+                            kinds?: string[];
+                            /** @description Meshery models included in the view. */
+                            models?: string[];
+                            /** @description Kubernetes namespaces included in the view. */
+                            namespaces?: string[];
+                            /** @description Label selectors in key=value form. */
+                            labels?: string[];
+                            /** @description Optional text used to filter resources in the view. */
+                            search?: string;
+                        } & {
+                            [key: string]: unknown;
+                        };
                         /** @description Additional metadata associated with the view. */
-                        metadata?: Record<string, never>;
+                        metadata?: {
+                            [key: string]: unknown;
+                        };
                         /**
                          * Format: uuid
                          * @description ID of the user who created the view.
