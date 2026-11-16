@@ -87,12 +87,6 @@ components:
       type: object
       additionalProperties: true
       description: Resource filters that define which Meshery resources this view displays.
-      required:
-        - k8sclusterIds
-        - kinds
-        - models
-        - namespaces
-        - labels
       properties:
         k8sclusterIds:
           type: array

@@ -22,7 +22,7 @@ test("view response, location response, and payload reuse the typed filters sche
   assert.ok(filters, "api.yml should declare the ViewFilters component");
   assert.equal(filters.additionalProperties, true);
   assert.deepEqual(Object.keys(filters.properties), expectedFilters);
-  assert.deepEqual(filters.required, ["k8sclusterIds", "kinds", "models", "namespaces", "labels"]);
+  assert.equal(filters.required, undefined);
   assert.equal(filters.properties.k8sclusterIds.items.format, "uuid");
   assert.deepEqual(entity.properties.filters.$ref, "./api.yml#/components/schemas/ViewFilters");
   assert.deepEqual(
@@ -80,14 +80,42 @@ const filters: Filters = {
 const listFilters: ListFilters = filters;
 const createFilters: CreateFilters = filters;
 const updateFilters: UpdateFilters = filters;
-const kinds: string[] = filters.kinds;
+const kinds: string[] | undefined = filters.kinds;
 const search: string | undefined = filters.search;
 const metadata: NonNullable<GetViewByIdApiResponse["metadata"]> = {
   custom: { enabled: true },
 };
+const emptyCreatePayload: CreateViewApiArg["viewPayload"] = {
+  name: "Unfiltered",
+  filters: {},
+};
+const partialCreatePayload: CreateViewApiArg["viewPayload"] = {
+  name: "Kind filtered",
+  filters: { kinds: ["Pod"] },
+};
+const emptyUpdatePayload: UpdateViewApiArg["viewPayload"] = {
+  name: "Unfiltered",
+  filters: {},
+};
+const partialUpdatePayload: UpdateViewApiArg["viewPayload"] = {
+  name: "Kind filtered",
+  filters: { kinds: ["Pod"] },
+};
 // @ts-expect-error Filter arrays contain strings.
 const invalidKinds: Filters["kinds"] = [42];
-void [listFilters, createFilters, updateFilters, kinds, search, metadata, invalidKinds];
+void [
+  listFilters,
+  createFilters,
+  updateFilters,
+  kinds,
+  search,
+  metadata,
+  emptyCreatePayload,
+  partialCreatePayload,
+  emptyUpdatePayload,
+  partialUpdatePayload,
+  invalidKinds,
+];
 `,
   );
   const program = ts.createProgram([consumer], {
