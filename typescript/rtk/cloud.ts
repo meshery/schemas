@@ -7085,9 +7085,25 @@ export type CreateViewApiResponse = /** status 201 Created view */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7103,11 +7119,27 @@ export type CreateViewApiArg = {
     /** Display name of the view. */
     name: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Visibility level of the view. */
     visibility?: string;
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type GetViewsApiResponse = /** status 200 Views page */ {
@@ -7125,9 +7157,25 @@ export type GetViewsApiResponse = /** status 200 Views page */ {
     /** Visibility level of the view. */
     visibility?: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
     /** ID of the user who created the view. */
     userId?: string;
     /** Name of the workspace this view belongs to. */
@@ -7194,9 +7242,25 @@ export type GetViewByIdApiResponse = /** status 200 View */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7218,9 +7282,25 @@ export type UpdateViewApiResponse = /** status 200 Updated view */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7238,11 +7318,27 @@ export type UpdateViewApiArg = {
     /** Display name of the view. */
     name: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Visibility level of the view. */
     visibility?: string;
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type DeleteViewApiResponse = unknown;
