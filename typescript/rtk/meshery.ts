@@ -775,7 +775,12 @@ const injectedRtkApi = api
         providesTags: ["User_users"],
       }),
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
-        query: () => ({ url: `/api/identity/users/profile` }),
+        query: (queryArg) => ({
+          url: `/api/identity/users/profile`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["User_users"],
       }),
       getUserEmailAddresses: build.query<GetUserEmailAddressesApiResponse, GetUserEmailAddressesApiArg>({
@@ -785,6 +790,9 @@ const injectedRtkApi = api
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -11075,7 +11083,7 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -11220,7 +11228,7 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -11341,7 +11349,7 @@ export type CreateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -11491,7 +11499,7 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -11633,7 +11641,7 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -11756,7 +11764,7 @@ export type UpdateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -11912,7 +11920,7 @@ export type CreateChildOrgApiResponse =
           };
           /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
           showAuthCarousel?: boolean;
-          /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+          /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
           schedulePause?: {
             /** Whether every schedule in the organization is paused. */
             paused?: boolean;
@@ -12035,7 +12043,7 @@ export type CreateChildOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -12133,7 +12141,7 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused?: boolean;
@@ -12238,7 +12246,7 @@ export type PatchOrgPreferencesApiResponse = /** status 200 Organization metadat
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused?: boolean;
@@ -12342,7 +12350,7 @@ export type PatchOrgPreferencesApiArg = {
     };
     /** Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused: boolean;
@@ -13016,7 +13024,10 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
     totalCount?: number | null;
   };
 };
-export type GetUserApiArg = void;
+export type GetUserApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
+};
 export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses associated with the requested user */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
@@ -13341,6 +13352,8 @@ export type GetConnectionsApiArg = {
   order?: string;
   /** Organization ID to scope the request. */
   orgId?: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
   /** Filter connections (general filter string) */
   filter?: string;
   /** Filter by connection kind (e.g., kubernetes, prometheus, grafana) */

@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "e0e93dd7284f2834f1d2b5683e27025aa3747e63ff4d78d8624039dc9fa9232a"
+const IndexID = "d28a7abf97147deeabe6b62a44cfdab9bba76a9cebfdeddbf1a608a2663b3b2d"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -1419,6 +1419,104 @@ var (
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
 
+	// WorkflowManagementPauseSchedules - Set or lift the organization-wide schedule pause, and nothing else about the organization
+	WorkflowManagementPauseSchedules = PermissionKey(uuid.Must(uuid.FromString("652c24f7-7fce-47c8-8bef-785ea4e788c4")))
+
+	// WorkflowManagementViewRequests - See the requests of the organization, such as AI app writes waiting for approval, and who decided each
+	WorkflowManagementViewRequests = PermissionKey(uuid.Must(uuid.FromString("471f38b7-c09a-4ff8-9620-0e5f5fdc822a")))
+
+	// CatalogManagementDecideContentItemApprovals - Approve or deny a content item written by an AI app, through its content_item_approval request
+	CatalogManagementDecideContentItemApprovals = PermissionKey(uuid.Must(uuid.FromString("c7bbef80-dd16-4396-b028-152f1f85f080")))
+
 	// BlowhornAccessDiagnostics - Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
 	BlowhornAccessDiagnostics = PermissionKey(uuid.Must(uuid.FromString("afb597fc-a027-4ade-b5f9-c5f82b67b053")))
 )
+
+// OAuthScope is an OAuth scope string. A scope names exactly one keychain.
+type OAuthScope string
+
+const (
+	// OAuthScopeContentRead - Read the content items of the organization.
+	OAuthScopeContentRead OAuthScope = "content:read"
+
+	// OAuthScopeContentWrite - Create and edit content items of the organization. Never approves them.
+	OAuthScopeContentWrite OAuthScope = "content:write"
+
+	// OAuthScopeScheduleRead - Read the schedules of the organization.
+	OAuthScopeScheduleRead OAuthScope = "schedule:read"
+
+	// OAuthScopeScheduleWrite - Create and change schedules of the organization, and set or lift its schedule pause.
+	OAuthScopeScheduleWrite OAuthScope = "schedule:write"
+
+	// OAuthScopeConnectionsRead - Read the connections of the organization.
+	OAuthScopeConnectionsRead OAuthScope = "connections:read"
+
+	// OAuthScopeEventsRead - Read the events of the organization, including run results.
+	OAuthScopeEventsRead OAuthScope = "events:read"
+
+	// OAuthScopeAccountRead - Read the signed-in account and the features of the organization.
+	OAuthScopeAccountRead OAuthScope = "account:read"
+)
+
+// OAuthScopeGrant is the keychain a scope names and the permission keys that keychain carries for it.
+type OAuthScopeGrant struct {
+	Keychain   string
+	KeychainID uuid.UUID
+	Keys       []PermissionKey
+}
+
+// OAuthScopeGrants maps each OAuth scope to its keychain and permission keys.
+var OAuthScopeGrants = map[OAuthScope]OAuthScopeGrant{
+	OAuthScopeContentRead: {
+		Keychain:   "Content View",
+		KeychainID: uuid.Must(uuid.FromString("8108fb73-4fb2-4b57-87e7-6e18cb540b4b")),
+		Keys: []PermissionKey{
+			CatalogManagementViewContentItems,
+		},
+	},
+	OAuthScopeContentWrite: {
+		Keychain:   "Content Edit",
+		KeychainID: uuid.Must(uuid.FromString("f6f0a84a-29f5-4dd4-ba0c-b9c300429406")),
+		Keys: []PermissionKey{
+			CatalogManagementCreateContentItem,
+			CatalogManagementEditContentItem,
+		},
+	},
+	OAuthScopeScheduleRead: {
+		Keychain:   "Schedule View",
+		KeychainID: uuid.Must(uuid.FromString("e3d90ac5-2bfa-4e5d-b7e8-356d3a258698")),
+		Keys: []PermissionKey{
+			WorkflowManagementViewSchedules,
+		},
+	},
+	OAuthScopeScheduleWrite: {
+		Keychain:   "Schedule Edit",
+		KeychainID: uuid.Must(uuid.FromString("7d41ff30-4224-4724-a944-9f9b9d7bbe68")),
+		Keys: []PermissionKey{
+			WorkflowManagementCreateSchedule,
+			WorkflowManagementEditSchedule,
+			WorkflowManagementPauseSchedules,
+		},
+	},
+	OAuthScopeConnectionsRead: {
+		Keychain:   "Connection View",
+		KeychainID: uuid.Must(uuid.FromString("2c6d7797-aff8-431c-90aa-36971b871e88")),
+		Keys: []PermissionKey{
+			WorkspaceManagementViewConnections,
+		},
+	},
+	OAuthScopeEventsRead: {
+		Keychain:   "Event View",
+		KeychainID: uuid.Must(uuid.FromString("25b6fbbb-6f83-43f9-a2d6-d5b722113665")),
+		Keys: []PermissionKey{
+			EventsManagementViewEvents,
+		},
+	},
+	OAuthScopeAccountRead: {
+		Keychain:   "Account View",
+		KeychainID: uuid.Must(uuid.FromString("d33444c0-59b2-42e2-9f14-e9ce9ead9206")),
+		Keys: []PermissionKey{
+			AccountManagementViewProfile,
+		},
+	},
+}

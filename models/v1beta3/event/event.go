@@ -646,6 +646,9 @@ type UpdateEventStatusResponse struct {
 // Cumulative defines model for cumulative.
 type Cumulative = bool
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // EventId defines model for eventId.
 type EventId = uuid.UUID
 

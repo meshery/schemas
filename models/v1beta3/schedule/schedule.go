@@ -411,6 +411,9 @@ type ScheduleTimezone = string
 // `private` restricts it to the schedule owner.
 type ScheduleVisibility string
 
+// IdempotencyKey defines model for idempotencyKey.
+type IdempotencyKey = string
+
 // IfMatch defines model for ifMatch.
 type IfMatch = string
 
@@ -444,6 +447,9 @@ type WorkspaceId = core.Uuid
 
 // WorkspaceIdQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type WorkspaceIdQuery = core.Uuid
+
+// CoreIdempotencyKeyInFlight A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type CoreIdempotencyKeyInFlight = core.IdempotencyKeyInFlightError
 
 // CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError429 = core.MeshkitError

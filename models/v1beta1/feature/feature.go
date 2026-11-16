@@ -61,7 +61,8 @@ type FeatureName string
 type Page = string
 
 // OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type OrgId = core.Uuid
+// OrgId defines model for orgId.
+type OrgId = string
 
 // CorePage defines model for page.
 type CorePage = string

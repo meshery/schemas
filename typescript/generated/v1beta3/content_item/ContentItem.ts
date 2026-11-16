@@ -20,7 +20,8 @@ export interface paths {
          *     case-insensitively. `threadId` returns one whole thread: the root
          *     item it names and every live item whose `threadId` names it,
          *     ordered by `threadIndex` (the root first) unless `order` names
-         *     another column.
+         *     another column. A `threadId` or `X-Current-Orgid` that is not a
+         *     UUID answers 400.
          */
         get: operations["listContentItems"];
         put?: never;
@@ -40,7 +41,8 @@ export interface paths {
          *     that has never had a content item is assigned row number 1 first.
          *     A supplied
          *     `rowNumber` that another live content item of the organization
-         *     already holds refuses the insert with a 409.
+         *     already holds refuses the insert with a 409 (`code`
+         *     `row_number_taken`).
          *     A `rulesOfEngagement` outside its schema (an unknown preset or
          *     dial, or a value out of range) is refused with a 400, on insert
          *     and on update alike.
@@ -61,7 +63,35 @@ export interface paths {
          *     (the root counts as 0). An item of another organization, a deleted
          *     item and a missing one receive the same 400. A `threadIndex` that
          *     another live item of the same thread already holds refuses the
-         *     insert with a 409.
+         *     insert with a 409 (`code` `thread_index_taken`).
+         *     The optional `Idempotency-Key` header makes the insert safe to
+         *     retry: within 24 hours the same key with the same request hash
+         *     returns the first response without inserting again, and the same
+         *     key with a different request hash answers 422 and inserts nothing.
+         *     A retry with the same key that arrives while the first request with
+         *     that key is still being processed answers 409 with the body `code`
+         *     `idempotency_key_in_flight` and inserts nothing. Once the first request
+         *     has finished without a 5xx, a retry receives the stored response; after
+         *     a 5xx, a retry is processed as new. Precedence: while the
+         *     first request with a key is in flight, every retry with that key
+         *     answers 409 whatever its body; only once the first request has finished
+         *     does a retry with a different body answer 422. An in-flight claim on a
+         *     request that never finished expires 24 hours after it was taken, the
+         *     same TTL as the stored response (no shorter in-flight lease applies),
+         *     and a retry after that is processed as new. The permanent 409s of
+         *     this operation carry `row_number_taken` and `thread_index_taken`, so
+         *     a client tells the in-flight case by its `code`.
+         *     A caller whose effective keys lack Decide Content Item Approvals in
+         *     the session organization who sends `approvalPolicy` `required` or
+         *     `not_required` gets a 403 and nothing is inserted; a caller holding
+         *     that key may send any value. Omitted or `inherit`, the item inherits
+         *     (the server stores both as null, so they are the same value). The server resolves the effective approval once,
+         *     here: when it is required the item lands `approved` false with a
+         *     pending `content_item_approval` request; when it is not required the
+         *     server sets `approved` true and opens no request. Interim: until the
+         *     upstream policies exist, inherit resolves to required.
+         *     `approved` is never in the payload (docs/content-item-contract.md,
+         *     Approval policy).
          */
         post: operations["insertContentItem"];
         delete?: never;
@@ -91,6 +121,58 @@ export interface paths {
          *     it. An omitted `mediaAssetIds` keeps the stored list and `[]`
          *     clears it. The thread fields are fixed at insert: omitted, or equal to the
          *     stored values, they are kept; any other value is refused with a 400.
+         *     `approved` is not in the payload, and no update sets it to true;
+         *     only `approveRequest` does. A content edit, or an `approvalPolicy`
+         *     change whose resolved result is required, can reset it, as described
+         *     below. A caller without Decide Content Item
+         *     Approvals gets a 403 if it sends an `approvalPolicy` different from
+         *     the stored one (absent and `inherit` count as one value, since
+         *     the server stores `inherit` as null);
+         *     sending back the unchanged stored value is accepted and changes
+         *     nothing. An omitted `approvalPolicy` keeps the stored value and is not
+         *     a change, so it is never refused.
+         *     Approval on a content edit. An update that changes the item's
+         *     content re-resolves its effective approval in the same transaction,
+         *     with the same rule as insert: the `approvalPolicy` the update stores,
+         *     then the higher-level settings (interim: `inherit` or absent resolves
+         *     to `required`). It records `approvalRequired` and
+         *     `approvalPolicySource` again. Content is `profile`, `rowNumber`,
+         *     `data` (without the server-owned `Approved?` mirror),
+         *     `rulesOfEngagement` and `mediaAssetIds`, the fields the fingerprint
+         *     covers, compared with the stored values, so a write-back that sends
+         *     them unchanged is not an edit. These never trigger it: the
+         *     `approvalPolicy` (a change to it alone is handled below),
+         *     `expectedFingerprint`, `id` and the thread fields (`threadId`,
+         *     `replyToId`, `threadIndex`, fixed at insert).
+         *     Whatever the resolved approval, the item's open
+         *     `content_item_approval` request, if it has one, is superseded: it is
+         *     closed with `status` `superseded`, `decidedAt` set to the edit time,
+         *     and no `decidedBy` and no `note`. When approval resolves to required,
+         *     an item that was `approved` is set to `approved` false. When approval
+         *     resolves to not required, `approved` is unchanged: an approved item
+         *     stays approved and opens no request. An item the edit leaves
+         *     unapproved gets a fresh pending request for the content as it now is,
+         *     in the same transaction, so after the edit an unapproved item has an
+         *     open request
+         *     (the open-request invariant in docs/content-item-contract.md). An
+         *     update never approves: the item stays unapproved until a decider
+         *     approves that request. A failed write keeps none of these changes, the item and
+         *     its requests alike.
+         *     Approval on an `approvalPolicy` change. A write that changes the stored
+         *     policy and no content re-resolves the approval the same way, in the
+         *     same transaction. When the result is required and the item was
+         *     `approved`, `approved` is set to false and a pending request opens,
+         *     unless one is already pending. Any other result changes no `approved`
+         *     and closes no request: a result that is not required leaves an unapproved
+         *     item unapproved, and its open request stays pending for a decider. An
+         *     unapproved item with no open request, after a denial for example, gets
+         *     a fresh pending request in the same write, whatever the result. The
+         *     stored `approvalRequired` and `approvalPolicySource` are rewritten to
+         *     the new result. Sending back the unchanged stored policy re-resolves
+         *     nothing. A write that changes nothing (a whole-item write-back of the
+         *     stored content and policy) opens no request and closes none, so a
+         *     denied item stays denied until a content edit or an `approvalPolicy`
+         *     change. This applies to every writer, a person included.
          */
         put: operations["updateContentItem"];
         post?: never;
@@ -101,6 +183,11 @@ export interface paths {
          *     still matches and is refused with a 409 otherwise; without it the
          *     delete is unconditional. Deleting an item that other items name in
          *     `threadId` or `replyToId` leaves their references as they are.
+         *     Deleting an item that has an open `content_item_approval` request
+         *     closes that request as `superseded` in the same transaction:
+         *     `decidedAt` is set to the delete time, and no `decidedBy` and no
+         *     `note` are set. `approveRequest` and `denyRequest` on it then answer
+         *     `409`, as for any request that is not pending, and change nothing.
          */
         delete: operations["deleteContentItem"];
         options?: never;
@@ -213,13 +300,38 @@ export interface components {
             threadIndex?: number;
             /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
             mediaAssetIds?: string[];
+            /**
+             * @description Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+             * @default false
+             */
+            approved: boolean;
+            /** @description OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created. */
+            createdByClient?: string;
+            /**
+             * @description The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+             * @enum {string}
+             */
+            approvalPolicy?: "required" | "not_required" | "inherit";
+            /** @description Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped. */
+            readonly approvalRequired?: boolean;
+            /**
+             * @description Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+             * @enum {string}
+             */
+            readonly approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
         };
         /**
          * @description Payload for inserting or updating a content item.
          *     Contains only client-settable fields; the owning
          *     `organizationId` (derived from the authenticated session), the
-         *     server-computed `fingerprint` and the server-generated
-         *     `createdAt` / `updatedAt` timestamps are intentionally excluded.
+         *     server-computed `fingerprint`, the server-set `createdByClient`,
+         *     `approved` (set only by `approveRequest` in the request construct),
+         *     the server-computed `approvalRequired` and `approvalPolicySource`
+         *     and the server-generated `createdAt` / `updatedAt` timestamps are
+         *     intentionally excluded. `approvalPolicy` is the one approval field a
+         *     write carries; a caller without Decide Content Item Approvals may send
+         *     only the stored value, or omit it (docs/content-item-contract.md,
+         *     Approval policy).
          */
         ContentItemPayload: {
             /**
@@ -314,6 +426,53 @@ export interface components {
              *     clients send the whole item without it); an empty array clears it.
              */
             mediaAssetIds?: string[];
+            /**
+             * @description The item's own approval policy. Optional: omitted on insert, the
+             *     item inherits; omitted on update, the stored value is kept;
+             *     `inherit` on update clears an explicit value back to inherit; the
+             *     field does not accept null.
+             *     A caller without Decide Content Item Approvals in the session
+             *     organization is refused with a 403 and nothing changes when it
+             *     sends a value that would change the stored one: on insert,
+             *     `required` or `not_required`; on update, a value different from
+             *     the stored one (absent and `inherit` are one value, since the
+             *     server stores `inherit` as null). Sending back the unchanged stored value
+             *     is accepted, and an omitted value on update keeps the stored one and is
+             *     never refused. An AI app token never carries that key. Interim: until
+             *     the upstream policies exist, `inherit` or absent resolves to
+             *     `required`, and the item's approval source is `item` for an
+             *     explicit value or `fallback` for `inherit` or absent.
+             * @enum {string}
+             */
+            approvalPolicy?: "required" | "not_required" | "inherit";
+        };
+        /**
+         * @description Whether an item needs a person's approval before it runs. `required`
+         *     and `not_required` are explicit and win over every higher-level
+         *     setting. `inherit`, and an absent value, inherit from higher-level
+         *     settings (platform, workspace, profile), hierarchy defined in
+         *     https://github.com/layer5io/meshery-cloud/issues/6365. When no level
+         *     sets a value, approval is required (fail closed); this fallback is
+         *     still open for confirmation in that issue. The effective result is
+         *     resolved at insert, again at each content edit, and again when the
+         *     stored value changes. AI apps can never set
+         *     `approved`; this value only says whether approval is needed.
+         *     Interim: until the upstream platform, workspace and profile policies
+         *     exist, `inherit` and an absent value resolve to `required`, with
+         *     approval source `fallback`. The user preference
+         *     `agentsActWithoutApproval` is not consulted during the interim.
+         * @enum {string}
+         */
+        ApprovalPolicy: "required" | "not_required" | "inherit";
+        /** @description Body of an insert refused for a permanent conflict with the content. `code` is the machine-readable reason and `message` the sentence the caller is shown. The in-flight retry body is `IdempotencyKeyInFlightError` in v1beta2 core. */
+        ContentItemInsertConflict: {
+            /**
+             * @description `row_number_taken`: a live item of the organization holds the `rowNumber`. `thread_index_taken`: a live item of the same thread holds the `threadIndex`.
+             * @enum {string}
+             */
+            code: "row_number_taken" | "thread_index_taken";
+            /** @description The sentence the caller is shown. */
+            message: string;
         };
         /**
          * @description A content item's own rules of engagement: a Posture preset and,
@@ -502,6 +661,25 @@ export interface components {
                 threadIndex?: number;
                 /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
                 mediaAssetIds?: string[];
+                /**
+                 * @description Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+                 * @default false
+                 */
+                approved: boolean;
+                /** @description OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created. */
+                createdByClient?: string;
+                /**
+                 * @description The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+                 * @enum {string}
+                 */
+                approvalPolicy?: "required" | "not_required" | "inherit";
+                /** @description Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped. */
+                readonly approvalRequired?: boolean;
+                /**
+                 * @description Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+                 * @enum {string}
+                 */
+                readonly approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
             }[];
         };
     };
@@ -542,8 +720,17 @@ export interface components {
                 "text/plain": string;
             };
         };
-        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex */
+        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber. Nothing changes. */
         409: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Unprocessable - the Idempotency-Key was already used with a different request body */
+        422: {
             headers: {
                 [name: string]: unknown;
             };
@@ -558,6 +745,31 @@ export interface components {
             };
             content: {
                 "text/plain": string;
+            };
+        };
+        /** @description Conflict on insert. The body's `code` says which: `row_number_taken` or `thread_index_taken` is permanent for this payload, and `idempotency_key_in_flight` is a retry whose first request with the same Idempotency-Key is still being processed. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Nothing is inserted in any case. */
+        InsertConflict: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /**
+                     * @description `row_number_taken`: a live item of the organization holds the `rowNumber`. `thread_index_taken`: a live item of the same thread holds the `threadIndex`.
+                     * @enum {string}
+                     */
+                    code: "row_number_taken" | "thread_index_taken";
+                    /** @description The sentence the caller is shown. */
+                    message: string;
+                } | {
+                    /**
+                     * @description Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+                     * @enum {string}
+                     */
+                    code: "idempotency_key_in_flight";
+                    /** @description The sentence the caller is shown. */
+                    message: string;
+                };
             };
         };
         /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
@@ -597,6 +809,10 @@ export interface components {
          *     whose `threadId` names it.
          */
         threadId: string;
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        currentOrgId: string;
+        /** @description Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
+        idempotencyKey: string;
         /** @description Content item ID */
         contentItemId: string;
         /** @description Get responses by page */
@@ -645,7 +861,10 @@ export interface operations {
                  */
                 threadId?: string;
             };
-            header?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                "X-Current-Orgid"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -756,8 +975,36 @@ export interface operations {
                             threadIndex?: number;
                             /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
                             mediaAssetIds?: string[];
+                            /**
+                             * @description Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+                             * @default false
+                             */
+                            approved: boolean;
+                            /** @description OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created. */
+                            createdByClient?: string;
+                            /**
+                             * @description The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+                             * @enum {string}
+                             */
+                            approvalPolicy?: "required" | "not_required" | "inherit";
+                            /** @description Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped. */
+                            readonly approvalRequired?: boolean;
+                            /**
+                             * @description Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+                             * @enum {string}
+                             */
+                            readonly approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
                         }[];
                     };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */
@@ -826,7 +1073,10 @@ export interface operations {
     insertContentItem: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -925,6 +1175,25 @@ export interface operations {
                      *     clients send the whole item without it); an empty array clears it.
                      */
                     mediaAssetIds?: string[];
+                    /**
+                     * @description The item's own approval policy. Optional: omitted on insert, the
+                     *     item inherits; omitted on update, the stored value is kept;
+                     *     `inherit` on update clears an explicit value back to inherit; the
+                     *     field does not accept null.
+                     *     A caller without Decide Content Item Approvals in the session
+                     *     organization is refused with a 403 and nothing changes when it
+                     *     sends a value that would change the stored one: on insert,
+                     *     `required` or `not_required`; on update, a value different from
+                     *     the stored one (absent and `inherit` are one value, since the
+                     *     server stores `inherit` as null). Sending back the unchanged stored value
+                     *     is accepted, and an omitted value on update keeps the stored one and is
+                     *     never refused. An AI app token never carries that key. Interim: until
+                     *     the upstream policies exist, `inherit` or absent resolves to
+                     *     `required`, and the item's approval source is `item` for an
+                     *     explicit value or `fallback` for `inherit` or absent.
+                     * @enum {string}
+                     */
+                    approvalPolicy?: "required" | "not_required" | "inherit";
                 };
             };
         };
@@ -1026,6 +1295,25 @@ export interface operations {
                         threadIndex?: number;
                         /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
                         mediaAssetIds?: string[];
+                        /**
+                         * @description Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+                         * @default false
+                         */
+                        approved: boolean;
+                        /** @description OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created. */
+                        createdByClient?: string;
+                        /**
+                         * @description The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+                         * @enum {string}
+                         */
+                        approvalPolicy?: "required" | "not_required" | "inherit";
+                        /** @description Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped. */
+                        readonly approvalRequired?: boolean;
+                        /**
+                         * @description Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+                         * @enum {string}
+                         */
+                        readonly approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
                     };
                 };
             };
@@ -1065,8 +1353,33 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex */
+            /** @description Conflict on insert. The body's `code` says which: `row_number_taken` or `thread_index_taken` is permanent for this payload, and `idempotency_key_in_flight` is a retry whose first request with the same Idempotency-Key is still being processed. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Nothing is inserted in any case. */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description `row_number_taken`: a live item of the organization holds the `rowNumber`. `thread_index_taken`: a live item of the same thread holds the `threadIndex`.
+                         * @enum {string}
+                         */
+                        code: "row_number_taken" | "thread_index_taken";
+                        /** @description The sentence the caller is shown. */
+                        message: string;
+                    } | {
+                        /**
+                         * @description Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+                         * @enum {string}
+                         */
+                        code: "idempotency_key_in_flight";
+                        /** @description The sentence the caller is shown. */
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unprocessable - the Idempotency-Key was already used with a different request body */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1113,7 +1426,10 @@ export interface operations {
     getContentItem: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                "X-Current-Orgid"?: string;
+            };
             path: {
                 /** @description Content item ID */
                 contentItemId: string;
@@ -1219,6 +1535,25 @@ export interface operations {
                         threadIndex?: number;
                         /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
                         mediaAssetIds?: string[];
+                        /**
+                         * @description Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+                         * @default false
+                         */
+                        approved: boolean;
+                        /** @description OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created. */
+                        createdByClient?: string;
+                        /**
+                         * @description The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+                         * @enum {string}
+                         */
+                        approvalPolicy?: "required" | "not_required" | "inherit";
+                        /** @description Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped. */
+                        readonly approvalRequired?: boolean;
+                        /**
+                         * @description Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+                         * @enum {string}
+                         */
+                        readonly approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
                     };
                 };
             };
@@ -1399,6 +1734,25 @@ export interface operations {
                      *     clients send the whole item without it); an empty array clears it.
                      */
                     mediaAssetIds?: string[];
+                    /**
+                     * @description The item's own approval policy. Optional: omitted on insert, the
+                     *     item inherits; omitted on update, the stored value is kept;
+                     *     `inherit` on update clears an explicit value back to inherit; the
+                     *     field does not accept null.
+                     *     A caller without Decide Content Item Approvals in the session
+                     *     organization is refused with a 403 and nothing changes when it
+                     *     sends a value that would change the stored one: on insert,
+                     *     `required` or `not_required`; on update, a value different from
+                     *     the stored one (absent and `inherit` are one value, since the
+                     *     server stores `inherit` as null). Sending back the unchanged stored value
+                     *     is accepted, and an omitted value on update keeps the stored one and is
+                     *     never refused. An AI app token never carries that key. Interim: until
+                     *     the upstream policies exist, `inherit` or absent resolves to
+                     *     `required`, and the item's approval source is `item` for an
+                     *     explicit value or `fallback` for `inherit` or absent.
+                     * @enum {string}
+                     */
+                    approvalPolicy?: "required" | "not_required" | "inherit";
                 };
             };
         };
@@ -1500,6 +1854,25 @@ export interface operations {
                         threadIndex?: number;
                         /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
                         mediaAssetIds?: string[];
+                        /**
+                         * @description Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+                         * @default false
+                         */
+                        approved: boolean;
+                        /** @description OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created. */
+                        createdByClient?: string;
+                        /**
+                         * @description The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+                         * @enum {string}
+                         */
+                        approvalPolicy?: "required" | "not_required" | "inherit";
+                        /** @description Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped. */
+                        readonly approvalRequired?: boolean;
+                        /**
+                         * @description Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+                         * @enum {string}
+                         */
+                        readonly approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
                     };
                 };
             };
@@ -1539,7 +1912,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber. Nothing changes. */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -1645,7 +2018,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber. Nothing changes. */
             409: {
                 headers: {
                     [name: string]: unknown;

@@ -498,10 +498,13 @@ type Filter = string
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 // Id defines model for id.
-type Id = uuid.UUID
+type Id = string
 
 // Order defines model for order.
 type Order = string
+
+// OrgId defines model for orgId.
+type OrgId = uuid.UUID
 
 // Page defines model for page.
 type Page = int

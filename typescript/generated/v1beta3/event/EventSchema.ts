@@ -2460,7 +2460,13 @@ const EventSchema: Record<string, unknown> = {
           "events"
         ],
         "operationId": "getEvents",
+        "x-mcp": {
+          "expose": true,
+          "title": "Get events",
+          "scope": "events:read"
+        },
         "summary": "Get events list",
+        "description": "Returns a page of events. An `X-Current-Orgid` that is not a UUID answers 400.\n",
         "parameters": [
           {
             "name": "page",
@@ -2515,6 +2521,18 @@ const EventSchema: Record<string, unknown> = {
                 "organization"
               ],
               "default": "user"
+            }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             }
           }
         ],
@@ -2858,6 +2876,16 @@ const EventSchema: Record<string, unknown> = {
                       "description": "The events returned on the current page."
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -3812,6 +3840,18 @@ const EventSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "currentOrgId": {
+        "name": "X-Current-Orgid",
+        "in": "header",
+        "required": false,
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+        "schema": {
+          "type": "string",
+          "minLength": 36,
+          "maxLength": 36,
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
       "eventId": {
         "name": "eventId",
         "in": "path",
