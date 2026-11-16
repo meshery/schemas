@@ -892,3 +892,212 @@ func TestCheckRule47_Valid205(t *testing.T) {
 		t.Errorf("expected 0 violations for 205 response without content, got %d", len(vs))
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Rule 48: Operations must have a summary or description
+// ---------------------------------------------------------------------------
+
+func makeDocWithOperation(summary, description string) *openapi3.T {
+	op := &openapi3.Operation{
+		Summary:     summary,
+		Description: description,
+		Responses:   openapi3.NewResponses(),
+	}
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	doc.Paths.Set("/api/items", &openapi3.PathItem{Get: op})
+	return doc
+}
+
+func TestCheckRule48_MissingBoth(t *testing.T) {
+	doc := makeDocWithOperation("", "")
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation when summary and description are both empty, got %d", len(vs))
+	}
+	if vs[0].RuleNumber != 48 {
+		t.Errorf("expected rule 48, got %d", vs[0].RuleNumber)
+	}
+	if vs[0].Severity != SeverityAdvisory {
+		t.Errorf("expected advisory severity by default")
+	}
+}
+
+func TestCheckRule48_SummaryOnly(t *testing.T) {
+	doc := makeDocWithOperation("List items", "")
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+	if len(vs) != 0 {
+		t.Errorf("expected 0 violations with a summary, got %d", len(vs))
+	}
+}
+
+func TestCheckRule48_DescriptionOnly(t *testing.T) {
+	doc := makeDocWithOperation("", "Returns all items.")
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+	if len(vs) != 0 {
+		t.Errorf("expected 0 violations with a description, got %d", len(vs))
+	}
+}
+
+func TestCheckRule48_WhitespaceOnlyCountsAsMissing(t *testing.T) {
+	doc := makeDocWithOperation("   ", "\n\t")
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for whitespace-only summary/description, got %d", len(vs))
+	}
+}
+
+func TestCheckRule48_StrictIsBlocking(t *testing.T) {
+	doc := makeDocWithOperation("", "")
+	vs := checkRule48("api.yml", doc, AuditOptions{Strict: true})
+	if len(vs) != 1 || vs[0].Severity != SeverityBlocking {
+		t.Fatalf("expected 1 blocking violation in strict mode, got %d", len(vs))
+	}
+}
+
+func TestCheckRule48_NilDoc(t *testing.T) {
+	if vs := checkRule48("api.yml", nil, AuditOptions{}); len(vs) != 0 {
+		t.Errorf("expected 0 violations for nil doc, got %d", len(vs))
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Rule 49: Path, query, and header parameters must have a description
+// ---------------------------------------------------------------------------
+
+func paramRef(name, in, description string) *openapi3.ParameterRef {
+	return &openapi3.ParameterRef{Value: &openapi3.Parameter{Name: name, In: in, Description: description}}
+}
+
+func TestCheckRule49_ComponentParamMissingDescription(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI:    "3.0.0",
+		Info:       &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:      openapi3.NewPaths(),
+		Components: &openapi3.Components{Parameters: openapi3.ParametersMap{"tokenId": paramRef("tokenId", "path", "")}},
+	}
+	vs := checkRule49("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for undocumented component parameter, got %d", len(vs))
+	}
+	if vs[0].RuleNumber != 49 {
+		t.Errorf("expected rule 49, got %d", vs[0].RuleNumber)
+	}
+	if !strings.Contains(vs[0].Message, "tokenId") {
+		t.Errorf("expected message to name the parameter, got %q", vs[0].Message)
+	}
+}
+
+func TestCheckRule49_ComponentParamWithDescription(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI:    "3.0.0",
+		Info:       &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:      openapi3.NewPaths(),
+		Components: &openapi3.Components{Parameters: openapi3.ParametersMap{"tokenId": paramRef("tokenId", "path", "Token ID")}},
+	}
+	if vs := checkRule49("api.yml", doc, AuditOptions{}); len(vs) != 0 {
+		t.Errorf("expected 0 violations for documented component parameter, got %d", len(vs))
+	}
+}
+
+func TestCheckRule49_RefdComponentParamSkipped(t *testing.T) {
+	// A component entry that is itself a $ref carries its description at the
+	// referenced definition, so it must not be flagged here.
+	ref := paramRef("page", "query", "")
+	ref.Ref = "../../core/api.yml#/components/parameters/page"
+	doc := &openapi3.T{
+		OpenAPI:    "3.0.0",
+		Info:       &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:      openapi3.NewPaths(),
+		Components: &openapi3.Components{Parameters: openapi3.ParametersMap{"page": ref}},
+	}
+	if vs := checkRule49("api.yml", doc, AuditOptions{}); len(vs) != 0 {
+		t.Errorf("expected 0 violations for $ref'd component parameter, got %d", len(vs))
+	}
+}
+
+func TestCheckRule49_InlineOperationParamMissingDescription(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	doc.Paths.Set("/api/items", &openapi3.PathItem{
+		Get: &openapi3.Operation{
+			Parameters: openapi3.Parameters{paramRef("search", "query", "")},
+			Responses:  openapi3.NewResponses(),
+		},
+	})
+	vs := checkRule49("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for undocumented inline operation parameter, got %d", len(vs))
+	}
+	if !strings.Contains(vs[0].Message, "GET /api/items") {
+		t.Errorf("expected message to carry the operation label, got %q", vs[0].Message)
+	}
+}
+
+func TestCheckRule49_InlinePathItemParamMissingDescription(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	doc.Paths.Set("/api/items/{itemId}", &openapi3.PathItem{
+		Parameters: openapi3.Parameters{paramRef("itemId", "path", "")},
+		Get:        &openapi3.Operation{Responses: openapi3.NewResponses()},
+	})
+	if vs := checkRule49("api.yml", doc, AuditOptions{}); len(vs) != 1 {
+		t.Fatalf("expected 1 violation for undocumented path-item parameter, got %d", len(vs))
+	}
+}
+
+func TestCheckRule49_RefdInlineParamSkipped(t *testing.T) {
+	ref := paramRef("page", "query", "")
+	ref.Ref = "#/components/parameters/page"
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	doc.Paths.Set("/api/items", &openapi3.PathItem{
+		Get: &openapi3.Operation{Parameters: openapi3.Parameters{ref}, Responses: openapi3.NewResponses()},
+	})
+	if vs := checkRule49("api.yml", doc, AuditOptions{}); len(vs) != 0 {
+		t.Errorf("expected 0 violations for $ref'd inline parameter, got %d", len(vs))
+	}
+}
+
+func TestCheckRule49_CookieParamExcluded(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI:    "3.0.0",
+		Info:       &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:      openapi3.NewPaths(),
+		Components: &openapi3.Components{Parameters: openapi3.ParametersMap{"session": paramRef("session", "cookie", "")}},
+	}
+	if vs := checkRule49("api.yml", doc, AuditOptions{}); len(vs) != 0 {
+		t.Errorf("expected cookie parameters to be out of scope, got %d violations", len(vs))
+	}
+}
+
+func TestCheckRule49_StrictIsBlocking(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI:    "3.0.0",
+		Info:       &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:      openapi3.NewPaths(),
+		Components: &openapi3.Components{Parameters: openapi3.ParametersMap{"tokenId": paramRef("tokenId", "path", "")}},
+	}
+	vs := checkRule49("api.yml", doc, AuditOptions{Strict: true})
+	if len(vs) != 1 || vs[0].Severity != SeverityBlocking {
+		t.Fatalf("expected 1 blocking violation in strict mode, got %d", len(vs))
+	}
+}
+
+func TestCheckRule49_NilDoc(t *testing.T) {
+	if vs := checkRule49("api.yml", nil, AuditOptions{}); len(vs) != 0 {
+		t.Errorf("expected 0 violations for nil doc, got %d", len(vs))
+	}
+}
