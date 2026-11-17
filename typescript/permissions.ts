@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "e0e93dd7284f2834f1d2b5683e27025aa3747e63ff4d78d8624039dc9fa9232a" as const;
+export const PERMISSIONS_INDEX_ID = "750cabe9ca4346e97f35dab5285f6ef2cc47e0ae5d4622ed09b8fda708cced0e" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -5152,6 +5152,50 @@ export const Keys = {
     subcategory: "Diagnostics",
     function: "Access Diagnostics",
     description: "Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces."
+  },
+
+  /**
+   * Set or lift the organization-wide schedule pause, and nothing else about the organization
+   */
+  WorkflowManagementPauseSchedules: {
+    id: "652c24f7-7fce-47c8-8bef-785ea4e788c4" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Pause schedules",
+    description: "Set or lift the organization-wide schedule pause, and nothing else about the organization"
+  },
+
+  /**
+   * See the requests of the organization, such as AI app writes waiting for approval, and who decided each
+   */
+  WorkflowManagementViewRequests: {
+    id: "471f38b7-c09a-4ff8-9620-0e5f5fdc822a" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Requests",
+    function: "View Requests",
+    description: "See the requests of the organization, such as AI app writes waiting for approval, and who decided each"
+  },
+
+  /**
+   * Approve or deny a content item written by an AI app, through its content_item_approval request
+   */
+  CatalogManagementDecideContentItemApprovals: {
+    id: "c7bbef80-dd16-4396-b028-152f1f85f080" as PermissionKey,
+    category: "Catalog Management",
+    subcategory: "Content Items",
+    function: "Decide Content Item Approvals",
+    description: "Approve or deny a content item written by an AI app, through its content_item_approval request"
+  },
+
+  /**
+   * Mark your own events read or unread, one at a time or all at once. Changes only the read status; never deletes an event or alters what it records.
+   */
+  EventsManagementChangeEventReadStatus: {
+    id: "671f3323-f311-4ea0-9884-539291691bbc" as PermissionKey,
+    category: "Events Management",
+    subcategory: "Events",
+    function: "Change Event Read Status",
+    description: "Mark your own events read or unread, one at a time or all at once. Changes only the read status; never deletes an event or alters what it records."
   }
 } as const;
 
@@ -7483,7 +7527,27 @@ export const PermissionKeys = {
   /**
    * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
    */
-  BlowhornAccessDiagnostics: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey
+  BlowhornAccessDiagnostics: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey,
+
+  /**
+   * Set or lift the organization-wide schedule pause, and nothing else about the organization
+   */
+  WorkflowManagementPauseSchedules: "652c24f7-7fce-47c8-8bef-785ea4e788c4" as PermissionKey,
+
+  /**
+   * See the requests of the organization, such as AI app writes waiting for approval, and who decided each
+   */
+  WorkflowManagementViewRequests: "471f38b7-c09a-4ff8-9620-0e5f5fdc822a" as PermissionKey,
+
+  /**
+   * Approve or deny a content item written by an AI app, through its content_item_approval request
+   */
+  CatalogManagementDecideContentItemApprovals: "c7bbef80-dd16-4396-b028-152f1f85f080" as PermissionKey,
+
+  /**
+   * Mark your own events read or unread, one at a time or all at once. Changes only the read status; never deletes an event or alters what it records.
+   */
+  EventsManagementChangeEventReadStatus: "671f3323-f311-4ea0-9884-539291691bbc" as PermissionKey
 } as const;
 
 /**
@@ -7505,3 +7569,57 @@ export const AllPermissionKeys = Object.values(PermissionKeys);
  * Array of all permission key names for iteration.
  */
 export const AllPermissionKeyNames = Object.keys(PermissionKeys) as PermissionKeyName[];
+
+/**
+ * OAuth scopes. A scope names exactly one keychain and lists the permission
+ * keys that keychain carries for it. Generated from build/oauth-scopes.json.
+ */
+export const OAuthScopes = {
+  "content:read": {
+    description: "Read the content items of the organization.",
+    keychain: "Content View",
+    keychainId: "8108fb73-4fb2-4b57-87e7-6e18cb540b4b",
+    keys: [PermissionKeys.CatalogManagementViewContentItems],
+  },
+  "content:write": {
+    description: "Create and edit content items of the organization. Never approves them.",
+    keychain: "Content Edit",
+    keychainId: "f6f0a84a-29f5-4dd4-ba0c-b9c300429406",
+    keys: [PermissionKeys.CatalogManagementCreateContentItem, PermissionKeys.CatalogManagementEditContentItem],
+  },
+  "schedule:read": {
+    description: "Read the schedules of the organization.",
+    keychain: "Schedule View",
+    keychainId: "e3d90ac5-2bfa-4e5d-b7e8-356d3a258698",
+    keys: [PermissionKeys.WorkflowManagementViewSchedules],
+  },
+  "schedule:write": {
+    description: "Create and change schedules of the organization, and set or lift its schedule pause.",
+    keychain: "Schedule Edit",
+    keychainId: "7d41ff30-4224-4724-a944-9f9b9d7bbe68",
+    keys: [PermissionKeys.WorkflowManagementCreateSchedule, PermissionKeys.WorkflowManagementEditSchedule, PermissionKeys.WorkflowManagementPauseSchedules],
+  },
+  "connections:read": {
+    description: "Read the connections of the organization.",
+    keychain: "Connection View",
+    keychainId: "2c6d7797-aff8-431c-90aa-36971b871e88",
+    keys: [PermissionKeys.WorkspaceManagementViewConnections],
+  },
+  "events:read": {
+    description: "Read the events of the organization, including run results.",
+    keychain: "Event View",
+    keychainId: "25b6fbbb-6f83-43f9-a2d6-d5b722113665",
+    keys: [PermissionKeys.EventsManagementViewEvents],
+  },
+  "account:read": {
+    description: "Read the signed-in account and the features of the organization.",
+    keychain: "Account View",
+    keychainId: "d33444c0-59b2-42e2-9f14-e9ce9ead9206",
+    keys: [PermissionKeys.AccountManagementViewProfile],
+  },
+} as const;
+
+/**
+ * Type representing all valid OAuth scope strings.
+ */
+export type OAuthScope = keyof typeof OAuthScopes;

@@ -12,7 +12,7 @@
  *
  * WHAT IT DOES:
  *   1. Discovers all schema packages by walking schemas/constructs/
- *   2. Bundles individual OpenAPI YAML schemas into dereferenced JSON files
+ *   2. Bundles individual OpenAPI YAML schemas into resolved JSON files
  *   3. Merges eligible construct OpenAPI specs into a unified merged_openapi.yml
  *   4. Filters merged specs by x-internal tag to create cloud_openapi.yml and meshery_openapi.yml
  *
@@ -412,6 +412,19 @@ async function dereferenceOpenapiSpec(inputPath) {
   return $RefParser.dereference(inputPath);
 }
 
+async function bundleConstructSpec(inputPath, pkg) {
+  // Keep component references for controllers-config. Dereferencing its
+  // shared MesheryOperatorConfig duplicates a nested model name in
+  // openapi-python-client 0.29.1, which then drops both 200 responses. Other
+  // constructs stay dereferenced because component names can collide across
+  // construct versions during the merge.
+  if (pkg?.version === "v1alpha1" && pkg?.dirName === "controllers_config") {
+    return $RefParser.bundle(inputPath);
+  }
+
+  return dereferenceOpenapiSpec(inputPath);
+}
+
 /**
  * Bundle a single OpenAPI schema
  * @param {Object} pkg - Package definition
@@ -431,8 +444,8 @@ async function bundleSchema(pkg) {
 
   logger.step(`Bundling: ${pkg.name} (${pkg.version})...`);
 
-  const dereferencedSpec = await dereferenceOpenapiSpec(inputPath);
-  fs.writeFileSync(outputPath, `${JSON.stringify(dereferencedSpec, null, 2)}\n`, "utf-8");
+  const bundledSpec = await bundleConstructSpec(inputPath, pkg);
+  fs.writeFileSync(outputPath, `${JSON.stringify(bundledSpec, null, 2)}\n`, "utf-8");
 
   logger.success(`Bundled: ${paths.relativePath(outputPath)}`);
 }
@@ -565,6 +578,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  bundleConstructSpec,
   dereferenceOpenapiSpec,
   mergeOpenapiSpec,
   mergeOpenapiSpecs,

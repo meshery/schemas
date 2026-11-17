@@ -575,6 +575,9 @@ type ConnectionId = uuid.UUID
 // ConnectionKind defines model for connectionKind.
 type ConnectionKind = string
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // EnvironmentId defines model for environmentId.
 type EnvironmentId = uuid.UUID
 

@@ -61,6 +61,12 @@ rejected invalid IDs, names, statuses, and unknown properties. Running
 `node --test tests/environment-connections-response.test.js` directly needs the
 bundled specs built first.
 
+## TypeScript unit tests
+
+`make test-ts` (`npm test`) runs every `typescript/**/*.test.ts` under Node's native test runner. It needs Node 22.18 or later, where type stripping is on by default: 22.6 to 22.17 have it only behind `--experimental-strip-types`, which `npm test` does not pass. The `blocking-validation` job in `.github/workflows/schema-audit.yml` runs it on every pull request that touches `typescript/`, `schemas/`, `package.json` or `package-lock.json`, right after `npm ci`, and `generate-artifacts-from-schemas.yml` runs it again on `master` after `make build`.
+
+The pull-request run happens before any build, so a test reads schema YAML from source and imports generated output only with `import type`, which is erased at runtime. A test that needs runtime generated code would read the committed output, which is stale on a schema change until `master` regenerates it. Keep that kind of test in `generate-artifacts-from-schemas.yml`.
+
 ## Consumer audit
 
 The consumer audit joins the schemas endpoint index against the routers and RTK Query clients of the downstream repos, producing a per-endpoint coverage and drift report. Three parsers are registered:
@@ -122,6 +128,8 @@ If the secret is ever removed or becomes under-scoped, `actions/checkout@v7` rec
 ## Python client generation (pilot, issue #1240)
 
 Typed Python clients are generated from the already-bundled `_openapi_build` specs with [`openapi-python-client`](https://github.com/openapi-generators/openapi-python-client), pinned to an exact version in `build/lib/config.js` (`config.python`) together with the `ruff` version that runs its post-processing (fix + format), so committed output reproduces byte-for-byte. That object is the single source of truth for both pins, the pilot scope, and the warning allow-list; the CI install steps read the pins from it rather than duplicating them, and `build/generate-python.js` refuses to run against any other generator or ruff version.
+
+The full Meshery bundle preserves component references for `v1alpha1/controllers_config`. Its GET and PUT responses share `MesheryOperatorConfig`; expanding those references duplicates nested model names in `openapi-python-client` 0.29.1 and silently omits both `200` response parsers. Other construct bundles remain dereferenced because component names can overlap across versions. If another active controllers-config version is added, version-scope its components before merging it alongside these references; merged component names currently use the construct title only.
 
 - **Pilot scope:** `config.python.pilotPackages` (currently `v1beta2/key` - the current canonical-casing key construct; `v1beta1/key` is `x-deprecated` and excluded from the merged bundles, so it is not piloted). `build/generate-python.js` resolves the pilot through the shared `build/lib/config.js` discovery and requires `bundle-openapi` first, like the other generators.
 - **Layout:** one `meshery-schemas` distribution under `python/generated/` (hatchling build, `src/` layout). `pyproject.toml` and `src/meshery_schemas/__init__.py` are hand-maintained scaffolding; each pilot construct lands as a generated subpackage (`src/meshery_schemas/key/`, PEP 561 `py.typed` included). The pinned generator cannot emit a hatchling project itself, so generation runs with `--meta none` into a temp staging dir and the script assembles the tree. Never hand-edit the generated `src/meshery_schemas/<construct>/` subpackages or `.python-gen-manifest.json` - automation owns them on `master`, same as `models/` and `typescript/generated/`.

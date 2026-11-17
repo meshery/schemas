@@ -188,6 +188,59 @@ const ViewSchema: Record<string, unknown> = {
       }
     },
     "schemas": {
+      "ViewFilters": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Resource filters that define which Meshery resources this view displays.",
+        "properties": {
+          "k8sclusterIds": {
+            "type": "array",
+            "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "kinds": {
+            "type": "array",
+            "description": "Resource kinds included in the view.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "models": {
+            "type": "array",
+            "description": "Meshery models included in the view.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "namespaces": {
+            "type": "array",
+            "description": "Kubernetes namespaces included in the view.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "labels": {
+            "type": "array",
+            "description": "Label selectors in key=value form.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "search": {
+            "type": "string",
+            "description": "Optional text used to filter resources in the view."
+          }
+        },
+        "x-go-type": "core.Map",
+        "x-go-type-import": {
+          "path": "github.com/meshery/schemas/models/core",
+          "name": "core"
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
       "MesheryView": {
         "$id": "https://schemas.meshery.io/view.yaml",
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -253,22 +306,66 @@ const ViewSchema: Record<string, unknown> = {
             }
           },
           "filters": {
-            "type": "object",
             "description": "Filter configuration that defines which resources this view displays.",
-            "x-go-type": "core.Map",
-            "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/core",
-              "name": "core"
-            },
             "x-go-type-skip-optional-pointer": true,
             "x-order": 4,
             "x-oapi-codegen-extra-tags": {
               "db": "filters",
               "json": "filters"
+            },
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "k8sclusterIds": {
+                "type": "array",
+                "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "kinds": {
+                "type": "array",
+                "description": "Resource kinds included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "models": {
+                "type": "array",
+                "description": "Meshery models included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "namespaces": {
+                "type": "array",
+                "description": "Kubernetes namespaces included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "labels": {
+                "type": "array",
+                "description": "Label selectors in key=value form.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "search": {
+                "type": "string",
+                "description": "Optional text used to filter resources in the view."
+              }
+            },
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
             }
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Additional metadata associated with the view.",
             "x-go-type": "core.Map",
             "x-go-type-import": {
@@ -383,21 +480,65 @@ const ViewSchema: Record<string, unknown> = {
             }
           },
           "filters": {
-            "type": "object",
             "description": "Filter configuration for this view.",
-            "x-go-type": "core.Map",
-            "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/core",
-              "name": "core"
-            },
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "filters",
               "json": "filters,omitempty"
+            },
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "k8sclusterIds": {
+                "type": "array",
+                "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "kinds": {
+                "type": "array",
+                "description": "Resource kinds included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "models": {
+                "type": "array",
+                "description": "Meshery models included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "namespaces": {
+                "type": "array",
+                "description": "Kubernetes namespaces included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "labels": {
+                "type": "array",
+                "description": "Label selectors in key=value form.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "search": {
+                "type": "string",
+                "description": "Optional text used to filter resources in the view."
+              }
+            },
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
             }
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Metadata associated with the view.",
             "x-go-type": "core.Map",
             "x-go-type-import": {
@@ -531,16 +672,59 @@ const ViewSchema: Record<string, unknown> = {
             }
           },
           "filters": {
-            "type": "object",
             "description": "Filter configuration for this view.",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "filters,omitempty"
+            },
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "k8sclusterIds": {
+                "type": "array",
+                "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "kinds": {
+                "type": "array",
+                "description": "Resource kinds included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "models": {
+                "type": "array",
+                "description": "Meshery models included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "namespaces": {
+                "type": "array",
+                "description": "Kubernetes namespaces included in the view.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "labels": {
+                "type": "array",
+                "description": "Label selectors in key=value form.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "search": {
+                "type": "string",
+                "description": "Optional text used to filter resources in the view."
+              }
+            },
             "x-go-type": "core.Map",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core",
               "name": "core"
-            },
-            "x-go-type-skip-optional-pointer": true,
-            "x-oapi-codegen-extra-tags": {
-              "json": "filters,omitempty"
             }
           },
           "visibility": {
@@ -553,6 +737,7 @@ const ViewSchema: Record<string, unknown> = {
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Metadata associated with the view.",
             "x-go-type": "core.Map",
             "x-go-type-import": {
@@ -687,21 +872,65 @@ const ViewSchema: Record<string, unknown> = {
                   }
                 },
                 "filters": {
-                  "type": "object",
                   "description": "Filter configuration for this view.",
-                  "x-go-type": "core.Map",
-                  "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/core",
-                    "name": "core"
-                  },
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "filters",
                     "json": "filters,omitempty"
+                  },
+                  "type": "object",
+                  "additionalProperties": true,
+                  "properties": {
+                    "k8sclusterIds": {
+                      "type": "array",
+                      "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    },
+                    "kinds": {
+                      "type": "array",
+                      "description": "Resource kinds included in the view.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "models": {
+                      "type": "array",
+                      "description": "Meshery models included in the view.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "namespaces": {
+                      "type": "array",
+                      "description": "Kubernetes namespaces included in the view.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "labels": {
+                      "type": "array",
+                      "description": "Label selectors in key=value form.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "search": {
+                      "type": "string",
+                      "description": "Optional text used to filter resources in the view."
+                    }
+                  },
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
                   }
                 },
                 "metadata": {
                   "type": "object",
+                  "additionalProperties": true,
                   "description": "Metadata associated with the view.",
                   "x-go-type": "core.Map",
                   "x-go-type-import": {
@@ -846,16 +1075,59 @@ const ViewSchema: Record<string, unknown> = {
                   }
                 },
                 "filters": {
-                  "type": "object",
                   "description": "Filter configuration for this view.",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "filters,omitempty"
+                  },
+                  "type": "object",
+                  "additionalProperties": true,
+                  "properties": {
+                    "k8sclusterIds": {
+                      "type": "array",
+                      "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    },
+                    "kinds": {
+                      "type": "array",
+                      "description": "Resource kinds included in the view.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "models": {
+                      "type": "array",
+                      "description": "Meshery models included in the view.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "namespaces": {
+                      "type": "array",
+                      "description": "Kubernetes namespaces included in the view.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "labels": {
+                      "type": "array",
+                      "description": "Label selectors in key=value form.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "search": {
+                      "type": "string",
+                      "description": "Optional text used to filter resources in the view."
+                    }
+                  },
                   "x-go-type": "core.Map",
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core",
                     "name": "core"
-                  },
-                  "x-go-type-skip-optional-pointer": true,
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "filters,omitempty"
                   }
                 },
                 "visibility": {
@@ -868,6 +1140,7 @@ const ViewSchema: Record<string, unknown> = {
                 },
                 "metadata": {
                   "type": "object",
+                  "additionalProperties": true,
                   "description": "Metadata associated with the view.",
                   "x-go-type": "core.Map",
                   "x-go-type-import": {
@@ -974,16 +1247,59 @@ const ViewSchema: Record<string, unknown> = {
                     }
                   },
                   "filters": {
-                    "type": "object",
                     "description": "Filter configuration for this view.",
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "filters,omitempty"
+                    },
+                    "type": "object",
+                    "additionalProperties": true,
+                    "properties": {
+                      "k8sclusterIds": {
+                        "type": "array",
+                        "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      },
+                      "kinds": {
+                        "type": "array",
+                        "description": "Resource kinds included in the view.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "models": {
+                        "type": "array",
+                        "description": "Meshery models included in the view.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "namespaces": {
+                        "type": "array",
+                        "description": "Kubernetes namespaces included in the view.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "labels": {
+                        "type": "array",
+                        "description": "Label selectors in key=value form.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "search": {
+                        "type": "string",
+                        "description": "Optional text used to filter resources in the view."
+                      }
+                    },
                     "x-go-type": "core.Map",
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core",
                       "name": "core"
-                    },
-                    "x-go-type-skip-optional-pointer": true,
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "filters,omitempty"
                     }
                   },
                   "visibility": {
@@ -996,6 +1312,7 @@ const ViewSchema: Record<string, unknown> = {
                   },
                   "metadata": {
                     "type": "object",
+                    "additionalProperties": true,
                     "description": "Metadata associated with the view.",
                     "x-go-type": "core.Map",
                     "x-go-type-import": {
@@ -1082,22 +1399,66 @@ const ViewSchema: Record<string, unknown> = {
                       }
                     },
                     "filters": {
-                      "type": "object",
                       "description": "Filter configuration that defines which resources this view displays.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "filters",
                         "json": "filters"
+                      },
+                      "type": "object",
+                      "additionalProperties": true,
+                      "properties": {
+                        "k8sclusterIds": {
+                          "type": "array",
+                          "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "kinds": {
+                          "type": "array",
+                          "description": "Resource kinds included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "models": {
+                          "type": "array",
+                          "description": "Meshery models included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "namespaces": {
+                          "type": "array",
+                          "description": "Kubernetes namespaces included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "labels": {
+                          "type": "array",
+                          "description": "Label selectors in key=value form.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "search": {
+                          "type": "string",
+                          "description": "Optional text used to filter resources in the view."
+                        }
+                      },
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
                       }
                     },
                     "metadata": {
                       "type": "object",
+                      "additionalProperties": true,
                       "description": "Additional metadata associated with the view.",
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
@@ -1384,21 +1745,65 @@ const ViewSchema: Record<string, unknown> = {
                             }
                           },
                           "filters": {
-                            "type": "object",
                             "description": "Filter configuration for this view.",
-                            "x-go-type": "core.Map",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/core",
-                              "name": "core"
-                            },
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "filters",
                               "json": "filters,omitempty"
+                            },
+                            "type": "object",
+                            "additionalProperties": true,
+                            "properties": {
+                              "k8sclusterIds": {
+                                "type": "array",
+                                "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                                "items": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                }
+                              },
+                              "kinds": {
+                                "type": "array",
+                                "description": "Resource kinds included in the view.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "models": {
+                                "type": "array",
+                                "description": "Meshery models included in the view.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "namespaces": {
+                                "type": "array",
+                                "description": "Kubernetes namespaces included in the view.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "labels": {
+                                "type": "array",
+                                "description": "Label selectors in key=value form.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "search": {
+                                "type": "string",
+                                "description": "Optional text used to filter resources in the view."
+                              }
+                            },
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
                             }
                           },
                           "metadata": {
                             "type": "object",
+                            "additionalProperties": true,
                             "description": "Metadata associated with the view.",
                             "x-go-type": "core.Map",
                             "x-go-type-import": {
@@ -1763,22 +2168,66 @@ const ViewSchema: Record<string, unknown> = {
                       }
                     },
                     "filters": {
-                      "type": "object",
                       "description": "Filter configuration that defines which resources this view displays.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "filters",
                         "json": "filters"
+                      },
+                      "type": "object",
+                      "additionalProperties": true,
+                      "properties": {
+                        "k8sclusterIds": {
+                          "type": "array",
+                          "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "kinds": {
+                          "type": "array",
+                          "description": "Resource kinds included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "models": {
+                          "type": "array",
+                          "description": "Meshery models included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "namespaces": {
+                          "type": "array",
+                          "description": "Kubernetes namespaces included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "labels": {
+                          "type": "array",
+                          "description": "Label selectors in key=value form.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "search": {
+                          "type": "string",
+                          "description": "Optional text used to filter resources in the view."
+                        }
+                      },
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
                       }
                     },
                     "metadata": {
                       "type": "object",
+                      "additionalProperties": true,
                       "description": "Additional metadata associated with the view.",
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
@@ -1949,16 +2398,59 @@ const ViewSchema: Record<string, unknown> = {
                     }
                   },
                   "filters": {
-                    "type": "object",
                     "description": "Filter configuration for this view.",
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "filters,omitempty"
+                    },
+                    "type": "object",
+                    "additionalProperties": true,
+                    "properties": {
+                      "k8sclusterIds": {
+                        "type": "array",
+                        "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      },
+                      "kinds": {
+                        "type": "array",
+                        "description": "Resource kinds included in the view.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "models": {
+                        "type": "array",
+                        "description": "Meshery models included in the view.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "namespaces": {
+                        "type": "array",
+                        "description": "Kubernetes namespaces included in the view.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "labels": {
+                        "type": "array",
+                        "description": "Label selectors in key=value form.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "search": {
+                        "type": "string",
+                        "description": "Optional text used to filter resources in the view."
+                      }
+                    },
                     "x-go-type": "core.Map",
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core",
                       "name": "core"
-                    },
-                    "x-go-type-skip-optional-pointer": true,
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "filters,omitempty"
                     }
                   },
                   "visibility": {
@@ -1971,6 +2463,7 @@ const ViewSchema: Record<string, unknown> = {
                   },
                   "metadata": {
                     "type": "object",
+                    "additionalProperties": true,
                     "description": "Metadata associated with the view.",
                     "x-go-type": "core.Map",
                     "x-go-type-import": {
@@ -2057,22 +2550,66 @@ const ViewSchema: Record<string, unknown> = {
                       }
                     },
                     "filters": {
-                      "type": "object",
                       "description": "Filter configuration that defines which resources this view displays.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "filters",
                         "json": "filters"
+                      },
+                      "type": "object",
+                      "additionalProperties": true,
+                      "properties": {
+                        "k8sclusterIds": {
+                          "type": "array",
+                          "description": "Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "kinds": {
+                          "type": "array",
+                          "description": "Resource kinds included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "models": {
+                          "type": "array",
+                          "description": "Meshery models included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "namespaces": {
+                          "type": "array",
+                          "description": "Kubernetes namespaces included in the view.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "labels": {
+                          "type": "array",
+                          "description": "Label selectors in key=value form.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "search": {
+                          "type": "string",
+                          "description": "Optional text used to filter resources in the view."
+                        }
+                      },
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
                       }
                     },
                     "metadata": {
                       "type": "object",
+                      "additionalProperties": true,
                       "description": "Additional metadata associated with the view.",
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
