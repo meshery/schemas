@@ -245,6 +245,8 @@ paths:
           description: registrationId is not a valid UUID.
         "401":
           $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 
   /api/integrations/connections/{connectionId}:
     get:
@@ -520,6 +522,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "404":
