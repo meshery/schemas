@@ -367,7 +367,13 @@ const FeatureSchema: Record<string, unknown> = {
           "Features"
         ],
         "summary": "Get the active features entitled to an organization through its subscriptions",
+        "description": "Returns the features the organization's active subscriptions entitle it to. When `X-Current-Orgid` is also sent, it must name the same organization as `orgId`; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, `orgId` must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.\n",
         "operationId": "getFeaturesByOrganization",
+        "x-mcp": {
+          "expose": true,
+          "title": "Get the features of an organization",
+          "scope": "account:read"
+        },
         "parameters": [
           {
             "name": "orgId",
@@ -382,6 +388,18 @@ const FeatureSchema: Record<string, unknown> = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               }
+            }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             }
           }
         ],
@@ -671,6 +689,16 @@ const FeatureSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -739,6 +767,18 @@ const FeatureSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "currentOrgId": {
+        "name": "X-Current-Orgid",
+        "in": "header",
+        "required": false,
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+        "schema": {
+          "type": "string",
+          "minLength": 36,
+          "maxLength": 36,
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
       "orgId": {
         "name": "orgId",
         "in": "path",

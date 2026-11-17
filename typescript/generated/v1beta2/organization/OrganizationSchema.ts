@@ -447,7 +447,7 @@ const OrganizationSchema: Record<string, unknown> = {
                                   },
                                   "schedulePause": {
                                     "x-go-type": "SchedulePause",
-                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                                     "type": "object",
                                     "additionalProperties": false,
                                     "properties": {
@@ -862,7 +862,7 @@ const OrganizationSchema: Record<string, unknown> = {
                       },
                       "schedulePause": {
                         "x-go-type": "SchedulePausePayload",
-                        "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
@@ -1248,7 +1248,7 @@ const OrganizationSchema: Record<string, unknown> = {
                                   },
                                   "schedulePause": {
                                     "x-go-type": "SchedulePause",
-                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                                     "type": "object",
                                     "additionalProperties": false,
                                     "properties": {
@@ -1948,7 +1948,7 @@ const OrganizationSchema: Record<string, unknown> = {
                                   },
                                   "schedulePause": {
                                     "x-go-type": "SchedulePause",
-                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                                     "type": "object",
                                     "additionalProperties": false,
                                     "properties": {
@@ -2499,7 +2499,7 @@ const OrganizationSchema: Record<string, unknown> = {
                       },
                       "schedulePause": {
                         "x-go-type": "SchedulePausePayload",
-                        "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
@@ -2885,7 +2885,7 @@ const OrganizationSchema: Record<string, unknown> = {
                                   },
                                   "schedulePause": {
                                     "x-go-type": "SchedulePause",
-                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                                     "type": "object",
                                     "additionalProperties": false,
                                     "properties": {
@@ -3559,7 +3559,7 @@ const OrganizationSchema: Record<string, unknown> = {
                       },
                       "schedulePause": {
                         "x-go-type": "SchedulePausePayload",
-                        "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
@@ -3945,7 +3945,7 @@ const OrganizationSchema: Record<string, unknown> = {
                                   },
                                   "schedulePause": {
                                     "x-go-type": "SchedulePause",
-                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                                     "type": "object",
                                     "additionalProperties": false,
                                     "properties": {
@@ -4399,7 +4399,7 @@ const OrganizationSchema: Record<string, unknown> = {
                         },
                         "schedulePause": {
                           "x-go-type": "SchedulePause",
-                          "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                           "type": "object",
                           "additionalProperties": false,
                           "properties": {
@@ -4794,7 +4794,7 @@ const OrganizationSchema: Record<string, unknown> = {
                   },
                   "schedulePause": {
                     "x-go-type": "SchedulePausePayload",
-                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause.",
+                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause.",
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
@@ -5111,7 +5111,7 @@ const OrganizationSchema: Record<string, unknown> = {
                         },
                         "schedulePause": {
                           "x-go-type": "SchedulePause",
-                          "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                           "type": "object",
                           "additionalProperties": false,
                           "properties": {
@@ -5185,6 +5185,157 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "412": {
             "description": "Precondition failed - `If-Match` does not match the current entity tag of the organization's preferences, so nothing was written. Read the preferences again and reapply the change."
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/schedule-pause": {
+      "put": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Set or lift the organization schedule pause",
+        "description": "Sets or lifts the organization-wide schedule pause and changes nothing else about the organization: no other preference, no branding, no links. The body is the closed SchedulePausePayload (`paused` required, `reason` optional); an echoed `pausedAt` or `pausedBy` is refused with 400. `paused` true pauses every schedule in the organization, and the server records `pausedAt` and `pausedBy`. `paused` false lifts the pause and clears `reason`, `pausedAt` and `pausedBy`. The call is idempotent: sending the state the organization is already in succeeds and returns it. It answers the resulting SchedulePause. Authorization is one permission key in the organization named by `orgId` (\"Workflow Management / Schedules: Pause schedules\", in the Schedule Edit keychain, whose OAuth scope is `schedule:write`), seeded to the organization admin role; a caller without it receives 403 and nothing is written. The broad updateOrg and patchOrgPreferences operations can still change `schedulePause`; there the change requires organization admin, as before. The caller must be a live member of the organization named by `orgId`; a caller who is not receives 404, and this operation does not take `X-Current-Orgid` (see the organization selector in docs/mcp-operation-contract.md). See docs/schedule-pause-contract.md.",
+        "operationId": "updateOrgSchedulePause",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission.",
+                "required": [
+                  "paused"
+                ],
+                "properties": {
+                  "paused": {
+                    "type": "boolean",
+                    "description": "Whether every schedule in the organization is paused."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Reason given for the pause. Cleared when the pause is lifted."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The organization schedule pause after the change",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences, or alone through updateOrgSchedulePause. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.",
+                  "properties": {
+                    "paused": {
+                      "type": "boolean",
+                      "description": "Whether every schedule in the organization is paused."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "maxLength": 1000,
+                      "description": "Reason given for the pause. Cleared when the pause is lifted."
+                    },
+                    "pausedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                    },
+                    "pausedBy": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal server error",
@@ -6429,7 +6580,7 @@ const OrganizationSchema: Record<string, unknown> = {
                     },
                     "schedulePause": {
                       "x-go-type": "SchedulePausePayload",
-                      "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                      "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                       "type": "object",
                       "additionalProperties": false,
                       "required": [
@@ -7230,7 +7381,7 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "schedulePause": {
             "x-go-type": "SchedulePause",
-            "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+            "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -7260,7 +7411,7 @@ const OrganizationSchema: Record<string, unknown> = {
       "SchedulePause": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.",
+        "description": "Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences, or alone through updateOrgSchedulePause. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.",
         "properties": {
           "paused": {
             "type": "boolean",
@@ -7575,7 +7726,7 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "schedulePause": {
             "x-go-type": "SchedulePausePayload",
-            "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+            "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
             "type": "object",
             "additionalProperties": false,
             "required": [
@@ -7864,7 +8015,7 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "schedulePause": {
             "x-go-type": "SchedulePausePayload",
-            "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause.",
+            "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause.",
             "type": "object",
             "additionalProperties": false,
             "required": [
@@ -8165,7 +8316,7 @@ const OrganizationSchema: Record<string, unknown> = {
               },
               "schedulePause": {
                 "x-go-type": "SchedulePause",
-                "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
@@ -8659,7 +8810,7 @@ const OrganizationSchema: Record<string, unknown> = {
                   },
                   "schedulePause": {
                     "x-go-type": "SchedulePause",
-                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
@@ -9076,7 +9227,7 @@ const OrganizationSchema: Record<string, unknown> = {
                         },
                         "schedulePause": {
                           "x-go-type": "SchedulePause",
-                          "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                           "type": "object",
                           "additionalProperties": false,
                           "properties": {
@@ -9497,7 +9648,7 @@ const OrganizationSchema: Record<string, unknown> = {
                         },
                         "schedulePause": {
                           "x-go-type": "SchedulePause",
-                          "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                           "type": "object",
                           "additionalProperties": false,
                           "properties": {
@@ -10044,7 +10195,7 @@ const OrganizationSchema: Record<string, unknown> = {
               },
               "schedulePause": {
                 "x-go-type": "SchedulePausePayload",
-                "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
                 "type": "object",
                 "additionalProperties": false,
                 "required": [

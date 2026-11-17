@@ -900,7 +900,20 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Create a schedule",
         "operationId": "createSchedule",
-        "description": "Creates a schedule in the organization of the authenticated session,\nowned by the session user (`createdBy`). `status` accepts only\n`pending`, `scheduled` and `cancelled`; omitted, the server picks\n`scheduled` when the schedule has a due time and `pending` otherwise.\n`nextRunAt` defaults to `runAt`. A `targetId` must name a live\nresource of `targetType` in the organization, else 400. Send\n`paused: true` to create the schedule already paused. `visibility`\ndefaults to `public`.\n",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
+            }
+          }
+        ],
+        "description": "Creates a schedule in the organization of the authenticated session,\nowned by the session user (`createdBy`). `status` accepts only\n`pending`, `scheduled` and `cancelled`; omitted, the server picks\n`scheduled` when the schedule has a due time and `pending` otherwise.\n`nextRunAt` defaults to `runAt`. A `targetId` must name a live\nresource of `targetType` in the organization, else 400. Send\n`paused: true` to create the schedule already paused. `visibility`\ndefaults to `public`.\nThe optional `Idempotency-Key` header makes the create safe to\nretry: within 24 hours the same key with the same request hash\nreturns the first response without creating another schedule, and\nthe same key with a different request hash answers 422 and creates\nnothing. A retry with the same key that arrives while the first request\nwith that key is still being processed answers 409 and creates nothing.\nOnce the first request has finished without a 5xx, a retry receives the\nstored response; after a 5xx, a retry is processed as new.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -1774,6 +1787,46 @@ const ScheduleSchema: Record<string, unknown> = {
           },
           "404": {
             "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - an earlier request with the same Idempotency-Key is still being processed. Nothing is created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. The body's `code` is `idempotency_key_in_flight`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Machine-readable reason. Always `idempotency_key_in_flight` for this body.",
+                      "enum": [
+                        "idempotency_key_in_flight"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable - the Idempotency-Key was already used with a different request body",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5848,12 +5901,52 @@ const ScheduleSchema: Record<string, unknown> = {
           }
         }
       },
+      "422": {
+        "description": "Unprocessable - the Idempotency-Key was already used with a different request body",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "500": {
         "description": "Internal server error",
         "content": {
           "text/plain": {
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      },
+      "IdempotencyKeyInFlight": {
+        "description": "Conflict - an earlier request with the same Idempotency-Key is still being processed. Nothing is created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. The body's `code` is `idempotency_key_in_flight`.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.",
+              "required": [
+                "code",
+                "message"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Machine-readable reason. Always `idempotency_key_in_flight` for this body.",
+                  "enum": [
+                    "idempotency_key_in_flight"
+                  ]
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                }
+              }
             }
           }
         }
@@ -5929,6 +6022,17 @@ const ScheduleSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "idempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "description": "Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      },
       "ifMatch": {
         "name": "If-Match",
         "in": "header",

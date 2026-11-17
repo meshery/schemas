@@ -14,6 +14,9 @@ on:
       - 'models/**'
       - 'python/**'
       - 'tests/**'
+      - 'typescript/**'
+      - 'package.json'
+      - 'package-lock.json'
       - 'go.mod'
       - 'go.sum'
   push:
@@ -30,6 +33,9 @@ on:
       - 'models/**'
       - 'python/**'
       - 'tests/**'
+      - 'typescript/**'
+      - 'package.json'
+      - 'package-lock.json'
       - 'go.mod'
       - 'go.sum'
 
@@ -54,11 +60,18 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          # >= 22.6 for `node --test` native TypeScript type-stripping.
+          # >= 22.18 for `node --test` type stripping without a flag.
           node-version: '22'
 
       - name: Install Node dependencies
         run: npm ci
+
+      # The TypeScript unit tests (typescript/**/*.test.ts) read schema YAML
+      # from source and import generated output only as types, so they need
+      # no build. Without this step they ran only after merge, in
+      # generate-artifacts-from-schemas.yml.
+      - name: Run TypeScript unit tests
+        run: make test-ts
 
       - name: Run generated-output guard tests
         run: make test-generated-outputs

@@ -170,6 +170,11 @@ const (
 	MesheryDesign IaCFileTypes = "meshery-design"
 )
 
+// Defines values for IdempotencyKeyInFlightErrorCode.
+const (
+	IdempotencyKeyInFlightErrorCodeIdempotencyKeyInFlight IdempotencyKeyInFlightErrorCode = "idempotency_key_in_flight"
+)
+
 // Defines values for MeshkitErrorSeverity.
 const (
 	Alert     MeshkitErrorSeverity = "alert"
@@ -630,6 +635,18 @@ type IaCFileTypes string
 // Id defines model for id.
 type Id = uuid.UUID
 
+// IdempotencyKeyInFlightError A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type IdempotencyKeyInFlightError struct {
+	// Code Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+	Code IdempotencyKeyInFlightErrorCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// IdempotencyKeyInFlightErrorCode Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+type IdempotencyKeyInFlightErrorCode string
+
 // InputString A string starting with an alphanumeric character. Spaces and hyphens allowed.
 type InputString = string
 
@@ -943,8 +960,14 @@ type ContentType = string
 // Cumulative defines model for cumulative.
 type Cumulative = string
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // Filter defines model for filter.
 type Filter = string
+
+// IdempotencyKey defines model for idempotencyKey.
+type IdempotencyKey = string
 
 // IsOAuth defines model for isOAuth.
 type IsOAuth = string
@@ -996,6 +1019,9 @@ type Type = string
 
 // UserId defines model for userId.
 type UserId = string
+
+// IdempotencyKeyInFlight A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type IdempotencyKeyInFlight = IdempotencyKeyInFlightError
 
 // MeshkitError400 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError400 = MeshkitError

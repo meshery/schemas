@@ -37,6 +37,7 @@ const EventSchema: Record<string, unknown> = {
         ],
         "operationId": "deleteEvent",
         "summary": "Delete a single event",
+        "description": "Servers implementing this contract must change only an event the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. An event the caller may not change, like one that does not exist or is already deleted, is 404, so the response does not disclose another tenant's event. An event id alone is never authorization.\n",
         "parameters": [
           {
             "name": "eventId",
@@ -168,6 +169,7 @@ const EventSchema: Record<string, unknown> = {
         ],
         "operationId": "bulkDeleteEvents",
         "summary": "Bulk delete events",
+        "description": "Servers implementing this contract must change only the events among `ids` the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. The response lists only the ids that were changed; an id the caller may not change, like one that does not exist, is left out rather than refused, so the response does not disclose another tenant's event.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -313,6 +315,140 @@ const EventSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/events/mark-all-read": {
+      "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
+        "tags": [
+          "events"
+        ],
+        "operationId": "markAllEventsRead",
+        "summary": "Mark all events as read",
+        "description": "Marks every unread event owned by the authenticated caller as read. System-owned events are not changed. The caller is determined from the authenticated session; clients do not send a user ID.\n",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All of the caller's unread events were marked as read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Response returned after marking the caller's unread events as read.",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable status message.",
+                      "maxLength": 500
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/events/status": {
       "put": {
         "x-internal": [
@@ -324,6 +460,7 @@ const EventSchema: Record<string, unknown> = {
         ],
         "operationId": "bulkUpdateEventStatus",
         "summary": "Bulk update event status",
+        "description": "Servers implementing this contract must change only the events among `ids` the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. The response lists only the ids that were changed; an id the caller may not change, like one that does not exist, is left out rather than refused, so the response does not disclose another tenant's event.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -487,6 +624,7 @@ const EventSchema: Record<string, unknown> = {
         ],
         "operationId": "updateEventStatus",
         "summary": "Update status of a single event",
+        "description": "Servers implementing this contract must change only an event the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. An event the caller may not change, like one that does not exist or is already deleted, is 404, so the response does not disclose another tenant's event. An event id alone is never authorization.\n",
         "parameters": [
           {
             "name": "eventId",
@@ -2326,7 +2464,13 @@ const EventSchema: Record<string, unknown> = {
           "events"
         ],
         "operationId": "getEvents",
+        "x-mcp": {
+          "expose": true,
+          "title": "Get events",
+          "scope": "events:read"
+        },
         "summary": "Get events list",
+        "description": "Returns a page of events. An `X-Current-Orgid` that is not a UUID answers 400.\n",
         "parameters": [
           {
             "name": "page",
@@ -2381,6 +2525,18 @@ const EventSchema: Record<string, unknown> = {
                 "organization"
               ],
               "default": "user"
+            }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             }
           }
         ],
@@ -2724,6 +2880,16 @@ const EventSchema: Record<string, unknown> = {
                       "description": "The events returned on the current page."
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -3678,6 +3844,18 @@ const EventSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "currentOrgId": {
+        "name": "X-Current-Orgid",
+        "in": "header",
+        "required": false,
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+        "schema": {
+          "type": "string",
+          "minLength": 36,
+          "maxLength": 36,
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
       "eventId": {
         "name": "eventId",
         "in": "path",
@@ -4037,6 +4215,21 @@ const EventSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Updated status of the event.",
             "maxLength": 255
+          }
+        }
+      },
+      "MarkAllEventsReadResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Response returned after marking the caller's unread events as read.",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable status message.",
+            "maxLength": 500
           }
         }
       },

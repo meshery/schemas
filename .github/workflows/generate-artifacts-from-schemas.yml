@@ -39,13 +39,13 @@ jobs:
       - name: Install build dependencies
         uses: actions/setup-node@v7
         with:
-          # >= 22.6 for `node --test` native TypeScript type-stripping (make test-ts).
+          # >= 22.18 for `node --test` type stripping without a flag (make test-ts).
           node-version: '22'
       - run: |
           npm i
           go version 
           go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
-          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
 
       # `generate-python`/`test-python` run after `make build` and need the
       # pinned generator and ruff (single source of truth: build/lib/config.js).

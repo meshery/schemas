@@ -21,6 +21,14 @@ paths:
       - events
       operationId: deleteEvent
       summary: Delete a single event
+      description: >
+        Servers implementing this contract must change only an event the
+        caller may list: its own, every event in the session organization
+        when the caller administers that organization, and every event for a
+        caller holding the all-organizations scope. An event the caller may
+        not change, like one that does not exist or is already deleted, is
+        404, so the response does not disclose another tenant's event. An
+        event id alone is never authorization.
       parameters:
       - $ref: '#/components/parameters/eventId'
       responses:
@@ -43,6 +51,14 @@ paths:
       - events
       operationId: bulkDeleteEvents
       summary: Bulk delete events
+      description: >
+        Servers implementing this contract must change only the events among
+        `ids` the caller may list: its own, every event in the session
+        organization when the caller administers that organization, and every
+        event for a caller holding the all-organizations scope. The response
+        lists only the ids that were changed; an id the caller may not
+        change, like one that does not exist, is left out rather than
+        refused, so the response does not disclose another tenant's event.
       requestBody:
         required: true
         content:
@@ -99,6 +115,14 @@ paths:
       - events
       operationId: bulkUpdateEventStatus
       summary: Bulk update event status
+      description: >
+        Servers implementing this contract must change only the events among
+        `ids` the caller may list: its own, every event in the session
+        organization when the caller administers that organization, and every
+        event for a caller holding the all-organizations scope. The response
+        lists only the ids that were changed; an id the caller may not
+        change, like one that does not exist, is left out rather than
+        refused, so the response does not disclose another tenant's event.
       requestBody:
         required: true
         content:
@@ -127,6 +151,14 @@ paths:
       - events
       operationId: updateEventStatus
       summary: Update status of a single event
+      description: >
+        Servers implementing this contract must change only an event the
+        caller may list: its own, every event in the session organization
+        when the caller administers that organization, and every event for a
+        caller holding the all-organizations scope. An event the caller may
+        not change, like one that does not exist or is already deleted, is
+        404, so the response does not disclose another tenant's event. An
+        event id alone is never authorization.
       parameters:
       - $ref: '#/components/parameters/eventId'
       requestBody:
@@ -367,7 +399,14 @@ paths:
       tags:
       - events
       operationId: getEvents
+      x-mcp:
+        expose: true
+        title: Get events
+        scope: events:read
       summary: Get events list
+      description: >
+        Returns a page of events. An `X-Current-Orgid` that is not a UUID
+        answers 400.
       parameters:
       - $ref: '#/components/parameters/page'
       - $ref: '#/components/parameters/pagesize'
@@ -375,6 +414,7 @@ paths:
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/eventsFilter'
       - $ref: '#/components/parameters/eventsScope'
+      - $ref: '#/components/parameters/currentOrgId'
       responses:
         '200':
           description: Events page
@@ -382,6 +422,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventsPage'
+        '400':
+          $ref: '#/components/responses/400'
         '401':
           description: Unauthorized
         '403':
@@ -535,6 +577,8 @@ components:
           - incremented
           - resolved
   parameters:
+    currentOrgId:
+      $ref: '../../v1beta2/core/api.yml#/components/parameters/currentOrgId'
     eventId:
       name: eventId
       in: path
