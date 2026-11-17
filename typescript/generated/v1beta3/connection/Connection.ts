@@ -3673,6 +3673,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
         };
     };
     getConnectionById: {
@@ -5803,6 +5812,15 @@ export interface operations {
                          */
                         schemaVersion: string;
                     };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */
