@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "d28a7abf97147deeabe6b62a44cfdab9bba76a9cebfdeddbf1a608a2663b3b2d"
+const IndexID = "750cabe9ca4346e97f35dab5285f6ef2cc47e0ae5d4622ed09b8fda708cced0e"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -1419,6 +1419,9 @@ var (
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
 
+	// BlowhornAccessDiagnostics - Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+	BlowhornAccessDiagnostics = PermissionKey(uuid.Must(uuid.FromString("afb597fc-a027-4ade-b5f9-c5f82b67b053")))
+
 	// WorkflowManagementPauseSchedules - Set or lift the organization-wide schedule pause, and nothing else about the organization
 	WorkflowManagementPauseSchedules = PermissionKey(uuid.Must(uuid.FromString("652c24f7-7fce-47c8-8bef-785ea4e788c4")))
 
@@ -1428,8 +1431,8 @@ var (
 	// CatalogManagementDecideContentItemApprovals - Approve or deny a content item written by an AI app, through its content_item_approval request
 	CatalogManagementDecideContentItemApprovals = PermissionKey(uuid.Must(uuid.FromString("c7bbef80-dd16-4396-b028-152f1f85f080")))
 
-	// BlowhornAccessDiagnostics - Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
-	BlowhornAccessDiagnostics = PermissionKey(uuid.Must(uuid.FromString("afb597fc-a027-4ade-b5f9-c5f82b67b053")))
+	// EventsManagementChangeEventReadStatus - Mark your own events read or unread, one at a time or all at once. Changes only the read status; never deletes an event or alters what it records.
+	EventsManagementChangeEventReadStatus = PermissionKey(uuid.Must(uuid.FromString("671f3323-f311-4ea0-9884-539291691bbc")))
 )
 
 // OAuthScope is an OAuth scope string. A scope names exactly one keychain.

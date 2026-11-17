@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "d28a7abf97147deeabe6b62a44cfdab9bba76a9cebfdeddbf1a608a2663b3b2d" as const;
+export const PERMISSIONS_INDEX_ID = "750cabe9ca4346e97f35dab5285f6ef2cc47e0ae5d4622ed09b8fda708cced0e" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -5144,6 +5144,17 @@ export const Keys = {
   },
 
   /**
+   * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+   */
+  BlowhornAccessDiagnostics: {
+    id: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey,
+    category: "Blowhorn",
+    subcategory: "Diagnostics",
+    function: "Access Diagnostics",
+    description: "Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces."
+  },
+
+  /**
    * Set or lift the organization-wide schedule pause, and nothing else about the organization
    */
   WorkflowManagementPauseSchedules: {
@@ -5177,14 +5188,14 @@ export const Keys = {
   },
 
   /**
-   * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+   * Mark your own events read or unread, one at a time or all at once. Changes only the read status; never deletes an event or alters what it records.
    */
-  BlowhornAccessDiagnostics: {
-    id: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey,
-    category: "Blowhorn",
-    subcategory: "Diagnostics",
-    function: "Access Diagnostics",
-    description: "Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces."
+  EventsManagementChangeEventReadStatus: {
+    id: "671f3323-f311-4ea0-9884-539291691bbc" as PermissionKey,
+    category: "Events Management",
+    subcategory: "Events",
+    function: "Change Event Read Status",
+    description: "Mark your own events read or unread, one at a time or all at once. Changes only the read status; never deletes an event or alters what it records."
   }
 } as const;
 
@@ -7514,6 +7525,11 @@ export const PermissionKeys = {
   ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey,
 
   /**
+   * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+   */
+  BlowhornAccessDiagnostics: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey,
+
+  /**
    * Set or lift the organization-wide schedule pause, and nothing else about the organization
    */
   WorkflowManagementPauseSchedules: "652c24f7-7fce-47c8-8bef-785ea4e788c4" as PermissionKey,
@@ -7529,9 +7545,9 @@ export const PermissionKeys = {
   CatalogManagementDecideContentItemApprovals: "c7bbef80-dd16-4396-b028-152f1f85f080" as PermissionKey,
 
   /**
-   * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+   * Mark your own events read or unread, one at a time or all at once. Changes only the read status; never deletes an event or alters what it records.
    */
-  BlowhornAccessDiagnostics: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey
+  EventsManagementChangeEventReadStatus: "671f3323-f311-4ea0-9884-539291691bbc" as PermissionKey
 } as const;
 
 /**
