@@ -1254,6 +1254,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
                 headers: {
