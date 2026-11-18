@@ -166,14 +166,18 @@ Most `/api/system/` operations are Meshery-only (`x-internal: ["meshery"]`); the
 
 ### Event mutations during the Meshery Server migration
 
-The v1beta3 event mutations at `/api/events*` are Cloud-only. Meshery Server
+The v1beta3 event creation, deletion, and single/bulk status-update operations
+at `/api/events*` are Cloud-only. Other operations retain their declared
+providers, including the shared `markAllEventsRead` operation. Meshery Server
 serves its mutations at `/api/system/events*`, with different bulk-delete
-semantics and delete/status response bodies. Until those server contracts are
+semantics and empty delete/status success responses. Until those server contracts are
 defined separately, Meshery consumers must keep their local mutation endpoints;
 the Cloud operations must not be generated into `mesheryApi` and collide with
 them. See [#1134](https://github.com/meshery/schemas/issues/1134). The read and
 configuration operations being added in
 [#1172](https://github.com/meshery/schemas/pull/1172) are a separate migration.
+[Provider regression coverage](../tests/event-mutation-providers.test.js) checks
+the filtered bundles and generated RTK endpoint definitions.
 
 ### A construct is an RTK cache-tag boundary
 
