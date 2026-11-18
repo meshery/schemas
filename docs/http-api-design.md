@@ -164,6 +164,17 @@ add `/api` reflexively.
 
 Most `/api/system/` operations are Meshery-only (`x-internal: ["meshery"]`); they act on the running Meshery server instance itself rather than on a user-facing logical construct. Existing shared exceptions must be annotated truthfully, such as public version metadata exposed by both Meshery and Meshery Cloud. Some pre-existing `/api/system/*` paths use singular nouns (e.g. `/api/system/database`) and embed verbs (e.g. `/api/system/database/reset`); these predate the canonical kebab-case-plural convention and are documented as-implemented. New `/api/system/*` paths should still follow the canonical conventions.
 
+### Event mutations during the Meshery Server migration
+
+The v1beta3 event mutations at `/api/events*` are Cloud-only. Meshery Server
+serves its mutations at `/api/system/events*`, with different bulk-delete
+semantics and delete/status response bodies. Until those server contracts are
+defined separately, Meshery consumers must keep their local mutation endpoints;
+the Cloud operations must not be generated into `mesheryApi` and collide with
+them. See [#1134](https://github.com/meshery/schemas/issues/1134). The read and
+configuration operations being added in
+[#1172](https://github.com/meshery/schemas/pull/1172) are a separate migration.
+
 ### A construct is an RTK cache-tag boundary
 
 The path prefix says which area serves an operation; the construct an operation is declared in

@@ -16,7 +16,7 @@ tags:
 paths:
   /api/events/{eventId}:
     delete:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
       - events
       operationId: deleteEvent
@@ -46,7 +46,7 @@ paths:
           $ref: '#/components/responses/500'
   /api/events/delete:
     post:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
       - events
       operationId: bulkDeleteEvents
@@ -110,7 +110,7 @@ paths:
           $ref: '#/components/responses/500'
   /api/events/status:
     put:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
       - events
       operationId: bulkUpdateEventStatus
@@ -146,7 +146,7 @@ paths:
           $ref: '#/components/responses/500'
   /api/events/{eventId}/status:
     put:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
       - events
       operationId: updateEventStatus
@@ -255,7 +255,7 @@ paths:
         '500':
           description: Server error
     post:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
       - events
       operationId: createEvent
