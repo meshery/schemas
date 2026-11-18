@@ -6,13 +6,20 @@ package v1beta3
 // callers (meshkit, meshery) can construct fixtures without hard-coding
 // the version literal.
 //
-// Note: components emit "components.meshery.io/v1beta3" (matching the
-// v1beta3 component schema default and the `model init` templates), while
-// nested model definitions remain v1beta2 (v1beta3/component.Model
-// references v1beta2/model.ModelDefinition).
+// Note: standalone v1beta3 components emit "components.meshery.io/v1beta3"
+// (matching the v1beta3 component schema default and the `model init`
+// templates), while nested model definitions remain v1beta2
+// (v1beta3/component.Model references v1beta2/model.ModelDefinition).
+//
+// A v1beta3 design still embeds v1beta2 components
+// (v1beta3/design.PatternFile.Components is []*v1beta2/component.ComponentDefinition),
+// whose wire body differs from v1beta3 (e.g. created_at vs createdAt).
+// Components built for a design must therefore be labelled with
+// DesignComponentSchemaVersion so the label matches the serialized body.
 const (
-	DesignSchemaVersion     = "designs.meshery.io/v1beta3"
-	ComponentSchemaVersion  = "components.meshery.io/v1beta3"
-	ModelSchemaVersion      = "models.meshery.io/v1beta2"
-	ConnectionSchemaVersion = "connections.meshery.io/v1beta3"
+	DesignSchemaVersion          = "designs.meshery.io/v1beta3"
+	ComponentSchemaVersion       = "components.meshery.io/v1beta3"
+	DesignComponentSchemaVersion = "components.meshery.io/v1beta2"
+	ModelSchemaVersion           = "models.meshery.io/v1beta2"
+	ConnectionSchemaVersion      = "connections.meshery.io/v1beta3"
 )

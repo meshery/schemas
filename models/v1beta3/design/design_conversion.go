@@ -95,7 +95,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 			compDefVersion = "v1.0.0"
 		}
 		cmp := component.ComponentDefinition{
-			SchemaVersion: v1beta3.ComponentSchemaVersion,
+			SchemaVersion: v1beta3.DesignComponentSchemaVersion,
 			Version:       compDefVersion,
 			DisplayName:   service.Name,
 			Component: component.Component{

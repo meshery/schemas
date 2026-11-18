@@ -55,6 +55,7 @@ properties:
   type:
     x-oapi-codegen-extra-tags:
       db: type
+      gorm: column:type
       json: type
       yaml: type
     x-go-name: ConnectionType
