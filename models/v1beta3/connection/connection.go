@@ -100,7 +100,7 @@ type Connection struct {
 	CredentialID *core.Uuid `db:"credential_id" json:"credentialId" yaml:"credentialId,omitempty"`
 
 	// ConnectionType Connection Type (platform, telemetry, collaboration)
-	ConnectionType string `db:"type" gorm:"column:type" json:"type" yaml:"type"`
+	ConnectionType string `db:"type" json:"type" yaml:"type"`
 
 	// SubType Connection Subtype (cloud, identity, metrics, chat, git, orchestration)
 	SubType string `db:"sub_type" json:"subType" yaml:"subType"`
