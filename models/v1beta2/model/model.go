@@ -10,8 +10,8 @@ import (
 	core "github.com/meshery/schemas/models/core"
 	capabilityv1beta1 "github.com/meshery/schemas/models/v1beta1/capability"
 	categoryv1beta1 "github.com/meshery/schemas/models/v1beta1/category"
-	connectionv1beta1 "github.com/meshery/schemas/models/v1beta1/connection"
 	subcategoryv1beta1 "github.com/meshery/schemas/models/v1beta1/subcategory"
+	connectionv1beta3 "github.com/meshery/schemas/models/v1beta3/connection"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -169,7 +169,7 @@ type ModelDefinition struct {
 	CategoryId core.Uuid `gorm:"categoryID" json:"-" yaml:"-"`
 
 	// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
-	Registrant connectionv1beta1.Connection `gorm:"foreignKey:RegistrantId;references:ID" json:"registrant" yaml:"registrant"`
+	Registrant connectionv1beta3.Connection `gorm:"foreignKey:RegistrantId;references:ID" json:"registrant" yaml:"registrant"`
 
 	// RegistrantId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	RegistrantId core.Uuid `gorm:"column:connection_id" json:"registrantId" yaml:"registrantId"`

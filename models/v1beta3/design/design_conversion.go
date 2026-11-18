@@ -10,13 +10,13 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/utils"
-	core "github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/conversion"
+	core "github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/v1alpha2"
-	"github.com/meshery/schemas/models/v1beta3"
-	model "github.com/meshery/schemas/models/v1beta1/model"
 	component "github.com/meshery/schemas/models/v1beta2/component"
+	model "github.com/meshery/schemas/models/v1beta2/model"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
+	"github.com/meshery/schemas/models/v1beta3"
 	"github.com/pkg/errors"
 )
 
