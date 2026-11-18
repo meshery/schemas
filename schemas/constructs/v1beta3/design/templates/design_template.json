@@ -42,23 +42,24 @@
           "subType": "",
           "kind": "",
           "status": "",
-          "user_id": "00000000-0000-0000-0000-000000000000",
-          "created_at": "",
-          "updated_at": "",
-          "deleted_at": "",
+          "owner": "00000000-0000-0000-0000-000000000000",
+          "organizationId": "00000000-0000-0000-0000-000000000000",
+          "createdAt": "",
+          "updatedAt": "",
+          "deletedAt": "",
           "environments": {
             "items": {
               "id": "00000000-0000-0000-0000-000000000000",
               "name": "",
               "description": "",
-              "organization_id": "00000000-0000-0000-0000-000000000000",
+              "organizationId": "00000000-0000-0000-0000-000000000000",
               "owner": "00000000-0000-0000-0000-000000000000",
-              "created_at": "",
-              "updated_at": "",
-              "deleted_at": ""
+              "createdAt": "",
+              "updatedAt": "",
+              "deletedAt": ""
             }
           },
-          "schemaVersion": "connections.meshery.io/v1beta2"
+          "schemaVersion": "connections.meshery.io/v1beta3"
         },
         "registrantId": "00000000-0000-0000-0000-000000000000",
         "categoryId": "00000000-0000-0000-0000-000000000000",
