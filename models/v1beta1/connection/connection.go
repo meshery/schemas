@@ -72,6 +72,9 @@ type Connection struct {
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
 	SchemaVersion core.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID *core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId"`
 }
 
 // ConnectionStatus Connection Status

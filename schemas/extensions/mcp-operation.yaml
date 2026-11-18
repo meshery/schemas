@@ -1,0 +1,59 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: McpOperation
+description: |
+  The value of an operation's `x-mcp` extension: the operation is offered as a
+  tool by the hosted MCP server. The tool name is the operation's
+  `operationId`. Tool hints derive from the HTTP method and are never written
+  by hand: GET is read-only, POST and PUT are not destructive, and a create
+  that declares the `Idempotency-Key` header is idempotent. The value carries
+  no readOnly or destructive flag for that reason.
+  Every operation that carries it must have an `operationId`, a 2xx response
+  whose `application/json` content has a schema, a `scope` defined below, and
+  an optional `X-Current-Orgid` header parameter, and it must not be a DELETE,
+  `approveRequest` or `denyRequest`. validate-schemas Rule 48 enforces these
+  (validation/rules_mcp.go). See docs/mcp-operation-contract.md.
+type: object
+additionalProperties: false
+required:
+  - expose
+  - scope
+properties:
+  expose:
+    type: boolean
+    description: >
+      The hosted MCP server lists and serves the operation as a tool. False
+      keeps the operation annotated but hidden. The same name as the local MCP
+      server's `x-mcp.expose`.
+  title:
+    type: string
+    description: Human-readable tool title shown to the person connecting an AI app. Defaults to the operation's `summary`.
+    minLength: 1
+    maxLength: 120
+  scope:
+    $ref: "#/definitions/McpScope"
+definitions:
+  McpScope:
+    type: string
+    description: >
+      The OAuth scope a token needs to call the operation. A scope is a
+      keychain (decision 6 of the hosted MCP design): each scope names exactly
+      one keychain, and build/oauth-scopes.json maps it to that keychain and to
+      the permission keys the keychain carries. A token's effective keys are
+      the user's keys in the organization intersected with the keys of the
+      keychains its scopes name.
+    enum:
+      - content:read
+      - content:write
+      - schedule:read
+      - schedule:write
+      - connections:read
+      - events:read
+      - account:read
+    x-enumDescriptions:
+      content:read: Read the content items of the organization.
+      content:write: Create and edit content items of the organization. Never approves them.
+      schedule:read: Read the schedules of the organization.
+      schedule:write: Create and change schedules of the organization, and set or lift its schedule pause.
+      connections:read: Read the connections of the organization.
+      events:read: Read the events of the organization, including run results.
+      account:read: Read the signed-in account and the features of the organization.

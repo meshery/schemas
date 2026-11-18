@@ -13,12 +13,14 @@ export interface paths {
         };
         /**
          * Get schedules
+         * @deprecated
          * @description Returns all schedules for the authenticated user.
          */
         get: operations["getSchedules"];
         put?: never;
         /**
          * Create or update schedule
+         * @deprecated
          * @description Creates or updates a schedule for the authenticated user.
          */
         post: operations["upsertSchedule"];
@@ -37,6 +39,7 @@ export interface paths {
         };
         /**
          * Get schedule by ID
+         * @deprecated
          * @description Returns a specific schedule by its ID.
          */
         get: operations["getSchedule"];
@@ -44,6 +47,7 @@ export interface paths {
         post?: never;
         /**
          * Delete schedule
+         * @deprecated
          * @description Deletes a schedule by its ID.
          */
         delete: operations["deleteSchedule"];

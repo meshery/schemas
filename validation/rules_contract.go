@@ -43,7 +43,16 @@ func collectSchemaFingerprints(filePath string, doc *openapi3.T, fingerprints ma
 }
 
 // fingerprintSchema creates a deterministic fingerprint based on property
-// names and types. Schemas with fewer than 3 properties are skipped.
+// names, types, full $ref paths, the sorted required array, and constraint
+// presence. Schemas with fewer than 3 properties are skipped.
+//
+// The fingerprint deliberately encodes constraint *presence* (has minLength
+// vs does not), not constraint values: two schemas that differ only in a
+// limit value are still structural duplicates worth flagging, while schemas
+// that differ in shape-affecting facts (different $ref targets, different
+// required sets, different applicable constraints) must not collide.
+// Descriptions are intentionally excluded: identical structures with
+// different prose are still duplicates for cross-construct $ref purposes.
 func fingerprintSchema(schema *openapi3.Schema) string {
 	if schema == nil || schema.Properties == nil {
 		return ""
@@ -59,47 +68,104 @@ func fingerprintSchema(schema *openapi3.Schema) string {
 		return ""
 	}
 
-	parts := make([]string, 0, len(propKeys))
+	parts := make([]string, 0, len(propKeys)+1)
 	for _, k := range propKeys {
-		propRef := schema.Properties[k]
-		if propRef == nil || propRef.Value == nil {
-			parts = append(parts, k+":unknown")
-			continue
-		}
-		p := propRef.Value
-
-		if propRef.Ref != "" {
-			refName := propRef.Ref
-			if idx := strings.LastIndex(refName, "/"); idx >= 0 {
-				refName = refName[idx+1:]
-			}
-			parts = append(parts, fmt.Sprintf("%s:$ref:%s", k, refName))
-			continue
-		}
-
-		if p.Type != nil && p.Type.Is("array") {
-			if p.Items != nil && p.Items.Ref != "" {
-				refName := p.Items.Ref
-				if idx := strings.LastIndex(refName, "/"); idx >= 0 {
-					refName = refName[idx+1:]
-				}
-				parts = append(parts, fmt.Sprintf("%s:array:$ref:%s", k, refName))
-			} else if p.Items != nil && p.Items.Value != nil && p.Items.Value.Type != nil {
-				parts = append(parts, fmt.Sprintf("%s:array:%s", k, p.Items.Value.Type.Slice()[0]))
-			} else {
-				parts = append(parts, fmt.Sprintf("%s:array:unknown", k))
-			}
-			continue
-		}
-
-		if p.Type != nil {
-			parts = append(parts, fmt.Sprintf("%s:%s", k, p.Type.Slice()[0]))
-		} else {
-			parts = append(parts, k+":unknown")
-		}
+		parts = append(parts, fingerprintProperty(k, schema.Properties[k]))
 	}
 
+	// Required array, sorted, so required-set differences change the
+	// fingerprint while required ordering does not.
+	required := append([]string(nil), schema.Required...)
+	sort.Strings(required)
+	parts = append(parts, "required:"+strings.Join(required, ","))
+
 	return strings.Join(parts, "|")
+}
+
+// fingerprintProperty renders one property's contribution to a schema
+// fingerprint: its name, its type (or the full $ref path when it is a
+// reference), and the constraint-presence flags that apply to it.
+func fingerprintProperty(name string, propRef *openapi3.SchemaRef) string {
+	if propRef == nil || propRef.Value == nil {
+		return name + ":unknown"
+	}
+	p := propRef.Value
+
+	// Full $ref path, not just the trailing schema name: two properties
+	// referencing different documents' "User" are not the same shape.
+	if propRef.Ref != "" {
+		return fmt.Sprintf("%s:$ref:%s", name, propRef.Ref)
+	}
+
+	var sb strings.Builder
+	sb.WriteString(name)
+	if p.Type != nil && p.Type.Is("array") {
+		sb.WriteString(":array")
+		if p.Items != nil && p.Items.Ref != "" {
+			sb.WriteString(":$ref:" + p.Items.Ref)
+		} else if p.Items != nil && p.Items.Value != nil && p.Items.Value.Type != nil {
+			sb.WriteString(":" + p.Items.Value.Type.Slice()[0])
+		} else {
+			sb.WriteString(":unknown")
+		}
+	} else if p.Type != nil {
+		sb.WriteString(":" + p.Type.Slice()[0])
+	} else {
+		sb.WriteString(":unknown")
+	}
+	if flags := constraintPresenceFlags(p); flags != "" {
+		sb.WriteString("{" + flags + "}")
+	}
+	return sb.String()
+}
+
+// constraintPresenceFlags lists, in sorted order, the validation constraints
+// present on a property schema. Presence (not values) keeps near-identical
+// shapes fingerprinted together while distinguishing genuinely different
+// contracts (e.g. a free-form string vs one with minLength/pattern).
+func constraintPresenceFlags(p *openapi3.Schema) string {
+	var flags []string
+	if p.MinLength != 0 {
+		flags = append(flags, "minLength")
+	}
+	if p.MaxLength != nil {
+		flags = append(flags, "maxLength")
+	}
+	if p.Pattern != "" {
+		flags = append(flags, "pattern")
+	}
+	if p.Format != "" {
+		flags = append(flags, "format")
+	}
+	if len(p.Enum) > 0 {
+		flags = append(flags, "enum")
+	}
+	if p.Min != nil {
+		flags = append(flags, "minimum")
+	}
+	if p.Max != nil {
+		flags = append(flags, "maximum")
+	}
+	if p.ExclusiveMin.IsSet() {
+		flags = append(flags, "exclusiveMinimum")
+	}
+	if p.ExclusiveMax.IsSet() {
+		flags = append(flags, "exclusiveMaximum")
+	}
+	if p.MultipleOf != nil {
+		flags = append(flags, "multipleOf")
+	}
+	if p.MinItems != 0 {
+		flags = append(flags, "minItems")
+	}
+	if p.MaxItems != nil {
+		flags = append(flags, "maxItems")
+	}
+	if p.UniqueItems {
+		flags = append(flags, "uniqueItems")
+	}
+	sort.Strings(flags)
+	return strings.Join(flags, ",")
 }
 
 // extractConstructName extracts the construct name from a file path.

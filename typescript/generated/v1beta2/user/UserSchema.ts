@@ -1713,6 +1713,18 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "301": {
+            "description": "Merged-away user ID; redirects to the surviving canonical account's equivalent profile path",
+            "headers": {
+              "Location": {
+                "description": "URL of the surviving canonical account's equivalent profile path",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request body or request param",
             "content": {
@@ -1776,7 +1788,27 @@ const UserSchema: Record<string, unknown> = {
           "users"
         ],
         "operationId": "getUser",
+        "x-mcp": {
+          "expose": true,
+          "title": "Get the current user profile",
+          "scope": "account:read"
+        },
         "summary": "Get current user profile",
+        "description": "Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400.\n",
+        "parameters": [
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Current user profile and role context",
@@ -2528,6 +2560,16 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
             "content": {
@@ -2540,6 +2582,222 @@ const UserSchema: Record<string, unknown> = {
           },
           "403": {
             "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/users/preferences": {
+      "put": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "users"
+        ],
+        "operationId": "updateUserPreferences",
+        "summary": "Update the current user's preferences",
+        "description": "Merges the payload onto the signed-in user's stored preferences. A key the payload names replaces the stored value; a key it leaves out keeps the stored value. Setting selectedOrganizationId switches the organization the user's session has selected, as Meshery Cloud's and Meshery's organization switchers do. Badges are server-owned and are never changed through this operation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "The client-settable fields of Preference for updateUserPreferences. Every field is optional: the server merges the ones present onto the stored preferences and keeps the rest. updatedAt is server-recorded and is not settable.",
+                "additionalProperties": false,
+                "properties": {
+                  "meshAdapters": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "Adapter",
+                      "type": "object",
+                      "description": "Placeholder for Adapter struct definition."
+                    },
+                    "description": "The mesh adapters of the preference."
+                  },
+                  "grafana": {
+                    "x-go-type": "Grafana",
+                    "type": "object",
+                    "properties": {
+                      "grafanaUrl": {
+                        "type": "string",
+                        "description": "Grafana URL for the user configuration.",
+                        "maxLength": 500
+                      },
+                      "grafanaApiKey": {
+                        "type": "string",
+                        "description": "Grafana API key for the user configuration.",
+                        "maxLength": 500
+                      },
+                      "selectedBoardsConfigs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "board": {
+                              "type": "object",
+                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                            },
+                            "panels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                              },
+                              "description": "Panels selected for the Grafana board configuration."
+                            },
+                            "templateVars": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Template variables applied to the selected Grafana board configuration."
+                            }
+                          }
+                        },
+                        "description": "Selected Grafana board configurations for the user."
+                      }
+                    }
+                  },
+                  "prometheus": {
+                    "x-go-type": "Prometheus",
+                    "type": "object",
+                    "properties": {
+                      "prometheusUrl": {
+                        "type": "string",
+                        "description": "The prometheus URL of the prometheus.",
+                        "maxLength": 500
+                      },
+                      "selectedPrometheusBoardsConfigs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "board": {
+                              "type": "object",
+                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                            },
+                            "panels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                              },
+                              "description": "Panels selected for the Grafana board configuration."
+                            },
+                            "templateVars": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Template variables applied to the selected Grafana board configuration."
+                            }
+                          }
+                        },
+                        "description": "The selected prometheus boards configs of the prometheus."
+                      }
+                    }
+                  },
+                  "loadTestPrefs": {
+                    "x-go-type": "LoadTestPreferences",
+                    "type": "object",
+                    "properties": {
+                      "c": {
+                        "type": "integer",
+                        "description": "Concurrent requests",
+                        "minimum": 0
+                      },
+                      "qps": {
+                        "type": "integer",
+                        "description": "Queries per second",
+                        "minimum": 0
+                      },
+                      "t": {
+                        "type": "string",
+                        "description": "Duration",
+                        "maxLength": 500
+                      },
+                      "gen": {
+                        "type": "string",
+                        "description": "Load generator",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "anonymousUsageStats": {
+                    "type": "boolean",
+                    "description": "The anonymous usage stats of the preference."
+                  },
+                  "anonymousPerfResults": {
+                    "type": "boolean",
+                    "description": "The anonymous perf results of the preference."
+                  },
+                  "dashboardPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The dashboard preferences of the preference."
+                  },
+                  "selectedOrganizationId": {
+                    "type": "string",
+                    "description": "ID of the organization to make the session's selected organization.",
+                    "maxLength": 500,
+                    "format": "uuid"
+                  },
+                  "selectedWorkspaceForOrganizations": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "The selected workspace for organizations of the preference."
+                  },
+                  "usersExtensionPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The users extension preferences of the preference."
+                  },
+                  "remoteProviderPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The remote provider preferences of the preference."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Preferences updated"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2646,7 +2904,7 @@ const UserSchema: Record<string, unknown> = {
         ],
         "operationId": "getUserRecentActivities",
         "summary": "Get recent activity for a user's public profile",
-        "description": "Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges.",
+        "description": "Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges. A retired account is not served: an id with no recorded successor answers 404, and a merged-away id redirects (301) to the surviving canonical account's equivalent path.",
         "security": [],
         "parameters": [
           {
@@ -2823,8 +3081,30 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "301": {
+            "description": "Merged-away user ID; redirects to the surviving canonical account's equivalent activity path",
+            "headers": {
+              "Location": {
+                "description": "URL of the surviving canonical account's equivalent activity path",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3026,7 +3306,7 @@ const UserSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -4252,6 +4532,18 @@ const UserSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "currentOrgId": {
+        "name": "X-Current-Orgid",
+        "in": "header",
+        "required": false,
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+        "schema": {
+          "type": "string",
+          "minLength": 36,
+          "maxLength": 36,
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
       "id": {
         "name": "id",
         "in": "path",
@@ -7153,6 +7445,167 @@ const UserSchema: Record<string, unknown> = {
           "selectedOrganizationId": {
             "type": "string",
             "description": "ID of the associated selectedOrganization.",
+            "maxLength": 500,
+            "format": "uuid"
+          },
+          "selectedWorkspaceForOrganizations": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The selected workspace for organizations of the preference."
+          },
+          "usersExtensionPreferences": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "The users extension preferences of the preference."
+          },
+          "remoteProviderPreferences": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "The remote provider preferences of the preference."
+          }
+        }
+      },
+      "PreferencePayload": {
+        "type": "object",
+        "description": "The client-settable fields of Preference for updateUserPreferences. Every field is optional: the server merges the ones present onto the stored preferences and keeps the rest. updatedAt is server-recorded and is not settable.",
+        "additionalProperties": false,
+        "properties": {
+          "meshAdapters": {
+            "type": "array",
+            "items": {
+              "x-go-type": "Adapter",
+              "type": "object",
+              "description": "Placeholder for Adapter struct definition."
+            },
+            "description": "The mesh adapters of the preference."
+          },
+          "grafana": {
+            "x-go-type": "Grafana",
+            "type": "object",
+            "properties": {
+              "grafanaUrl": {
+                "type": "string",
+                "description": "Grafana URL for the user configuration.",
+                "maxLength": 500
+              },
+              "grafanaApiKey": {
+                "type": "string",
+                "description": "Grafana API key for the user configuration.",
+                "maxLength": 500
+              },
+              "selectedBoardsConfigs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "board": {
+                      "type": "object",
+                      "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                    },
+                    "panels": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                      },
+                      "description": "Panels selected for the Grafana board configuration."
+                    },
+                    "templateVars": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Template variables applied to the selected Grafana board configuration."
+                    }
+                  }
+                },
+                "description": "Selected Grafana board configurations for the user."
+              }
+            }
+          },
+          "prometheus": {
+            "x-go-type": "Prometheus",
+            "type": "object",
+            "properties": {
+              "prometheusUrl": {
+                "type": "string",
+                "description": "The prometheus URL of the prometheus.",
+                "maxLength": 500
+              },
+              "selectedPrometheusBoardsConfigs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "board": {
+                      "type": "object",
+                      "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                    },
+                    "panels": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                      },
+                      "description": "Panels selected for the Grafana board configuration."
+                    },
+                    "templateVars": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Template variables applied to the selected Grafana board configuration."
+                    }
+                  }
+                },
+                "description": "The selected prometheus boards configs of the prometheus."
+              }
+            }
+          },
+          "loadTestPrefs": {
+            "x-go-type": "LoadTestPreferences",
+            "type": "object",
+            "properties": {
+              "c": {
+                "type": "integer",
+                "description": "Concurrent requests",
+                "minimum": 0
+              },
+              "qps": {
+                "type": "integer",
+                "description": "Queries per second",
+                "minimum": 0
+              },
+              "t": {
+                "type": "string",
+                "description": "Duration",
+                "maxLength": 500
+              },
+              "gen": {
+                "type": "string",
+                "description": "Load generator",
+                "maxLength": 500
+              }
+            }
+          },
+          "anonymousUsageStats": {
+            "type": "boolean",
+            "description": "The anonymous usage stats of the preference."
+          },
+          "anonymousPerfResults": {
+            "type": "boolean",
+            "description": "The anonymous perf results of the preference."
+          },
+          "dashboardPreferences": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "The dashboard preferences of the preference."
+          },
+          "selectedOrganizationId": {
+            "type": "string",
+            "description": "ID of the organization to make the session's selected organization.",
             "maxLength": 500,
             "format": "uuid"
           },

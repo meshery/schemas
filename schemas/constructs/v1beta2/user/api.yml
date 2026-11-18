@@ -73,6 +73,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "301":
+          description: Merged-away user ID; redirects to the surviving canonical account's equivalent profile path
+          headers:
+            Location:
+              description: URL of the surviving canonical account's equivalent profile path
+              schema:
+                type: string
+                format: uri
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -90,7 +98,16 @@ paths:
       tags:
         - users
       operationId: getUser
+      x-mcp:
+        expose: true
+        title: Get the current user profile
+        scope: account:read
       summary: Get current user profile
+      description: >
+        Returns the profile of the signed-in user. An `X-Current-Orgid`
+        that is not a UUID answers 400.
+      parameters:
+        - $ref: "#/components/parameters/currentOrgId"
       responses:
         "200":
           description: Current user profile and role context
@@ -98,10 +115,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
           $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/preferences:
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: updateUserPreferences
+      summary: Update the current user's preferences
+      description: >-
+        Merges the payload onto the signed-in user's stored preferences. A key
+        the payload names replaces the stored value; a key it leaves out keeps
+        the stored value. Setting selectedOrganizationId switches the
+        organization the user's session has selected, as Meshery Cloud's and
+        Meshery's organization switchers do. Badges are server-owned and are
+        never changed through this operation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreferencePayload"
+      responses:
+        "201":
+          description: Preferences updated
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
 
@@ -142,7 +191,10 @@ paths:
         Accessible without authentication; sensitive event categories are
         filtered out and email addresses are redacted unless the caller is a
         provider admin or is viewing their own profile. Pagination beyond the
-        first page requires provider-admin privileges.
+        first page requires provider-admin privileges. A retired account is
+        not served: an id with no recorded successor answers 404, and a
+        merged-away id redirects (301) to the surviving canonical account's
+        equivalent path.
       security: []
       parameters:
         - $ref: "#/components/parameters/userId"
@@ -176,8 +228,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecentActivityPage"
+        "301":
+          description: Merged-away user ID; redirects to the surviving canonical account's equivalent activity path
+          headers:
+            Location:
+              description: URL of the surviving canonical account's equivalent activity path
+              schema:
+                type: string
+                format: uri
         "400":
           $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -409,6 +471,8 @@ components:
             type: string
 
   parameters:
+    currentOrgId:
+      $ref: "../core/api.yml#/components/parameters/currentOrgId"
     id:
       name: id
       in: path
@@ -1082,6 +1146,59 @@ components:
         selectedOrganizationId:
           type: string
           description: ID of the associated selectedOrganization.
+          maxLength: 500
+          format: uuid
+        selectedWorkspaceForOrganizations:
+          type: object
+          additionalProperties:
+            type: string
+          description: The selected workspace for organizations of the preference.
+        usersExtensionPreferences:
+          type: object
+          additionalProperties: true
+          description: The users extension preferences of the preference.
+        remoteProviderPreferences:
+          type: object
+          additionalProperties: true
+          description: The remote provider preferences of the preference.
+
+    PreferencePayload:
+      type: object
+      description: >-
+        The client-settable fields of Preference for updateUserPreferences.
+        Every field is optional: the server merges the ones present onto the
+        stored preferences and keeps the rest. updatedAt is server-recorded and
+        is not settable.
+      additionalProperties: false
+      properties:
+        meshAdapters:
+          type: array
+          items:
+            x-go-type: Adapter
+            $ref: "#/components/schemas/Adapter"
+          description: The mesh adapters of the preference.
+        grafana:
+          x-go-type: Grafana
+          $ref: "#/components/schemas/Grafana"
+        prometheus:
+          x-go-type: Prometheus
+          $ref: "#/components/schemas/Prometheus"
+        loadTestPrefs:
+          x-go-type: LoadTestPreferences
+          $ref: "#/components/schemas/LoadTestPreferences"
+        anonymousUsageStats:
+          type: boolean
+          description: The anonymous usage stats of the preference.
+        anonymousPerfResults:
+          type: boolean
+          description: The anonymous perf results of the preference.
+        dashboardPreferences:
+          type: object
+          additionalProperties: true
+          description: The dashboard preferences of the preference.
+        selectedOrganizationId:
+          type: string
+          description: ID of the organization to make the session's selected organization.
           maxLength: 500
           format: uuid
         selectedWorkspaceForOrganizations:

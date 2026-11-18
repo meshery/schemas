@@ -24,6 +24,11 @@ const (
 	MesheryDesign IaCFileTypes = "meshery-design"
 )
 
+// Defines values for IdempotencyKeyInFlightErrorCode.
+const (
+	IdempotencyKeyInFlight IdempotencyKeyInFlightErrorCode = "idempotency_key_in_flight"
+)
+
 // Defines values for MeshkitErrorSeverity.
 const (
 	Alert     MeshkitErrorSeverity = "alert"
@@ -202,10 +207,22 @@ type IaCFileTypes string
 // Id defines model for id.
 type Id = uuid.UUID
 
+// IdempotencyKeyInFlightError A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type IdempotencyKeyInFlightError struct {
+	// Code Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+	Code IdempotencyKeyInFlightErrorCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// IdempotencyKeyInFlightErrorCode Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+type IdempotencyKeyInFlightErrorCode string
+
 // MapObject defines model for MapObject.
 type MapObject map[string]string
 
-// MeshkitError A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshkitError A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError struct {
 	// Code MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error.
 	Code *string `json:"code,omitempty" yaml:"code,omitempty"`

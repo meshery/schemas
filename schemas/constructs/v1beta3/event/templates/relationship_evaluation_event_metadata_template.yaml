@@ -1,0 +1,12 @@
+designId: 6c4b8a52-1f3e-4d2b-9a7c-0e5f3b2d1a90
+designName: Online Boutique
+designVersion: v0.0.3
+designLink: https://cloud.layer5.io/extension/meshmap?mode=design&design=6c4b8a52-1f3e-4d2b-9a7c-0e5f3b2d1a90
+viewLink: https://cloud.layer5.io/extension/meshmap?mode=operator&type=view&design_id=6c4b8a52-1f3e-4d2b-9a7c-0e5f3b2d1a90
+historyTitle: 5 changes made at version v0.0.3
+evaluatedAt: '2026-11-02T18:30:00Z'
+relationshipsAdded: 3
+relationshipsRemoved: 1
+relationshipsUpdated: 1
+evaluationStatus: completed
+evaluationDurationMs: 412

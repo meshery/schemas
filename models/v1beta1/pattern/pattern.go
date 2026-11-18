@@ -69,6 +69,9 @@ type MesheryPattern struct {
 	Location    core.MapObject              `json:"location,omitempty" yaml:"location,omitempty"`
 	Name        core.Text                   `json:"name,omitempty" yaml:"name,omitempty"`
 
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID *core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
+
 	// PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 	PatternFile *PatternFile `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
 	UpdatedAt   core.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`

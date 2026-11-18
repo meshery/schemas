@@ -21,3 +21,22 @@ export const CoreConnectionKinds = {
 
 export type CoreConnectionKind =
   (typeof CoreConnectionKinds)[keyof typeof CoreConnectionKinds];
+
+/**
+ * A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
+ *
+ * Source: v1beta3/connection components.schemas.DestinationKind
+ */
+export const DestinationConnectionKinds = {
+  linkedin: "linkedin",
+  x: "x",
+  reddit: "reddit",
+  hn: "hn",
+  slack: "slack",
+  bluesky: "bluesky",
+  github: "github",
+  blog: "blog",
+} as const;
+
+export type DestinationConnectionKind =
+  (typeof DestinationConnectionKinds)[keyof typeof DestinationConnectionKinds];

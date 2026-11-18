@@ -1,0 +1,310 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Content Item Schema
+description: |
+  Server-returned content item as persisted by the owning service.
+  Content items carry a row number and a server-computed fingerprint over
+  their canonical values; updates are conditional on the fingerprint the
+  writer read, so stale writes are refused rather than silently applied.
+  An item may carry its own rules of engagement, which can only tighten,
+  and may belong to a thread through `threadId`, `replyToId` and
+  `threadIndex`. See docs/content-item-contract.md.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - profile
+  - rowNumber
+  - fingerprint
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated content item ID.
+    x-oapi-codegen-extra-tags:
+      db: id
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  profile:
+    type: string
+    description: Subject of the owning profile.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: profile
+    x-order: 3
+  rowNumber:
+    type: integer
+    description: Row number of the content item, unique across the live content items of the organization.
+    minimum: 1
+    x-oapi-codegen-extra-tags:
+      db: row_number
+    x-order: 4
+  fingerprint:
+    type: string
+    description: >
+      Hex digest over the canonical content values (`data`, `profile`,
+      `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`),
+      typed so null, empty string, zero and false differ. An item without
+      them hashes exactly as it did before the fields existed. The thread fields
+      are fixed at insert and are not part of it. Server-computed; used for
+      conditional updates.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: fingerprint
+    x-order: 5
+  data:
+    type: object
+    description: Content values, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: data
+    x-order: 6
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of content item creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 7
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last content item modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 8
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the content item was soft-deleted.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 9
+  createdBy:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the user whose session created the content item. Derived from the
+      authenticated session, never client-settable, and never changed by an
+      update. Omitted on content items created before it was recorded, and
+      when that user was later purged.
+    x-go-name: CreatedBy
+    x-oapi-codegen-extra-tags:
+      db: created_by
+      json: "createdBy,omitempty"
+    x-order: 10
+  rulesOfEngagement:
+    $ref: ./api.yml#/components/schemas/ContentItemRulesOfEngagement
+    description: >
+      The item's own rules of engagement, set by the order that wrote it.
+      They can only tighten: the client that runs the item applies the
+      stricter of these and the rules that apply to the item's profile and
+      platform without them, and the warm-up and the pause after a sign-in
+      challenge always apply. The server validates the shape and stores
+      the value; it does not resolve it. Omitted when the item has none, in
+      which case the item runs under the rules that apply without them.
+    x-oapi-codegen-extra-tags:
+      db: rules_of_engagement
+      json: "rulesOfEngagement,omitempty"
+    x-order: 11
+  threadId:
+    type: string
+    format: uuid
+    x-go-type: core.Uuid
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    description: >
+      ID of the root item of the thread this item belongs to: the first
+      post of a split thread, or the first transmission of a conversation
+      between profiles. Omitted on a standalone item and on a root itself;
+      a root is the item other items name here. Set on insert only.
+    x-go-name: ThreadID
+    x-oapi-codegen-extra-tags:
+      db: thread_id
+      json: "threadId,omitempty"
+    x-order: 12
+  replyToId:
+    type: string
+    format: uuid
+    x-go-type: core.Uuid
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    description: >
+      ID of the item this item answers directly: the thread root or another
+      item of the same thread. A split thread's part names the part before
+      it; a reply in a conversation between profiles names the transmission
+      above it. Omitted when the item answers nothing. Never set without
+      `threadId`. Set on insert only.
+    x-go-name: ReplyToID
+    x-oapi-codegen-extra-tags:
+      db: reply_to_id
+      json: "replyToId,omitempty"
+    x-order: 13
+  threadIndex:
+    type: integer
+    description: >
+      Position of the item in its thread, counting the root as 0. Present
+      exactly when `threadId` is, unique among the live items of the
+      thread, and greater than the position of the item named by
+      `replyToId`. Set on insert only.
+    minimum: 1
+    x-oapi-codegen-extra-tags:
+      db: thread_index
+      json: "threadIndex,omitempty"
+    x-order: 14
+  mediaAssetIds:
+    type: array
+    uniqueItems: true
+    maxItems: 20
+    x-go-type: pq.StringArray
+    x-go-type-import:
+      path: github.com/lib/pq
+    x-go-type-skip-optional-pointer: true
+    items:
+      type: string
+      format: uuid
+      description: ID of a media_asset in the same organization.
+    description: >
+      The media assets the item posts, in posting order. Ids only, never
+      URLs. Omitted when the item posts no file.
+    x-oapi-codegen-extra-tags:
+      db: media_asset_ids
+      json: "mediaAssetIds,omitempty"
+    x-order: 15
+  approved:
+    type: boolean
+    description: >
+      Whether the item is approved to run. Server-set and read-only:
+      it is not in ContentItemPayload. At insert the server sets it from the
+      effective approval, which is resolved at insert, again at each content
+      edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request
+      when `approvalRequired` is true, and `true` with no request when it is
+      false. Afterwards `approveRequest` in the request construct sets it to
+      true, and so does the one-time backfill of a row written before this
+      field shipped (see below); that operation needs the Decide Content Item
+      Approvals key and is never an AI app tool. A content edit that resolves to required sets
+      it back to false. Any content edit that leaves it unapproved supersedes
+      an open request with a fresh pending one, so after the edit an
+      unapproved item has an open request (see updateContentItem). A change to
+      `approvalPolicy` whose resolved result is required does the same to an
+      approved item.
+      The client that runs the queue reads this field.
+      For one release after this field ships, servers mirror it into the
+      free-form `Approved?` column in `data` for older readers, and backfill
+      `approved` once from that column for rows written before the field
+      shipped, so every row carries a value. A client-sent `Approved?` never
+      approves an item. New readers read this field only. See
+      docs/content-item-contract.md.
+    default: false
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: approved
+      json: "approved"
+    x-order: 16
+  createdByClient:
+    type: string
+    description: >
+      OAuth client ID of the AI app that created the item. Server-set from
+      the access token, never client-settable, and never changed by an
+      update. Empty or omitted on an item a person created.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: created_by_client
+      json: "createdByClient,omitempty"
+    x-order: 17
+  approvalPolicy:
+    $ref: ./api.yml#/components/schemas/ApprovalPolicy
+    description: >
+      The item's own approval policy. Absent means inherit. An explicit
+      `required` or `not_required` wins over every higher-level setting;
+      `inherit` or absent inherits from higher-level settings (platform,
+      workspace, profile), hierarchy defined in
+      https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until
+      the upstream policies exist, `inherit` or absent resolves to
+      `required`. Only a person with Decide Content Item Approvals may write
+      a value that changes the stored one; an AI app never can. Changing it
+      alone re-resolves the approval. A change whose result is required
+      (`required`, or `inherit` or absent in the interim, which resolves to
+      required) resets an approved item and opens its request. A change whose
+      result is not required never changes `approved`, and any change leaves
+      an unapproved item with an open request, whatever the result (see
+      updateContentItem).
+      Stored in the
+      nullable `approval_policy` column; null means inherit, and a written
+      `inherit` is stored as null, so reads return it absent.
+    x-oapi-codegen-extra-tags:
+      db: approval_policy
+      json: "approvalPolicy,omitempty"
+    x-order: 18
+  approvalRequired:
+    type: boolean
+    readOnly: true
+    description: >
+      Server-computed and read-only: whether the item needs a person's
+      approval, resolved at insert, again at each content edit, and again
+      when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level
+      settings (hierarchy defined in
+      https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the
+      `approval_required` column. Never in a payload. A change to
+      `approvalPolicy` alone re-resolves it; a higher-level setting alone does
+      not, and the next content edit resolves it again. Interim: until the upstream
+      policies exist, an absent or `inherit` policy resolves to `true`
+      (approval source `fallback`). Absent on items inserted before this
+      field shipped.
+    x-oapi-codegen-extra-tags:
+      db: approval_required
+      json: "approvalRequired,omitempty"
+    x-order: 19
+  approvalPolicySource:
+    type: string
+    readOnly: true
+    description: >
+      Server-computed and read-only: the level that decided
+      `approvalRequired`, resolved at insert, again at each content edit, and
+      again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column.
+      `item` when the item's own `approvalPolicy` was explicit; `fallback`
+      when no level set a value and approval is required. The other levels
+      name the higher level that set the value: `workspace`, `profile`,
+      `organization` and `platform`, listed in their planned order (the
+      hierarchy is defined in
+      https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until
+      the upstream policies exist, only `item` and `fallback` are active (an
+      absent or `inherit` policy resolves to `fallback`). The other four
+      levels become active as that hierarchy lands. Never in a payload.
+      Absent on items inserted before this field shipped.
+    enum:
+      - item
+      - workspace
+      - profile
+      - organization
+      - platform
+      - fallback
+    x-enum-varnames:
+      - ApprovalPolicySourceItem
+      - ApprovalPolicySourceWorkspace
+      - ApprovalPolicySourceProfile
+      - ApprovalPolicySourceOrganization
+      - ApprovalPolicySourcePlatform
+      - ApprovalPolicySourceFallback
+    x-oapi-codegen-extra-tags:
+      db: approval_policy_source
+      json: "approvalPolicySource,omitempty"
+    x-order: 20

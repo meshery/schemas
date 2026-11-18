@@ -56,8 +56,8 @@ var githubIntegrationOperations = []githubIntegrationOperation{
 		method:        "get",
 		operationID:   "scanGithubRepository",
 		successSchema: "#/components/schemas/GithubRepositoryTree",
-		responseCodes: []string{"200", "206", "400", "401", "403", "500", "502"},
-		params:        []string{"repositoryName", "page", "pageSize"},
+		responseCodes: []string{"200", "206", "400", "401", "403", "409", "500", "502"},
+		params:        []string{"repositoryName", "repositoryRef", "page", "pageSize"},
 	},
 	{
 		path:          "/api/integrations/github/verify/{owner}/{repo}",
@@ -92,13 +92,14 @@ var githubIntegrationOperations = []githubIntegrationOperation{
 	},
 }
 
-// Meshery Cloud answers 400/403/404/500/502 from these routes as a MeshKit
+// Meshery Cloud answers 400/403/404/409/500/502 from these routes as a MeshKit
 // JSON body; 401 keeps the shared core response.
 var githubIntegrationErrorResponse = map[string]string{
 	"400": "#/components/responses/MeshkitError400",
 	"401": "#/components/responses/401",
 	"403": "#/components/responses/MeshkitError403",
 	"404": "#/components/responses/MeshkitError404",
+	"409": "#/components/responses/MeshkitError409",
 	"500": "#/components/responses/MeshkitError500",
 	"502": "#/components/responses/MeshkitError502",
 }
@@ -188,6 +189,7 @@ func TestGithubIntegrationParameters(t *testing.T) {
 		{"installationIdQuery", "id", "query"},
 		{"ignoredInstallationId", "id", "query"},
 		{"repositoryName", "name", "query"},
+		{"repositoryRef", "ref", "query"},
 		{"owner", "owner", "path"},
 		{"repo", "repo", "path"},
 		{"flow", "flow", "query"},
@@ -211,6 +213,13 @@ func TestGithubIntegrationParameters(t *testing.T) {
 	}
 	if got := mustLookup(t, params, "installationIdQuery", "schema", "pattern"); got != "^[1-9][0-9]*$" {
 		t.Errorf("installationIdQuery pattern = %v, want a positive decimal installation id", got)
+	}
+	// An omitted or empty ref scans the default branch, so existing callers are unaffected.
+	if got, ok := mappingValue(mustValue(params, "repositoryRef"), "required"); ok && got != false {
+		t.Errorf("repositoryRef required = %v, want optional", got)
+	}
+	if got := mustLookup(t, params, "repositoryRef", "schema", "maxLength"); got != 255 {
+		t.Errorf("repositoryRef maxLength = %v, want 255", got)
 	}
 	if got := mustLookup(t, params, "ignoredInstallationId", "deprecated"); got != true {
 		t.Errorf("ignoredInstallationId deprecated = %v, want true (the server does not consult it)", got)
@@ -302,7 +311,7 @@ func TestConnectionWritesDeclareReservedIdentity409(t *testing.T) {
 		path, method, operationID string
 		codes                     []string
 	}{
-		{"/api/integrations/connections", "post", "registerConnection", []string{"201", "400", "401", "409", "500"}},
+		{"/api/integrations/connections", "post", "registerConnection", []string{"200", "201", "400", "401", "403", "409", "426", "429", "500"}},
 		{"/api/integrations/connections/{connectionId}", "put", "updateConnection", []string{"200", "400", "401", "404", "409", "500"}},
 	} {
 		operation := mustLookup(t, doc, "paths", op.path, op.method)
@@ -316,8 +325,8 @@ func TestConnectionWritesDeclareReservedIdentity409(t *testing.T) {
 	}
 }
 
-// Meshery Cloud answers the invitation-write and events-aggregate refusals as
-// MeshKit JSON error bodies.
+// Meshery Cloud answers the invitation-write, invitation-acceptance and
+// events-aggregate refusals as MeshKit JSON error bodies.
 func TestInvitationAndEventsDeclareMeshkitErrorBodies(t *testing.T) {
 	invitations := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), invitationV1beta3Spec))
 	for _, op := range []struct {
@@ -341,6 +350,30 @@ func TestInvitationAndEventsDeclareMeshkitErrorBodies(t *testing.T) {
 		if ref, _ := mappingValue(mustValue(responses, "401"), "$ref"); ref != "#/components/responses/401" {
 			t.Errorf("%s 401 $ref = %v, want the shared 401", op.operationID, ref)
 		}
+	}
+
+	// acceptInvitation answers its 400, 404 and 500 as the shared MeshKit
+	// responses.
+	accept := mustLookup(t, invitations, "paths", "/api/organizations/invitations/{invitationId}/accept", "post")
+	if got := mustValue(accept, "operationId"); got != "acceptInvitation" {
+		t.Fatalf("POST accept operationId = %v, want acceptInvitation", got)
+	}
+	acceptResponses := mustValue(accept, "responses")
+	if got := sortedMappingKeys(acceptResponses); !reflect.DeepEqual(got, []string{"200", "400", "401", "404", "500"}) {
+		t.Errorf("acceptInvitation responses = %v", got)
+	}
+	for _, code := range []string{"400", "404", "500"} {
+		want := "#/components/responses/MeshkitError" + code
+		if ref, _ := mappingValue(mustValue(acceptResponses, code), "$ref"); ref != want {
+			t.Errorf("acceptInvitation %s $ref = %v, want %q", code, ref, want)
+		}
+	}
+	if ref, _ := mappingValue(mustValue(acceptResponses, "401"), "$ref"); ref != "#/components/responses/401" {
+		t.Errorf("acceptInvitation 401 $ref = %v, want the shared 401", ref)
+	}
+	invitationSpec := mustLoadAPISpec(t, invitationV1beta3Spec)
+	for _, code := range []string{"400", "404", "500"} {
+		assertMeshkitErrorBody(t, invitationSpec, "/api/organizations/invitations/{invitationId}/accept", "post", code)
 	}
 
 	events := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), eventV1beta3Spec))

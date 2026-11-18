@@ -170,6 +170,11 @@ const (
 	MesheryDesign IaCFileTypes = "meshery-design"
 )
 
+// Defines values for IdempotencyKeyInFlightErrorCode.
+const (
+	IdempotencyKeyInFlightErrorCodeIdempotencyKeyInFlight IdempotencyKeyInFlightErrorCode = "idempotency_key_in_flight"
+)
+
 // Defines values for MeshkitErrorSeverity.
 const (
 	Alert     MeshkitErrorSeverity = "alert"
@@ -630,6 +635,18 @@ type IaCFileTypes string
 // Id defines model for id.
 type Id = uuid.UUID
 
+// IdempotencyKeyInFlightError A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type IdempotencyKeyInFlightError struct {
+	// Code Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+	Code IdempotencyKeyInFlightErrorCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// IdempotencyKeyInFlightErrorCode Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+type IdempotencyKeyInFlightErrorCode string
+
 // InputString A string starting with an alphanumeric character. Spaces and hyphens allowed.
 type InputString = string
 
@@ -642,7 +659,7 @@ type MapObject map[string]string
 // MesheryInstanceID defines model for MesheryInstanceUuid.
 type MesheryInstanceID = uuid.UUID
 
-// MeshkitError A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshkitError A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError struct {
 	// Code MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error.
 	Code *string `json:"code,omitempty" yaml:"code,omitempty"`
@@ -689,6 +706,12 @@ type OperationID = uuid.UUID
 
 // OrganizationId defines model for OrganizationId.
 type OrganizationId = uuid.UUID
+
+// OwnershipTransferPayload Request body for transferring ownership of a resource to another user. Used uniformly across all ownable resource constructs.
+type OwnershipTransferPayload struct {
+	// NewOwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	NewOwnerId Uuid `json:"newOwnerId" yaml:"newOwnerId"`
+}
 
 // Price defines model for Price.
 type Price = int32
@@ -937,8 +960,14 @@ type ContentType = string
 // Cumulative defines model for cumulative.
 type Cumulative = string
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // Filter defines model for filter.
 type Filter = string
+
+// IdempotencyKey defines model for idempotencyKey.
+type IdempotencyKey = string
 
 // IsOAuth defines model for isOAuth.
 type IsOAuth = string
@@ -991,22 +1020,28 @@ type Type = string
 // UserId defines model for userId.
 type UserId = string
 
-// MeshkitError400 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// IdempotencyKeyInFlight A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type IdempotencyKeyInFlight = IdempotencyKeyInFlightError
+
+// MeshkitError400 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError400 = MeshkitError
 
-// MeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError403 = MeshkitError
 
-// MeshkitError404 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshkitError404 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError404 = MeshkitError
 
-// MeshkitError409 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshkitError409 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError409 = MeshkitError
 
-// MeshkitError500 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type MeshkitError429 = MeshkitError
+
+// MeshkitError500 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError500 = MeshkitError
 
-// MeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError502 = MeshkitError
 
 // Getter for additional properties for ComponentStyles. Returns the specified

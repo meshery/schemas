@@ -4220,7 +4220,7 @@ const AcademySchema: Record<string, unknown> = {
                               }
                             },
                             "acceptanceOutcome": {
-                              "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                              "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
                               "x-go-type": "InvitationAcceptanceOutcome",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "acceptance_outcome",
@@ -4232,6 +4232,30 @@ const AcademySchema: Record<string, unknown> = {
                                 "child_organization"
                               ],
                               "default": "direct_membership"
+                            },
+                            "childOrganizationBranding": {
+                              "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                              "x-go-type": "InvitationChildOrganizationBranding",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "child_organization_branding",
+                                "json": "childOrganizationBranding"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "parent",
+                                "provider",
+                                "none"
+                              ],
+                              "default": "parent"
+                            },
+                            "childOrganizationName": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "child_organization_name",
+                                "json": "childOrganizationName"
+                              }
                             },
                             "status": {
                               "description": "Activation status of the invitation.",
@@ -5004,7 +5028,7 @@ const AcademySchema: Record<string, unknown> = {
                               }
                             },
                             "acceptanceOutcome": {
-                              "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                              "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
                               "x-go-type": "InvitationAcceptanceOutcome",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "acceptance_outcome",
@@ -5016,6 +5040,30 @@ const AcademySchema: Record<string, unknown> = {
                                 "child_organization"
                               ],
                               "default": "direct_membership"
+                            },
+                            "childOrganizationBranding": {
+                              "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                              "x-go-type": "InvitationChildOrganizationBranding",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "child_organization_branding",
+                                "json": "childOrganizationBranding"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "parent",
+                                "provider",
+                                "none"
+                              ],
+                              "default": "parent"
+                            },
+                            "childOrganizationName": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "child_organization_name",
+                                "json": "childOrganizationName"
+                              }
                             },
                             "status": {
                               "description": "Activation status of the invitation.",
@@ -11016,7 +11064,7 @@ const AcademySchema: Record<string, unknown> = {
                     }
                   },
                   "acceptanceOutcome": {
-                    "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                    "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to \"My Organization\". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
                     "x-go-type": "InvitationAcceptanceOutcome",
                     "x-oapi-codegen-extra-tags": {
                       "db": "acceptance_outcome",
@@ -11028,6 +11076,30 @@ const AcademySchema: Record<string, unknown> = {
                       "child_organization"
                     ],
                     "default": "direct_membership"
+                  },
+                  "childOrganizationBranding": {
+                    "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.",
+                    "x-go-type": "InvitationChildOrganizationBranding",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "child_organization_branding",
+                      "json": "childOrganizationBranding"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "parent",
+                      "provider",
+                      "none"
+                    ],
+                    "default": "parent"
+                  },
+                  "childOrganizationName": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward.",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "child_organization_name",
+                      "json": "childOrganizationName"
+                    }
                   },
                   "status": {
                     "description": "Activation status of the invitation.",

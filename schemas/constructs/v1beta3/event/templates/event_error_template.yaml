@@ -1,0 +1,43 @@
+code: meshery-server-1033
+component:
+  type: component
+  name: meshery-server
+severity: alert
+shortDescription: Unable to reach the Kubernetes cluster
+longDescription: Meshery Server could not reach the Kubernetes API server of the connection prod-1.
+probableCauses:
+- id: cluster-unreachable
+  description: The cluster's API server is not reachable from Meshery Server.
+  remediations:
+  - id: check-network
+    description: Check that Meshery Server can reach the cluster's API server address.
+    actionPolicy: manual
+  - id: reconnect
+    description: Reconnect the connection once the cluster is reachable.
+    action: connection.reconnect
+    actionPolicy: requiresApproval
+- id: credentials-expired
+  description: The connection's credentials for the cluster have expired.
+  remediations:
+  - id: refresh-credentials
+    description: Refresh the connection's credentials from its credential store.
+    action: connection.refresh-credentials
+    actionPolicy: automatic
+  - id: reconnect
+    description: Reconnect the connection once the cluster is reachable.
+    action: connection.reconnect
+    actionPolicy: requiresApproval
+matchedCauses:
+- causeId: credentials-expired
+  confidence: 0.8
+probableCause:
+- The cluster's API server is not reachable from Meshery Server.
+- The connection's credentials for the cluster have expired.
+suggestedRemediation:
+- Check that Meshery Server can reach the cluster's API server address.
+- Reconnect the connection once the cluster is reachable.
+- Refresh the connection's credentials from its credential store.
+referenceUrl: https://docs.meshery.io/reference/error-codes/component-meshery-server/errkubernetesconnectionunreachable-1033/
+details:
+  connectionName: prod-1
+  apiServer: https://203.0.113.10:6443

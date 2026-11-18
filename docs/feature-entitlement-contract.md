@@ -30,9 +30,9 @@ Two rules hold for both kinds:
 `quantity` is `number` with `format: double`; the generated Go field is a
 `float64`, which represents the sentinel exactly.
 
-## The Blowhorn set
+## The posting-client set
 
-Blowhorn (leecalcote/blowhorn) gates publishing on these values. The client
+The downstream posting client gates publishing on these values. The client
 flag column is the name `outbox/entitlement.py` maps each value to.
 
 | Value | Kind | Client flag |
@@ -52,7 +52,7 @@ flag column is the name `outbox/entitlement.py` maps each value to.
 
 ## Consumers
 
-- **leecalcote/blowhorn** - `outbox/entitlement.py` parses the organization
+- **The downstream posting client** - `outbox/entitlement.py` parses the organization
   features response and refuses a publish the plan does not cover. It keys on
   the literal strings above.
 - **meshery-cloud** - mirrors `FeatureName` as the Postgres `feature_name`
@@ -80,6 +80,6 @@ flag column is the name `outbox/entitlement.py` maps each value to.
    committed by automation once the change reaches `master`, not in the PR
    (see `AGENTS.md`, Build). Commit them in the PR only when a downstream
    consumer must pin the PR's own commit for the generated Go constants, as
-   meshery-cloud does for the Blowhorn set; say so in the PR description.
+   meshery-cloud does for the posting-client set; say so in the PR description.
 6. Open the meshery-cloud migration and seed change, and point the consuming
    product's client at the new literal.

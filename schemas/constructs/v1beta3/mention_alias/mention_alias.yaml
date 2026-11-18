@@ -1,0 +1,97 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Mention Alias Schema
+description: |
+  Server-returned mention alias: how one tagged entity (a person, company,
+  page or community, written `@entity` in a message) is named on one
+  platform, as a member of the organization confirmed it. An organization
+  keeps at most one alias per (entity, platform), with `entity` compared
+  ignoring case, so a confirmed answer is remembered across every later
+  message that tags the same entity. Writing the same key again replaces the
+  alias rather than adding a second one. Aliases belong to the organization
+  of the authenticated session; any member holding the content item keys
+  may read and change them.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - entity
+  - platform
+  - handle
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated mention alias ID.
+    x-oapi-codegen-extra-tags:
+      db: id
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  entity:
+    type: string
+    description: >
+      The tag as written after `@`, without the `@` (`kate`). Compared
+      ignoring case: `Kate` and `kate` are the same entity, and the alias
+      keeps the casing of the write that last stored it. The pattern is the
+      tag grammar a message is read with: letters, digits, `_`, `.` and `-`,
+      starting and ending with a letter, digit or `_`.
+    minLength: 1
+    maxLength: 100
+    pattern: '^[A-Za-z0-9_](?:[A-Za-z0-9_.-]*[A-Za-z0-9_])?$'
+    x-oapi-codegen-extra-tags:
+      db: entity
+    x-order: 3
+  platform:
+    $ref: ./api.yml#/components/schemas/MentionAliasPlatform
+    description: The platform this alias names the entity on.
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 4
+  handle:
+    type: string
+    description: >
+      The entity's form on `platform`, stored as confirmed: `@kate_ops` on X,
+      `@kate.example.org` on Bluesky, `u/kate` or `r/kate` on Reddit, a member
+      ID such as `U012AB3CD` on Slack, or a plain-text name on LinkedIn. An
+      empty string is a confirmed answer, not a missing one: it means the
+      entity is sent as its name in plain text on that platform. The server
+      checks length and surrounding whitespace only; whether a value is a
+      valid handle on its platform is the client's check.
+    minLength: 0
+    maxLength: 200
+    pattern: '^(\S(.*\S)?)?$'
+    x-oapi-codegen-extra-tags:
+      db: handle
+    x-order: 5
+  confirmedBy:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the user whose session last wrote the alias. Derived from the
+      authenticated session on every write, never client-settable. Omitted
+      when that user was later purged.
+    x-go-name: ConfirmedBy
+    x-oapi-codegen-extra-tags:
+      db: confirmed_by
+      json: "confirmedBy,omitempty"
+    x-order: 6
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp the alias was first confirmed.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 7
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: >
+      Timestamp the alias was last confirmed. Every write of the alias's key
+      advances it, including one that stores the same handle again.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 8

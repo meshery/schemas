@@ -63,7 +63,11 @@ properties:
     x-order: 5
   created_at:
     $ref: ../core/api.yml#/components/schemas/created_at
+    x-oapi-codegen-extra-tags:
+      db: created_at
     x-order: 6
   updated_at:
     $ref: ../core/api.yml#/components/schemas/updated_at
+    x-oapi-codegen-extra-tags:
+      db: updated_at
     x-order: 7

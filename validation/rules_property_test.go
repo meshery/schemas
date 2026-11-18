@@ -437,6 +437,114 @@ func TestFingerprintSchema_IdenticalSchemasProduceSameFingerprint(t *testing.T) 
 }
 
 // ---------------------------------------------------------------------------
+// fingerprintSchema: full $ref paths, sorted required, constraint presence
+// (meshery/schemas#731)
+// ---------------------------------------------------------------------------
+
+func TestFingerprintSchema_FullRefPathDistinguishesTargets(t *testing.T) {
+	// Same property names and trailing $ref names, but different full $ref
+	// paths: must not collide.
+	build := func(ref string) *openapi3.Schema {
+		return &openapi3.Schema{
+			Properties: openapi3.Schemas{
+				"owner": {Ref: ref, Value: &openapi3.Schema{Type: &openapi3.Types{"object"}}},
+				"name":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+				"state": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+			},
+		}
+	}
+	fpA := fingerprintSchema(build("#/components/schemas/User"))
+	fpB := fingerprintSchema(build("../other/api.yml#/components/schemas/User"))
+	if fpA == fpB {
+		t.Errorf("expected different fingerprints for different $ref paths; got both = %q", fpA)
+	}
+	if !contains(fpA, "owner:$ref:#/components/schemas/User") {
+		t.Errorf("expected full $ref path in fingerprint, got: %s", fpA)
+	}
+}
+
+func TestFingerprintSchema_RequiredArrayAffectsFingerprint(t *testing.T) {
+	build := func(required ...string) *openapi3.Schema {
+		return &openapi3.Schema{
+			Required: required,
+			Properties: openapi3.Schemas{
+				"owner": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+				"name":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+				"state": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+			},
+		}
+	}
+	base := fingerprintSchema(build("name"))
+	withMore := fingerprintSchema(build("name", "owner"))
+	if base == withMore {
+		t.Errorf("expected different fingerprints for different required sets; got both = %q", base)
+	}
+	// Required ordering must not matter: the array is sorted.
+	reordered := fingerprintSchema(build("owner", "name"))
+	if withMore != reordered {
+		t.Errorf("required order should not affect fingerprint: %q vs %q", withMore, reordered)
+	}
+	if !contains(withMore, "required:name,owner") {
+		t.Errorf("expected sorted required array in fingerprint, got: %s", withMore)
+	}
+}
+
+func TestFingerprintSchema_ConstraintPresenceAffectsFingerprint(t *testing.T) {
+	minLen := uint64(1)
+	build := func(withConstraints bool) *openapi3.Schema {
+		nameProp := &openapi3.Schema{Type: &openapi3.Types{"string"}}
+		if withConstraints {
+			nameProp.MinLength = minLen
+			nameProp.MaxLength = &minLen
+			nameProp.Pattern = "^[a-z]+$"
+		}
+		return &openapi3.Schema{
+			Properties: openapi3.Schemas{
+				"owner": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+				"name":  {Value: nameProp},
+				"state": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+			},
+		}
+	}
+	plain := fingerprintSchema(build(false))
+	constrained := fingerprintSchema(build(true))
+	if plain == constrained {
+		t.Errorf("expected different fingerprints when constraints are present; got both = %q", plain)
+	}
+	if !contains(constrained, "name:string{maxLength,minLength,pattern}") {
+		t.Errorf("expected constraint flags in fingerprint, got: %s", constrained)
+	}
+	// Constraint values do not matter, only presence: different values on
+	// the same constraint set still collide (near-duplicates stay flagged).
+	otherLen := uint64(99)
+	alt := build(true)
+	alt.Properties["name"].Value.MinLength = otherLen
+	if fingerprintSchema(alt) != constrained {
+		t.Error("constraint values should not affect the fingerprint, only presence")
+	}
+}
+
+func TestFingerprintSchema_ArrayItemRefUsesFullPath(t *testing.T) {
+	build := func(ref string) *openapi3.Schema {
+		return &openapi3.Schema{
+			Properties: openapi3.Schemas{
+				"members": {Value: &openapi3.Schema{
+					Type:  &openapi3.Types{"array"},
+					Items: &openapi3.SchemaRef{Ref: ref, Value: &openapi3.Schema{Type: &openapi3.Types{"object"}}},
+				}},
+				"name":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+				"state": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+			},
+		}
+	}
+	fpA := fingerprintSchema(build("#/components/schemas/User"))
+	fpB := fingerprintSchema(build("../other/api.yml#/components/schemas/User"))
+	if fpA == fpB {
+		t.Errorf("expected different fingerprints for different array item $ref paths; got both = %q", fpA)
+	}
+}
+
+// ---------------------------------------------------------------------------
 // Rule 6 (inverted): unconditional camelCase — no DB-mirroring exception.
 // See docs/casing-rules.md.
 // ---------------------------------------------------------------------------
@@ -547,8 +655,9 @@ func TestCheckRule6ForAPI_NonDBSnakeFails(t *testing.T) {
 }
 
 // TestCheckRule6ForAPI_LegacyMirroredFieldAnnotated confirms that when a
-// dbMirroredFields-listed name fails Rule 6, the violation message surfaces
-// the legacy-migration guidance pointing at the plan.
+// DB-backed (per its x-oapi-codegen-extra-tags annotations) snake_case name
+// fails Rule 6, the violation message surfaces the legacy-migration
+// guidance pointing at the plan.
 func TestCheckRule6ForAPI_LegacyMirroredFieldAnnotated(t *testing.T) {
 	schema := &openapi3.Schema{
 		Type: &openapi3.Types{"object"},

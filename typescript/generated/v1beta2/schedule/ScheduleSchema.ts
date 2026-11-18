@@ -7,7 +7,7 @@ const ScheduleSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "schedule",
-    "description": "Documentation for Meshery Cloud REST APIs for Schedules",
+    "description": "Documentation for Meshery Cloud REST APIs for per-user Schedules. These\nroutes are a deprecated alias kept for Meshery Server's persist-schedules\ncapability; organization schedules are served by v1beta3 at /api/schedules.\n",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -55,6 +55,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Get schedules",
         "operationId": "getSchedules",
+        "deprecated": true,
         "description": "Returns all schedules for the authenticated user.",
         "parameters": [
           {
@@ -270,6 +271,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Create or update schedule",
         "operationId": "upsertSchedule",
+        "deprecated": true,
         "description": "Creates or updates a schedule for the authenticated user.",
         "requestBody": {
           "required": true,
@@ -483,6 +485,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Get schedule by ID",
         "operationId": "getSchedule",
+        "deprecated": true,
         "description": "Returns a specific schedule by its ID.",
         "parameters": [
           {
@@ -655,6 +658,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Delete schedule",
         "operationId": "deleteSchedule",
+        "deprecated": true,
         "description": "Deletes a schedule by its ID.",
         "parameters": [
           {

@@ -83,6 +83,46 @@ components:
       bearerFormat: JWT
 
   schemas:
+    ViewFilters:
+      type: object
+      additionalProperties: true
+      description: Resource filters that define which Meshery resources this view displays.
+      properties:
+        k8sclusterIds:
+          type: array
+          description: Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling.
+          items:
+            type: string
+            format: uuid
+        kinds:
+          type: array
+          description: Resource kinds included in the view.
+          items:
+            type: string
+        models:
+          type: array
+          description: Meshery models included in the view.
+          items:
+            type: string
+        namespaces:
+          type: array
+          description: Kubernetes namespaces included in the view.
+          items:
+            type: string
+        labels:
+          type: array
+          description: Label selectors in key=value form.
+          items:
+            type: string
+        search:
+          type: string
+          description: Optional text used to filter resources in the view.
+      x-go-type: core.Map
+      x-go-type-import:
+        path: github.com/meshery/schemas/models/core
+        name: core
+      x-go-type-skip-optional-pointer: true
+
     MesheryView:
       $ref: "./view.yaml"
 
@@ -112,18 +152,15 @@ components:
             db: visibility
             json: "visibility,omitempty"
         filters:
-          type: object
+          $ref: "#/components/schemas/ViewFilters"
           description: Filter configuration for this view.
-          x-go-type: core.Map
-          x-go-type-import:
-            path: github.com/meshery/schemas/models/core
-            name: core
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: filters
             json: "filters,omitempty"
         metadata:
           type: object
+          additionalProperties: true
           description: Metadata associated with the view.
           x-go-type: core.Map
           x-go-type-import:
@@ -218,12 +255,8 @@ components:
           x-oapi-codegen-extra-tags:
             json: "name,omitempty"
         filters:
-          type: object
+          $ref: "#/components/schemas/ViewFilters"
           description: Filter configuration for this view.
-          x-go-type: core.Map
-          x-go-type-import:
-            path: github.com/meshery/schemas/models/core
-            name: core
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: "filters,omitempty"
@@ -235,6 +268,7 @@ components:
             json: "visibility,omitempty"
         metadata:
           type: object
+          additionalProperties: true
           description: Metadata associated with the view.
           x-go-type: core.Map
           x-go-type-import:

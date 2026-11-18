@@ -506,6 +506,22 @@ const RegistrySchema: Record<string, unknown> = {
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
+                                      },
                                       "environments": {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
@@ -628,16 +644,16 @@ const RegistrySchema: Record<string, unknown> = {
                                               }
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
@@ -652,16 +668,16 @@ const RegistrySchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
@@ -1212,6 +1228,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -1221,6 +1238,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -1771,6 +1789,22 @@ const RegistrySchema: Record<string, unknown> = {
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
+                                      },
                                       "environments": {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
@@ -1893,16 +1927,16 @@ const RegistrySchema: Record<string, unknown> = {
                                               }
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
@@ -1917,16 +1951,16 @@ const RegistrySchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
@@ -2477,6 +2511,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -2486,6 +2521,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -3183,6 +3219,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -3305,16 +3357,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -3329,16 +3381,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -3898,6 +3950,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -3908,6 +3961,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -3941,29 +3995,29 @@ const RegistrySchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -5628,6 +5682,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -5750,16 +5820,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -5774,16 +5844,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -6343,6 +6413,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -6353,6 +6424,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -6386,29 +6458,29 @@ const RegistrySchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -23798,6 +23870,22 @@ const RegistrySchema: Record<string, unknown> = {
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
+                                      },
                                       "environments": {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
@@ -23920,16 +24008,16 @@ const RegistrySchema: Record<string, unknown> = {
                                               }
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
@@ -23944,16 +24032,16 @@ const RegistrySchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
@@ -24504,6 +24592,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -24513,6 +24602,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -25072,6 +25162,22 @@ const RegistrySchema: Record<string, unknown> = {
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
+                                      },
                                       "environments": {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
@@ -25194,16 +25300,16 @@ const RegistrySchema: Record<string, unknown> = {
                                               }
                                             },
                                             "created_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "created_at",
+                                                "yaml": "created_at"
+                                              },
                                               "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "CreatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "created_at",
-                                                "yaml": "created_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
@@ -25218,16 +25324,16 @@ const RegistrySchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-oapi-codegen-extra-tags": {
+                                                "db": "updated_at",
+                                                "yaml": "updated_at"
+                                              },
                                               "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
                                               "format": "date-time",
                                               "x-go-name": "UpdatedAt",
-                                              "x-oapi-codegen-extra-tags": {
-                                                "db": "updated_at",
-                                                "yaml": "updated_at"
-                                              },
                                               "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
@@ -25778,6 +25884,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "relationships": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -25787,6 +25894,7 @@ const RegistrySchema: Record<string, unknown> = {
                                   },
                                   "components": {
                                     "type": "array",
+                                    "items": {},
                                     "x-go-type": "interface{}",
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-",
@@ -26453,6 +26561,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -26575,16 +26699,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -26599,16 +26723,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -27168,6 +27292,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -27178,6 +27303,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -27211,29 +27337,29 @@ const RegistrySchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -28908,6 +29034,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -29030,16 +29172,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -29054,16 +29196,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -29623,6 +29765,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -29633,6 +29776,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -29666,29 +29810,29 @@ const RegistrySchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -31343,6 +31487,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -31465,16 +31625,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -31489,16 +31649,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -32058,6 +32218,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -32068,6 +32229,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -32101,29 +32263,29 @@ const RegistrySchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -33788,6 +33950,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -33910,16 +34088,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -33934,16 +34112,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -34503,6 +34681,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -34513,6 +34692,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -34546,29 +34726,29 @@ const RegistrySchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -36214,6 +36394,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -36336,16 +36532,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -36360,16 +36556,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -36929,6 +37125,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -36939,6 +37136,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -36972,29 +37170,29 @@ const RegistrySchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -38134,7 +38332,8 @@ const RegistrySchema: Record<string, unknown> = {
                       "type",
                       "subType",
                       "kind",
-                      "status"
+                      "status",
+                      "organizationId"
                     ],
                     "properties": {
                       "id": {
@@ -38164,7 +38363,7 @@ const RegistrySchema: Record<string, unknown> = {
                       "description": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "description",
-                          "json": "description"
+                          "json": "description,omitempty"
                         },
                         "x-order": 3,
                         "type": "string",
@@ -38174,7 +38373,7 @@ const RegistrySchema: Record<string, unknown> = {
                       "url": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "url",
-                          "json": "url"
+                          "json": "url,omitempty"
                         },
                         "x-order": 4,
                         "type": "string",
@@ -38225,7 +38424,7 @@ const RegistrySchema: Record<string, unknown> = {
                         },
                         "x-order": 8,
                         "type": "string",
-                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                         "maxLength": 255
                       },
                       "modelReference": {
@@ -38940,6 +39139,22 @@ const RegistrySchema: Record<string, unknown> = {
                         "nullable": true,
                         "x-go-type-skip-optional-pointer": true
                       },
+                      "organizationId": {
+                        "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                        "x-go-name": "OrganizationID",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "organization_id",
+                          "json": "organizationId"
+                        },
+                        "x-order": 19,
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
                       "environments": {
                         "type": "array",
                         "description": "Associated environments for this connection",
@@ -39117,16 +39332,14 @@ const RegistrySchema: Record<string, unknown> = {
                             },
                             "purpose": {
                               "type": "string",
-                              "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                              "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                               "enum": [
                                 "user",
-                                "administrative",
-                                "blowhorn"
+                                "administrative"
                               ],
                               "x-enum-varnames": [
                                 "EnvironmentPurposeUser",
-                                "EnvironmentPurposeAdministrative",
-                                "EnvironmentPurposeBlowhorn"
+                                "EnvironmentPurposeAdministrative"
                               ],
                               "x-go-type-skip-optional-pointer": true,
                               "x-oapi-codegen-extra-tags": {
@@ -39747,6 +39960,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -39869,16 +40098,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   }
                                                 },
                                                 "created_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "created_at",
+                                                    "yaml": "created_at"
+                                                  },
                                                   "x-order": 7,
                                                   "description": "Timestamp when the resource was created.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "CreatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "created_at",
-                                                    "yaml": "created_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "metadata": {
@@ -39893,16 +40122,16 @@ const RegistrySchema: Record<string, unknown> = {
                                                   "type": "object"
                                                 },
                                                 "updated_at": {
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "updated_at",
+                                                    "yaml": "updated_at"
+                                                  },
                                                   "x-order": 9,
                                                   "description": "Timestamp when the resource was updated.",
                                                   "x-go-type": "time.Time",
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-name": "UpdatedAt",
-                                                  "x-oapi-codegen-extra-tags": {
-                                                    "db": "updated_at",
-                                                    "yaml": "updated_at"
-                                                  },
                                                   "x-go-type-skip-optional-pointer": true
                                                 },
                                                 "deleted_at": {
@@ -40462,6 +40691,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "relationships": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -40472,6 +40702,7 @@ const RegistrySchema: Record<string, unknown> = {
                                       },
                                       "components": {
                                         "type": "array",
+                                        "items": {},
                                         "x-go-type": "interface{}",
                                         "x-oapi-codegen-extra-tags": {
                                           "gorm": "-",
@@ -40505,29 +40736,29 @@ const RegistrySchema: Record<string, unknown> = {
                                         "minimum": 0
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 14,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 15,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     },
@@ -49235,7 +49466,8 @@ const RegistrySchema: Record<string, unknown> = {
                       "type",
                       "subType",
                       "kind",
-                      "status"
+                      "status",
+                      "organizationId"
                     ],
                     "properties": {
                       "id": {
@@ -49265,7 +49497,7 @@ const RegistrySchema: Record<string, unknown> = {
                       "description": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "description",
-                          "json": "description"
+                          "json": "description,omitempty"
                         },
                         "x-order": 3,
                         "type": "string",
@@ -49275,7 +49507,7 @@ const RegistrySchema: Record<string, unknown> = {
                       "url": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "url",
-                          "json": "url"
+                          "json": "url,omitempty"
                         },
                         "x-order": 4,
                         "type": "string",
@@ -49326,7 +49558,7 @@ const RegistrySchema: Record<string, unknown> = {
                         },
                         "x-order": 8,
                         "type": "string",
-                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                         "maxLength": 255
                       },
                       "modelReference": {
@@ -50041,6 +50273,22 @@ const RegistrySchema: Record<string, unknown> = {
                         "nullable": true,
                         "x-go-type-skip-optional-pointer": true
                       },
+                      "organizationId": {
+                        "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                        "x-go-name": "OrganizationID",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "organization_id",
+                          "json": "organizationId"
+                        },
+                        "x-order": 19,
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
                       "environments": {
                         "type": "array",
                         "description": "Associated environments for this connection",
@@ -50218,16 +50466,14 @@ const RegistrySchema: Record<string, unknown> = {
                             },
                             "purpose": {
                               "type": "string",
-                              "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                              "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                               "enum": [
                                 "user",
-                                "administrative",
-                                "blowhorn"
+                                "administrative"
                               ],
                               "x-enum-varnames": [
                                 "EnvironmentPurposeUser",
-                                "EnvironmentPurposeAdministrative",
-                                "EnvironmentPurposeBlowhorn"
+                                "EnvironmentPurposeAdministrative"
                               ],
                               "x-go-type-skip-optional-pointer": true,
                               "x-oapi-codegen-extra-tags": {
@@ -50576,6 +50822,22 @@ const RegistrySchema: Record<string, unknown> = {
                                     "format": "date-time",
                                     "x-go-type-skip-optional-pointer": true
                                   },
+                                  "organizationId": {
+                                    "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                    "x-go-name": "OrganizationID",
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "organization_id",
+                                      "json": "organizationId,omitempty",
+                                      "yaml": "organizationId"
+                                    },
+                                    "x-order": 15,
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
                                   "environments": {
                                     "type": "array",
                                     "description": "Associated environments for this connection",
@@ -50698,16 +50960,16 @@ const RegistrySchema: Record<string, unknown> = {
                                           }
                                         },
                                         "created_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
                                           "x-order": 7,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "CreatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "created_at",
-                                            "yaml": "created_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "metadata": {
@@ -50722,16 +50984,16 @@ const RegistrySchema: Record<string, unknown> = {
                                           "type": "object"
                                         },
                                         "updated_at": {
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
                                           "x-order": 9,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-name": "UpdatedAt",
-                                          "x-oapi-codegen-extra-tags": {
-                                            "db": "updated_at",
-                                            "yaml": "updated_at"
-                                          },
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "deleted_at": {
@@ -51564,6 +51826,22 @@ const RegistrySchema: Record<string, unknown> = {
                                       "format": "date-time",
                                       "x-go-type-skip-optional-pointer": true
                                     },
+                                    "organizationId": {
+                                      "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                      "x-go-name": "OrganizationID",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "organization_id",
+                                        "json": "organizationId,omitempty",
+                                        "yaml": "organizationId"
+                                      },
+                                      "x-order": 15,
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
                                     "environments": {
                                       "type": "array",
                                       "description": "Associated environments for this connection",
@@ -51686,16 +51964,16 @@ const RegistrySchema: Record<string, unknown> = {
                                             }
                                           },
                                           "created_at": {
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "created_at",
+                                              "yaml": "created_at"
+                                            },
                                             "x-order": 7,
                                             "description": "Timestamp when the resource was created.",
                                             "x-go-type": "time.Time",
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-name": "CreatedAt",
-                                            "x-oapi-codegen-extra-tags": {
-                                              "db": "created_at",
-                                              "yaml": "created_at"
-                                            },
                                             "x-go-type-skip-optional-pointer": true
                                           },
                                           "metadata": {
@@ -51710,16 +51988,16 @@ const RegistrySchema: Record<string, unknown> = {
                                             "type": "object"
                                           },
                                           "updated_at": {
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "updated_at",
+                                              "yaml": "updated_at"
+                                            },
                                             "x-order": 9,
                                             "description": "Timestamp when the resource was updated.",
                                             "x-go-type": "time.Time",
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-name": "UpdatedAt",
-                                            "x-oapi-codegen-extra-tags": {
-                                              "db": "updated_at",
-                                              "yaml": "updated_at"
-                                            },
                                             "x-go-type-skip-optional-pointer": true
                                           },
                                           "deleted_at": {
@@ -52279,6 +52557,7 @@ const RegistrySchema: Record<string, unknown> = {
                                 },
                                 "relationships": {
                                   "type": "array",
+                                  "items": {},
                                   "x-go-type": "interface{}",
                                   "x-oapi-codegen-extra-tags": {
                                     "gorm": "-",
@@ -52289,6 +52568,7 @@ const RegistrySchema: Record<string, unknown> = {
                                 },
                                 "components": {
                                   "type": "array",
+                                  "items": {},
                                   "x-go-type": "interface{}",
                                   "x-oapi-codegen-extra-tags": {
                                     "gorm": "-",
@@ -52322,29 +52602,29 @@ const RegistrySchema: Record<string, unknown> = {
                                   "minimum": 0
                                 },
                                 "created_at": {
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "created_at",
+                                    "yaml": "created_at"
+                                  },
                                   "x-order": 14,
                                   "description": "Timestamp when the resource was created.",
                                   "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-name": "CreatedAt",
-                                  "x-oapi-codegen-extra-tags": {
-                                    "db": "created_at",
-                                    "yaml": "created_at"
-                                  },
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "updated_at": {
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "updated_at",
+                                    "yaml": "updated_at"
+                                  },
                                   "x-order": 15,
                                   "description": "Timestamp when the resource was updated.",
                                   "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-name": "UpdatedAt",
-                                  "x-oapi-codegen-extra-tags": {
-                                    "db": "updated_at",
-                                    "yaml": "updated_at"
-                                  },
                                   "x-go-type-skip-optional-pointer": true
                                 }
                               },
@@ -54243,6 +54523,22 @@ const RegistrySchema: Record<string, unknown> = {
                     "format": "date-time",
                     "x-go-type-skip-optional-pointer": true
                   },
+                  "organizationId": {
+                    "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                    "x-go-name": "OrganizationID",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "organization_id",
+                      "json": "organizationId,omitempty",
+                      "yaml": "organizationId"
+                    },
+                    "x-order": 15,
+                    "type": "string",
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
                   "environments": {
                     "type": "array",
                     "description": "Associated environments for this connection",
@@ -54365,16 +54661,16 @@ const RegistrySchema: Record<string, unknown> = {
                           }
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
                           "x-order": 7,
                           "description": "Timestamp when the resource was created.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "CreatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "yaml": "created_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "metadata": {
@@ -54389,16 +54685,16 @@ const RegistrySchema: Record<string, unknown> = {
                           "type": "object"
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
                           "x-order": 9,
                           "description": "Timestamp when the resource was updated.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "UpdatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "yaml": "updated_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "deleted_at": {
@@ -54949,6 +55245,7 @@ const RegistrySchema: Record<string, unknown> = {
               },
               "relationships": {
                 "type": "array",
+                "items": {},
                 "x-go-type": "interface{}",
                 "x-oapi-codegen-extra-tags": {
                   "gorm": "-",
@@ -54958,6 +55255,7 @@ const RegistrySchema: Record<string, unknown> = {
               },
               "components": {
                 "type": "array",
+                "items": {},
                 "x-go-type": "interface{}",
                 "x-oapi-codegen-extra-tags": {
                   "gorm": "-",
@@ -55440,6 +55738,22 @@ const RegistrySchema: Record<string, unknown> = {
                         "format": "date-time",
                         "x-go-type-skip-optional-pointer": true
                       },
+                      "organizationId": {
+                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                        "x-go-name": "OrganizationID",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "organization_id",
+                          "json": "organizationId,omitempty",
+                          "yaml": "organizationId"
+                        },
+                        "x-order": 15,
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
                       "environments": {
                         "type": "array",
                         "description": "Associated environments for this connection",
@@ -55562,16 +55876,16 @@ const RegistrySchema: Record<string, unknown> = {
                               }
                             },
                             "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
                               "x-order": 7,
                               "description": "Timestamp when the resource was created.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "CreatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "created_at",
-                                "yaml": "created_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "metadata": {
@@ -55586,16 +55900,16 @@ const RegistrySchema: Record<string, unknown> = {
                               "type": "object"
                             },
                             "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
                               "x-order": 9,
                               "description": "Timestamp when the resource was updated.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "UpdatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "updated_at",
-                                "yaml": "updated_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "deleted_at": {
@@ -56155,6 +56469,7 @@ const RegistrySchema: Record<string, unknown> = {
                   },
                   "relationships": {
                     "type": "array",
+                    "items": {},
                     "x-go-type": "interface{}",
                     "x-oapi-codegen-extra-tags": {
                       "gorm": "-",
@@ -56165,6 +56480,7 @@ const RegistrySchema: Record<string, unknown> = {
                   },
                   "components": {
                     "type": "array",
+                    "items": {},
                     "x-go-type": "interface{}",
                     "x-oapi-codegen-extra-tags": {
                       "gorm": "-",
@@ -56198,29 +56514,29 @@ const RegistrySchema: Record<string, unknown> = {
                     "minimum": 0
                   },
                   "created_at": {
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "created_at",
+                      "yaml": "created_at"
+                    },
                     "x-order": 14,
                     "description": "Timestamp when the resource was created.",
                     "x-go-type": "time.Time",
                     "type": "string",
                     "format": "date-time",
                     "x-go-name": "CreatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "created_at",
-                      "yaml": "created_at"
-                    },
                     "x-go-type-skip-optional-pointer": true
                   },
                   "updated_at": {
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "updated_at",
+                      "yaml": "updated_at"
+                    },
                     "x-order": 15,
                     "description": "Timestamp when the resource was updated.",
                     "x-go-type": "time.Time",
                     "type": "string",
                     "format": "date-time",
                     "x-go-name": "UpdatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "updated_at",
-                      "yaml": "updated_at"
-                    },
                     "x-go-type-skip-optional-pointer": true
                   }
                 },
@@ -57635,6 +57951,22 @@ const RegistrySchema: Record<string, unknown> = {
                               "format": "date-time",
                               "x-go-type-skip-optional-pointer": true
                             },
+                            "organizationId": {
+                              "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                              "x-go-name": "OrganizationID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organization_id",
+                                "json": "organizationId,omitempty",
+                                "yaml": "organizationId"
+                              },
+                              "x-order": 15,
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
                             "environments": {
                               "type": "array",
                               "description": "Associated environments for this connection",
@@ -57757,16 +58089,16 @@ const RegistrySchema: Record<string, unknown> = {
                                     }
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 7,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "metadata": {
@@ -57781,16 +58113,16 @@ const RegistrySchema: Record<string, unknown> = {
                                     "type": "object"
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 9,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "deleted_at": {
@@ -58341,6 +58673,7 @@ const RegistrySchema: Record<string, unknown> = {
                         },
                         "relationships": {
                           "type": "array",
+                          "items": {},
                           "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-",
@@ -58350,6 +58683,7 @@ const RegistrySchema: Record<string, unknown> = {
                         },
                         "components": {
                           "type": "array",
+                          "items": {},
                           "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-",
@@ -58879,6 +59213,22 @@ const RegistrySchema: Record<string, unknown> = {
                                   "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 },
+                                "organizationId": {
+                                  "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                  "x-go-name": "OrganizationID",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "organization_id",
+                                    "json": "organizationId,omitempty",
+                                    "yaml": "organizationId"
+                                  },
+                                  "x-order": 15,
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
+                                },
                                 "environments": {
                                   "type": "array",
                                   "description": "Associated environments for this connection",
@@ -59001,16 +59351,16 @@ const RegistrySchema: Record<string, unknown> = {
                                         }
                                       },
                                       "created_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "created_at",
+                                          "yaml": "created_at"
+                                        },
                                         "x-order": 7,
                                         "description": "Timestamp when the resource was created.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "CreatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "created_at",
-                                          "yaml": "created_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "metadata": {
@@ -59025,16 +59375,16 @@ const RegistrySchema: Record<string, unknown> = {
                                         "type": "object"
                                       },
                                       "updated_at": {
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "updated_at",
+                                          "yaml": "updated_at"
+                                        },
                                         "x-order": 9,
                                         "description": "Timestamp when the resource was updated.",
                                         "x-go-type": "time.Time",
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-name": "UpdatedAt",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "updated_at",
-                                          "yaml": "updated_at"
-                                        },
                                         "x-go-type-skip-optional-pointer": true
                                       },
                                       "deleted_at": {
@@ -59594,6 +59944,7 @@ const RegistrySchema: Record<string, unknown> = {
                             },
                             "relationships": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -59604,6 +59955,7 @@ const RegistrySchema: Record<string, unknown> = {
                             },
                             "components": {
                               "type": "array",
+                              "items": {},
                               "x-go-type": "interface{}",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-",
@@ -59637,29 +59989,29 @@ const RegistrySchema: Record<string, unknown> = {
                               "minimum": 0
                             },
                             "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
                               "x-order": 14,
                               "description": "Timestamp when the resource was created.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "CreatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "created_at",
-                                "yaml": "created_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             },
                             "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
                               "x-order": 15,
                               "description": "Timestamp when the resource was updated.",
                               "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
                               "x-go-name": "UpdatedAt",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "updated_at",
-                                "yaml": "updated_at"
-                              },
                               "x-go-type-skip-optional-pointer": true
                             }
                           },
@@ -68568,6 +68920,22 @@ const RegistrySchema: Record<string, unknown> = {
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
               },
+              "organizationId": {
+                "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                "x-go-name": "OrganizationID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "organization_id",
+                  "json": "organizationId,omitempty",
+                  "yaml": "organizationId"
+                },
+                "x-order": 15,
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
               "environments": {
                 "type": "array",
                 "description": "Associated environments for this connection",
@@ -68690,16 +69058,16 @@ const RegistrySchema: Record<string, unknown> = {
                       }
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-order": 7,
                       "description": "Timestamp when the resource was created.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "metadata": {
@@ -68714,16 +69082,16 @@ const RegistrySchema: Record<string, unknown> = {
                       "type": "object"
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-order": 9,
                       "description": "Timestamp when the resource was updated.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
@@ -69047,6 +69415,22 @@ const RegistrySchema: Record<string, unknown> = {
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         },
+                        "organizationId": {
+                          "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                          "x-go-name": "OrganizationID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organization_id",
+                            "json": "organizationId,omitempty",
+                            "yaml": "organizationId"
+                          },
+                          "x-order": 15,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
                         "environments": {
                           "type": "array",
                           "description": "Associated environments for this connection",
@@ -69169,16 +69553,16 @@ const RegistrySchema: Record<string, unknown> = {
                                 }
                               },
                               "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "yaml": "created_at"
+                                },
                                 "x-order": 7,
                                 "description": "Timestamp when the resource was created.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "CreatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "created_at",
-                                  "yaml": "created_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "metadata": {
@@ -69193,16 +69577,16 @@ const RegistrySchema: Record<string, unknown> = {
                                 "type": "object"
                               },
                               "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "yaml": "updated_at"
+                                },
                                 "x-order": 9,
                                 "description": "Timestamp when the resource was updated.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "UpdatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "updated_at",
-                                  "yaml": "updated_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "deleted_at": {
@@ -69318,7 +69702,8 @@ const RegistrySchema: Record<string, unknown> = {
               "type",
               "subType",
               "kind",
-              "status"
+              "status",
+              "organizationId"
             ],
             "properties": {
               "id": {
@@ -69348,7 +69733,7 @@ const RegistrySchema: Record<string, unknown> = {
               "description": {
                 "x-oapi-codegen-extra-tags": {
                   "db": "description",
-                  "json": "description"
+                  "json": "description,omitempty"
                 },
                 "x-order": 3,
                 "type": "string",
@@ -69358,7 +69743,7 @@ const RegistrySchema: Record<string, unknown> = {
               "url": {
                 "x-oapi-codegen-extra-tags": {
                   "db": "url",
-                  "json": "url"
+                  "json": "url,omitempty"
                 },
                 "x-order": 4,
                 "type": "string",
@@ -69409,7 +69794,7 @@ const RegistrySchema: Record<string, unknown> = {
                 },
                 "x-order": 8,
                 "type": "string",
-                "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                 "maxLength": 255
               },
               "modelReference": {
@@ -70124,6 +70509,22 @@ const RegistrySchema: Record<string, unknown> = {
                 "nullable": true,
                 "x-go-type-skip-optional-pointer": true
               },
+              "organizationId": {
+                "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                "x-go-name": "OrganizationID",
+                "x-go-type-skip-optional-pointer": true,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "organization_id",
+                  "json": "organizationId"
+                },
+                "x-order": 19,
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
               "environments": {
                 "type": "array",
                 "description": "Associated environments for this connection",
@@ -70301,16 +70702,14 @@ const RegistrySchema: Record<string, unknown> = {
                     },
                     "purpose": {
                       "type": "string",
-                      "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                      "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                       "enum": [
                         "user",
-                        "administrative",
-                        "blowhorn"
+                        "administrative"
                       ],
                       "x-enum-varnames": [
                         "EnvironmentPurposeUser",
-                        "EnvironmentPurposeAdministrative",
-                        "EnvironmentPurposeBlowhorn"
+                        "EnvironmentPurposeAdministrative"
                       ],
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
@@ -70982,6 +71381,22 @@ const RegistrySchema: Record<string, unknown> = {
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         },
+                        "organizationId": {
+                          "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                          "x-go-name": "OrganizationID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organization_id",
+                            "json": "organizationId,omitempty",
+                            "yaml": "organizationId"
+                          },
+                          "x-order": 15,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
                         "environments": {
                           "type": "array",
                           "description": "Associated environments for this connection",
@@ -71104,16 +71519,16 @@ const RegistrySchema: Record<string, unknown> = {
                                 }
                               },
                               "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "yaml": "created_at"
+                                },
                                 "x-order": 7,
                                 "description": "Timestamp when the resource was created.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "CreatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "created_at",
-                                  "yaml": "created_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "metadata": {
@@ -71128,16 +71543,16 @@ const RegistrySchema: Record<string, unknown> = {
                                 "type": "object"
                               },
                               "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "yaml": "updated_at"
+                                },
                                 "x-order": 9,
                                 "description": "Timestamp when the resource was updated.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-name": "UpdatedAt",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "updated_at",
-                                  "yaml": "updated_at"
-                                },
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "deleted_at": {
@@ -71697,6 +72112,7 @@ const RegistrySchema: Record<string, unknown> = {
                     },
                     "relationships": {
                       "type": "array",
+                      "items": {},
                       "x-go-type": "interface{}",
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "-",
@@ -71707,6 +72123,7 @@ const RegistrySchema: Record<string, unknown> = {
                     },
                     "components": {
                       "type": "array",
+                      "items": {},
                       "x-go-type": "interface{}",
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "-",
@@ -71740,29 +72157,29 @@ const RegistrySchema: Record<string, unknown> = {
                       "minimum": 0
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-order": 14,
                       "description": "Timestamp when the resource was created.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-order": 15,
                       "description": "Timestamp when the resource was updated.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     }
                   },

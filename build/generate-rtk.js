@@ -31,6 +31,7 @@
  */
 
 const fs = require("fs");
+const yaml = require("js-yaml");
 const logger = require("./lib/logger");
 const config = require("./lib/config");
 const paths = require("./lib/paths");
@@ -248,6 +249,107 @@ function guardOptionalQueryParams(filePath) {
 }
 
 /**
+ * Collect the operationIds whose request body is optional in an OpenAPI
+ * document, i.e. whose resolved `requestBody` does not declare
+ * `required: true` (OpenAPI defaults `required` to false).
+ *
+ * @param {Object} spec - Parsed OpenAPI document
+ * @returns {string[]} operationIds with an optional request body
+ */
+function findOptionalRequestBodyOperations(spec) {
+  const resolveRef = (ref) =>
+    ref
+      .replace(/^#\//, "")
+      .split("/")
+      .reduce((node, key) => (node == null ? node : node[key]), spec);
+  const operationIds = [];
+
+  for (const pathItem of Object.values(spec.paths || {})) {
+    for (const operation of Object.values(pathItem || {})) {
+      if (!operation || typeof operation !== "object" || !operation.requestBody) {
+        continue;
+      }
+      const requestBody = operation.requestBody.$ref
+        ? resolveRef(operation.requestBody.$ref)
+        : operation.requestBody;
+      if (!requestBody) {
+        throw new Error(
+          `Unresolvable requestBody $ref ${operation.requestBody.$ref} on ${operation.operationId}`
+        );
+      }
+      if (requestBody.required !== true) {
+        operationIds.push(operation.operationId);
+      }
+    }
+  }
+
+  return operationIds;
+}
+
+/**
+ * Mark the `body` member of generated `*ApiArg` types optional for every
+ * operation whose request body is optional.
+ *
+ * Upstream `@rtk-query/codegen-openapi` hard-codes `required: true` for every
+ * request body and ignores `requestBody.required: false`, so an operation such
+ * as `generateToken` (whose body is omitted for an unrestricted token) gets
+ * `body: {...}` and a body-less call fails to type-check. `fetchBaseQuery`
+ * already sends no body when `queryArg.body` is undefined, so only the type
+ * needs correcting. Fails loudly when an expected `*ApiArg` type or its
+ * top-level `body` member is missing, so upstream shape drift cannot silently
+ * reintroduce the mistyping.
+ *
+ * @param {string} content - Generated RTK file contents
+ * @param {string[]} operationIds - operationIds with an optional request body
+ * @returns {{content: string, rewrites: number}} patched source and rewrite count
+ */
+function markOptionalRequestBodies(content, operationIds) {
+  let patched = content;
+  let rewrites = 0;
+
+  for (const operationId of operationIds) {
+    const typeName = `${operationId.charAt(0).toUpperCase()}${operationId.slice(1)}ApiArg`;
+    // The codegen emits CRLF or LF line endings depending on its formatter.
+    const blockRe = new RegExp(`export type ${typeName} = \\{\\r?\\n[\\s\\S]*?\\r?\\n\\};`);
+    const blockMatch = blockRe.exec(patched);
+    if (!blockMatch) {
+      throw new Error(`Post-process failed: ${typeName} type literal not found.`);
+    }
+    const block = blockMatch[0];
+    if (/\n {2}body\?: /.test(block)) {
+      continue;
+    }
+    if (!/\n {2}body: /.test(block)) {
+      throw new Error(`Post-process failed: ${typeName} has no top-level body member.`);
+    }
+    patched =
+      patched.slice(0, blockMatch.index) +
+      block.replace(/\n {2}body: /, "\n  body?: ") +
+      patched.slice(blockMatch.index + block.length);
+    rewrites += 1;
+  }
+
+  return { content: patched, rewrites };
+}
+
+/**
+ * Percent-encode path parameter interpolations in generated ledger URL templates.
+ * Ledger entry keys are arbitrary client strings, so a key such as `a/b` would
+ * otherwise address a different path. Wrapping each `${queryArg.X}` in
+ * `encodeURIComponent` keeps the value a single path segment.
+ * @param {string} content - Generated TS source
+ * @returns {string} source with ledger path parameter interpolations encoded
+ */
+function encodePathParams(content) {
+  return content.replace(/`\/api\/ledgers\/[^`]*`/g, (template) =>
+    template.replace(
+      /\$\{queryArg\.([A-Za-z_$][A-Za-z0-9_$]*)\}/g,
+      (_hit, prop) => `\${encodeURIComponent(queryArg.${prop})}`
+    )
+  );
+}
+
+/**
  * Post-process a generated RTK file to add extra named exports.
  * The codegen only emits `export { injectedRtkApi as <exportName> }`.
  * For consumers that import `injectedRtkApi` by its original internal name
@@ -288,7 +390,20 @@ async function generateRtkClient(rtk) {
     await npx("@rtk-query/codegen-openapi", [configPath]);
     logger.success(`Generated: ${rtk.outputDescription}`);
     if (rtk.outputFile) {
-      guardOptionalQueryParams(paths.fromRoot(rtk.outputFile));
+      const outputPath = paths.fromRoot(rtk.outputFile);
+      if (paths.fileExists(outputPath)) {
+        const source = fs.readFileSync(outputPath, "utf8");
+        const spec = yaml.load(fs.readFileSync(paths.fromRoot(rtk.requiredSpec), "utf8"));
+        const { content, rewrites } = markOptionalRequestBodies(
+          encodePathParams(source),
+          findOptionalRequestBodyOperations(spec)
+        );
+        fs.writeFileSync(outputPath, content, "utf8");
+        if (rewrites > 0) {
+          logger.success(`Post-processed: marked ${rewrites} optional request body(ies) in ${outputPath}`);
+        }
+      }
+      guardOptionalQueryParams(outputPath);
     }
     if (rtk.outputFile && rtk.outputExportName) {
       addInjectedRtkApiExport(paths.fromRoot(rtk.outputFile), rtk.outputExportName);
@@ -334,10 +449,13 @@ async function main() {
 module.exports = {
   addInjectedRtkApiExport,
   checkPrerequisites,
+  encodePathParams,
+  findOptionalRequestBodyOperations,
   findUnguardedQueryParamAccesses,
   generateRtkClient,
   guardOptionalQueryParams,
   main,
+  markOptionalRequestBodies,
 };
 
 if (require.main === module) {

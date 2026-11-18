@@ -92,6 +92,14 @@ export interface components {
         };
         /** @description Body for empty request */
         Empty: Record<string, never>;
+        /** @description Request body for transferring ownership of a resource to another user. Used uniformly across all ownable resource constructs. */
+        OwnershipTransferPayload: {
+            /**
+             * Format: uuid
+             * @description UUID of the user to whom ownership will be transferred.
+             */
+            newOwnerId: string;
+        };
         EmailPreference: {
             /** @description The welcome email of the emailpreference. */
             welcomeEmail?: boolean;
@@ -651,7 +659,17 @@ export interface components {
          * @enum {string}
          */
         IaCFileTypes: "meshery-design" | "helm-chart" | "k8s-manifest" | "docker-compose" | "k8s-kustomize";
-        /** @description A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way. */
+        /** @description A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. */
+        IdempotencyKeyInFlightError: {
+            /**
+             * @description Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+             * @enum {string}
+             */
+            code: "idempotency_key_in_flight";
+            /** @description The sentence the caller is shown. */
+            message: string;
+        };
+        /** @description A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way. */
         MeshkitError: {
             /** @description The sentence the caller is shown. */
             error: string;
@@ -731,6 +749,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Unprocessable - the Idempotency-Key was already used with a different request body */
+        422: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Internal server error */
         500: {
             headers: {
@@ -747,6 +774,23 @@ export interface components {
             };
             content: {
                 "text/plain": string;
+            };
+        };
+        /** @description Conflict - an earlier request with the same Idempotency-Key is still being processed. Nothing is created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. The body's `code` is `idempotency_key_in_flight`. */
+        IdempotencyKeyInFlight: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /**
+                     * @description Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+                     * @enum {string}
+                     */
+                    code: "idempotency_key_in_flight";
+                    /** @description The sentence the caller is shown. */
+                    message: string;
+                };
             };
         };
         /** @description Invalid request body or request param */
@@ -864,6 +908,31 @@ export interface components {
                 };
             };
         };
+        /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+        MeshkitError429: {
+            headers: {
+                /** @description Number of seconds the caller must wait before retrying. */
+                "Retry-After": number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
         /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
         MeshkitError502: {
             headers: {
@@ -943,6 +1012,10 @@ export interface components {
         contentType: string;
         /** @description Filter catalog data based on technology(compatibility) of content e.g (kubernetes, istio...) multiple params can be passed */
         contentTechnology: string;
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        currentOrgId: string;
+        /** @description Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
+        idempotencyKey: string;
     };
     requestBodies: never;
     headers: never;

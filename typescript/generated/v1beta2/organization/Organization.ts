@@ -35,7 +35,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get organization by domain */
+        /**
+         * Get organization by domain
+         * @description Unauthenticated lookup. Servers MUST omit `preferences.schedulePause` from this response; the organization-wide pause is read through getOrgPreferences.
+         */
         get: operations["getOrgByDomain"];
         put?: never;
         post?: never;
@@ -59,7 +62,7 @@ export interface paths {
         get: operations["getOrg"];
         /**
          * Update an organization
-         * @description Updates the organization.
+         * @description Updates the organization. Changing `preferences.schedulePause` is restricted to organization admins (otherwise 403); omitting `schedulePause` keeps the current pause unchanged.
          */
         put: operations["updateOrg"];
         post?: never;
@@ -110,6 +113,30 @@ export interface paths {
          */
         get: operations["getOrgPreferences"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Partially update organization preferences
+         * @description Merges the body into the organization's stored preferences. Every member of the body is optional: a member that is present replaces that member of the stored preferences as a whole, and a member that is omitted stays unchanged. An empty body changes nothing and returns the current preferences. Members may not be null. Authorization is the same as updating the organization (updateOrg) for every member, and changing `schedulePause` is additionally restricted to organization admins (otherwise 403, and nothing is written). Lifting the pause clears its reason and server-recorded fields exactly as updateOrg does. The optional `If-Match` header makes the write conditional on the entity tag the preferences carried when they were read (see the `ETag` header of getOrgPreferences and of this response): when it no longer matches, the request is refused with 412 and nothing is written. Without `If-Match` the write is unconditional.
+         */
+        patch: operations["patchOrgPreferences"];
+        trace?: never;
+    };
+    "/api/identity/orgs/{orgId}/schedule-pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set or lift the organization schedule pause
+         * @description Sets or lifts the organization-wide schedule pause and changes nothing else about the organization: no other preference, no branding, no links. The body is the closed SchedulePausePayload (`paused` required, `reason` optional); an echoed `pausedAt` or `pausedBy` is refused with 400. `paused` true pauses every schedule in the organization, and the server records `pausedAt` and `pausedBy`. `paused` false lifts the pause and clears `reason`, `pausedAt` and `pausedBy`. The call is idempotent: sending the state the organization is already in succeeds and returns it. It answers the resulting SchedulePause. Authorization is one permission key in the organization named by `orgId` ("Workflow Management / Schedules: Pause schedules", in the Schedule Edit keychain, whose OAuth scope is `schedule:write`), seeded to the organization admin role; a caller without it receives 403 and nothing is written. The broad updateOrg and patchOrgPreferences operations can still change `schedulePause`; there the change requires organization admin, as before. The caller must be a live member of the organization named by `orgId`; a caller who is not receives 404, and this operation does not take `X-Current-Orgid` (see the organization selector in docs/mcp-operation-contract.md). See docs/schedule-pause-contract.md.
+         */
+        put: operations["updateOrgSchedulePause"];
         post?: never;
         delete?: never;
         options?: never;
@@ -490,6 +517,276 @@ export interface components {
              * @default true
              */
             showAuthCarousel: boolean;
+            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+            schedulePause?: {
+                /** @description Whether every schedule in the organization is paused. */
+                paused?: boolean;
+                /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                reason?: string;
+                /**
+                 * Format: date-time
+                 * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                 */
+                pausedAt?: string;
+                /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                pausedBy?: string;
+            };
+        };
+        /** @description Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences, or alone through updateOrgSchedulePause. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity. */
+        SchedulePause: {
+            /** @description Whether every schedule in the organization is paused. */
+            paused?: boolean;
+            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+            /**
+             * Format: date-time
+             * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+             */
+            pausedAt?: string;
+            /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedBy?: string;
+        };
+        /** @description Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission. */
+        SchedulePausePayload: {
+            /** @description Whether every schedule in the organization is paused. */
+            paused: boolean;
+            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+        };
+        /** @description Client-settable organization preferences. Identical to Preferences except that schedulePause is SchedulePausePayload. */
+        PreferencesPayload: {
+            /** @description UI theme configured for an organization. */
+            theme: {
+                /**
+                 * Format: uuid
+                 * @description Theme identifier.
+                 */
+                id: string;
+                /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                logo: {
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    desktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    mobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    darkDesktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    darkMobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                };
+                /** @description Arbitrary theme variables keyed by name. */
+                vars?: {
+                    [key: string]: unknown;
+                };
+            };
+            /** @description Preferences specific to dashboard behavior. */
+            dashboard: {
+                [key: string]: unknown;
+            };
+            /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+            authBranding?: {
+                /** @description Ordered slides rendered in the auth-page feature carousel. */
+                carousel?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the slide image asset.
+                     */
+                    imageUrl: string;
+                    /** @description Slide title. */
+                    title: string;
+                    /** @description Slide description text. */
+                    description: string;
+                }[];
+                /** @description FAQ entries rendered on the auth pages. */
+                faqs?: {
+                    /** @description The question text. */
+                    question: string;
+                    /** @description The answer text. */
+                    answer: string;
+                }[];
+            };
+            /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+            links?: {
+                /**
+                 * Format: uri
+                 * @description URL of the organization's Terms of Service page.
+                 */
+                termsOfService?: string;
+                /**
+                 * Format: uri
+                 * @description URL of the organization's Privacy Policy page.
+                 */
+                privacy?: string;
+                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                support?: {
+                    [key: string]: string;
+                };
+                /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                social?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's LinkedIn profile.
+                     */
+                    linkedin?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's X (formerly Twitter) profile.
+                     */
+                    x?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's YouTube channel.
+                     */
+                    youtube?: string;
+                };
+            };
+            /**
+             * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+             * @default true
+             */
+            showAuthCarousel: boolean;
+            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+            schedulePause?: {
+                /** @description Whether every schedule in the organization is paused. */
+                paused: boolean;
+                /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                reason?: string;
+            };
+        };
+        /** @description Partial update of organization preferences (patchOrgPreferences). Every member is optional: a present member replaces that member of the stored preferences as a whole, and an omitted member stays unchanged. Members are those of PreferencesPayload, with the same schemas, and may not be null. */
+        PreferencesPatchPayload: {
+            /** @description UI theme configured for an organization. */
+            theme?: {
+                /**
+                 * Format: uuid
+                 * @description Theme identifier.
+                 */
+                id: string;
+                /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                logo: {
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    desktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    mobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    darkDesktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    darkMobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                };
+                /** @description Arbitrary theme variables keyed by name. */
+                vars?: {
+                    [key: string]: unknown;
+                };
+            };
+            /** @description Preferences specific to dashboard behavior. */
+            dashboard?: {
+                [key: string]: unknown;
+            };
+            /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+            authBranding?: {
+                /** @description Ordered slides rendered in the auth-page feature carousel. */
+                carousel?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the slide image asset.
+                     */
+                    imageUrl: string;
+                    /** @description Slide title. */
+                    title: string;
+                    /** @description Slide description text. */
+                    description: string;
+                }[];
+                /** @description FAQ entries rendered on the auth pages. */
+                faqs?: {
+                    /** @description The question text. */
+                    question: string;
+                    /** @description The answer text. */
+                    answer: string;
+                }[];
+            };
+            /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+            links?: {
+                /**
+                 * Format: uri
+                 * @description URL of the organization's Terms of Service page.
+                 */
+                termsOfService?: string;
+                /**
+                 * Format: uri
+                 * @description URL of the organization's Privacy Policy page.
+                 */
+                privacy?: string;
+                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                support?: {
+                    [key: string]: string;
+                };
+                /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                social?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's LinkedIn profile.
+                     */
+                    linkedin?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's X (formerly Twitter) profile.
+                     */
+                    x?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's YouTube channel.
+                     */
+                    youtube?: string;
+                };
+            };
+            /** @description Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
+            showAuthCarousel?: boolean;
+            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause. */
+            schedulePause?: {
+                /** @description Whether every schedule in the organization is paused. */
+                paused: boolean;
+                /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                reason?: string;
+            };
         };
         /** @description Free-form metadata associated with an organization, including preferences. */
         OrgMetadata: {
@@ -604,6 +901,20 @@ export interface components {
                  * @default true
                  */
                 showAuthCarousel: boolean;
+                /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                schedulePause?: {
+                    /** @description Whether every schedule in the organization is paused. */
+                    paused?: boolean;
+                    /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                    reason?: string;
+                    /**
+                     * Format: date-time
+                     * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                     */
+                    pausedAt?: string;
+                    /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                    pausedBy?: string;
+                };
             };
         };
         /** @description An organization in Meshery Cloud. Organizations are the top-level tenancy boundary and own teams, workspaces, environments, designs, and other resources. Learn more at https://docs.meshery.io/concepts/logical/organizations */
@@ -778,6 +1089,20 @@ export interface components {
                      * @default true
                      */
                     showAuthCarousel: boolean;
+                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                    schedulePause?: {
+                        /** @description Whether every schedule in the organization is paused. */
+                        paused?: boolean;
+                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                        reason?: string;
+                        /**
+                         * Format: date-time
+                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                         */
+                        pausedAt?: string;
+                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                        pausedBy?: string;
+                    };
                 };
             };
             /**
@@ -936,6 +1261,20 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel: boolean;
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused?: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                            /**
+                             * Format: date-time
+                             * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                             */
+                            pausedAt?: string;
+                            /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                            pausedBy?: string;
+                        };
                     };
                 };
                 /**
@@ -1095,6 +1434,20 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel: boolean;
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused?: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                            /**
+                             * Format: date-time
+                             * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                             */
+                            pausedAt?: string;
+                            /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                            pausedBy?: string;
+                        };
                     };
                 };
                 /**
@@ -1308,6 +1661,13 @@ export interface components {
                  * @default true
                  */
                 showAuthCarousel: boolean;
+                /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                schedulePause?: {
+                    /** @description Whether every schedule in the organization is paused. */
+                    paused: boolean;
+                    /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                    reason?: string;
+                };
             };
         };
         /** @description Team listing record used in team listings associated with an organization. */
@@ -1610,6 +1970,8 @@ export interface components {
         order: string;
         /** @description Get all possible entries */
         all: boolean;
+        /** @description Entity tag of the organization's preferences as last read, from the `ETag` header of getOrgPreferences or patchOrgPreferences. When present the write applies only if it still matches; otherwise 412. */
+        ifMatch: string;
     };
     requestBodies: {
         /** @description Body for creating or updating an organization */
@@ -1737,12 +2099,22 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                        };
                     };
                 };
             };
         };
     };
-    headers: never;
+    headers: {
+        /** @description Strong entity tag of the organization's stored preferences. It changes whenever the preferences change; send it back as `If-Match` to make a patchOrgPreferences write conditional. */
+        PreferencesETag: string;
+    };
     pathItems: never;
 }
 export type $defs = Record<string, never>;
@@ -1912,6 +2284,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -2092,6 +2478,13 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                        };
                     };
                 };
             };
@@ -2242,6 +2635,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -2542,6 +2949,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -2736,6 +3157,13 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                        };
                     };
                 };
             };
@@ -2886,6 +3314,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -3262,6 +3704,13 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                        };
                     };
                 };
             };
@@ -3412,6 +3861,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -3495,6 +3958,8 @@ export interface operations {
             /** @description Organization metadata, including preferences */
             200: {
                 headers: {
+                    /** @description Strong entity tag of the organization's stored preferences. It changes whenever the preferences change; send it back as `If-Match` to make a patchOrgPreferences write conditional. */
+                    ETag?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3610,8 +4075,436 @@ export interface operations {
                              * @default true
                              */
                             showAuthCarousel: boolean;
+                            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                            schedulePause?: {
+                                /** @description Whether every schedule in the organization is paused. */
+                                paused?: boolean;
+                                /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                reason?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                 */
+                                pausedAt?: string;
+                                /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                pausedBy?: string;
+                            };
                         };
                     };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    patchOrgPreferences: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Entity tag of the organization's preferences as last read, from the `ETag` header of getOrgPreferences or patchOrgPreferences. When present the write applies only if it still matches; otherwise 412. */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description Organization ID. */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description UI theme configured for an organization. */
+                    theme?: {
+                        /**
+                         * Format: uuid
+                         * @description Theme identifier.
+                         */
+                        id: string;
+                        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                        logo: {
+                            /** @description Image asset anchored to a named location within an organization theme. */
+                            desktopView: {
+                                /** @description SVG markup for the asset. */
+                                svg: string;
+                                /** @description Named location of the asset (e.g. header, footer). */
+                                location: string;
+                            };
+                            /** @description Image asset anchored to a named location within an organization theme. */
+                            mobileView: {
+                                /** @description SVG markup for the asset. */
+                                svg: string;
+                                /** @description Named location of the asset (e.g. header, footer). */
+                                location: string;
+                            };
+                            /** @description Image asset anchored to a named location within an organization theme. */
+                            darkDesktopView: {
+                                /** @description SVG markup for the asset. */
+                                svg: string;
+                                /** @description Named location of the asset (e.g. header, footer). */
+                                location: string;
+                            };
+                            /** @description Image asset anchored to a named location within an organization theme. */
+                            darkMobileView: {
+                                /** @description SVG markup for the asset. */
+                                svg: string;
+                                /** @description Named location of the asset (e.g. header, footer). */
+                                location: string;
+                            };
+                        };
+                        /** @description Arbitrary theme variables keyed by name. */
+                        vars?: {
+                            [key: string]: unknown;
+                        };
+                    };
+                    /** @description Preferences specific to dashboard behavior. */
+                    dashboard?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                    authBranding?: {
+                        /** @description Ordered slides rendered in the auth-page feature carousel. */
+                        carousel?: {
+                            /**
+                             * Format: uri
+                             * @description URL of the slide image asset.
+                             */
+                            imageUrl: string;
+                            /** @description Slide title. */
+                            title: string;
+                            /** @description Slide description text. */
+                            description: string;
+                        }[];
+                        /** @description FAQ entries rendered on the auth pages. */
+                        faqs?: {
+                            /** @description The question text. */
+                            question: string;
+                            /** @description The answer text. */
+                            answer: string;
+                        }[];
+                    };
+                    /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+                    links?: {
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's Terms of Service page.
+                         */
+                        termsOfService?: string;
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's Privacy Policy page.
+                         */
+                        privacy?: string;
+                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                        support?: {
+                            [key: string]: string;
+                        };
+                        /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                        social?: {
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's LinkedIn profile.
+                             */
+                            linkedin?: string;
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's X (formerly Twitter) profile.
+                             */
+                            x?: string;
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's YouTube channel.
+                             */
+                            youtube?: string;
+                        };
+                    };
+                    /** @description Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
+                    showAuthCarousel?: boolean;
+                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause. */
+                    schedulePause?: {
+                        /** @description Whether every schedule in the organization is paused. */
+                        paused: boolean;
+                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                        reason?: string;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Organization metadata with the merged preferences */
+            200: {
+                headers: {
+                    /** @description Strong entity tag of the organization's stored preferences. It changes whenever the preferences change; send it back as `If-Match` to make a patchOrgPreferences write conditional. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Organization-level user experience preferences. */
+                        preferences: {
+                            /** @description UI theme configured for an organization. */
+                            theme: {
+                                /**
+                                 * Format: uuid
+                                 * @description Theme identifier.
+                                 */
+                                id: string;
+                                /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                                logo: {
+                                    /** @description Image asset anchored to a named location within an organization theme. */
+                                    desktopView: {
+                                        /** @description SVG markup for the asset. */
+                                        svg: string;
+                                        /** @description Named location of the asset (e.g. header, footer). */
+                                        location: string;
+                                    };
+                                    /** @description Image asset anchored to a named location within an organization theme. */
+                                    mobileView: {
+                                        /** @description SVG markup for the asset. */
+                                        svg: string;
+                                        /** @description Named location of the asset (e.g. header, footer). */
+                                        location: string;
+                                    };
+                                    /** @description Image asset anchored to a named location within an organization theme. */
+                                    darkDesktopView: {
+                                        /** @description SVG markup for the asset. */
+                                        svg: string;
+                                        /** @description Named location of the asset (e.g. header, footer). */
+                                        location: string;
+                                    };
+                                    /** @description Image asset anchored to a named location within an organization theme. */
+                                    darkMobileView: {
+                                        /** @description SVG markup for the asset. */
+                                        svg: string;
+                                        /** @description Named location of the asset (e.g. header, footer). */
+                                        location: string;
+                                    };
+                                };
+                                /** @description Arbitrary theme variables keyed by name. */
+                                vars?: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /** @description Preferences specific to dashboard behavior. */
+                            dashboard: {
+                                [key: string]: unknown;
+                            };
+                            /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                            authBranding?: {
+                                /** @description Ordered slides rendered in the auth-page feature carousel. */
+                                carousel?: {
+                                    /**
+                                     * Format: uri
+                                     * @description URL of the slide image asset.
+                                     */
+                                    imageUrl: string;
+                                    /** @description Slide title. */
+                                    title: string;
+                                    /** @description Slide description text. */
+                                    description: string;
+                                }[];
+                                /** @description FAQ entries rendered on the auth pages. */
+                                faqs?: {
+                                    /** @description The question text. */
+                                    question: string;
+                                    /** @description The answer text. */
+                                    answer: string;
+                                }[];
+                            };
+                            /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+                            links?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's Terms of Service page.
+                                 */
+                                termsOfService?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's Privacy Policy page.
+                                 */
+                                privacy?: string;
+                                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                                support?: {
+                                    [key: string]: string;
+                                };
+                                /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                                social?: {
+                                    /**
+                                     * Format: uri
+                                     * @description URL of the organization's LinkedIn profile.
+                                     */
+                                    linkedin?: string;
+                                    /**
+                                     * Format: uri
+                                     * @description URL of the organization's X (formerly Twitter) profile.
+                                     */
+                                    x?: string;
+                                    /**
+                                     * Format: uri
+                                     * @description URL of the organization's YouTube channel.
+                                     */
+                                    youtube?: string;
+                                };
+                            };
+                            /**
+                             * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+                             * @default true
+                             */
+                            showAuthCarousel: boolean;
+                            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                            schedulePause?: {
+                                /** @description Whether every schedule in the organization is paused. */
+                                paused?: boolean;
+                                /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                reason?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                 */
+                                pausedAt?: string;
+                                /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                pausedBy?: string;
+                            };
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Precondition failed - `If-Match` does not match the current entity tag of the organization's preferences, so nothing was written. Read the preferences again and reapply the change. */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateOrgSchedulePause: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization ID. */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Whether every schedule in the organization is paused. */
+                    paused: boolean;
+                    /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                    reason?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description The organization schedule pause after the change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Whether every schedule in the organization is paused. */
+                        paused?: boolean;
+                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                        reason?: string;
+                        /**
+                         * Format: date-time
+                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                         */
+                        pausedAt?: string;
+                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                        pausedBy?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */

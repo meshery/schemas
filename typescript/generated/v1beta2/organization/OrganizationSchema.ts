@@ -444,6 +444,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -832,6 +859,26 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "boolean",
                         "default": true,
                         "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                      },
+                      "schedulePause": {
+                        "x-go-type": "SchedulePausePayload",
+                        "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "paused"
+                        ],
+                        "properties": {
+                          "paused": {
+                            "type": "boolean",
+                            "description": "Whether every schedule in the organization is paused."
+                          },
+                          "reason": {
+                            "type": "string",
+                            "maxLength": 1000,
+                            "description": "Reason given for the pause. Cleared when the pause is lifted."
+                          }
+                        }
                       }
                     }
                   }
@@ -1198,6 +1245,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -1295,6 +1369,7 @@ const OrganizationSchema: Record<string, unknown> = {
           "Organizations"
         ],
         "summary": "Get organization by domain",
+        "description": "Unauthenticated lookup. Servers MUST omit `preferences.schedulePause` from this response; the organization-wide pause is read through getOrgPreferences.",
         "operationId": "getOrgByDomain",
         "parameters": [
           {
@@ -1870,6 +1945,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -2067,7 +2169,7 @@ const OrganizationSchema: Record<string, unknown> = {
           }
         ],
         "summary": "Update an organization",
-        "description": "Updates the organization.",
+        "description": "Updates the organization. Changing `preferences.schedulePause` is restricted to organization admins (otherwise 403); omitting `schedulePause` keeps the current pause unchanged.",
         "operationId": "updateOrg",
         "parameters": [
           {
@@ -2394,6 +2496,26 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "boolean",
                         "default": true,
                         "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                      },
+                      "schedulePause": {
+                        "x-go-type": "SchedulePausePayload",
+                        "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "paused"
+                        ],
+                        "properties": {
+                          "paused": {
+                            "type": "boolean",
+                            "description": "Whether every schedule in the organization is paused."
+                          },
+                          "reason": {
+                            "type": "string",
+                            "maxLength": 1000,
+                            "description": "Reason given for the pause. Cleared when the pause is lifted."
+                          }
+                        }
                       }
                     }
                   }
@@ -2760,6 +2882,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -3407,6 +3556,26 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "boolean",
                         "default": true,
                         "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                      },
+                      "schedulePause": {
+                        "x-go-type": "SchedulePausePayload",
+                        "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "paused"
+                        ],
+                        "properties": {
+                          "paused": {
+                            "type": "boolean",
+                            "description": "Whether every schedule in the organization is paused."
+                          },
+                          "reason": {
+                            "type": "string",
+                            "maxLength": 1000,
+                            "description": "Reason given for the pause. Cleared when the pause is lifted."
+                          }
+                        }
                       }
                     }
                   }
@@ -3773,6 +3942,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -3912,6 +4108,14 @@ const OrganizationSchema: Record<string, unknown> = {
         "responses": {
           "200": {
             "description": "Organization metadata, including preferences",
+            "headers": {
+              "ETag": {
+                "description": "Strong entity tag of the organization's stored preferences. It changes whenever the preferences change; send it back as `If-Match` to make a patchOrgPreferences write conditional.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -4192,10 +4396,913 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "boolean",
                           "default": true,
                           "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                        },
+                        "schedulePause": {
+                          "x-go-type": "SchedulePause",
+                          "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "paused": {
+                              "type": "boolean",
+                              "description": "Whether every schedule in the organization is paused."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "maxLength": 1000,
+                              "description": "Reason given for the pause. Cleared when the pause is lifted."
+                            },
+                            "pausedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            },
+                            "pausedBy": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            }
+                          }
                         }
                       }
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Partially update organization preferences",
+        "description": "Merges the body into the organization's stored preferences. Every member of the body is optional: a member that is present replaces that member of the stored preferences as a whole, and a member that is omitted stays unchanged. An empty body changes nothing and returns the current preferences. Members may not be null. Authorization is the same as updating the organization (updateOrg) for every member, and changing `schedulePause` is additionally restricted to organization admins (otherwise 403, and nothing is written). Lifting the pause clears its reason and server-recorded fields exactly as updateOrg does. The optional `If-Match` header makes the write conditional on the entity tag the preferences carried when they were read (see the `ETag` header of getOrgPreferences and of this response): when it no longer matches, the request is refused with 412 and nothing is written. Without `If-Match` the write is unconditional.",
+        "operationId": "patchOrgPreferences",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "description": "Entity tag of the organization's preferences as last read, from the `ETag` header of getOrgPreferences or patchOrgPreferences. When present the write applies only if it still matches; otherwise 412.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Partial update of organization preferences (patchOrgPreferences). Every member is optional: a present member replaces that member of the stored preferences as a whole, and an omitted member stays unchanged. Members are those of PreferencesPayload, with the same schemas, and may not be null.",
+                "properties": {
+                  "theme": {
+                    "x-go-type": "Theme",
+                    "type": "object",
+                    "description": "UI theme configured for an organization.",
+                    "required": [
+                      "id",
+                      "logo"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Theme identifier.",
+                        "format": "uuid",
+                        "maxLength": 36
+                      },
+                      "logo": {
+                        "x-go-type": "Logo",
+                        "type": "object",
+                        "description": "Themed logo assets used across light and dark, desktop and mobile presentations.",
+                        "required": [
+                          "desktopView",
+                          "mobileView",
+                          "darkDesktopView",
+                          "darkMobileView"
+                        ],
+                        "properties": {
+                          "desktopView": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "description": "Image asset anchored to a named location within an organization theme.",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string",
+                                "description": "SVG markup for the asset.",
+                                "maxLength": 500
+                              },
+                              "location": {
+                                "type": "string",
+                                "description": "Named location of the asset (e.g. header, footer).",
+                                "maxLength": 500
+                              }
+                            }
+                          },
+                          "mobileView": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "description": "Image asset anchored to a named location within an organization theme.",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string",
+                                "description": "SVG markup for the asset.",
+                                "maxLength": 500
+                              },
+                              "location": {
+                                "type": "string",
+                                "description": "Named location of the asset (e.g. header, footer).",
+                                "maxLength": 500
+                              }
+                            }
+                          },
+                          "darkDesktopView": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "description": "Image asset anchored to a named location within an organization theme.",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string",
+                                "description": "SVG markup for the asset.",
+                                "maxLength": 500
+                              },
+                              "location": {
+                                "type": "string",
+                                "description": "Named location of the asset (e.g. header, footer).",
+                                "maxLength": 500
+                              }
+                            }
+                          },
+                          "darkMobileView": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "description": "Image asset anchored to a named location within an organization theme.",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string",
+                                "description": "SVG markup for the asset.",
+                                "maxLength": 500
+                              },
+                              "location": {
+                                "type": "string",
+                                "description": "Named location of the asset (e.g. header, footer).",
+                                "maxLength": 500
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "vars": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "Arbitrary theme variables keyed by name."
+                      }
+                    }
+                  },
+                  "dashboard": {
+                    "x-go-type": "DashboardPrefs",
+                    "type": "object",
+                    "description": "Preferences specific to dashboard behavior.",
+                    "additionalProperties": true
+                  },
+                  "authBranding": {
+                    "x-go-type": "AuthBranding",
+                    "type": "object",
+                    "x-internal": [
+                      "cloud"
+                    ],
+                    "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                    "properties": {
+                      "carousel": {
+                        "type": "array",
+                        "description": "Ordered slides rendered in the auth-page feature carousel.",
+                        "items": {
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "A single slide in the auth-page feature carousel.",
+                          "required": [
+                            "imageUrl",
+                            "title",
+                            "description"
+                          ],
+                          "properties": {
+                            "imageUrl": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the slide image asset.",
+                              "x-go-name": "ImageURL"
+                            },
+                            "title": {
+                              "type": "string",
+                              "maxLength": 500,
+                              "description": "Slide title."
+                            },
+                            "description": {
+                              "type": "string",
+                              "maxLength": 2048,
+                              "description": "Slide description text."
+                            }
+                          }
+                        }
+                      },
+                      "faqs": {
+                        "type": "array",
+                        "description": "FAQ entries rendered on the auth pages.",
+                        "items": {
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "A single question/answer pair for the auth-page FAQ section.",
+                          "required": [
+                            "question",
+                            "answer"
+                          ],
+                          "properties": {
+                            "question": {
+                              "type": "string",
+                              "maxLength": 500,
+                              "description": "The question text."
+                            },
+                            "answer": {
+                              "type": "string",
+                              "maxLength": 5000,
+                              "description": "The answer text."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "links": {
+                    "x-go-type": "Links",
+                    "type": "object",
+                    "x-internal": [
+                      "cloud"
+                    ],
+                    "description": "Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.",
+                    "properties": {
+                      "termsOfService": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2048,
+                        "description": "URL of the organization's Terms of Service page."
+                      },
+                      "privacy": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2048,
+                        "description": "URL of the organization's Privacy Policy page."
+                      },
+                      "support": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string",
+                          "maxLength": 2048
+                        },
+                        "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                      },
+                      "social": {
+                        "x-go-type": "Social",
+                        "type": "object",
+                        "x-internal": [
+                          "cloud"
+                        ],
+                        "description": "The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults.",
+                        "properties": {
+                          "linkedin": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2048,
+                            "description": "URL of the organization's LinkedIn profile.",
+                            "x-go-name": "LinkedIn"
+                          },
+                          "x": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2048,
+                            "description": "URL of the organization's X (formerly Twitter) profile.",
+                            "x-go-name": "X"
+                          },
+                          "youtube": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2048,
+                            "description": "URL of the organization's YouTube channel.",
+                            "x-go-name": "YouTube"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "showAuthCarousel": {
+                    "type": "boolean",
+                    "description": "Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value."
+                  },
+                  "schedulePause": {
+                    "x-go-type": "SchedulePausePayload",
+                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "paused"
+                    ],
+                    "properties": {
+                      "paused": {
+                        "type": "boolean",
+                        "description": "Whether every schedule in the organization is paused."
+                      },
+                      "reason": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Organization metadata with the merged preferences",
+            "headers": {
+              "ETag": {
+                "description": "Strong entity tag of the organization's stored preferences. It changes whenever the preferences change; send it back as `If-Match` to make a patchOrgPreferences write conditional.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Free-form metadata associated with an organization, including preferences.",
+                  "required": [
+                    "preferences"
+                  ],
+                  "properties": {
+                    "preferences": {
+                      "x-go-type": "Preferences",
+                      "type": "object",
+                      "description": "Organization-level user experience preferences.",
+                      "required": [
+                        "theme",
+                        "dashboard"
+                      ],
+                      "properties": {
+                        "theme": {
+                          "x-go-type": "Theme",
+                          "type": "object",
+                          "description": "UI theme configured for an organization.",
+                          "required": [
+                            "id",
+                            "logo"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Theme identifier.",
+                              "format": "uuid",
+                              "maxLength": 36
+                            },
+                            "logo": {
+                              "x-go-type": "Logo",
+                              "type": "object",
+                              "description": "Themed logo assets used across light and dark, desktop and mobile presentations.",
+                              "required": [
+                                "desktopView",
+                                "mobileView",
+                                "darkDesktopView",
+                                "darkMobileView"
+                              ],
+                              "properties": {
+                                "desktopView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "description": "Image asset anchored to a named location within an organization theme.",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "SVG markup for the asset.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "Named location of the asset (e.g. header, footer).",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "mobileView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "description": "Image asset anchored to a named location within an organization theme.",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "SVG markup for the asset.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "Named location of the asset (e.g. header, footer).",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "darkDesktopView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "description": "Image asset anchored to a named location within an organization theme.",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "SVG markup for the asset.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "Named location of the asset (e.g. header, footer).",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "darkMobileView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "description": "Image asset anchored to a named location within an organization theme.",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "SVG markup for the asset.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "Named location of the asset (e.g. header, footer).",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "vars": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "Arbitrary theme variables keyed by name."
+                            }
+                          }
+                        },
+                        "dashboard": {
+                          "x-go-type": "DashboardPrefs",
+                          "type": "object",
+                          "description": "Preferences specific to dashboard behavior.",
+                          "additionalProperties": true
+                        },
+                        "authBranding": {
+                          "x-go-type": "AuthBranding",
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "carousel": {
+                              "type": "array",
+                              "description": "Ordered slides rendered in the auth-page feature carousel.",
+                              "items": {
+                                "type": "object",
+                                "x-internal": [
+                                  "cloud"
+                                ],
+                                "description": "A single slide in the auth-page feature carousel.",
+                                "required": [
+                                  "imageUrl",
+                                  "title",
+                                  "description"
+                                ],
+                                "properties": {
+                                  "imageUrl": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "maxLength": 2048,
+                                    "description": "URL of the slide image asset.",
+                                    "x-go-name": "ImageURL"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "maxLength": 500,
+                                    "description": "Slide title."
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "maxLength": 2048,
+                                    "description": "Slide description text."
+                                  }
+                                }
+                              }
+                            },
+                            "faqs": {
+                              "type": "array",
+                              "description": "FAQ entries rendered on the auth pages.",
+                              "items": {
+                                "type": "object",
+                                "x-internal": [
+                                  "cloud"
+                                ],
+                                "description": "A single question/answer pair for the auth-page FAQ section.",
+                                "required": [
+                                  "question",
+                                  "answer"
+                                ],
+                                "properties": {
+                                  "question": {
+                                    "type": "string",
+                                    "maxLength": 500,
+                                    "description": "The question text."
+                                  },
+                                  "answer": {
+                                    "type": "string",
+                                    "maxLength": 5000,
+                                    "description": "The answer text."
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "links": {
+                          "x-go-type": "Links",
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "termsOfService": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's Terms of Service page."
+                            },
+                            "privacy": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's Privacy Policy page."
+                            },
+                            "support": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string",
+                                "maxLength": 2048
+                              },
+                              "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                            },
+                            "social": {
+                              "x-go-type": "Social",
+                              "type": "object",
+                              "x-internal": [
+                                "cloud"
+                              ],
+                              "description": "The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults.",
+                              "properties": {
+                                "linkedin": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "description": "URL of the organization's LinkedIn profile.",
+                                  "x-go-name": "LinkedIn"
+                                },
+                                "x": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "description": "URL of the organization's X (formerly Twitter) profile.",
+                                  "x-go-name": "X"
+                                },
+                                "youtube": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "description": "URL of the organization's YouTube channel.",
+                                  "x-go-name": "YouTube"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "showAuthCarousel": {
+                          "type": "boolean",
+                          "default": true,
+                          "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                        },
+                        "schedulePause": {
+                          "x-go-type": "SchedulePause",
+                          "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "paused": {
+                              "type": "boolean",
+                              "description": "Whether every schedule in the organization is paused."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "maxLength": 1000,
+                              "description": "Reason given for the pause. Cleared when the pause is lifted."
+                            },
+                            "pausedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            },
+                            "pausedBy": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition failed - `If-Match` does not match the current entity tag of the organization's preferences, so nothing was written. Read the preferences again and reapply the change."
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/schedule-pause": {
+      "put": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Set or lift the organization schedule pause",
+        "description": "Sets or lifts the organization-wide schedule pause and changes nothing else about the organization: no other preference, no branding, no links. The body is the closed SchedulePausePayload (`paused` required, `reason` optional); an echoed `pausedAt` or `pausedBy` is refused with 400. `paused` true pauses every schedule in the organization, and the server records `pausedAt` and `pausedBy`. `paused` false lifts the pause and clears `reason`, `pausedAt` and `pausedBy`. The call is idempotent: sending the state the organization is already in succeeds and returns it. It answers the resulting SchedulePause. Authorization is one permission key in the organization named by `orgId` (\"Workflow Management / Schedules: Pause schedules\", in the Schedule Edit keychain, whose OAuth scope is `schedule:write`), seeded to the organization admin role; a caller without it receives 403 and nothing is written. The broad updateOrg and patchOrgPreferences operations can still change `schedulePause`; there the change requires organization admin, as before. The caller must be a live member of the organization named by `orgId`; a caller who is not receives 404, and this operation does not take `X-Current-Orgid` (see the organization selector in docs/mcp-operation-contract.md). See docs/schedule-pause-contract.md.",
+        "operationId": "updateOrgSchedulePause",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission.",
+                "required": [
+                  "paused"
+                ],
+                "properties": {
+                  "paused": {
+                    "type": "boolean",
+                    "description": "Whether every schedule in the organization is paused."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Reason given for the pause. Cleared when the pause is lifted."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The organization schedule pause after the change",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences, or alone through updateOrgSchedulePause. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.",
+                  "properties": {
+                    "paused": {
+                      "type": "boolean",
+                      "description": "Whether every schedule in the organization is paused."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "maxLength": 1000,
+                      "description": "Reason given for the pause. Cleared when the pause is lifted."
+                    },
+                    "pausedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                    },
+                    "pausedBy": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -5146,6 +6253,24 @@ const OrganizationSchema: Record<string, unknown> = {
         "schema": {
           "type": "boolean"
         }
+      },
+      "ifMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": false,
+        "description": "Entity tag of the organization's preferences as last read, from the `ETag` header of getOrgPreferences or patchOrgPreferences. When present the write applies only if it still matches; otherwise 412.",
+        "schema": {
+          "type": "string",
+          "maxLength": 255
+        }
+      }
+    },
+    "headers": {
+      "PreferencesETag": {
+        "description": "Strong entity tag of the organization's stored preferences. It changes whenever the preferences change; send it back as `If-Match` to make a patchOrgPreferences write conditional.",
+        "schema": {
+          "type": "string"
+        }
       }
     },
     "requestBodies": {
@@ -5452,6 +6577,26 @@ const OrganizationSchema: Record<string, unknown> = {
                       "type": "boolean",
                       "default": true,
                       "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                    },
+                    "schedulePause": {
+                      "x-go-type": "SchedulePausePayload",
+                      "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "paused"
+                      ],
+                      "properties": {
+                        "paused": {
+                          "type": "boolean",
+                          "description": "Whether every schedule in the organization is paused."
+                        },
+                        "reason": {
+                          "type": "string",
+                          "maxLength": 1000,
+                          "description": "Reason given for the pause. Cleared when the pause is lifted."
+                        }
+                      }
                     }
                   }
                 }
@@ -6233,6 +7378,660 @@ const OrganizationSchema: Record<string, unknown> = {
             "type": "boolean",
             "default": true,
             "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+          },
+          "schedulePause": {
+            "x-go-type": "SchedulePause",
+            "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "paused": {
+                "type": "boolean",
+                "description": "Whether every schedule in the organization is paused."
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Reason given for the pause. Cleared when the pause is lifted."
+              },
+              "pausedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+              },
+              "pausedBy": {
+                "type": "string",
+                "maxLength": 255,
+                "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+              }
+            }
+          }
+        }
+      },
+      "SchedulePause": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences, or alone through updateOrgSchedulePause. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.",
+        "properties": {
+          "paused": {
+            "type": "boolean",
+            "description": "Whether every schedule in the organization is paused."
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Reason given for the pause. Cleared when the pause is lifted."
+          },
+          "pausedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+          },
+          "pausedBy": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+          }
+        }
+      },
+      "SchedulePausePayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission.",
+        "required": [
+          "paused"
+        ],
+        "properties": {
+          "paused": {
+            "type": "boolean",
+            "description": "Whether every schedule in the organization is paused."
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Reason given for the pause. Cleared when the pause is lifted."
+          }
+        }
+      },
+      "PreferencesPayload": {
+        "type": "object",
+        "description": "Client-settable organization preferences. Identical to Preferences except that schedulePause is SchedulePausePayload.",
+        "required": [
+          "theme",
+          "dashboard"
+        ],
+        "properties": {
+          "theme": {
+            "x-go-type": "Theme",
+            "type": "object",
+            "description": "UI theme configured for an organization.",
+            "required": [
+              "id",
+              "logo"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Theme identifier.",
+                "format": "uuid",
+                "maxLength": 36
+              },
+              "logo": {
+                "x-go-type": "Logo",
+                "type": "object",
+                "description": "Themed logo assets used across light and dark, desktop and mobile presentations.",
+                "required": [
+                  "desktopView",
+                  "mobileView",
+                  "darkDesktopView",
+                  "darkMobileView"
+                ],
+                "properties": {
+                  "desktopView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "mobileView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "darkDesktopView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "darkMobileView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  }
+                }
+              },
+              "vars": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Arbitrary theme variables keyed by name."
+              }
+            }
+          },
+          "dashboard": {
+            "x-go-type": "DashboardPrefs",
+            "type": "object",
+            "description": "Preferences specific to dashboard behavior.",
+            "additionalProperties": true
+          },
+          "authBranding": {
+            "x-go-type": "AuthBranding",
+            "type": "object",
+            "x-internal": [
+              "cloud"
+            ],
+            "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "carousel": {
+                "type": "array",
+                "description": "Ordered slides rendered in the auth-page feature carousel.",
+                "items": {
+                  "type": "object",
+                  "x-internal": [
+                    "cloud"
+                  ],
+                  "description": "A single slide in the auth-page feature carousel.",
+                  "required": [
+                    "imageUrl",
+                    "title",
+                    "description"
+                  ],
+                  "properties": {
+                    "imageUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 2048,
+                      "description": "URL of the slide image asset.",
+                      "x-go-name": "ImageURL"
+                    },
+                    "title": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Slide title."
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 2048,
+                      "description": "Slide description text."
+                    }
+                  }
+                }
+              },
+              "faqs": {
+                "type": "array",
+                "description": "FAQ entries rendered on the auth pages.",
+                "items": {
+                  "type": "object",
+                  "x-internal": [
+                    "cloud"
+                  ],
+                  "description": "A single question/answer pair for the auth-page FAQ section.",
+                  "required": [
+                    "question",
+                    "answer"
+                  ],
+                  "properties": {
+                    "question": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "The question text."
+                    },
+                    "answer": {
+                      "type": "string",
+                      "maxLength": 5000,
+                      "description": "The answer text."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "links": {
+            "x-go-type": "Links",
+            "type": "object",
+            "x-internal": [
+              "cloud"
+            ],
+            "description": "Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "termsOfService": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's Terms of Service page."
+              },
+              "privacy": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's Privacy Policy page."
+              },
+              "support": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+              },
+              "social": {
+                "x-go-type": "Social",
+                "type": "object",
+                "x-internal": [
+                  "cloud"
+                ],
+                "description": "The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "linkedin": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's LinkedIn profile.",
+                    "x-go-name": "LinkedIn"
+                  },
+                  "x": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's X (formerly Twitter) profile.",
+                    "x-go-name": "X"
+                  },
+                  "youtube": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's YouTube channel.",
+                    "x-go-name": "YouTube"
+                  }
+                }
+              }
+            }
+          },
+          "showAuthCarousel": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+          },
+          "schedulePause": {
+            "x-go-type": "SchedulePausePayload",
+            "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "paused"
+            ],
+            "properties": {
+              "paused": {
+                "type": "boolean",
+                "description": "Whether every schedule in the organization is paused."
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Reason given for the pause. Cleared when the pause is lifted."
+              }
+            }
+          }
+        }
+      },
+      "PreferencesPatchPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Partial update of organization preferences (patchOrgPreferences). Every member is optional: a present member replaces that member of the stored preferences as a whole, and an omitted member stays unchanged. Members are those of PreferencesPayload, with the same schemas, and may not be null.",
+        "properties": {
+          "theme": {
+            "x-go-type": "Theme",
+            "type": "object",
+            "description": "UI theme configured for an organization.",
+            "required": [
+              "id",
+              "logo"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Theme identifier.",
+                "format": "uuid",
+                "maxLength": 36
+              },
+              "logo": {
+                "x-go-type": "Logo",
+                "type": "object",
+                "description": "Themed logo assets used across light and dark, desktop and mobile presentations.",
+                "required": [
+                  "desktopView",
+                  "mobileView",
+                  "darkDesktopView",
+                  "darkMobileView"
+                ],
+                "properties": {
+                  "desktopView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "mobileView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "darkDesktopView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "darkMobileView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  }
+                }
+              },
+              "vars": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Arbitrary theme variables keyed by name."
+              }
+            }
+          },
+          "dashboard": {
+            "x-go-type": "DashboardPrefs",
+            "type": "object",
+            "description": "Preferences specific to dashboard behavior.",
+            "additionalProperties": true
+          },
+          "authBranding": {
+            "x-go-type": "AuthBranding",
+            "type": "object",
+            "x-internal": [
+              "cloud"
+            ],
+            "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "carousel": {
+                "type": "array",
+                "description": "Ordered slides rendered in the auth-page feature carousel.",
+                "items": {
+                  "type": "object",
+                  "x-internal": [
+                    "cloud"
+                  ],
+                  "description": "A single slide in the auth-page feature carousel.",
+                  "required": [
+                    "imageUrl",
+                    "title",
+                    "description"
+                  ],
+                  "properties": {
+                    "imageUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 2048,
+                      "description": "URL of the slide image asset.",
+                      "x-go-name": "ImageURL"
+                    },
+                    "title": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Slide title."
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 2048,
+                      "description": "Slide description text."
+                    }
+                  }
+                }
+              },
+              "faqs": {
+                "type": "array",
+                "description": "FAQ entries rendered on the auth pages.",
+                "items": {
+                  "type": "object",
+                  "x-internal": [
+                    "cloud"
+                  ],
+                  "description": "A single question/answer pair for the auth-page FAQ section.",
+                  "required": [
+                    "question",
+                    "answer"
+                  ],
+                  "properties": {
+                    "question": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "The question text."
+                    },
+                    "answer": {
+                      "type": "string",
+                      "maxLength": 5000,
+                      "description": "The answer text."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "links": {
+            "x-go-type": "Links",
+            "type": "object",
+            "x-internal": [
+              "cloud"
+            ],
+            "description": "Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "termsOfService": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's Terms of Service page."
+              },
+              "privacy": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's Privacy Policy page."
+              },
+              "support": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+              },
+              "social": {
+                "x-go-type": "Social",
+                "type": "object",
+                "x-internal": [
+                  "cloud"
+                ],
+                "description": "The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "linkedin": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's LinkedIn profile.",
+                    "x-go-name": "LinkedIn"
+                  },
+                  "x": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's X (formerly Twitter) profile.",
+                    "x-go-name": "X"
+                  },
+                  "youtube": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's YouTube channel.",
+                    "x-go-name": "YouTube"
+                  }
+                }
+              }
+            }
+          },
+          "showAuthCarousel": {
+            "type": "boolean",
+            "description": "Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value."
+          },
+          "schedulePause": {
+            "x-go-type": "SchedulePausePayload",
+            "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "paused"
+            ],
+            "properties": {
+              "paused": {
+                "type": "boolean",
+                "description": "Whether every schedule in the organization is paused."
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Reason given for the pause. Cleared when the pause is lifted."
+              }
+            }
           }
         }
       },
@@ -6514,6 +8313,33 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "boolean",
                 "default": true,
                 "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+              },
+              "schedulePause": {
+                "x-go-type": "SchedulePause",
+                "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "paused": {
+                    "type": "boolean",
+                    "description": "Whether every schedule in the organization is paused."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Reason given for the pause. Cleared when the pause is lifted."
+                  },
+                  "pausedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                  },
+                  "pausedBy": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                  }
+                }
               }
             }
           }
@@ -6981,6 +8807,33 @@ const OrganizationSchema: Record<string, unknown> = {
                     "type": "boolean",
                     "default": true,
                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                  },
+                  "schedulePause": {
+                    "x-go-type": "SchedulePause",
+                    "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "paused": {
+                        "type": "boolean",
+                        "description": "Whether every schedule in the organization is paused."
+                      },
+                      "reason": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                      },
+                      "pausedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                      },
+                      "pausedBy": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                      }
+                    }
                   }
                 }
               }
@@ -7371,6 +9224,33 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "boolean",
                           "default": true,
                           "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                        },
+                        "schedulePause": {
+                          "x-go-type": "SchedulePause",
+                          "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "paused": {
+                              "type": "boolean",
+                              "description": "Whether every schedule in the organization is paused."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "maxLength": 1000,
+                              "description": "Reason given for the pause. Cleared when the pause is lifted."
+                            },
+                            "pausedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            },
+                            "pausedBy": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            }
+                          }
                         }
                       }
                     }
@@ -7765,6 +9645,33 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "boolean",
                           "default": true,
                           "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                        },
+                        "schedulePause": {
+                          "x-go-type": "SchedulePause",
+                          "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "paused": {
+                              "type": "boolean",
+                              "description": "Whether every schedule in the organization is paused."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "maxLength": 1000,
+                              "description": "Reason given for the pause. Cleared when the pause is lifted."
+                            },
+                            "pausedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            },
+                            "pausedBy": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            }
+                          }
                         }
                       }
                     }
@@ -8285,6 +10192,26 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "boolean",
                 "default": true,
                 "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+              },
+              "schedulePause": {
+                "x-go-type": "SchedulePausePayload",
+                "description": "Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "paused"
+                ],
+                "properties": {
+                  "paused": {
+                    "type": "boolean",
+                    "description": "Whether every schedule in the organization is paused."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Reason given for the pause. Cleared when the pause is lifted."
+                  }
+                }
               }
             }
           }
