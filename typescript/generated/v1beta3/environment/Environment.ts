@@ -719,6 +719,29 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description MeshKit error response for forbidden requests. */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+                "application/json": {
+                    /** @description User-facing error message; MeshKit ShortDescription when present. */
+                    error: string;
+                    /** @description MeshKit error code. */
+                    code?: string;
+                    /**
+                     * @description MeshKit error severity.
+                     * @enum {string}
+                     */
+                    severity?: "EMERGENCY" | "ALERT" | "CRITICAL" | "FATAL" | "ERROR";
+                    probableCause?: string[];
+                    suggestedRemediation?: string[];
+                    longDescription?: string[];
+                };
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {
@@ -904,6 +927,29 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description MeshKit error response for forbidden requests. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                    "application/json": {
+                        /** @description User-facing error message; MeshKit ShortDescription when present. */
+                        error: string;
+                        /** @description MeshKit error code. */
+                        code?: string;
+                        /**
+                         * @description MeshKit error severity.
+                         * @enum {string}
+                         */
+                        severity?: "EMERGENCY" | "ALERT" | "CRITICAL" | "FATAL" | "ERROR";
+                        probableCause?: string[];
+                        suggestedRemediation?: string[];
+                        longDescription?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -1163,6 +1209,29 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description MeshKit error response for forbidden requests. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                    "application/json": {
+                        /** @description User-facing error message; MeshKit ShortDescription when present. */
+                        error: string;
+                        /** @description MeshKit error code. */
+                        code?: string;
+                        /**
+                         * @description MeshKit error severity.
+                         * @enum {string}
+                         */
+                        severity?: "EMERGENCY" | "ALERT" | "CRITICAL" | "FATAL" | "ERROR";
+                        probableCause?: string[];
+                        suggestedRemediation?: string[];
+                        longDescription?: string[];
+                    };
                 };
             };
             /** @description Result not found */
