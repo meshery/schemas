@@ -103,6 +103,8 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 		}
 		return m.ID, nil
 	}
+	// The model is already present; sync m.ID so callers reading it get the stored id
+	m.ID = model.ID
 	return model.ID, nil
 }
 
