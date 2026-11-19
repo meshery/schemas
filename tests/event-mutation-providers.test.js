@@ -58,7 +58,9 @@ for (const target of ["cloud", "meshery"]) {
     const spec = yaml.load(fs.readFileSync(path.join(root, "_openapi_build", `${target}_openapi.yml`), "utf8"));
     const names = new Set(mutations.map(([name]) => name));
     const exposed = Object.values(spec.paths).flatMap((item) =>
-      Object.values(item).filter((operation) => names.has(operation?.operationId)).map((operation) => operation.operationId),
+      Object.values(item)
+        .filter((operation) => names.has(operation?.operationId))
+        .map((operation) => operation.operationId),
     );
     assert.deepEqual(exposed.sort(), target === "cloud" ? [...names].sort() : []);
   });
