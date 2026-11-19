@@ -104,6 +104,7 @@ components:
           description: Minimum number of distinct givers a recipient needed to be listed.
         badge:
           type: string
+          minLength: 1
           description: Slug of the badge the candidates are being considered for.
         candidates:
           type: array

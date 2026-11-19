@@ -19,6 +19,7 @@ properties:
     x-order: 1
   email:
     type: string
+    format: email
     maxLength: 320
     description: Email address of the resolved Layer5 user.
     x-order: 2
@@ -37,6 +38,6 @@ properties:
     x-order: 4
   givers:
     type: integer
-    minimum: 0
+    minimum: 1
     description: Number of distinct givers who gave the recipient valid kudos in the month.
     x-order: 5

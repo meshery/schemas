@@ -26,6 +26,6 @@ properties:
     x-order: 2
   givers:
     type: integer
-    minimum: 0
+    minimum: 1
     description: Number of distinct givers who gave the recipient valid kudos in the month.
     x-order: 3
