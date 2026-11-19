@@ -1,0 +1,31 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Community Guide Needs Info Schema
+description: |
+  A kudos recipient who reached the unique-giver threshold but did not
+  resolve to a Layer5 user. Ask the person for the missing link when the
+  recognition is presented.
+type: object
+additionalProperties: false
+required:
+  - provider
+  - externalId
+  - givers
+properties:
+  provider:
+    type: string
+    minLength: 1
+    maxLength: 32
+    description: Identity provider the kudos recipient was recorded under, for example `github` or `slack`.
+    x-order: 1
+  externalId:
+    type: string
+    minLength: 1
+    maxLength: 255
+    description: The recipient's identifier at the provider.
+    x-go-name: ExternalID
+    x-order: 2
+  givers:
+    type: integer
+    minimum: 0
+    description: Number of distinct givers who gave the recipient valid kudos in the month.
+    x-order: 3

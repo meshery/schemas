@@ -1,0 +1,21 @@
+{
+  "month": "2026-10",
+  "minGivers": 5,
+  "badge": "community-guide",
+  "candidates": [
+    {
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "email": "member@example.com",
+      "provider": "github",
+      "externalId": "12345",
+      "givers": 6
+    }
+  ],
+  "needsInfo": [
+    {
+      "provider": "slack",
+      "externalId": "U0000000",
+      "givers": 5
+    }
+  ]
+}
