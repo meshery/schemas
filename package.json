@@ -55,6 +55,7 @@
     "build:rtk": "node ./build/generate-rtk.js",
     "build:all": "node ./build/index.js all",
     "generate:python": "node ./build/generate-python.js",
+    "generate:rust": "node ./build/generate-rust.js",
     "test": "node --test \"typescript/**/*.test.ts\"",
     "test:validate-schemas": "go test ./validation/...",
     "generate:types": "node ./build/generate-typescript.js",
