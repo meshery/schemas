@@ -83,9 +83,11 @@ Always run `make build`, `go test ./...`, and `npm run build` before committing 
   the worktree, then run `no-mistakes axi run --intent "<goal>"` (a clone without a
   `no-mistakes` remote needs `no-mistakes init` once). `no-mistakes axi status` shows the step
   and its findings, and `no-mistakes axi respond` answers a review gate. The pipeline reviews,
-  tests, pushes and opens the pull request. After the third run, merge the pull request as it
-  stands and open an issue for anything still flagged. A run that stopped on a usage limit
-  counts; one cancelled before it did anything does not.
+  tests, pushes and opens the pull request. Drive it with the vendored skill at
+  `.agents/skills/no-mistakes/SKILL.md`. After the third run, open an issue for anything
+  still flagged and hand the pull request to a human. A run that stopped on a usage limit
+  counts; one cancelled before it did anything does not. Three runs do not waive the merge gate.
+- **A pull request that changes any path outside documentation, the website, and CI merges only with a green no-mistakes run on its current head.** Documentation is `docs/**`. The website (`schemas.meshery.io`) is `site/**`, root `CNAME`, `_config.yml`, `Gemfile`, and `Gemfile.lock`. CI is `.github/workflows/**`. The check is `PR must be raised via no-mistakes`: `review`, `test`, and `document` must each be `completed` in a head-bound attestation.
 
 ### Where skills live
 
@@ -218,6 +220,9 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/claim-contract.md`](docs/claim-contract.md)** - the claim construct: connection holders, expiry at read time, kept history, release outcomes, and its permission keys.
 - **[`docs/oauth-consent-request-contract.md`](docs/oauth-consent-request-contract.md)** - the pending OAuth consent request: reading it by challenge, allow and deny, ownership, single-use challenges, and the verified mark that marks trust and never blocks.
 - **[`docs/media-asset-contract.md`](docs/media-asset-contract.md)** - the media asset construct: create-upload-complete flow, per-use download URLs, `r2`/`gdrive` backends with no credential on the wire, limits, expiry and `locationStripped`.
+- **[`docs/mcp-operation-contract.md`](docs/mcp-operation-contract.md)** - the `x-mcp` operation extension for the hosted MCP server, the OAuth scopes (each one a keychain), the Rule 48 lint, `X-Current-Orgid` and `Idempotency-Key`.
+- **[`docs/request-contract.md`](docs/request-contract.md)** - the generic request construct: kinds, the permission key that decides each, and why approve and deny are never tools.
+- **[`docs/schedule-pause-contract.md`](docs/schedule-pause-contract.md)** - the narrow `updateOrgSchedulePause` operation and its key, beside the broad organization updates.
 - **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
 - **[`docs/design-event-metadata-contract.md`](docs/design-event-metadata-contract.md)** - the named shapes of design event metadata, its banned keys and 16 KB guard, the `status` `error` rule for an operation that did not complete, and why they have no `*Payload` twins.
 - **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.

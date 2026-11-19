@@ -24,6 +24,11 @@ const (
 	MesheryDesign IaCFileTypes = "meshery-design"
 )
 
+// Defines values for IdempotencyKeyInFlightErrorCode.
+const (
+	IdempotencyKeyInFlight IdempotencyKeyInFlightErrorCode = "idempotency_key_in_flight"
+)
+
 // Defines values for MeshkitErrorSeverity.
 const (
 	Alert     MeshkitErrorSeverity = "alert"
@@ -201,6 +206,18 @@ type IaCFileTypes string
 // Id defines model for Id.
 // Id defines model for id.
 type Id = uuid.UUID
+
+// IdempotencyKeyInFlightError A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type IdempotencyKeyInFlightError struct {
+	// Code Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+	Code IdempotencyKeyInFlightErrorCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// IdempotencyKeyInFlightErrorCode Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+type IdempotencyKeyInFlightErrorCode string
 
 // MapObject defines model for MapObject.
 type MapObject map[string]string

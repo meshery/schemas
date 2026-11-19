@@ -14,7 +14,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Delete a single event */
+        /**
+         * Delete a single event
+         * @description Servers implementing this contract must change only an event the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. An event the caller may not change, like one that does not exist or is already deleted, is 404, so the response does not disclose another tenant's event. An event id alone is never authorization.
+         */
         delete: operations["deleteEvent"];
         options?: never;
         head?: never;
@@ -30,8 +33,31 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Bulk delete events */
+        /**
+         * Bulk delete events
+         * @description Servers implementing this contract must change only the events among `ids` the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. The response lists only the ids that were changed; an id the caller may not change, like one that does not exist, is left out rather than refused, so the response does not disclose another tenant's event.
+         */
         post: operations["bulkDeleteEvents"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/mark-all-read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark all events as read
+         * @description Marks every unread event owned by the authenticated caller as read. System-owned events are not changed. The caller is determined from the authenticated session; clients do not send a user ID.
+         */
+        post: operations["markAllEventsRead"];
         delete?: never;
         options?: never;
         head?: never;
@@ -46,7 +72,10 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Bulk update event status */
+        /**
+         * Bulk update event status
+         * @description Servers implementing this contract must change only the events among `ids` the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. The response lists only the ids that were changed; an id the caller may not change, like one that does not exist, is left out rather than refused, so the response does not disclose another tenant's event.
+         */
         put: operations["bulkUpdateEventStatus"];
         post?: never;
         delete?: never;
@@ -63,7 +92,10 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update status of a single event */
+        /**
+         * Update status of a single event
+         * @description Servers implementing this contract must change only an event the caller may list: its own, every event in the session organization when the caller administers that organization, and every event for a caller holding the all-organizations scope. An event the caller may not change, like one that does not exist or is already deleted, is 404, so the response does not disclose another tenant's event. An event id alone is never authorization.
+         */
         put: operations["updateEventStatus"];
         post?: never;
         delete?: never;
@@ -128,7 +160,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get events list */
+        /**
+         * Get events list
+         * @description Returns a page of events. An `X-Current-Orgid` that is not a UUID answers 400.
+         */
         get: operations["getEvents"];
         put?: never;
         post?: never;
@@ -282,6 +317,11 @@ export interface components {
             eventId?: string;
             /** @description Updated status of the event. */
             status?: string;
+        };
+        /** @description Response returned after marking the caller's unread events as read. */
+        MarkAllEventsReadResponse: {
+            /** @description Human-readable status message. */
+            message: string;
         };
         /** @description Payload for bulk-deleting events by ID. */
         BulkDeleteRequest: {
@@ -1135,6 +1175,8 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        currentOrgId: string;
         /** @description ID of the event. */
         eventId: string;
         /** @description Workspace ID */
@@ -1285,6 +1327,81 @@ export interface operations {
                     "application/json": {
                         /** @description UUIDs of events that were deleted. */
                         deleted?: string[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    markAllEventsRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All of the caller's unread events were marked as read */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Human-readable status message. */
+                        message: string;
                     };
                 };
             };
@@ -2216,7 +2333,10 @@ export interface operations {
                 /** @description Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403. */
                 scope?: "user" | "organization";
             };
-            header?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                "X-Current-Orgid"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2352,6 +2472,15 @@ export interface operations {
                             deletedAt?: string | null;
                         }[];
                     };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Unauthorized */

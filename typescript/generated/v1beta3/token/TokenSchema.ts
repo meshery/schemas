@@ -2211,6 +2211,16 @@ const TokenSchema: Record<string, unknown> = {
               }
             }
           },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "503": {
             "description": "Signing keys or token revocation status are temporarily unavailable. The token is refused, but the caller should retry rather than sign the user out.",
             "content": {

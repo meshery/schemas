@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get all connections
-         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
+         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
          */
         get: operations["getConnections"];
         put?: never;
@@ -2005,6 +2005,8 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        currentOrgId: string;
         /** @description Connection ID */
         connectionId: string;
         /** @description Connection definition ID */
@@ -2058,7 +2060,10 @@ export interface operations {
                 /** @description Filter by connection name (partial match supported) */
                 name?: string;
             };
-            header?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                "X-Current-Orgid"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2441,8 +2446,35 @@ export interface operations {
                     };
                 };
             };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3634,6 +3666,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5771,6 +5812,15 @@ export interface operations {
                          */
                         schemaVersion: string;
                     };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */

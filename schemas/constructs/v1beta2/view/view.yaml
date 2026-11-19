@@ -49,12 +49,8 @@ properties:
       db: visibility
       json: visibility
   filters:
-    type: object
+    $ref: ./api.yml#/components/schemas/ViewFilters
     description: Filter configuration that defines which resources this view displays.
-    x-go-type: core.Map
-    x-go-type-import:
-      path: github.com/meshery/schemas/models/core
-      name: core
     x-go-type-skip-optional-pointer: true
     x-order: 4
     x-oapi-codegen-extra-tags:
@@ -62,6 +58,7 @@ properties:
       json: filters
   metadata:
     type: object
+    additionalProperties: true
     description: Additional metadata associated with the view.
     x-go-type: core.Map
     x-go-type-import:

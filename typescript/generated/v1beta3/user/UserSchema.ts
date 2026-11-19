@@ -901,6 +901,16 @@ const UserSchema: Record<string, unknown> = {
           "201": {
             "description": "Preferences updated"
           },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
             "content": {

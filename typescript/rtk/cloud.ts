@@ -41,6 +41,7 @@ export const addTagTypes = [
   "Plan_Plans",
   "Profile_profiles",
   "ProviderCapability_capabilities",
+  "Request_requests",
   "Schedule_schedules",
   "Subscription_Subscriptions",
   "Subscription_Payment Processors",
@@ -71,7 +72,12 @@ const injectedRtkApi = api
         providesTags: ["Feature_Features"],
       }),
       getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
-        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features` }),
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["Feature_Features"],
       }),
       getOrganizationSmtpEnvironment: build.query<
@@ -433,6 +439,14 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Organization_Organizations"],
       }),
+      updateOrgSchedulePause: build.mutation<UpdateOrgSchedulePauseApiResponse, UpdateOrgSchedulePauseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/schedule-pause`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
@@ -647,7 +661,12 @@ const injectedRtkApi = api
         providesTags: ["User_users"],
       }),
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
-        query: () => ({ url: `/api/identity/users/profile` }),
+        query: (queryArg) => ({
+          url: `/api/identity/users/profile`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["User_users"],
       }),
       updateUserPreferences: build.mutation<UpdateUserPreferencesApiResponse, UpdateUserPreferencesApiArg>({
@@ -944,6 +963,9 @@ const injectedRtkApi = api
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -1100,6 +1122,9 @@ const injectedRtkApi = api
       listContentItems: build.query<ListContentItemsApiResponse, ListContentItemsApiArg>({
         query: (queryArg) => ({
           url: `/api/content-items`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -1113,11 +1138,23 @@ const injectedRtkApi = api
         providesTags: ["ContentItem_contentItems"],
       }),
       insertContentItem: build.mutation<InsertContentItemApiResponse, InsertContentItemApiArg>({
-        query: (queryArg) => ({ url: `/api/content-items`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/content-items`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "Idempotency-Key": queryArg["Idempotency-Key"],
+          },
+        }),
         invalidatesTags: ["ContentItem_contentItems"],
       }),
       getContentItem: build.query<GetContentItemApiResponse, GetContentItemApiArg>({
-        query: (queryArg) => ({ url: `/api/content-items/${queryArg.contentItemId}` }),
+        query: (queryArg) => ({
+          url: `/api/content-items/${queryArg.contentItemId}`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["ContentItem_contentItems"],
       }),
       updateContentItem: build.mutation<UpdateContentItemApiResponse, UpdateContentItemApiArg>({
@@ -1397,6 +1434,10 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/events/delete`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
+      markAllEventsRead: build.mutation<MarkAllEventsReadApiResponse, MarkAllEventsReadApiArg>({
+        query: () => ({ url: `/api/events/mark-all-read`, method: "POST" }),
+        invalidatesTags: ["Events_events"],
+      }),
       bulkUpdateEventStatus: build.mutation<BulkUpdateEventStatusApiResponse, BulkUpdateEventStatusApiArg>({
         query: (queryArg) => ({ url: `/api/events/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
@@ -1434,6 +1475,9 @@ const injectedRtkApi = api
       getEvents: build.query<GetEventsApiResponse, GetEventsApiArg>({
         query: (queryArg) => ({
           url: `/api/events/list`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pagesize: queryArg?.pagesize,
@@ -2086,6 +2130,53 @@ const injectedRtkApi = api
         }),
         providesTags: ["ProviderCapability_capabilities"],
       }),
+      listRequests: build.query<ListRequestsApiResponse, ListRequestsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/requests`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            order: queryArg?.order,
+            kind: queryArg?.kind,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Request_requests"],
+      }),
+      getRequest: build.query<GetRequestApiResponse, GetRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/requests/${queryArg.requestId}`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
+        providesTags: ["Request_requests"],
+      }),
+      approveRequest: build.mutation<ApproveRequestApiResponse, ApproveRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/requests/${queryArg.requestId}/approve`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
+        invalidatesTags: ["Request_requests"],
+      }),
+      denyRequest: build.mutation<DenyRequestApiResponse, DenyRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/requests/${queryArg.requestId}/deny`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
+        invalidatesTags: ["Request_requests"],
+      }),
       listSchedules: build.query<ListSchedulesApiResponse, ListSchedulesApiArg>({
         query: (queryArg) => ({
           url: `/api/schedules`,
@@ -2101,7 +2192,14 @@ const injectedRtkApi = api
         providesTags: ["Schedule_schedules"],
       }),
       createSchedule: build.mutation<CreateScheduleApiResponse, CreateScheduleApiArg>({
-        query: (queryArg) => ({ url: `/api/schedules`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/schedules`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "Idempotency-Key": queryArg["Idempotency-Key"],
+          },
+        }),
         invalidatesTags: ["Schedule_schedules"],
       }),
       getScheduleById: build.query<GetScheduleByIdApiResponse, GetScheduleByIdApiArg>({
@@ -2696,6 +2794,8 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
 export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
   orgId: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
 };
 export type GetOrganizationSmtpEnvironmentApiResponse =
   /** status 200 The organization has its own mail-relay environment. The canonical Environment shape, not a bespoke one: this endpoint returns an ordinary environment row that happens to carry the well-known name. */ {
@@ -4228,7 +4328,7 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -4373,7 +4473,7 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -4494,7 +4594,7 @@ export type CreateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -4644,7 +4744,7 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -4786,7 +4886,7 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -4909,7 +5009,7 @@ export type UpdateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -5065,7 +5165,7 @@ export type CreateChildOrgApiResponse =
           };
           /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
           showAuthCarousel?: boolean;
-          /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+          /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
           schedulePause?: {
             /** Whether every schedule in the organization is paused. */
             paused?: boolean;
@@ -5188,7 +5288,7 @@ export type CreateChildOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -5286,7 +5386,7 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused?: boolean;
@@ -5391,7 +5491,7 @@ export type PatchOrgPreferencesApiResponse = /** status 200 Organization metadat
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused?: boolean;
@@ -5495,13 +5595,33 @@ export type PatchOrgPreferencesApiArg = {
     };
     /** Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused: boolean;
       /** Reason given for the pause. Cleared when the pause is lifted. */
       reason?: string;
     };
+  };
+};
+export type UpdateOrgSchedulePauseApiResponse = /** status 200 The organization schedule pause after the change */ {
+  /** Whether every schedule in the organization is paused. */
+  paused?: boolean;
+  /** Reason given for the pause. Cleared when the pause is lifted. */
+  reason?: string;
+  /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+  pausedAt?: string;
+  /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+  pausedBy?: string;
+};
+export type UpdateOrgSchedulePauseApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  body: {
+    /** Whether every schedule in the organization is paused. */
+    paused: boolean;
+    /** Reason given for the pause. Cleared when the pause is lifted. */
+    reason?: string;
   };
 };
 export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
@@ -6666,7 +6786,10 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
     totalCount?: number | null;
   };
 };
-export type GetUserApiArg = void;
+export type GetUserApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
+};
 export type UpdateUserPreferencesApiResponse = unknown;
 export type UpdateUserPreferencesApiArg = {
   body: {
@@ -7085,9 +7208,25 @@ export type CreateViewApiResponse = /** status 201 Created view */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7103,11 +7242,27 @@ export type CreateViewApiArg = {
     /** Display name of the view. */
     name: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Visibility level of the view. */
     visibility?: string;
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type GetViewsApiResponse = /** status 200 Views page */ {
@@ -7125,9 +7280,25 @@ export type GetViewsApiResponse = /** status 200 Views page */ {
     /** Visibility level of the view. */
     visibility?: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
     /** ID of the user who created the view. */
     userId?: string;
     /** Name of the workspace this view belongs to. */
@@ -7194,9 +7365,25 @@ export type GetViewByIdApiResponse = /** status 200 View */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7218,9 +7405,25 @@ export type UpdateViewApiResponse = /** status 200 Updated view */ {
   /** Visibility level of the view. */
   visibility: string;
   /** Filter configuration that defines which resources this view displays. */
-  filters?: object;
+  filters?: {
+    /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+    k8sclusterIds?: string[];
+    /** Resource kinds included in the view. */
+    kinds?: string[];
+    /** Meshery models included in the view. */
+    models?: string[];
+    /** Kubernetes namespaces included in the view. */
+    namespaces?: string[];
+    /** Label selectors in key=value form. */
+    labels?: string[];
+    /** Optional text used to filter resources in the view. */
+    search?: string;
+    [key: string]: any;
+  };
   /** Additional metadata associated with the view. */
-  metadata?: object;
+  metadata?: {
+    [key: string]: any;
+  };
   /** ID of the user who created the view. */
   userId: string;
   /** Timestamp when the view was created. */
@@ -7238,11 +7441,27 @@ export type UpdateViewApiArg = {
     /** Display name of the view. */
     name: string;
     /** Filter configuration for this view. */
-    filters?: object;
+    filters?: {
+      /** Kubernetes cluster UUIDs included in the view. Uses the canonical Ids spelling. */
+      k8sclusterIds?: string[];
+      /** Resource kinds included in the view. */
+      kinds?: string[];
+      /** Meshery models included in the view. */
+      models?: string[];
+      /** Kubernetes namespaces included in the view. */
+      namespaces?: string[];
+      /** Label selectors in key=value form. */
+      labels?: string[];
+      /** Optional text used to filter resources in the view. */
+      search?: string;
+      [key: string]: any;
+    };
     /** Visibility level of the view. */
     visibility?: string;
     /** Metadata associated with the view. */
-    metadata?: object;
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type DeleteViewApiResponse = unknown;
@@ -9869,6 +10088,8 @@ export type GetConnectionsApiArg = {
   order?: string;
   /** Organization ID to scope the request. */
   orgId?: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
   /** Filter connections (general filter string) */
   filter?: string;
   /** Filter by connection kind (e.g., kubernetes, prometheus, grafana) */
@@ -12346,6 +12567,21 @@ export type ListContentItemsApiResponse = /** status 200 Content item page */ {
     /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
      */
     mediaAssetIds?: string[];
+    /** Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+     */
+    approved?: boolean;
+    /** OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+     */
+    createdByClient?: string;
+    /** The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+     */
+    approvalPolicy?: "required" | "not_required" | "inherit";
+    /** Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+     */
+    approvalRequired?: boolean;
+    /** Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+     */
+    approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
   }[];
 };
 export type ListContentItemsApiArg = {
@@ -12367,6 +12603,8 @@ export type ListContentItemsApiArg = {
     whose `threadId` names it.
      */
   threadId?: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
 };
 export type InsertContentItemApiResponse = /** status 201 Content item created */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -12431,8 +12669,25 @@ export type InsertContentItemApiResponse = /** status 201 Content item created *
   /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
    */
   mediaAssetIds?: string[];
+  /** Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+   */
+  approved?: boolean;
+  /** OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+   */
+  createdByClient?: string;
+  /** The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+   */
+  approvalPolicy?: "required" | "not_required" | "inherit";
+  /** Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+   */
+  approvalRequired?: boolean;
+  /** Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+   */
+  approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
 };
 export type InsertContentItemApiArg = {
+  /** Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
+  "Idempotency-Key"?: string;
   body: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
@@ -12504,6 +12759,23 @@ export type InsertContentItemApiArg = {
         clients send the whole item without it); an empty array clears it.
          */
     mediaAssetIds?: string[];
+    /** The item's own approval policy. Optional: omitted on insert, the
+        item inherits; omitted on update, the stored value is kept;
+        `inherit` on update clears an explicit value back to inherit; the
+        field does not accept null.
+        A caller without Decide Content Item Approvals in the session
+        organization is refused with a 403 and nothing changes when it
+        sends a value that would change the stored one: on insert,
+        `required` or `not_required`; on update, a value different from
+        the stored one (absent and `inherit` are one value, since the
+        server stores `inherit` as null). Sending back the unchanged stored value
+        is accepted, and an omitted value on update keeps the stored one and is
+        never refused. An AI app token never carries that key. Interim: until
+        the upstream policies exist, `inherit` or absent resolves to
+        `required`, and the item's approval source is `item` for an
+        explicit value or `fallback` for `inherit` or absent.
+         */
+    approvalPolicy?: "required" | "not_required" | "inherit";
   };
 };
 export type GetContentItemApiResponse = /** status 200 Content item response */ {
@@ -12569,10 +12841,27 @@ export type GetContentItemApiResponse = /** status 200 Content item response */ 
   /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
    */
   mediaAssetIds?: string[];
+  /** Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+   */
+  approved?: boolean;
+  /** OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+   */
+  createdByClient?: string;
+  /** The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+   */
+  approvalPolicy?: "required" | "not_required" | "inherit";
+  /** Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+   */
+  approvalRequired?: boolean;
+  /** Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+   */
+  approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
 };
 export type GetContentItemApiArg = {
   /** Content item ID */
   contentItemId: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
 };
 export type UpdateContentItemApiResponse = /** status 200 Content item updated */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -12637,6 +12926,21 @@ export type UpdateContentItemApiResponse = /** status 200 Content item updated *
   /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
    */
   mediaAssetIds?: string[];
+  /** Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+   */
+  approved?: boolean;
+  /** OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+   */
+  createdByClient?: string;
+  /** The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+   */
+  approvalPolicy?: "required" | "not_required" | "inherit";
+  /** Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+   */
+  approvalRequired?: boolean;
+  /** Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+   */
+  approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
 };
 export type UpdateContentItemApiArg = {
   /** Content item ID */
@@ -12712,6 +13016,23 @@ export type UpdateContentItemApiArg = {
         clients send the whole item without it); an empty array clears it.
          */
     mediaAssetIds?: string[];
+    /** The item's own approval policy. Optional: omitted on insert, the
+        item inherits; omitted on update, the stored value is kept;
+        `inherit` on update clears an explicit value back to inherit; the
+        field does not accept null.
+        A caller without Decide Content Item Approvals in the session
+        organization is refused with a 403 and nothing changes when it
+        sends a value that would change the stored one: on insert,
+        `required` or `not_required`; on update, a value different from
+        the stored one (absent and `inherit` are one value, since the
+        server stores `inherit` as null). Sending back the unchanged stored value
+        is accepted, and an omitted value on update keeps the stored one and is
+        never refused. An AI app token never carries that key. Interim: until
+        the upstream policies exist, `inherit` or absent resolves to
+        `required`, and the item's approval source is `item` for an
+        explicit value or `fallback` for `inherit` or absent.
+         */
+    approvalPolicy?: "required" | "not_required" | "inherit";
   };
 };
 export type DeleteContentItemApiResponse = unknown;
@@ -16893,6 +17214,11 @@ export type BulkDeleteEventsApiArg = {
     ids: string[];
   };
 };
+export type MarkAllEventsReadApiResponse = /** status 200 All of the caller's unread events were marked as read */ {
+  /** Human-readable status message. */
+  message: string;
+};
+export type MarkAllEventsReadApiArg = void;
 export type BulkUpdateEventStatusApiResponse = /** status 200 Events updated */ {
   /** UUIDs of events whose status was updated. */
   updated?: string[];
@@ -17319,6 +17645,8 @@ export type GetEventsApiArg = {
   /** Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.
    */
   scope?: "user" | "organization";
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
 };
 export type GetEventFeedApiResponse = /** status 200 Event feed page */ {
   /** Current page number of the result set. */
@@ -20597,6 +20925,183 @@ export type GetProviderCapabilitiesApiArg = {
   /** Operating system of the client, used to select packages. */
   os?: string;
 };
+export type ListRequestsApiResponse = /** status 200 Requests page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Requests included on this page of results. */
+  requests: {
+    /** Server-generated request ID. */
+    id: string;
+    /** Owning organization ID. Derived from the subject, never client-settable. */
+    organizationId: string;
+    /** What a request asks a person to decide. Each kind fixes the subject type and names the permission key that may decide it, in `x-decision-key` (the generated constant name in models/permissions). A kind is added together with its deciding key and its handling in docs/request-contract.md.
+     */
+    kind: "content_item_approval";
+    /** Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind. */
+    subjectType: string;
+    /** ID of the subject the request is about. */
+    subjectId: string;
+    /** ID of the user on whose behalf the request was made: the user whose session or AI app made the write that needs a decision. Server-set.
+     */
+    requesterId: string;
+    /** OAuth client ID of the AI app that made the write behind the request. Server-set from the access token. Empty or omitted when a person made it.
+     */
+    createdByClient?: string;
+    /** Lifecycle of a request. `pending` until it is decided. `approved` or `denied` once, by a person with the kind's deciding key. `superseded` when a content edit or a delete changes the subject before a decision: the request is closed with `decidedAt` set, no `decidedBy` and no note, and a fresh pending request opens if the edit leaves the item unapproved, whatever the result. Each of `approved`, `denied` and `superseded` is final.
+     */
+    status: "pending" | "approved" | "denied" | "superseded";
+    /** ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it. */
+    decidedBy?: string;
+    /** Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending. */
+    decidedAt?: string | null;
+    /** The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none. */
+    note?: string;
+    /** Timestamp of request creation. */
+    createdAt: string;
+    /** Timestamp of last request modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListRequestsApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by request kind. */
+  kind?: "content_item_approval";
+  /** Filter by request status, for example `superseded` for the requests a content edit or a delete closed before a decision. */
+  status?: "pending" | "approved" | "denied" | "superseded";
+};
+export type GetRequestApiResponse = /** status 200 Request response */ {
+  /** Server-generated request ID. */
+  id: string;
+  /** Owning organization ID. Derived from the subject, never client-settable. */
+  organizationId: string;
+  /** What a request asks a person to decide. Each kind fixes the subject type and names the permission key that may decide it, in `x-decision-key` (the generated constant name in models/permissions). A kind is added together with its deciding key and its handling in docs/request-contract.md.
+   */
+  kind: "content_item_approval";
+  /** Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind. */
+  subjectType: string;
+  /** ID of the subject the request is about. */
+  subjectId: string;
+  /** ID of the user on whose behalf the request was made: the user whose session or AI app made the write that needs a decision. Server-set.
+   */
+  requesterId: string;
+  /** OAuth client ID of the AI app that made the write behind the request. Server-set from the access token. Empty or omitted when a person made it.
+   */
+  createdByClient?: string;
+  /** Lifecycle of a request. `pending` until it is decided. `approved` or `denied` once, by a person with the kind's deciding key. `superseded` when a content edit or a delete changes the subject before a decision: the request is closed with `decidedAt` set, no `decidedBy` and no note, and a fresh pending request opens if the edit leaves the item unapproved, whatever the result. Each of `approved`, `denied` and `superseded` is final.
+   */
+  status: "pending" | "approved" | "denied" | "superseded";
+  /** ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it. */
+  decidedBy?: string;
+  /** Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending. */
+  decidedAt?: string | null;
+  /** The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none. */
+  note?: string;
+  /** Timestamp of request creation. */
+  createdAt: string;
+  /** Timestamp of last request modification. */
+  updatedAt: string;
+};
+export type GetRequestApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
+  /** Request ID */
+  requestId: string;
+};
+export type ApproveRequestApiResponse = /** status 200 Request approved */ {
+  /** Server-generated request ID. */
+  id: string;
+  /** Owning organization ID. Derived from the subject, never client-settable. */
+  organizationId: string;
+  /** What a request asks a person to decide. Each kind fixes the subject type and names the permission key that may decide it, in `x-decision-key` (the generated constant name in models/permissions). A kind is added together with its deciding key and its handling in docs/request-contract.md.
+   */
+  kind: "content_item_approval";
+  /** Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind. */
+  subjectType: string;
+  /** ID of the subject the request is about. */
+  subjectId: string;
+  /** ID of the user on whose behalf the request was made: the user whose session or AI app made the write that needs a decision. Server-set.
+   */
+  requesterId: string;
+  /** OAuth client ID of the AI app that made the write behind the request. Server-set from the access token. Empty or omitted when a person made it.
+   */
+  createdByClient?: string;
+  /** Lifecycle of a request. `pending` until it is decided. `approved` or `denied` once, by a person with the kind's deciding key. `superseded` when a content edit or a delete changes the subject before a decision: the request is closed with `decidedAt` set, no `decidedBy` and no note, and a fresh pending request opens if the edit leaves the item unapproved, whatever the result. Each of `approved`, `denied` and `superseded` is final.
+   */
+  status: "pending" | "approved" | "denied" | "superseded";
+  /** ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it. */
+  decidedBy?: string;
+  /** Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending. */
+  decidedAt?: string | null;
+  /** The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none. */
+  note?: string;
+  /** Timestamp of request creation. */
+  createdAt: string;
+  /** Timestamp of last request modification. */
+  updatedAt: string;
+};
+export type ApproveRequestApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
+  /** Request ID */
+  requestId: string;
+  body?: {
+    /** Optional note left with the decision, shown to the requester. */
+    note?: string;
+  };
+};
+export type DenyRequestApiResponse = /** status 200 Request denied */ {
+  /** Server-generated request ID. */
+  id: string;
+  /** Owning organization ID. Derived from the subject, never client-settable. */
+  organizationId: string;
+  /** What a request asks a person to decide. Each kind fixes the subject type and names the permission key that may decide it, in `x-decision-key` (the generated constant name in models/permissions). A kind is added together with its deciding key and its handling in docs/request-contract.md.
+   */
+  kind: "content_item_approval";
+  /** Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind. */
+  subjectType: string;
+  /** ID of the subject the request is about. */
+  subjectId: string;
+  /** ID of the user on whose behalf the request was made: the user whose session or AI app made the write that needs a decision. Server-set.
+   */
+  requesterId: string;
+  /** OAuth client ID of the AI app that made the write behind the request. Server-set from the access token. Empty or omitted when a person made it.
+   */
+  createdByClient?: string;
+  /** Lifecycle of a request. `pending` until it is decided. `approved` or `denied` once, by a person with the kind's deciding key. `superseded` when a content edit or a delete changes the subject before a decision: the request is closed with `decidedAt` set, no `decidedBy` and no note, and a fresh pending request opens if the edit leaves the item unapproved, whatever the result. Each of `approved`, `denied` and `superseded` is final.
+   */
+  status: "pending" | "approved" | "denied" | "superseded";
+  /** ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it. */
+  decidedBy?: string;
+  /** Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending. */
+  decidedAt?: string | null;
+  /** The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none. */
+  note?: string;
+  /** Timestamp of request creation. */
+  createdAt: string;
+  /** Timestamp of last request modification. */
+  updatedAt: string;
+};
+export type DenyRequestApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
+  /** Request ID */
+  requestId: string;
+  body?: {
+    /** Optional note left with the decision, shown to the requester. */
+    note?: string;
+  };
+};
 export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
   /** Current page number of the result set. */
   page: number;
@@ -20914,6 +21419,8 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   visibility: "public" | "org" | "private";
 };
 export type CreateScheduleApiArg = {
+  /** Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
+  "Idempotency-Key"?: string;
   body: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
@@ -24132,6 +24639,7 @@ export const {
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
   usePatchOrgPreferencesMutation,
+  useUpdateOrgSchedulePauseMutation,
   useAddTeamToOrgMutation,
   useGetTeamByIdQuery,
   useLazyGetTeamByIdQuery,
@@ -24302,6 +24810,7 @@ export const {
   useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
   useBulkDeleteEventsMutation,
+  useMarkAllEventsReadMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
   useGetEventsOfWorkspaceQuery,
@@ -24425,6 +24934,12 @@ export const {
   useRemoveConnectionFromProfileMutation,
   useGetProviderCapabilitiesQuery,
   useLazyGetProviderCapabilitiesQuery,
+  useListRequestsQuery,
+  useLazyListRequestsQuery,
+  useGetRequestQuery,
+  useLazyGetRequestQuery,
+  useApproveRequestMutation,
+  useDenyRequestMutation,
   useListSchedulesQuery,
   useLazyListSchedulesQuery,
   useCreateScheduleMutation,
