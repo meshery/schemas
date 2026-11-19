@@ -28,7 +28,7 @@ const (
 	registryRelationshipItemRef = "../../v1alpha3/relationship/relationship.yaml#/components/schemas/RelationshipDefinition"
 
 	// registryRelationshipOldRef is the whole-document ref this file used to
-	// carry. Rule 48 must keep flagging it.
+	// carry. Rule 49 must keep flagging it.
 	registryRelationshipOldRef = "../../v1alpha3/relationship/relationship.yaml"
 )
 
@@ -108,17 +108,17 @@ func TestRegistryRelationshipsPageItemsResolveToRelationshipDefinition(t *testin
 	}
 }
 
-// TestRule48OnRegistrySpec runs Rule 48 against the real registry api.yml: the
+// TestRule49OnRegistrySpec runs Rule 49 against the real registry api.yml: the
 // file as committed is clean, and the old whole-document ref is still caught.
-func TestRule48OnRegistrySpec(t *testing.T) {
+func TestRule49OnRegistrySpec(t *testing.T) {
 	specPath := filepath.Join(repoRootDir(t), registrySpecPath)
 
-	if vs := checkRule48(registrySpecPath, specPath, loadOpenAPIDocument(t, specPath)); len(vs) != 0 {
-		t.Errorf("Rule 48 should pass on %s, got %+v", registrySpecPath, vs)
+	if vs := checkRule49(registrySpecPath, specPath, loadOpenAPIDocument(t, specPath)); len(vs) != 0 {
+		t.Errorf("Rule 49 should pass on %s, got %+v", registrySpecPath, vs)
 	}
 
 	old := map[string]any{"items": map[string]any{"$ref": registryRelationshipOldRef}}
-	if vs := checkRule48(registrySpecPath, specPath, old); len(vs) != 1 {
-		t.Errorf("Rule 48 should flag the old ref %q once, got %+v", registryRelationshipOldRef, vs)
+	if vs := checkRule49(registrySpecPath, specPath, old); len(vs) != 1 {
+		t.Errorf("Rule 49 should flag the old ref %q once, got %+v", registryRelationshipOldRef, vs)
 	}
 }

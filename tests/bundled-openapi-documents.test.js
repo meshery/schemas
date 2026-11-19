@@ -12,11 +12,11 @@ const REPO_ROOT = path.join(__dirname, "..");
 // whole document a schema. The bundler then inlines `openapi`, `info`, `paths`
 // and `components` where the $ref sat, and the generated clients type the
 // value as `unknown` (meshery/schemas#1304: `RegistryRelationshipsPage`
-// typed `relationships` as `unknown[]`). Validator Rule 48 blocks that $ref
+// typed `relationships` as `unknown[]`). Validator Rule 49 blocks that $ref
 // in the source YAML. This file checks the output instead: the bundles the
 // TypeScript generator (one per construct) and the RTK generator
 // (meshery_openapi.yml and cloud_openapi.yml) read. So it also catches a
-// regression in the bundler or a $ref form Rule 48 does not model.
+// regression in the bundler or a $ref form Rule 49 does not model.
 //
 // It reads a fresh bundle, never the committed generated TypeScript, which is
 // regenerated only after merge. `make test-rtk` bundles before running it.

@@ -172,8 +172,8 @@ func Audit(opts AuditOptions) AuditResult {
 		return nil
 	})
 
-	// Rule 48: a $ref with no fragment must not point at an OpenAPI document.
-	auditRule48(opts, baseline, &result)
+	// Rule 49: a $ref with no fragment must not point at an OpenAPI document.
+	auditRule49(opts, baseline, &result)
 
 	// Rule 29: report cross-construct duplicates.
 	for _, v := range reportDuplicateSchemas(fingerprints, opts) {
@@ -324,23 +324,23 @@ func entitySchemaFiles(constructDir string) []string {
 	return files
 }
 
-// auditRule48 runs Rule 48 on every non-deprecated construct version: its
+// auditRule49 runs Rule 49 on every non-deprecated construct version: its
 // api.yml, entity schemas and helper .yml files. It is a pass of its own, not
 // part of walkValidatedConstructSpecs, because:
 //
 //   - the walk keeps only the newest version of each construct, but the
 //     generators bundle every version;
-//   - Rule 48 reads raw YAML only, so it must not depend on kin-openapi
+//   - Rule 49 reads raw YAML only, so it must not depend on kin-openapi
 //     loading the api.yml;
 //   - deprecation is read from the raw api.yml, so it is known even when the
 //     typed load fails.
 //
 // An api.yml that is not valid YAML cannot say whether its version is
 // deprecated, so the other files of that version are still checked.
-func auditRule48(opts AuditOptions, baseline map[string]bool, result *AuditResult) {
+func auditRule49(opts AuditOptions, baseline map[string]bool, result *AuditResult) {
 	check := func(path string, doc map[string]any) {
 		relPath := relativeToRoot(path, opts.RootDir)
-		for _, v := range checkRule48(relPath, path, doc) {
+		for _, v := range checkRule49(relPath, path, doc) {
 			addViolation(result, v, baseline)
 		}
 	}

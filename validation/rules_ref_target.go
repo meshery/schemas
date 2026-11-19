@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// --- Rule 48: a $ref with no fragment must not point at an OpenAPI document ---
+// --- Rule 49: a $ref with no fragment must not point at an OpenAPI document ---
 //
 // A $ref with no `#` fragment makes the whole target file the schema at that
 // spot. That is right for a plain schema file such as
@@ -42,11 +42,11 @@ import (
 // would fetch and inline the whole file. A remote $ref with a fragment is
 // allowed.
 
-// checkRule48 reports every $ref in a raw YAML document (an api.yml or an
+// checkRule49 reports every $ref in a raw YAML document (an api.yml or an
 // entity schema) that has no fragment and resolves to a file whose root is an
 // OpenAPI document. relPath is the path used in messages; absPath is where the
 // file lives on disk, used to resolve relative refs.
-func checkRule48(relPath, absPath string, raw map[string]any) []Violation {
+func checkRule49(relPath, absPath string, raw map[string]any) []Violation {
 	if raw == nil {
 		return nil
 	}
@@ -72,7 +72,7 @@ func checkRule48(relPath, absPath string, raw map[string]any) []Violation {
 					pointer, ref,
 					strings.TrimSuffix(ref, "#")+"#/components/schemas/<SchemaName>"),
 				Severity:   SeverityBlocking,
-				RuleNumber: 48,
+				RuleNumber: 49,
 			})
 			return
 		}
@@ -97,7 +97,7 @@ func checkRule48(relPath, absPath string, raw map[string]any) []Violation {
 				pointer, ref, info.version,
 				strings.TrimSuffix(ref, "#")+"#/components/schemas/<SchemaName>"),
 			Severity:   SeverityBlocking,
-			RuleNumber: 48,
+			RuleNumber: 49,
 		})
 	})
 	return out

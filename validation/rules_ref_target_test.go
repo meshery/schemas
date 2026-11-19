@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// rule48Fixture writes a small construct tree into a temp dir:
+// rule49Fixture writes a small construct tree into a temp dir:
 //
 //	<tmp>/v1/doc/doc.yaml           an OpenAPI document with one schema, Thing
 //	<tmp>/v1/doc-noversion/doc.yaml an OpenAPI document whose `openapi` key is empty
@@ -18,7 +18,7 @@ import (
 //
 // and returns the path of the caller file. Refs in the test cases are
 // relative to the caller's directory, as they are in real api.yml files.
-func rule48Fixture(t *testing.T) string {
+func rule49Fixture(t *testing.T) string {
 	t.Helper()
 	root := t.TempDir()
 	write := func(rel, content string) {
@@ -58,8 +58,8 @@ properties:
 	return filepath.Join(root, "v1", "caller", "api.yml")
 }
 
-// rule48Doc parses a YAML snippet into the raw form checkRule48 receives.
-func rule48Doc(t *testing.T, src string) map[string]any {
+// rule49Doc parses a YAML snippet into the raw form checkRule49 receives.
+func rule49Doc(t *testing.T, src string) map[string]any {
 	t.Helper()
 	var doc map[string]any
 	if err := yaml.Unmarshal([]byte(src), &doc); err != nil {
@@ -68,10 +68,10 @@ func rule48Doc(t *testing.T, src string) map[string]any {
 	return doc
 }
 
-// TestCheckRule48 runs checkRule48 on one document per case and checks the
+// TestCheckRule49 runs checkRule49 on one document per case and checks the
 // JSON pointers it reports and the text of each message.
-func TestCheckRule48(t *testing.T) {
-	callerPath := rule48Fixture(t)
+func TestCheckRule49(t *testing.T) {
+	callerPath := rule49Fixture(t)
 
 	tests := []struct {
 		name string
@@ -259,13 +259,13 @@ components:
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			vs := checkRule48("v1/caller/api.yml", callerPath, rule48Doc(t, tc.yaml))
+			vs := checkRule49("v1/caller/api.yml", callerPath, rule49Doc(t, tc.yaml))
 			if len(vs) != len(tc.wantPointers) {
 				t.Fatalf("got %d violations, want %d: %+v", len(vs), len(tc.wantPointers), vs)
 			}
 			for i, v := range vs {
-				if v.RuleNumber != 48 {
-					t.Errorf("violation %d: RuleNumber = %d, want 48", i, v.RuleNumber)
+				if v.RuleNumber != 49 {
+					t.Errorf("violation %d: RuleNumber = %d, want 49", i, v.RuleNumber)
 				}
 				if v.Severity != SeverityBlocking {
 					t.Errorf("violation %d: Severity = %v, want blocking", i, v.Severity)
@@ -286,9 +286,9 @@ components:
 	}
 }
 
-// TestCheckRule48_NilDoc checks that a nil document yields no violations.
-func TestCheckRule48_NilDoc(t *testing.T) {
-	if vs := checkRule48("api.yml", "api.yml", nil); len(vs) != 0 {
+// TestCheckRule49_NilDoc checks that a nil document yields no violations.
+func TestCheckRule49_NilDoc(t *testing.T) {
+	if vs := checkRule49("api.yml", "api.yml", nil); len(vs) != 0 {
 		t.Errorf("expected no violations for a nil document, got %+v", vs)
 	}
 }
@@ -364,8 +364,8 @@ func TestOpenAPIVersionOf(t *testing.T) {
 	}
 }
 
-// TestAuditRule48 runs the full Audit over a small repository tree, so it
-// fails if Rule 48 stops covering any file kind (api.yml, entity schema,
+// TestAuditRule49 runs the full Audit over a small repository tree, so it
+// fails if Rule 49 stops covering any file kind (api.yml, entity schema,
 // helper .yml), any version, or any load failure. The tree holds:
 //
 //	v1alpha1/target  an OpenAPI document that the other files point at whole
@@ -384,17 +384,17 @@ func TestOpenAPIVersionOf(t *testing.T) {
 // The tree is built under three root names. A root with "[1]" or "[x" in its
 // path must be read literally: as a glob pattern, the first matches no
 // directory and the second is a syntax error.
-func TestAuditRule48(t *testing.T) {
+func TestAuditRule49(t *testing.T) {
 	for _, name := range []string{"repo", "repo[1]", "repo[x"} {
 		t.Run(name, func(t *testing.T) {
-			testAuditRule48(t, filepath.Join(t.TempDir(), name))
+			testAuditRule49(t, filepath.Join(t.TempDir(), name))
 		})
 	}
 }
 
-// testAuditRule48 builds the TestAuditRule48 tree under root, runs Audit and
-// checks that exactly the expected files get one blocking Rule 48 violation.
-func testAuditRule48(t *testing.T, root string) {
+// testAuditRule49 builds the TestAuditRule49 tree under root, runs Audit and
+// checks that exactly the expected files get one blocking Rule 49 violation.
+func testAuditRule49(t *testing.T, root string) {
 	write := func(rel, content string) {
 		t.Helper()
 		p := filepath.Join(root, filepath.FromSlash(rel))
@@ -501,13 +501,13 @@ components:
 
 	got := map[string]int{}
 	for _, v := range result.Blocking {
-		if v.RuleNumber == 48 {
+		if v.RuleNumber == 49 {
 			got[v.File]++
 		}
 	}
 	for _, v := range result.Advisory {
-		if v.RuleNumber == 48 {
-			t.Errorf("Rule 48 violation reported as advisory: %+v", v)
+		if v.RuleNumber == 49 {
+			t.Errorf("Rule 49 violation reported as advisory: %+v", v)
 		}
 	}
 
@@ -541,20 +541,20 @@ components:
 	}
 	for _, file := range want {
 		if got[file] != 1 {
-			t.Errorf("%s: got %d blocking Rule 48 violations, want 1", file, got[file])
+			t.Errorf("%s: got %d blocking Rule 49 violations, want 1", file, got[file])
 		}
 		delete(got, file)
 	}
 	for file, n := range got {
-		t.Errorf("%s: got %d unexpected blocking Rule 48 violations", file, n)
+		t.Errorf("%s: got %d unexpected blocking Rule 49 violations", file, n)
 	}
 }
 
-// TestAuditRule48_SymlinkedDirectories checks that Rule 48 follows a
+// TestAuditRule49_SymlinkedDirectories checks that Rule 49 follows a
 // symlinked version directory and a symlinked construct directory, because
 // bundle discovery follows them too. A dangling symlink and a symlink to a
 // file are skipped without error.
-func TestAuditRule48_SymlinkedDirectories(t *testing.T) {
+func TestAuditRule49_SymlinkedDirectories(t *testing.T) {
 	root := t.TempDir()
 	write := func(rel, content string) {
 		t.Helper()
@@ -599,7 +599,7 @@ properties:
     $ref: "../../v1alpha1/target/api.yml"
 `
 
-	// The real files live outside schemas/constructs, so Rule 48 only sees
+	// The real files live outside schemas/constructs, so Rule 49 only sees
 	// them through the links.
 	write("outside/v1beta2/gadget/api.yml", wholeRefAPI)
 	write("outside/v1beta2/gadget/gadget.yaml", wholeRefEntity)
@@ -615,7 +615,7 @@ properties:
 
 	got := map[string]int{}
 	for _, v := range append(result.Blocking, result.Advisory...) {
-		if v.RuleNumber == 48 {
+		if v.RuleNumber == 49 {
 			got[v.File]++
 		}
 	}
@@ -625,11 +625,11 @@ properties:
 		"schemas/constructs/v1beta2/gadget/gadget.yaml",
 	} {
 		if got[file] != 1 {
-			t.Errorf("%s: got %d Rule 48 violations, want 1", file, got[file])
+			t.Errorf("%s: got %d Rule 49 violations, want 1", file, got[file])
 		}
 		delete(got, file)
 	}
 	for file, n := range got {
-		t.Errorf("%s: got %d unexpected Rule 48 violations", file, n)
+		t.Errorf("%s: got %d unexpected Rule 49 violations", file, n)
 	}
 }
