@@ -151,6 +151,11 @@ schemas/
         <construct>/                # Generated client per pilot construct
     tests/                          # Hand-maintained pytest suites
 
+  rust/                             # meshery-schemas crate (commit regenerated output when a bundled pilot spec changes)
+    Cargo.toml, Cargo.lock          # Hand-maintained scaffold (crate identity, dependencies, features)
+    src/lib.rs                      # Hand-maintained scaffold (declares the construct modules)
+    src/<construct>/                # Generated models (types/) and async client (mod.rs) per pilot construct
+    tests/                          # Hand-maintained cargo integration tests
   dist/                             # Built distribution (do NOT commit)
     index.js, index.d.ts
     cloudApi.js, mesheryApi.js
@@ -498,6 +503,7 @@ Meshery supports **automated code generation** from schemas for:
 * **TypeScript Schemas**: OpenAPI schemas as const JS objects → `typescript/generated/<version>/<package>/<Package>Schema.ts`
 * **RTK Query**: Clients generated from OpenAPI for use with Redux → `typescript/rtk/`
 * **Python**: Typed clients generated from OpenAPI (pilot: key construct) → `python/generated/` (`meshery-schemas` distribution)
+* **Rust**: Models and a typed async client generated from OpenAPI with progenitor (pilot: key construct) → `rust/` (`meshery-schemas` crate)
 * **JSON/YAML**: Templates with defaults and resolved references.
 
 ### TypeScript Schema Exports

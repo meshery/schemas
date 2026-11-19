@@ -63,6 +63,8 @@ make build                  # generate Go, TypeScript, and RTK code
 npm run build               # build the TypeScript distribution
 ```
 
+The Python and Rust client pilots are standalone targets, outside `make build`, so their toolchains are only needed when you touch them: `make generate-python test-python` and `make generate-rust test-rust`. A change to a bundled pilot spec must commit the regenerated `python/generated/` and `rust/` output. Setup and the PR contract are in [`docs/schema-tooling.md`](docs/schema-tooling.md#rust-client-generation-pilot).
+
 ## 🤝 Getting Help
 
 - [GitHub Issues](https://github.com/meshery/schemas/issues) - report bugs or request features
