@@ -144,6 +144,8 @@ paths:
       responses:
         "201":
           description: Preferences updated
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
@@ -909,6 +911,14 @@ components:
         anonymousUsageStats:
           type: boolean
           description: The anonymous usage stats of the preference.
+        shareActivityPublicly:
+          type: boolean
+          description: >-
+            Account-wide switch for whether events the user marked public
+            appear on GET /api/events/feed. If absent, the preference is on.
+            Cloud reads it at feed time; turning it off hides all of the
+            user's past public events from the next response, and events are
+            never rewritten.
         anonymousPerfResults:
           type: boolean
           description: The anonymous perf results of the preference.
@@ -1027,6 +1037,14 @@ components:
         anonymousUsageStats:
           type: boolean
           description: The anonymous usage stats of the preference.
+        shareActivityPublicly:
+          type: boolean
+          description: >-
+            Account-wide switch for whether events the user marked public
+            appear on GET /api/events/feed. If absent, the preference is on.
+            Cloud reads it at feed time; turning it off hides all of the
+            user's past public events from the next response, and events are
+            never rewritten.
         anonymousPerfResults:
           type: boolean
           description: The anonymous perf results of the preference.

@@ -181,6 +181,8 @@ export interface components {
                 };
                 /** @description The anonymous usage stats of the preference. */
                 anonymousUsageStats: boolean;
+                /** @description Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten. */
+                shareActivityPublicly?: boolean;
                 /** @description The anonymous perf results of the preference. */
                 anonymousPerfResults: boolean;
                 /**
@@ -638,6 +640,8 @@ export interface components {
             };
             /** @description The anonymous usage stats of the preference. */
             anonymousUsageStats: boolean;
+            /** @description Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten. */
+            shareActivityPublicly?: boolean;
             /** @description The anonymous perf results of the preference. */
             anonymousPerfResults: boolean;
             /**
@@ -713,6 +717,8 @@ export interface components {
             };
             /** @description The anonymous usage stats of the preference. */
             anonymousUsageStats?: boolean;
+            /** @description Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten. */
+            shareActivityPublicly?: boolean;
             /** @description The anonymous perf results of the preference. */
             anonymousPerfResults?: boolean;
             /** @description The dashboard preferences of the preference. */
@@ -1210,6 +1216,8 @@ export interface operations {
                     };
                     /** @description The anonymous usage stats of the preference. */
                     anonymousUsageStats?: boolean;
+                    /** @description Account-wide switch for whether events the user marked public appear on GET /api/events/feed. If absent, the preference is on. Cloud reads it at feed time; turning it off hides all of the user's past public events from the next response, and events are never rewritten. */
+                    shareActivityPublicly?: boolean;
                     /** @description The anonymous perf results of the preference. */
                     anonymousPerfResults?: boolean;
                     /** @description The dashboard preferences of the preference. */
@@ -1245,6 +1253,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {

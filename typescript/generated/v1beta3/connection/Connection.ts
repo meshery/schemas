@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get all connections
-         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
+         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
          */
         get: operations["getConnections"];
         put?: never;
@@ -25,7 +25,7 @@ export interface paths {
          *
          *     Desktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.
          *
-         *     A `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.
+         *     A `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. One sign-in can back one install's connections in several organizations, so a token is revoked only once no live connection of the same owner still links it: removing or superseding one organization's connection must not sign the install out of another. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.
          */
         post: operations["registerConnection"];
         delete?: never;
@@ -94,7 +94,7 @@ export interface paths {
         post?: never;
         /**
          * Delete a connection
-         * @description Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token.
+         * @description Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token, unless another live connection of the same owner still links it.
          */
         delete: operations["deleteConnection"];
         options?: never;
@@ -174,7 +174,7 @@ export interface paths {
         post?: never;
         /**
          * Deregister a desktop app install
-         * @description Delete the caller's `desktop` connection whose `metadata.installationId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`).
+         * @description Delete the caller's `desktop` connection whose `metadata.installationId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. An install registers one connection per organization, so with `X-Current-Orgid` naming an organization the server must delete only the install's connection in that organization and leave its connections in other organizations live; this is how an install releases the organization it is leaving when it switches to another. Without the header (or with the all-organizations value `all`) the server deletes the install's connections in every organization. When nothing matches, the server answers 404 and revokes nothing. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`) unless a live connection of the same owner still links it: the token still authenticates that connection.
          */
         delete: operations["deregisterDesktopConnection"];
         options?: never;
@@ -1403,7 +1403,7 @@ export interface components {
             osVersion?: string;
             /**
              * Format: uuid
-             * @description Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token. A value sent by the client is ignored.
+             * @description Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token, unless another live connection of the same owner still links it. A value sent by the client is ignored.
              */
             tokenId?: string;
             /**
@@ -2005,6 +2005,8 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        currentOrgId: string;
         /** @description Connection ID */
         connectionId: string;
         /** @description Connection definition ID */
@@ -2058,7 +2060,10 @@ export interface operations {
                 /** @description Filter by connection name (partial match supported) */
                 name?: string;
             };
-            header?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                "X-Current-Orgid"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2441,8 +2446,35 @@ export interface operations {
                     };
                 };
             };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3634,6 +3666,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5315,7 +5356,10 @@ export interface operations {
     deregisterDesktopConnection: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Organization whose connection for this install is deleted. Absent, or `all`, deletes the install's connections in every organization. A value that is neither an organization id nor `all` is refused with 400. An organization id where the caller has no connection for this install deletes nothing and is 404. Membership is not checked: a non-member with no connection there gets the same 404, so the response does not disclose membership, and a connection the caller still owns in an organization it has left is deleted (204). The schema is a plain string, not `format: uuid` as on `registerConnection`, because `all` is a legal value here. */
+                "X-Current-Orgid"?: string;
+            };
             path: {
                 /** @description Installation identifier from `metadata.installationId`. */
                 installationId: string;
@@ -5330,6 +5374,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
@@ -5759,6 +5812,15 @@ export interface operations {
                          */
                         schemaVersion: string;
                     };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */

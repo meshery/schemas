@@ -50,8 +50,8 @@ type MesheryView struct {
 	// Visibility Visibility level of the view.
 	Visibility string `db:"visibility" json:"visibility" yaml:"visibility"`
 
-	// Filters Filter configuration that defines which resources this view displays.
-	Filters core.Map `db:"filters" json:"filters" yaml:"filters"`
+	// Filters Resource filters that define which Meshery resources this view displays.
+	Filters ViewFilters `db:"filters" json:"filters" yaml:"filters,omitempty"`
 
 	// Metadata Additional metadata associated with the view.
 	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
@@ -92,8 +92,8 @@ type MesheryViewWithLocation struct {
 	// DeletedAt Timestamp when the view was soft deleted. Null while the view remains active.
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
-	// Filters Filter configuration for this view.
-	Filters core.Map       `db:"filters" json:"filters,omitempty" yaml:"filters,omitempty"`
+	// Filters Resource filters that define which Meshery resources this view displays.
+	Filters ViewFilters    `db:"filters" json:"filters,omitempty" yaml:"filters,omitempty"`
 	ID      core.GeneralId `db:"id" json:"id" yaml:"id"`
 
 	// Metadata Metadata associated with the view.
@@ -124,10 +124,13 @@ type MesheryViewWithLocation struct {
 	WorkspaceName string `db:"workspace_name" json:"workspaceName,omitempty" yaml:"workspaceName,omitempty"`
 }
 
+// ViewFilters Resource filters that define which Meshery resources this view displays.
+type ViewFilters = core.Map
+
 // ViewPayload Payload for creating or updating a view.
 type ViewPayload struct {
-	// Filters Filter configuration for this view.
-	Filters core.Map `json:"filters,omitempty" yaml:"filters,omitempty"`
+	// Filters Resource filters that define which Meshery resources this view displays.
+	Filters ViewFilters `json:"filters,omitempty" yaml:"filters,omitempty"`
 
 	// Metadata Metadata associated with the view.
 	Metadata core.Map `json:"metadata,omitempty" yaml:"metadata,omitempty"`

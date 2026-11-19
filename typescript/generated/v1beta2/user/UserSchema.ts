@@ -1713,6 +1713,18 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "301": {
+            "description": "Merged-away user ID; redirects to the surviving canonical account's equivalent profile path",
+            "headers": {
+              "Location": {
+                "description": "URL of the surviving canonical account's equivalent profile path",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request body or request param",
             "content": {
@@ -1776,7 +1788,27 @@ const UserSchema: Record<string, unknown> = {
           "users"
         ],
         "operationId": "getUser",
+        "x-mcp": {
+          "expose": true,
+          "title": "Get the current user profile",
+          "scope": "account:read"
+        },
         "summary": "Get current user profile",
+        "description": "Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400.\n",
+        "parameters": [
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Current user profile and role context",
@@ -2528,6 +2560,16 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
             "content": {
@@ -2540,6 +2582,16 @@ const UserSchema: Record<string, unknown> = {
           },
           "403": {
             "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2852,7 +2904,7 @@ const UserSchema: Record<string, unknown> = {
         ],
         "operationId": "getUserRecentActivities",
         "summary": "Get recent activity for a user's public profile",
-        "description": "Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges.",
+        "description": "Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges. A retired account is not served: an id with no recorded successor answers 404, and a merged-away id redirects (301) to the surviving canonical account's equivalent path.",
         "security": [],
         "parameters": [
           {
@@ -3029,8 +3081,30 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "301": {
+            "description": "Merged-away user ID; redirects to the surviving canonical account's equivalent activity path",
+            "headers": {
+              "Location": {
+                "description": "URL of the surviving canonical account's equivalent activity path",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4458,6 +4532,18 @@ const UserSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "currentOrgId": {
+        "name": "X-Current-Orgid",
+        "in": "header",
+        "required": false,
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+        "schema": {
+          "type": "string",
+          "minLength": 36,
+          "maxLength": 36,
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
       "id": {
         "name": "id",
         "in": "path",

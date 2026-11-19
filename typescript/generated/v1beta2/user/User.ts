@@ -48,7 +48,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get current user profile */
+        /**
+         * Get current user profile
+         * @description Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400.
+         */
         get: operations["getUser"];
         put?: never;
         post?: never;
@@ -107,7 +110,7 @@ export interface paths {
         };
         /**
          * Get recent activity for a user's public profile
-         * @description Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges.
+         * @description Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges. A retired account is not served: an id with no recorded successor answers 404, and a merged-away id redirects (301) to the surviving canonical account's equivalent path.
          */
         get: operations["getUserRecentActivities"];
         put?: never;
@@ -1626,6 +1629,8 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        currentOrgId: string;
         /** @description User ID */
         id: string;
         /** @description Organization ID */
@@ -2282,6 +2287,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Merged-away user ID; redirects to the surviving canonical account's equivalent profile path */
+            301: {
+                headers: {
+                    /** @description URL of the surviving canonical account's equivalent profile path */
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Invalid request body or request param */
             400: {
                 headers: {
@@ -2332,7 +2346,10 @@ export interface operations {
     getUser: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                "X-Current-Orgid"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2607,6 +2624,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
                 headers: {
@@ -2618,6 +2644,15 @@ export interface operations {
             };
             /** @description Forbidden */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2865,8 +2900,26 @@ export interface operations {
                     };
                 };
             };
+            /** @description Merged-away user ID; redirects to the surviving canonical account's equivalent activity path */
+            301: {
+                headers: {
+                    /** @description URL of the surviving canonical account's equivalent activity path */
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Invalid request body or request param */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -1326,6 +1326,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Signing keys or token revocation status are temporarily unavailable. The token is refused, but the caller should retry rather than sign the user out. */
             503: {
                 headers: {

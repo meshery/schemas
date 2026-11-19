@@ -124,6 +124,26 @@ export interface paths {
         patch: operations["patchOrgPreferences"];
         trace?: never;
     };
+    "/api/identity/orgs/{orgId}/schedule-pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set or lift the organization schedule pause
+         * @description Sets or lifts the organization-wide schedule pause and changes nothing else about the organization: no other preference, no branding, no links. The body is the closed SchedulePausePayload (`paused` required, `reason` optional); an echoed `pausedAt` or `pausedBy` is refused with 400. `paused` true pauses every schedule in the organization, and the server records `pausedAt` and `pausedBy`. `paused` false lifts the pause and clears `reason`, `pausedAt` and `pausedBy`. The call is idempotent: sending the state the organization is already in succeeds and returns it. It answers the resulting SchedulePause. Authorization is one permission key in the organization named by `orgId` ("Workflow Management / Schedules: Pause schedules", in the Schedule Edit keychain, whose OAuth scope is `schedule:write`), seeded to the organization admin role; a caller without it receives 403 and nothing is written. The broad updateOrg and patchOrgPreferences operations can still change `schedulePause`; there the change requires organization admin, as before. The caller must be a live member of the organization named by `orgId`; a caller who is not receives 404, and this operation does not take `X-Current-Orgid` (see the organization selector in docs/mcp-operation-contract.md). See docs/schedule-pause-contract.md.
+         */
+        put: operations["updateOrgSchedulePause"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/identity/orgs/{orgId}/teams/{teamId}": {
         parameters: {
             query?: never;
@@ -497,7 +517,7 @@ export interface components {
              * @default true
              */
             showAuthCarousel: boolean;
-            /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
             schedulePause?: {
                 /** @description Whether every schedule in the organization is paused. */
                 paused?: boolean;
@@ -512,7 +532,7 @@ export interface components {
                 pausedBy?: string;
             };
         };
-        /** @description Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity. */
+        /** @description Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences, or alone through updateOrgSchedulePause. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity. */
         SchedulePause: {
             /** @description Whether every schedule in the organization is paused. */
             paused?: boolean;
@@ -644,7 +664,7 @@ export interface components {
              * @default true
              */
             showAuthCarousel: boolean;
-            /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
             schedulePause?: {
                 /** @description Whether every schedule in the organization is paused. */
                 paused: boolean;
@@ -760,7 +780,7 @@ export interface components {
             };
             /** @description Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
             showAuthCarousel?: boolean;
-            /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause. */
             schedulePause?: {
                 /** @description Whether every schedule in the organization is paused. */
                 paused: boolean;
@@ -881,7 +901,7 @@ export interface components {
                  * @default true
                  */
                 showAuthCarousel: boolean;
-                /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                 schedulePause?: {
                     /** @description Whether every schedule in the organization is paused. */
                     paused?: boolean;
@@ -1069,7 +1089,7 @@ export interface components {
                      * @default true
                      */
                     showAuthCarousel: boolean;
-                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                     schedulePause?: {
                         /** @description Whether every schedule in the organization is paused. */
                         paused?: boolean;
@@ -1241,7 +1261,7 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel: boolean;
-                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                         schedulePause?: {
                             /** @description Whether every schedule in the organization is paused. */
                             paused?: boolean;
@@ -1414,7 +1434,7 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel: boolean;
-                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                         schedulePause?: {
                             /** @description Whether every schedule in the organization is paused. */
                             paused?: boolean;
@@ -1641,7 +1661,7 @@ export interface components {
                  * @default true
                  */
                 showAuthCarousel: boolean;
-                /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                 schedulePause?: {
                     /** @description Whether every schedule in the organization is paused. */
                     paused: boolean;
@@ -2079,7 +2099,7 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
-                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                         schedulePause?: {
                             /** @description Whether every schedule in the organization is paused. */
                             paused: boolean;
@@ -2264,7 +2284,7 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
-                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                                     schedulePause?: {
                                         /** @description Whether every schedule in the organization is paused. */
                                         paused?: boolean;
@@ -2458,7 +2478,7 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
-                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                         schedulePause?: {
                             /** @description Whether every schedule in the organization is paused. */
                             paused: boolean;
@@ -2615,7 +2635,7 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
-                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                                     schedulePause?: {
                                         /** @description Whether every schedule in the organization is paused. */
                                         paused?: boolean;
@@ -2929,7 +2949,7 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
-                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                                     schedulePause?: {
                                         /** @description Whether every schedule in the organization is paused. */
                                         paused?: boolean;
@@ -3137,7 +3157,7 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
-                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                         schedulePause?: {
                             /** @description Whether every schedule in the organization is paused. */
                             paused: boolean;
@@ -3294,7 +3314,7 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
-                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                                     schedulePause?: {
                                         /** @description Whether every schedule in the organization is paused. */
                                         paused?: boolean;
@@ -3684,7 +3704,7 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
-                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                         schedulePause?: {
                             /** @description Whether every schedule in the organization is paused. */
                             paused: boolean;
@@ -3841,7 +3861,7 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
-                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                                     schedulePause?: {
                                         /** @description Whether every schedule in the organization is paused. */
                                         paused?: boolean;
@@ -4055,7 +4075,7 @@ export interface operations {
                              * @default true
                              */
                             showAuthCarousel: boolean;
-                            /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                             schedulePause?: {
                                 /** @description Whether every schedule in the organization is paused. */
                                 paused?: boolean;
@@ -4233,7 +4253,7 @@ export interface operations {
                     };
                     /** @description Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
                     showAuthCarousel?: boolean;
-                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+                    /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause. */
                     schedulePause?: {
                         /** @description Whether every schedule in the organization is paused. */
                         paused: boolean;
@@ -4364,7 +4384,7 @@ export interface operations {
                              * @default true
                              */
                             showAuthCarousel: boolean;
-                            /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                            /** @description Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
                             schedulePause?: {
                                 /** @description Whether every schedule in the organization is paused. */
                                 paused?: boolean;
@@ -4424,6 +4444,95 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateOrgSchedulePause: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization ID. */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Whether every schedule in the organization is paused. */
+                    paused: boolean;
+                    /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                    reason?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description The organization schedule pause after the change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Whether every schedule in the organization is paused. */
+                        paused?: boolean;
+                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                        reason?: string;
+                        /**
+                         * Format: date-time
+                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                         */
+                        pausedAt?: string;
+                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                        pausedBy?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
             /** @description Internal server error */
             500: {

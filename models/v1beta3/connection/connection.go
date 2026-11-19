@@ -442,7 +442,7 @@ type DesktopConnectionMetadata struct {
 	// OsVersion Operating system version, for example `26.0.1`.
 	OsVersion *string `json:"osVersion,omitempty" yaml:"osVersion,omitempty"`
 
-	// TokenId Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token. A value sent by the client is ignored.
+	// TokenId Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token, unless another live connection of the same owner still links it. A value sent by the client is ignored.
 	TokenId *uuid.UUID `json:"tokenId,omitempty" yaml:"tokenId,omitempty"`
 }
 
@@ -574,6 +574,9 @@ type ConnectionId = uuid.UUID
 
 // ConnectionKind defines model for connectionKind.
 type ConnectionKind = string
+
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
 
 // EnvironmentId defines model for environmentId.
 type EnvironmentId = uuid.UUID

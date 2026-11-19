@@ -118,7 +118,7 @@ func TestUpdateUserPreferencesOwnedByV1beta3(t *testing.T) {
 	if resp := op.Responses.Status(201); resp == nil || resp.Value == nil || len(resp.Value.Content) != 0 {
 		t.Error("201 must be declared with no body")
 	}
-	for _, code := range []int{401, 500} {
+	for _, code := range []int{400, 401, 500} {
 		if op.Responses.Status(code) == nil {
 			t.Errorf("updateUserPreferences must document %d", code)
 		}

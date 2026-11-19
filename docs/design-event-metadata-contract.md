@@ -17,7 +17,7 @@ one.**
 | `pattern` / `validate`, `deploy`, `undeploy`, `dry-run` | `DesignValidationEventMetadata` |
 | `pattern` / `create`, `update` (design saved) | `DesignSavedEventMetadata` |
 | `pattern` / `validate` whose operation did not complete | `DesignValidationEventMetadata` with `status` `error` and `error` (`DesignEventOperationError`) |
-| Any error event | `metadata.error` holds only the MeshKit error (see below) |
+| Any other error event | `metadata.error` is an `EventError` ([error definition contract](error-definition-contract.md#eventerror-metadataerror-on-an-error-event)) |
 
 `DesignEventIdentity` is the set of fields that identify the design:
 
@@ -150,12 +150,13 @@ verdict.
 
 ## Error events
 
-On an error event, `metadata.error` holds only the MeshKit error, never the
-design, the request body or the failed operation's response. On a design
-validation event whose operation did not complete, that error is a
+On an error event, `metadata.error` holds only the error, never the design,
+the request body or the failed operation's response. On a design validation
+event whose operation did not complete, that error is a
 `DesignEventOperationError` (see above): the MeshKit code, or a producer code
-when there is none, and at most one short line. Other error events carry
-MeshKit's error as MeshKit serializes it.
+when there is none, and at most one short line. Every other error event
+carries an `EventError`; see the
+[error definition contract](error-definition-contract.md#eventerror-metadataerror-on-an-error-event).
 
 ## Legacy keys on old Cloud rows
 

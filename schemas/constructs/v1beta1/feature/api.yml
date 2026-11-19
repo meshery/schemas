@@ -38,6 +38,8 @@ components:
       $ref: "../core/api.yml#/components/responses/500"
 
   parameters:
+    currentOrgId:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/currentOrgId"
     orgId:
       name: orgId
       in: path

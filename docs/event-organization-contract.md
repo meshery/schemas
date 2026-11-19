@@ -1,9 +1,9 @@
 # Event organization contract
 
 `schemas/constructs/v1beta3/event` is the wire contract for a recorded event
-(`event_trackers`) and for listing those events. `organizationId` says which
-organization an event belongs to. `getEvents` `scope` says whose events a
-caller is allowed to list.
+(`event_trackers`), listing those events, and marking the caller's events as
+read. `organizationId` says which organization an event belongs to. `getEvents`
+`scope` says whose events a caller is allowed to list.
 
 ## `organizationId`
 
@@ -28,6 +28,19 @@ carries a read-only `organizationId`, so an organization-scope listing shows
 which organization each row belongs to. It is optional there because the list
 is a projection; the server fills it for every row.
 
+The same page item carries, as optional properties, the row fields Layer5
+Cloud's `getEvents` serves on every row: `id`, `actedUpon`, `operationId`,
+`severity`, `status`, `metadata` (the same nullable free-form object as
+`Event.metadata`. On an error event, `metadata.error` is an EventError when
+present, except that a design validation event whose operation did not
+complete (`status` `error`) carries it as a DesignEventOperationError. Rows
+recorded before EventError carry MeshKit's Go field names instead (`Code`,
+`Severity` as a number, `ShortDescription`, `LongDescription`,
+`ProbableCause` and `SuggestedRemediation` as lists); readers fall back to
+those keys when `code` is absent and treat their flat lists as unpaired),
+`updatedAt` and `deletedAt`. They are not required, so a row recorded
+without them still validates. (#1353)
+
 ## `getEvents` scope
 
 `GET /api/events/list` (`getEvents`) takes the `eventsScope` query parameter
@@ -40,3 +53,14 @@ is a projection; the server fills it for every row.
 
 The `403` uses `MeshkitError403`, the same response `getEventsAggregate`
 uses. Omitting `scope` is `user`.
+
+## Mark all events as read
+
+`POST /api/events/mark-all-read` (`markAllEventsRead`) marks every unread event
+owned by the authenticated caller as read. The server derives the caller from
+the authenticated session; the operation accepts neither a request body nor a
+user ID parameter. System-owned events are unchanged.
+
+The operation returns `200`, `400`, `401`, `429`, or `500`. Its `200` body is a
+closed `MarkAllEventsReadResponse` object whose required `message` property is
+a human-readable status string.
