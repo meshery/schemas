@@ -39,6 +39,7 @@ test("Meshery bundle excludes the five unsupported Cloud event mutations", async
   const spec = await eventBundle("meshery");
   const exposed = mutations.filter(([, route, method]) => spec.paths[route]?.[method]);
   assert.deepEqual(exposed.map(([name]) => name), []);
+  assert.equal(spec.paths["/api/events/mark-all-read"]?.post?.operationId, "markAllEventsRead");
 });
 
 test("Cloud bundle retains event mutation request and response contracts", async () => {
@@ -55,7 +56,9 @@ for (const target of ["cloud", "meshery"]) {
   test(`complete ${target} bundle does not reintroduce mutations from older event versions`, () => {
     // make test-rtk produces the full provider bundles before running this file.
     const yaml = require("js-yaml");
-    const spec = yaml.load(fs.readFileSync(path.join(root, "_openapi_build", `${target}_openapi.yml`), "utf8"));
+    const bundlePath = path.join(root, "_openapi_build", `${target}_openapi.yml`);
+    assert.ok(fs.existsSync(bundlePath), `run 'make bundle-openapi' first, missing ${bundlePath}`);
+    const spec = yaml.load(fs.readFileSync(bundlePath, "utf8"));
     const names = new Set(mutations.map(([name]) => name));
     const exposed = Object.values(spec.paths).flatMap((item) =>
       Object.values(item)
