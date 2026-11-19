@@ -1730,14 +1730,17 @@ components:
           type: array
           items:
             type: object
+            description: Free-form key-value map entry for model-by-count aggregates.
             additionalProperties: true
           description: Model-by-count aggregates for the catalog page.
         categoryCount:
           type: array
           items:
             type: object
+            description: Free-form key-value map entry for category-by-count aggregates.
             additionalProperties: true
           description: Category-by-count aggregates for the catalog page.
+
 
     CatalogContentType:
       type: string
@@ -1924,8 +1927,10 @@ components:
           type: array
           items:
             type: object
+            description: Free-form key-value map entry representing a user access actor.
             additionalProperties: true
           description: The users of the resourceaccessactorsresponse.
+
 
     ContentSharePayload:
       type: object
