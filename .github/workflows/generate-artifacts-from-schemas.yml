@@ -20,9 +20,13 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build-artifacts:
-    # Skip auto-commits made by the release flow (publish-schemas.yml + publish-npm-package.yml)
-    # so generate-artifacts does not loop on its own commits or on release-driven schema bumps.
-    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.author.email != 'ci@meshery.io'
+    # Skip auto-commits made by this workflow and the release flow
+    # (publish-schemas.yml + publish-npm-package.yml) so generate-artifacts does
+    # not loop on its own commits or on release-driven version bumps. Those
+    # commits set ci@meshery.io as the COMMITTER (commit_user_email); their
+    # author is the triggering actor (commit_author), so the guard must test
+    # the committer, not the author.
+    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.committer.email != 'ci@meshery.io'
     runs-on: ubuntu-24.04
     permissions:
       contents: write

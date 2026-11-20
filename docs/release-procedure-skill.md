@@ -187,6 +187,8 @@ gh workflow run notify-dependents.yml -f release_version=<TAG>
 gh workflow run publish-openapi-docs.yml
 ```
 
+The rejected commit-back also leaves `package.json` and `package-lock.json` on `master` at the previous version. Do not push that bump to `master` by hand. Every publish sets the version from the release tag (`npm version <TAG> --allow-same-version`) before it builds, so the stale value affects no published artifact, and the next release's commit-back brings `master` forward.
+
 Contact the team if the error is not obvious.
 
 ## References
