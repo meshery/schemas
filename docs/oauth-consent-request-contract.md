@@ -107,7 +107,8 @@ app as a host. The server classifies each registered redirect URI by its scheme
 into exactly one list:
 
 - **`redirectHosts`** lists the network host of each `https` redirect URI and
-  of each loopback `http` redirect URI: a DNS hostname of at least two labels
+  of each loopback `http` redirect URI (a loopback IP literal or, for an
+  operator-managed client only, the exact host `localhost`): a DNS hostname of at least two labels
   whose last label starts with a letter (`app.example.com`,
   `1password.example.com`), a dotted-decimal IPv4 literal (`127.0.0.1`) or a
   bracketed hexadecimal IPv6 literal (`[::1]`). Loopback hosts appear as

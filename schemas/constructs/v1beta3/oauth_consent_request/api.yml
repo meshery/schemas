@@ -312,13 +312,15 @@ components:
             decision: the host of each https redirect URI (for example
             `app.example.com`) and of each loopback redirect URI (`127.0.0.1`
             or `[::1]`), without duplicates. Only redirect URIs whose scheme
-            is `https`, or `http` on a loopback IP literal, are listed here,
-            and a private-use app redirect is listed in `appSchemes`
-            instead. The `localhost` hostname is never registered through
-            dynamic registration (RFC 8252 section 8.3); the single entry
-            `localhost` appears only for an operator-managed client that the
-            operator registered with an `http://localhost` redirect, because
-            some official desktop hosts use a fixed localhost callback. Lowercase ASCII, with no scheme, port or path; an
+            is `https`, or `http` on a loopback IP literal or (operator-managed
+            clients only) the exact host `localhost`, are listed here, and a
+            private-use app redirect is listed in `appSchemes` instead. The
+            `localhost` hostname is never registered through dynamic
+            registration (RFC 8252 section 8.3); the single entry `localhost`
+            appears only for an operator-managed client that the operator
+            registered with an `http://localhost` redirect, because some
+            official desktop hosts use a fixed localhost callback.
+            Lowercase ASCII, with no scheme, port or path; an
             internationalized hostname is sent in IDNA A-label (punycode)
             form. Empty when the client registered only app redirects;
             `redirectHosts` and `appSchemes` are never both empty.
