@@ -36,6 +36,10 @@ export const DestinationConnectionKinds = {
   bluesky: "bluesky",
   github: "github",
   blog: "blog",
+  youtube: "youtube",
+  tiktok: "tiktok",
+  instagram: "instagram",
+  facebook: "facebook",
 } as const;
 
 export type DestinationConnectionKind =

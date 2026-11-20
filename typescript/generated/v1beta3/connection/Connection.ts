@@ -668,7 +668,7 @@ export interface components {
          * @description A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
          * @enum {string}
          */
-        DestinationKind: "linkedin" | "x" | "reddit" | "hn" | "slack" | "bluesky" | "github" | "blog";
+        DestinationKind: "linkedin" | "x" | "reddit" | "hn" | "slack" | "bluesky" | "github" | "blog" | "youtube" | "tiktok" | "instagram" | "facebook";
         /** @description A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model. */
         ConnectionDefinition: unknown;
         /** @description Represents a page of connection definitions with meta information about the total count */
