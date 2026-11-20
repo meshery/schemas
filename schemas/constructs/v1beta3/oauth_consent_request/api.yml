@@ -392,7 +392,7 @@ components:
             dynamically registered client, whose self-asserted logo is not
             shown. Omitted when there is none.
           maxLength: 2048
-          pattern: '^https://'
+          pattern: '^https://[^\s/?#@]+(?:[/?#]\S*)?$'
           x-order: 6
     OauthConsentDecisionPayload:
       type: object

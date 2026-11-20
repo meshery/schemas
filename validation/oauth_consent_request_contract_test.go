@@ -252,6 +252,10 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 		{"https logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://cdn.example.com/logo.png" }), false},
 		{"http logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "http://cdn.example.com/logo.png" }), true},
 		{"javascript logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "javascript:alert(1)" }), true},
+		{"logoUri without a host", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://" }), true},
+		{"logoUri with a space", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = `https://cdn.example.com/a" onerror="x` }), true},
+		{"logoUri with userinfo", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://user@cdn.example.com/logo.png" }), true},
+		{"logoUri with a port and query", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://cdn.example.com:8443/logo.png?v=2" }), false},
 		{"data logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "data:image/png;base64,AAAA" }), true},
 		{"over-long logoUri", consentRequest, request(func(b map[string]any) {
 			client0(b)["logoUri"] = "https://cdn.example.com/" + strings.Repeat("a", 2048)
