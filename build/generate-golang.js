@@ -798,6 +798,25 @@ function addCompatibilityParameterAliases(filePath, inputPath) {
     return;
   }
 
+  // A component schema whose name ends in a parameter's exported name (for
+  // example `DesktopInstallationId` next to the `installationId` parameter) is
+  // a real model type, not a parameter alias. Rewriting it deletes the type, so
+  // a schema type that other generated code references must be left alone.
+  const schemaTypeNames = new Set(
+    Object.keys(document.components?.schemas || {}).map((name) => exportGoIdentifier(name)),
+  );
+
+  function isReferencedSchemaType(typeName) {
+    if (!schemaTypeNames.has(typeName)) {
+      return false;
+    }
+    const usage = new RegExp(`\\b${typeName}\\b`);
+    return content
+      .split("\n")
+      .map((line) => line.trim())
+      .some((line) => !line.startsWith("//") && !line.startsWith(`type ${typeName} =`) && usage.test(line));
+  }
+
   let content = fs.readFileSync(filePath, "utf-8");
 
   function extractTypeQualifier(typeExpression) {
@@ -827,9 +846,11 @@ function addCompatibilityParameterAliases(filePath, inputPath) {
 
   for (const parameterName of parameterNames) {
     const exportedName = exportGoIdentifier(parameterName);
-    const aliasPattern = new RegExp(`(^// .*\\n)?^type (\\w+${exportedName}) = (.+)$`, "m");
-    const aliasMatch = content.match(aliasPattern);
-    if (!aliasMatch || aliasMatch[2] === exportedName) {
+    const aliasPattern = new RegExp(`(^// .*\\n)?^type (\\w+${exportedName}) = (.+)$`, "gm");
+    const aliasMatch = [...content.matchAll(aliasPattern)].find(
+      (match) => match[2] !== exportedName && !isReferencedSchemaType(match[2]),
+    );
+    if (!aliasMatch) {
       continue;
     }
 
@@ -860,7 +881,7 @@ function addCompatibilityParameterAliases(filePath, inputPath) {
       continue;
     }
 
-    content = content.replace(aliasPattern, directAlias);
+    content = content.replace(aliasMatch[0], directAlias);
   }
 
   fs.writeFileSync(filePath, content, "utf-8");
@@ -1630,6 +1651,7 @@ async function main() {
 }
 
 module.exports = {
+  addCompatibilityParameterAliases,
   addYamlTags,
   buildImportMappings,
   collectRefs,
