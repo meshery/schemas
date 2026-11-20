@@ -78,7 +78,7 @@ cannot hide unchecked operations; only a spec that loads and carries
 `validation/rules_mcp_test.go` (each failure case and the passing case) and
 `validation/mcp_operation_contract_test.go` (the real tree).
 
-## The six operations that carry it
+## The seven operations that carry it
 
 | `operationId` | Version | Route | Scope |
 | --- | --- | --- | --- |
@@ -88,6 +88,10 @@ cannot hide unchecked operations; only a spec that loads and carries
 | `getEvents` | v1beta3/event | `GET /api/events/list` | `events:read` |
 | `getUser` | v1beta2/user | `GET /api/identity/users/profile` | `account:read` |
 | `getFeaturesByOrganization` | v1beta1/feature | `GET /api/entitlement/subscriptions/organizations/{orgId}/features` | `account:read` |
+| `getPlatformSessions` | v1beta3/connection | `GET /api/integrations/platform-sessions` | `connections:read` |
+
+`getPlatformSessions` answers "where is this social account signed in?"; its
+contract is [platform-session-contract.md](platform-session-contract.md).
 
 `getUser` is the account profile read. Its published `operationId` is
 `getUser`, and renaming a published operation changes generated client names,
@@ -156,7 +160,7 @@ compared. Both operation descriptions reference this section and declare the
 `400` and the `403`.
 
 A UUID-constrained parameter that is not a UUID answers `400` on every hosted
-read: `X-Current-Orgid` on all six, `threadId` on `listContentItems`. Each
+read: `X-Current-Orgid` on all seven, `threadId` on `listContentItems`. Each
 hosted read declares the `400`, as does `getRequest` for `requestId`.
 
 This rule covers the operations that declare `X-Current-Orgid`. An operation

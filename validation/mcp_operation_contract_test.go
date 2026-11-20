@@ -28,6 +28,7 @@ var hostedMcpReads = map[string]string{
 	"getEvents":                 "events:read",
 	"getUser":                   "account:read",
 	"getFeaturesByOrganization": "account:read",
+	"getPlatformSessions":       "connections:read",
 }
 
 type permissionRow struct {
@@ -670,7 +671,7 @@ func TestOperationsWithUuidParametersDeclare400(t *testing.T) {
 	want := map[string]bool{
 		"listContentItems": true, "getContentItem": true, "getConnections": true,
 		"getEvents": true, "getUser": true, "getFeaturesByOrganization": true,
-		"getRequest": true,
+		"getRequest": true, "getPlatformSessions": true,
 	}
 	seen := map[string]bool{}
 	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
