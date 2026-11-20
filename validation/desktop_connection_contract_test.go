@@ -92,10 +92,20 @@ func TestClientHandshakeContract(t *testing.T) {
 		}
 	}
 	session := mustLookup(t, schemas, "ProviderSession", "properties")
-	for _, name := range []string{"userId", "providerRoles", "organizationRoles", "plan", "entitlements", "deviceUsage"} {
+	for _, name := range []string{"userId", "providerRoles", "organizationRoles", "plan", "entitlements", "deviceUsage", "permissionKeys"} {
 		if _, ok := mappingValue(session, name); !ok {
 			t.Errorf("ProviderSession must define %q", name)
 		}
+	}
+	permKeys := mustLookup(t, session, "permissionKeys")
+	if v, _ := mappingValue(permKeys, "type"); v != "array" {
+		t.Errorf("permissionKeys type = %v, want array", v)
+	}
+	if v, _ := mappingValue(permKeys, "uniqueItems"); v != true {
+		t.Errorf("permissionKeys uniqueItems = %v, want true", v)
+	}
+	if _, ok := mappingValue(permKeys, "maxItems"); !ok {
+		t.Error("permissionKeys must define bounded maxItems")
 	}
 	if _, ok := mappingValue(mustLookup(t, schemas, "ProviderDeviceUsage", "properties"), "overLimit"); !ok {
 		t.Error("ProviderDeviceUsage must define overLimit")
