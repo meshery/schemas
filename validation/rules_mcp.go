@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"unicode/utf8"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"gopkg.in/yaml.v3"
@@ -243,7 +244,7 @@ func lintMcpOperations(filePath string, doc *openapi3.T, scopes map[string]bool)
 				switch {
 				case !isString || s == "":
 					fail("description must be a non-empty string when present")
-				case len(s) > mcpDescriptionMaxLength:
+				case utf8.RuneCountInString(s) > mcpDescriptionMaxLength:
 					fail("description must be at most %d characters", mcpDescriptionMaxLength)
 				case method == "get" && !strings.HasPrefix(s, mcpDescriptionPrefix):
 					fail("GET description must start with %q", mcpDescriptionPrefix)
