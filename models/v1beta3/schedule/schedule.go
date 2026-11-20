@@ -411,6 +411,9 @@ type ScheduleTimezone = string
 // `private` restricts it to the schedule owner.
 type ScheduleVisibility string
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // IdempotencyKey defines model for idempotencyKey.
 type IdempotencyKey = string
 

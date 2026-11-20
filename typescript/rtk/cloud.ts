@@ -2180,6 +2180,9 @@ const injectedRtkApi = api
       listSchedules: build.query<ListSchedulesApiResponse, ListSchedulesApiArg>({
         query: (queryArg) => ({
           url: `/api/schedules`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -2203,7 +2206,12 @@ const injectedRtkApi = api
         invalidatesTags: ["Schedule_schedules"],
       }),
       getScheduleById: build.query<GetScheduleByIdApiResponse, GetScheduleByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}` }),
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["Schedule_schedules"],
       }),
       updateSchedule: build.mutation<UpdateScheduleApiResponse, UpdateScheduleApiArg>({
@@ -21254,6 +21262,8 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
   }[];
 };
 export type ListSchedulesApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
   /** Get responses by page */
   page?: number;
   /** Number of items per page. */
@@ -21655,6 +21665,8 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
 export type GetScheduleByIdApiArg = {
   /** Schedule ID */
   scheduleId: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
 };
 export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */

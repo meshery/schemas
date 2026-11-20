@@ -15,7 +15,9 @@ export interface paths {
          * List schedules
          * @description Returns a paginated list of the schedules in the organization of the
          *     authenticated session, optionally filtered by workspace or status. Each
-         *     schedule carries its live claim, when one is held.
+         *     schedule carries its live claim, when one is held. The live claim names
+         *     the connection (typically a desktop app install) that is currently
+         *     running the schedule.
          */
         get: operations["listSchedules"];
         put?: never;
@@ -1087,6 +1089,8 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        currentOrgId: string;
         /** @description Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
         idempotencyKey: string;
         /** @description Entity tag of the schedule as last read, from the `ETag` header of getScheduleById, createSchedule or updateSchedule. When present the write applies only if it still matches; otherwise 412. */
@@ -1133,7 +1137,10 @@ export interface operations {
                 /** @description Only schedules in this status. */
                 status?: "pending" | "scheduled" | "assigned" | "claimed" | "running" | "retrying" | "completed" | "failed" | "cancelled";
             };
-            header?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                "X-Current-Orgid"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1938,7 +1945,10 @@ export interface operations {
     getScheduleById: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                "X-Current-Orgid"?: string;
+            };
             path: {
                 /** @description Schedule ID */
                 scheduleId: string;
@@ -2198,6 +2208,15 @@ export interface operations {
                          */
                         visibility: "public" | "org" | "private";
                     };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */

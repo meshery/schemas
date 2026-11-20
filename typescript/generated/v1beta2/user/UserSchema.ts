@@ -1791,7 +1791,8 @@ const UserSchema: Record<string, unknown> = {
         "x-mcp": {
           "expose": true,
           "title": "Get the current user profile",
-          "scope": "account:read"
+          "scope": "account:read",
+          "description": "Read-only. Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400."
         },
         "summary": "Get current user profile",
         "description": "Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400.\n",

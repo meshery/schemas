@@ -41,8 +41,26 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "List schedules",
         "operationId": "listSchedules",
-        "description": "Returns a paginated list of the schedules in the organization of the\nauthenticated session, optionally filtered by workspace or status. Each\nschedule carries its live claim, when one is held.\n",
+        "x-mcp": {
+          "expose": true,
+          "title": "List schedules",
+          "scope": "schedule:read",
+          "description": "Read-only. Returns a paginated list of the schedules in the organization of the authenticated session, optionally filtered by workspace or status. If a worker currently holds a schedule, that entry includes the live claim, which names the connection (typically a desktop app install) that is running it."
+        },
+        "description": "Returns a paginated list of the schedules in the organization of the\nauthenticated session, optionally filtered by workspace or status. Each\nschedule carries its live claim, when one is held. The live claim names\nthe connection (typically a desktop app install) that is currently\nrunning the schedule.\n",
         "parameters": [
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          },
           {
             "name": "page",
             "in": "query",
@@ -1919,6 +1937,12 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Get a schedule by ID",
         "operationId": "getScheduleById",
+        "x-mcp": {
+          "expose": true,
+          "title": "Get a schedule by ID",
+          "scope": "schedule:read",
+          "description": "Read-only. Returns the schedule in the organization of the authenticated session. If a worker currently holds it, the result includes the live claim, which names the connection (typically a desktop app install) that is running it."
+        },
         "description": "Returns the schedule with its live claim, when one is held, and its\nentity tag in the `ETag` header.\n",
         "parameters": [
           {
@@ -1934,6 +1958,18 @@ const ScheduleSchema: Record<string, unknown> = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               }
+            }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             }
           }
         ],
@@ -2583,6 +2619,16 @@ const ScheduleSchema: Record<string, unknown> = {
                       ]
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -6022,6 +6068,18 @@ const ScheduleSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "currentOrgId": {
+        "name": "X-Current-Orgid",
+        "in": "header",
+        "required": false,
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+        "schema": {
+          "type": "string",
+          "minLength": 36,
+          "maxLength": 36,
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
       "idempotencyKey": {
         "name": "Idempotency-Key",
         "in": "header",

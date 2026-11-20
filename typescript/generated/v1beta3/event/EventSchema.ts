@@ -2467,7 +2467,8 @@ const EventSchema: Record<string, unknown> = {
         "x-mcp": {
           "expose": true,
           "title": "Get events",
-          "scope": "events:read"
+          "scope": "events:read",
+          "description": "Read-only. Returns a page of events. An `X-Current-Orgid` that is not a UUID answers 400."
         },
         "summary": "Get events list",
         "description": "Returns a page of events. An `X-Current-Orgid` that is not a UUID answers 400.\n",

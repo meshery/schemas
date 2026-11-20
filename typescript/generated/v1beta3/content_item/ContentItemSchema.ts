@@ -44,7 +44,8 @@ const ContentItemSchema: Record<string, unknown> = {
         "x-mcp": {
           "expose": true,
           "title": "List content items",
-          "scope": "content:read"
+          "scope": "content:read",
+          "description": "Read-only. Returns a paginated list of the live content items in the organization of the authenticated session, ordered by `rowNumber` unless `order` names another column (`rowNumber`, `createdAt`, `updatedAt`). `search` matches the profile or the content values, case-insensitively. `threadId` returns one whole thread: the root item it names and every live item whose `threadId` names it, ordered by `threadIndex` (the root first) unless `order` names another column. A `threadId` or `X-Current-Orgid` that is not a UUID answers 400."
         },
         "description": "Returns a paginated list of the live content items in the\norganization of the authenticated session, ordered by `rowNumber`\nunless `order` names another column (`rowNumber`, `createdAt`,\n`updatedAt`). `search` matches the profile or the content values,\ncase-insensitively. `threadId` returns one whole thread: the root\nitem it names and every live item whose `threadId` names it,\nordered by `threadIndex` (the root first) unless `order` names\nanother column. A `threadId` or `X-Current-Orgid` that is not a\nUUID answers 400.\n",
         "parameters": [
@@ -1467,7 +1468,8 @@ const ContentItemSchema: Record<string, unknown> = {
         "x-mcp": {
           "expose": true,
           "title": "Get a content item",
-          "scope": "content:read"
+          "scope": "content:read",
+          "description": "Read-only. Returns the content item with the given ID in the organization of the authenticated session. An `X-Current-Orgid` that is not a UUID answers 400."
         },
         "parameters": [
           {
