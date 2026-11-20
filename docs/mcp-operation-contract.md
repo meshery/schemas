@@ -93,7 +93,7 @@ cannot hide unchecked operations; only a spec that loads and carries
 `validation/rules_mcp_test.go` (each failure case and the passing case) and
 `validation/mcp_operation_contract_test.go` (the real tree).
 
-## The eight operations that carry it
+## The nine operations that carry it
 
 | `operationId` | Version | Route | Scope |
 | --- | --- | --- | --- |
@@ -105,6 +105,10 @@ cannot hide unchecked operations; only a spec that loads and carries
 | `getScheduleById` | v1beta3/schedule | `GET /api/schedules/{scheduleId}` | `schedule:read` |
 | `getUser` | v1beta2/user | `GET /api/identity/users/profile` | `account:read` |
 | `getFeaturesByOrganization` | v1beta1/feature | `GET /api/entitlement/subscriptions/organizations/{orgId}/features` | `account:read` |
+| `getPlatformSessions` | v1beta3/connection | `GET /api/integrations/platform-sessions` | `connections:read` |
+
+`getPlatformSessions` answers "where is this social account signed in?"; its
+contract is [platform-session-contract.md](platform-session-contract.md).
 
 `getUser` is the account profile read. Its published `operationId` is
 `getUser`, and renaming a published operation changes generated client names,

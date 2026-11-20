@@ -30,6 +30,7 @@ var hostedMcpReads = map[string]string{
 	"getScheduleById":           "schedule:read",
 	"getUser":                   "account:read",
 	"getFeaturesByOrganization": "account:read",
+	"getPlatformSessions":       "connections:read",
 }
 
 type permissionRow struct {
@@ -100,9 +101,9 @@ func readScopeFile(t *testing.T, root string) scopeFile {
 	return sf
 }
 
-// Only the eight hosted reads carry x-mcp, every one exposed with its scope,
+// Only the hosted reads carry x-mcp, every one exposed with its scope,
 // and the real tree passes Rule 48.
-func TestHostedMcpOperationsAreExactlyTheEightReads(t *testing.T) {
+func TestHostedMcpOperationsAreExactlyTheHostedReads(t *testing.T) {
 	root := repoRootDir(t)
 	got := map[string]string{}
 	var violations []Violation
@@ -662,7 +663,7 @@ func anyStrings(v any) []string {
 
 // Every operation that takes a UUID-constrained parameter declares the 400
 // that a malformed UUID answers (core responses/400: "Invalid request body
-// or request param"). The six hosted reads take X-Current-Orgid
+// or request param"). The hosted reads take X-Current-Orgid
 // (listContentItems also takes threadId), and getRequest also takes
 // requestId; listRequests, approveRequest and denyRequest already declared
 // it. A missing 400 leaves clients without a documented answer for invalid
@@ -672,7 +673,7 @@ func TestOperationsWithUuidParametersDeclare400(t *testing.T) {
 	want := map[string]bool{
 		"listContentItems": true, "getContentItem": true, "getConnections": true,
 		"getEvents": true, "getUser": true, "getFeaturesByOrganization": true,
-		"getRequest": true,
+		"getRequest": true, "getPlatformSessions": true,
 	}
 	seen := map[string]bool{}
 	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
