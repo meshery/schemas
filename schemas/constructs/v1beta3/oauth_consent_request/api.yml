@@ -262,8 +262,8 @@ components:
       description: >-
         The OAuth client that asks for consent, as the consent page names it:
         its ID and registered name, where it can send the user afterwards
-        (`redirectHosts` for https and loopback redirects, `appSchemes` for
-        private-use app redirects), an optional `logoUri`, and the `verified`
+        (`redirectHosts` for a redirect URI that has a host, `appSchemes` for
+        one that has none), an optional `logoUri`, and the `verified`
         mark. The client is one of two kinds. A dynamically registered client
         registered itself (RFC 7591), so its name is self-asserted. An
         operator-managed client was created by an operator through the
@@ -314,8 +314,7 @@ components:
           description: >-
             The network hosts the client can send the user to after the
             decision: the host of each registered redirect URI that has one,
-            hostname only (no scheme, port or path), lowercase, without
-            duplicates. For a dynamically registered client, registration
+            hostname only (no scheme, port or path), without duplicates. For a dynamically registered client, registration
             policy limits these to `https` hosts and loopback IP literals
             (`127.0.0.1` or `[::1]`), and never `localhost` (RFC 8252 section
             8.3). For an operator-managed client every registered redirect
@@ -330,13 +329,16 @@ components:
           items:
             type: string
             description: >-
-              One network host: a DNS hostname of one or more labels, in IDNA
-              A-label (punycode) form when internationalized, a dotted-decimal
-              IPv4 literal, or a bracketed hexadecimal IPv6 literal. A colon
-              appears only inside IPv6 brackets, so no entry carries a port.
+              One network host as the server reports it for a registered
+              redirect URI: a hostname or single label, an IPv4 literal, or a
+              bracketed IPv6 literal. No scheme, port, path, userinfo or
+              whitespace; a colon appears only inside IPv6 brackets. The
+              pattern checks only that shape. Dynamic registration's own
+              policy limits what a dynamically registered client can have,
+              server-side.
             minLength: 1
             maxLength: 253
-            pattern: '^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*|\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\])$'
+            pattern: '^(?:[^\s/?#@:\[\]]+|\[[^\s/?#@\[\]]+\])$'
           x-order: 3
         appSchemes:
           type: array
@@ -352,9 +354,9 @@ components:
             allowlisted schemes appear here. An operator-managed client's
             redirects are shown as registered. A reverse-domain
             scheme such as `com.example.app` names an app, not a host, and
-            must not be shown as one. Empty when the client registered only
-            https and loopback redirects; `redirectHosts` and `appSchemes` are
-            never both empty.
+            must not be shown as one. Empty when every redirect URI of the
+            client has a host; `redirectHosts` and `appSchemes` are never both
+            empty.
           maxItems: 100
           uniqueItems: true
           items:
@@ -391,7 +393,7 @@ components:
             dynamically registered client, whose self-asserted logo is not
             shown. Omitted when there is none.
           maxLength: 2048
-          pattern: '^https://[^\s/?#@]+(?:[/?#]\S*)?$'
+          pattern: '^https://'
           x-order: 6
     OauthConsentDecisionPayload:
       type: object

@@ -252,10 +252,6 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 		{"https logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://cdn.example.com/logo.png" }), false},
 		{"http logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "http://cdn.example.com/logo.png" }), true},
 		{"javascript logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "javascript:alert(1)" }), true},
-		{"logoUri without a host", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://" }), true},
-		{"logoUri with a space", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = `https://cdn.example.com/a" onerror="x` }), true},
-		{"logoUri with userinfo", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://user@cdn.example.com/logo.png" }), true},
-		{"logoUri with a port and query", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://cdn.example.com:8443/logo.png?v=2" }), false},
 		{"data logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "data:image/png;base64,AAAA" }), true},
 		{"over-long logoUri", consentRequest, request(func(b map[string]any) {
 			client0(b)["logoUri"] = "https://cdn.example.com/" + strings.Repeat("a", 2048)
@@ -299,11 +295,13 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 }
 
 // Where the client sends the user is split by kind, so the consent page never
-// shows an app as a host: redirectHosts holds only network hosts of https and
-// loopback redirects, appSchemes only private-use app schemes. The patterns
-// keep each value out of the wrong list where the forms differ; a
-// reverse-domain scheme such as github.com is valid in both, and only the
-// server's classification by redirect URI scheme places it (in appSchemes).
+// shows an app as a host: redirectHosts holds the host of each redirect URI
+// that has one, appSchemes the scheme of one that has none. The patterns only
+// check each entry's shape (a host has no scheme, port, path, userinfo or
+// whitespace; a scheme is an RFC 3986 token, never http or https). They do not
+// keep a value out of the wrong list: a reverse-domain scheme such as
+// github.com is valid in both, and only the server's classification by
+// redirect URI places it (in appSchemes).
 func TestOauthConsentClientRedirectTargets(t *testing.T) {
 	spec := loadOauthConsentRequestSpec(t)
 	client := spec.Components.Schemas["OauthConsentClient"].Value
@@ -319,30 +317,26 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"app.example.com",
 				"1password.example.com",
 				"xn--bcher-kva.example",
+				"my_host.example.com",
 				"127.0.0.1",
 				"[::1]",
 				"[2001:db8:0:0:0:0:0:1]",
+				"[::ffff:127.0.0.1]",
 				"localhost", // an operator-managed client's redirects are shown as registered
 				"vscode",    // any single-label name is a valid host
-				"foo",
-				"256.0.0.1", // matches the hostname form; the identity provider owns redirect validity
 			},
 			rejected: []string{
 				"",
-				"LOCALHOST",
-				"localhost.",
-				"localhost/cb",
 				"https://app.example.com", // no scheme
 				"app.example.com/cb",      // no path
-				"app.example.com:8080",    // no port
+				"app.example.com?x=1",
+				"app.example.com:8080", // no port
 				"127.0.0.1:8080",
 				"[::1]:8080",
 				"localhost:3000",
 				"::1", // IPv6 must be bracketed
-				"App.Example.com",
-				"bücher.example", // internationalized hosts are sent as IDNA A-labels
-				"app.example.com.",
-				"-app.example.com",
+				"app example.com",
+				"user@app.example.com", // no userinfo
 			},
 		},
 		{

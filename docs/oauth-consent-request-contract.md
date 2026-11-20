@@ -113,17 +113,16 @@ of `localhost`): the identity provider's exact-match `redirect_uri` check is the
 only gate.
 
 - **`redirectHosts`** lists the host of each redirect URI that has one, as a
-  hostname only: lowercase, no scheme, port or path. An entry is a DNS hostname
-  of one or more labels (`app.example.com`, `1password.example.com`, and for an
-  operator-managed client a single label such as `localhost`), a
-  dotted-decimal IPv4 literal (`127.0.0.1`) or a bracketed hexadecimal IPv6
-  literal (`[::1]`). An internationalized hostname appears in IDNA A-label
-  (punycode) form (`xn--bcher-kva.example`, never `bücher.example`), so a
-  look-alike Unicode host cannot pass for a familiar one. A colon appears only
-  inside IPv6 brackets, so `app.example.com:8080`, `127.0.0.1:8080` and
-  `[::1]:8080` are rejected. For a dynamically registered client, registration
-  policy allows only `https` hosts and loopback IP literals, and rejects the
-  `localhost` hostname (RFC 8252 section 8.3).
+  hostname only, as the server reports it: no scheme, port, path, userinfo or
+  whitespace. An entry is a hostname or single label (`app.example.com`,
+  `1password.example.com`, `my_host`, and for an operator-managed client
+  `localhost`), an IPv4 literal (`127.0.0.1`) or a bracketed IPv6 literal
+  (`[::1]`, `[::ffff:127.0.0.1]`). A colon appears only inside IPv6 brackets,
+  so `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are rejected.
+  The pattern checks only that shape. For a dynamically registered client,
+  registration policy (enforced server-side) allows only `https` hosts and
+  loopback IP literals, and rejects the `localhost` hostname (RFC 8252 section
+  8.3).
 - **`appSchemes`** lists the scheme of each redirect URI that has no host, in
   lowercase RFC 3986 scheme form with no `:` or `//` (`vscode`,
   `com.example.app`). For a dynamically registered client, Cloud accepts a
