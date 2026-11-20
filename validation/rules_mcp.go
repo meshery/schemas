@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"unicode/utf8"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"gopkg.in/yaml.v3"
@@ -32,11 +33,20 @@ import (
 //   - does not accept the optional `X-Current-Orgid` header, which selects the
 //     organization the call acts in, or
 //   - has a value outside the extension schema (a missing `expose`, an unknown
-//     key such as a hand-written read-only or destructive flag).
+//     key such as a hand-written read-only or destructive flag, or a
+//     `description` that is empty, too long, or, on a GET, does not start with
+//     "Read-only.").
 const (
 	mcpExtension         = "x-mcp"
 	mcpExtensionSchema   = "schemas/extensions/mcp-operation.yaml"
 	mcpOrganizationField = "X-Current-Orgid"
+
+	// mcpDescriptionPrefix opens every GET tool description: today's hosted
+	// tools are reads, and the description says so before anything else.
+	// Write tools may be annotated later; they must not be forced into this
+	// prefix.
+	mcpDescriptionPrefix    = "Read-only."
+	mcpDescriptionMaxLength = 2000
 )
 
 // mcpForbiddenOperationIDs are operations that never become tools.
@@ -229,6 +239,17 @@ func lintMcpOperations(filePath string, doc *openapi3.T, scopes map[string]bool)
 					fail("title must be a non-empty string when present")
 				}
 			}
+			if description, present := value["description"]; present {
+				s, isString := description.(string)
+				switch {
+				case !isString || s == "":
+					fail("description must be a non-empty string when present")
+				case utf8.RuneCountInString(s) > mcpDescriptionMaxLength:
+					fail("description must be at most %d characters", mcpDescriptionMaxLength)
+				case method == "get" && !strings.HasPrefix(s, mcpDescriptionPrefix):
+					fail("GET description must start with %q", mcpDescriptionPrefix)
+				}
+			}
 			scope, hasScope := value["scope"]
 			switch {
 			case !hasScope:
@@ -238,7 +259,7 @@ func lintMcpOperations(filePath string, doc *openapi3.T, scopes map[string]bool)
 			}
 			for key := range value {
 				switch key {
-				case "expose", "title", "scope":
+				case "expose", "title", "scope", "description":
 				default:
 					fail("unknown key %q; tool hints derive from the HTTP method and are never written by hand", key)
 				}

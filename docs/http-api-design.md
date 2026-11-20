@@ -447,7 +447,8 @@ not use a separate health endpoint.
 ## Hosted MCP tools, requests and idempotent creates
 
 An operation becomes a tool of the hosted MCP server with the operation-level
-`x-mcp` extension (`expose`, optional `title`, required OAuth `scope`). The tool
+`x-mcp` extension (`expose`, optional `title` and `description`, required OAuth
+`scope`). The tool
 name is the `operationId` and the hints derive from the method, so nothing is
 hand-written. Rule 48 of `make validate-schemas` enforces the contract, and a
 scope is a keychain. Full contract:
