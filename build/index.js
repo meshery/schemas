@@ -15,6 +15,7 @@
  *   golang      - Generate Go structs from OpenAPI specs
  *   rtk         - Generate RTK Query clients
  *   python      - Generate Python client (pilot constructs)
+ *   rust        - Generate Rust models and client (pilot constructs)
  *   types       - Generate TypeScript type definitions
  *   all         - Run full build pipeline (validate → bundle → golang → rtk → types)
  *   help        - Show this help message
@@ -56,6 +57,11 @@ const commands = {
   python: {
     description: "Generate Python client (pilot constructs)",
     script: "generate-python.js",
+    dependsOn: "bundle",
+  },
+  rust: {
+    description: "Generate Rust models and client (pilot constructs)",
+    script: "generate-rust.js",
     dependsOn: "bundle",
   },
   types: {

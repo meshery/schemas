@@ -53,6 +53,10 @@ __pycache__/
 python/generated/build/
 python/generated/dist/
 
+# Rust (cargo build output; rust/ itself, its Cargo.lock and build/rust-gen/Cargo.lock are committed)
+rust/target/
+build/rust-gen/target/
+
 # Generated files
 **/bin
 *.Identifier
