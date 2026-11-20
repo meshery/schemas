@@ -26,6 +26,8 @@ var hostedMcpReads = map[string]string{
 	"getContentItem":            "content:read",
 	"getConnections":            "connections:read",
 	"getEvents":                 "events:read",
+	"listSchedules":             "schedule:read",
+	"getScheduleById":           "schedule:read",
 	"getUser":                   "account:read",
 	"getFeaturesByOrganization": "account:read",
 	"getPlatformSessions":       "connections:read",
@@ -151,7 +153,7 @@ func TestNothingElseIsAnnotated(t *testing.T) {
 		"approveRequest": true, "denyRequest": true, "listRequests": true, "getRequest": true,
 		"updateOrgSchedulePause": true, "patchOrgPreferences": true, "updateOrg": true,
 		"insertContentItem": true, "updateContentItem": true, "createSchedule": true,
-		"listSchedules": true, "getScheduleById": true, "updateSchedule": true,
+		"updateSchedule": true,
 	}
 	seen := map[string]bool{}
 	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
@@ -862,4 +864,58 @@ func stringKeyed(node any) any {
 	}
 
 	return node
+}
+
+// hostedMcpDescriptions pins the MCP tool description of the six tools the
+// live hosted server offers. These are the texts connecting apps read.
+var hostedMcpDescriptions = map[string]string{
+	"listSchedules":    "Read-only. Returns a paginated list of the schedules in the organization of the authenticated session, optionally filtered by workspace or status. If a worker currently holds a schedule, that entry includes the live claim, which names the connection (typically a desktop app install) that is running it.",
+	"getScheduleById":  "Read-only. Returns the schedule in the organization of the authenticated session. If a worker currently holds it, the result includes the live claim, which names the connection (typically a desktop app install) that is running it.",
+	"getConnections":   "Read-only. Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.",
+	"getEvents":        "Read-only. Returns a page of events. An `X-Current-Orgid` that is not a UUID answers 400.",
+	"getContentItem":   "Read-only. Returns the content item with the given ID in the organization of the authenticated session. An `X-Current-Orgid` that is not a UUID answers 400.",
+	"listContentItems": "Read-only. Returns a paginated list of the live content items in the organization of the authenticated session, ordered by `rowNumber` unless `order` names another column (`rowNumber`, `createdAt`, `updatedAt`). `search` matches the profile or the content values, case-insensitively. `threadId` returns one whole thread: the root item it names and every live item whose `threadId` names it, ordered by `threadIndex` (the root first) unless `order` names another column. A `threadId` or `X-Current-Orgid` that is not a UUID answers 400.",
+}
+
+// Every GET x-mcp operation carries a description that starts with
+// "Read-only.", the six live tools carry exactly the pinned text, and none advertises the
+// HTTP-only ETag header.
+func TestHostedMcpDescriptions(t *testing.T) {
+	root := repoRootDir(t)
+	seen := map[string]bool{}
+	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T, loadErr error) {
+		if loadErr != nil {
+			t.Errorf("%s could not be loaded: %v", relPath, loadErr)
+			return
+		}
+		for _, item := range doc.Paths.Map() {
+			for _, method := range httpMethods {
+				op := getOperation(item, method)
+				if op == nil {
+					continue
+				}
+				raw, ok := op.Extensions[mcpExtension]
+				if !ok {
+					continue
+				}
+				value, _ := raw.(map[string]any)
+				desc, _ := value["description"].(string)
+				seen[op.OperationID] = true
+				if method == "get" && !strings.HasPrefix(desc, "Read-only.") {
+					t.Errorf("%s: x-mcp.description must start with \"Read-only.\", got %q", op.OperationID, desc)
+				}
+				if strings.Contains(desc, "ETag") {
+					t.Errorf("%s: x-mcp.description must not mention the HTTP-only ETag header", op.OperationID)
+				}
+				if want, pinned := hostedMcpDescriptions[op.OperationID]; pinned && desc != want {
+					t.Errorf("%s: x-mcp.description = %q, want %q", op.OperationID, desc, want)
+				}
+			}
+		}
+	})
+	for id := range hostedMcpDescriptions {
+		if !seen[id] {
+			t.Errorf("operation %s was not found, so its description was not checked", id)
+		}
+	}
 }

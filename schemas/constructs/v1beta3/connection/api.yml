@@ -24,6 +24,8 @@ paths:
         expose: true
         title: Get connections
         scope: connections:read
+        description: >-
+          Read-only. Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
       summary: Get all connections
       description: >
         Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support.
@@ -588,6 +590,8 @@ paths:
         expose: true
         title: Where accounts are signed in
         scope: connections:read
+        description: >-
+          Read-only. Returns a page of matching social account sessions reported by visible desktop installations in the selected organization, including the computer and session details. Filters never broaden the caller's access. An `X-Current-Orgid` that is not a UUID answers 400.
       summary: Find where a social account is signed in
       description: >
         Answers "where is this social account signed in?": for each desktop
