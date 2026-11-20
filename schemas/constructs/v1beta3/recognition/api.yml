@@ -105,6 +105,7 @@ components:
         badge:
           type: string
           minLength: 1
+          maxLength: 255
           description: Slug of the badge the candidates are being considered for.
         candidates:
           type: array

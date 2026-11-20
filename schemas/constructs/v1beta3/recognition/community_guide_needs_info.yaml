@@ -22,6 +22,7 @@ properties:
     minLength: 1
     maxLength: 255
     description: The recipient's identifier at the provider.
+    x-id-format: external
     x-go-name: ExternalID
     x-order: 2
   givers:
