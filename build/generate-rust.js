@@ -316,6 +316,36 @@ function checkRustPrerequisites(pilotPackages) {
 }
 
 /**
+ * Read the host target triple from `rustc -vV` output (its `host:` line).
+ * The glue binary runs on this machine, so its build target is the host
+ * triple, never whatever CARGO_BUILD_TARGET happens to name.
+ *
+ * @param {string} rustcVerbose - stdout of `rustc -vV`
+ * @returns {string} Host target triple, e.g. "x86_64-unknown-linux-gnu"
+ */
+function parseHostTriple(rustcVerbose) {
+  const match = String(rustcVerbose).match(/^host:\s*(\S+)\s*$/m);
+  if (!match) {
+    throw new Error("`rustc -vV` reported no host triple");
+  }
+  return match[1];
+}
+
+/**
+ * The cargo arguments that build the glue crate for the host it runs on.
+ * `--target` is passed explicitly so an inherited CARGO_BUILD_TARGET
+ * (environment or .cargo/config.toml) naming another target cannot produce
+ * a glue binary the host cannot execute; the CLI flag wins over both.
+ *
+ * @param {string} hostTriple - Host target triple from parseHostTriple
+ * @param {string} manifestPath - Absolute path of build/rust-gen/Cargo.toml
+ * @returns {string[]} cargo build arguments
+ */
+function glueBuildArgs(hostTriple, manifestPath) {
+  return ["build", "--locked", "--target", hostTriple, "--message-format=json", "--manifest-path", manifestPath];
+}
+
+/**
  * Find the glue executable in `cargo build --message-format=json` output.
  * CARGO_BUILD_TARGET (environment or .cargo/config.toml) moves the binary
  * under target/<triple>/debug, so the path is read from Cargo's artifact
@@ -359,9 +389,11 @@ function buildGlue() {
   // --message-format=json (not --quiet) so the binary is located from
   // Cargo's artifact report: an inherited CARGO_BUILD_TARGET moves it under
   // target/<triple>/debug, and assuming target/debug would run a stale
-  // binary or fail outright. The glue runs on this machine, so the host
-  // artifact is the one to take; no --target flag is passed.
-  const { stdout } = run("cargo", ["build", "--locked", "--message-format=json", "--manifest-path", manifestPath], {
+  // binary or fail outright. --target pins the build to the host triple
+  // from `rustc -vV`, so the artifact is one this machine can execute even
+  // when CARGO_BUILD_TARGET names another target.
+  const hostTriple = parseHostTriple(run("rustc", ["-vV"]).stdout);
+  const { stdout } = run("cargo", glueBuildArgs(hostTriple, manifestPath), {
     env: { ...process.env, CARGO_TARGET_DIR: targetDir },
   });
   const glue = findGlueExecutable(stdout);
@@ -553,9 +585,11 @@ module.exports = {
   generatedFileDigests,
   generatedHeader,
   getPilotPackages,
+  glueBuildArgs,
   listFiles,
   lockedVersions,
   missingDependencyLines,
+  parseHostTriple,
   parseToolchainChannel,
   specDigest,
   main,

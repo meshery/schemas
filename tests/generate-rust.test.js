@@ -13,9 +13,11 @@ const {
   generatedFileDigests,
   generatedHeader,
   getPilotPackages,
+  glueBuildArgs,
   listFiles,
   lockedVersions,
   missingDependencyLines,
+  parseHostTriple,
   parseToolchainChannel,
   specDigest,
 } = require("../build/generate-rust");
@@ -48,6 +50,51 @@ test("findGlueExecutable reads the binary path from cargo JSON artifacts", () =>
   assert.equal(findGlueExecutable(""), null);
   assert.equal(findGlueExecutable(artifact("other-crate", ["bin"], "/x/other-crate")), null);
   assert.equal(findGlueExecutable(artifact("meshery-schemas-rust-gen", ["bin"], null)), null);
+});
+
+test("parseHostTriple reads the host line from rustc -vV output", () => {
+  const verbose = [
+    "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "binary: rustc",
+    "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+    "commit-date: 2026-10-13",
+    "host: x86_64-unknown-linux-gnu",
+    "release: 1.99.1",
+    "LLVM version: 23.1.1",
+    "",
+  ].join("\n");
+  assert.equal(parseHostTriple(verbose), "x86_64-unknown-linux-gnu");
+  assert.throws(() => parseHostTriple("rustc 1.99.1\nrelease: 1.99.1\n"), /no host triple/);
+});
+
+test("glueBuildArgs pins the host target whatever CARGO_BUILD_TARGET names", () => {
+  const host = "x86_64-unknown-linux-gnu";
+  const manifest = "/repo/build/rust-gen/Cargo.toml";
+  const expected = [
+    "build",
+    "--locked",
+    "--target",
+    host,
+    "--message-format=json",
+    "--manifest-path",
+    manifest,
+  ];
+  const previous = process.env.CARGO_BUILD_TARGET;
+  try {
+    // A non-host target setting must not move the glue build off the host:
+    // --target on the command line wins over the environment variable.
+    process.env.CARGO_BUILD_TARGET = "aarch64-unknown-linux-gnu";
+    assert.deepEqual(glueBuildArgs(host, manifest), expected);
+    // And with the setting unset, the same host target is selected.
+    delete process.env.CARGO_BUILD_TARGET;
+    assert.deepEqual(glueBuildArgs(host, manifest), expected);
+  } finally {
+    if (previous === undefined) {
+      delete process.env.CARGO_BUILD_TARGET;
+    } else {
+      process.env.CARGO_BUILD_TARGET = previous;
+    }
+  }
 });
 
 test("lockedVersions reads one package's versions from a Cargo.lock", () => {
