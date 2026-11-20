@@ -1664,6 +1664,7 @@ components:
       properties:
         installationId:
           $ref: "#/components/schemas/DesktopInstallationId"
+          x-go-type: string
         reportedAt:
           type: string
           format: date-time
@@ -1686,6 +1687,7 @@ components:
           description: The `desktop` connection of the install.
         installationId:
           $ref: "#/components/schemas/DesktopInstallationId"
+          x-go-type: string
         hostname:
           type: string
           maxLength: 255
