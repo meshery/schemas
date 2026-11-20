@@ -22,11 +22,15 @@ info:
     - An accept grants only what the client requested, never more: the
       scopes in `requestedScopes`, and any audience the client asked the
       identity provider for. The decision body cannot widen or narrow it.
-    - `client.verified` marks trust and never blocks. It is derived only
-      from the client's redirect targets, never from `clientName` or
-      `clientId`: true only when every redirect URI of the client matches one
-      operator-listed known-client entry. An unverified client is shown as
-      unverified and the user may still allow it.
+    - `client.verified` marks trust and never blocks. For a dynamically
+      registered client it is true only when every redirect URI of the client
+      matches one operator-listed known-client entry. For an operator-managed
+      client (pre-registered by an operator through the identity provider's
+      admin API) it is true when the operator set the verified mark in the
+      client's identity-provider metadata, which only the admin API can write:
+      a client can never set or clear it. It is never derived from a
+      self-asserted name or from the client ID. An unverified client is shown
+      as unverified and the user may still allow it.
 
     The server stores nothing of its own for a pending request: it reads the
     request from the identity provider on every call, so a 503 means the
@@ -259,9 +263,19 @@ components:
         The OAuth client that asks for consent, as the consent page names it:
         its ID and registered name, where it can send the user afterwards
         (`redirectHosts` for https and loopback redirects, `appSchemes` for
-        private-use app redirects), and the `verified` mark. `verified` marks
-        trust and never blocks: it is true only when every redirect URI of the
-        client matches one operator-listed known-client entry, and an
+        private-use app redirects), an optional `logoUri`, and the `verified`
+        mark. The client is one of two kinds. A dynamically registered client
+        registered itself (RFC 7591), so its name is self-asserted. An
+        operator-managed client was created by an operator through the
+        identity provider's admin API, never through dynamic registration; it
+        still gets the consent page, is not first-party and is not
+        auto-accepted, and its name and logo are operator-set. `verified`
+        marks trust and never blocks: for a dynamically registered client it
+        is true only when every redirect URI matches one operator-listed
+        known-client entry; for an operator-managed client it is true when the
+        operator set the verified mark in the client's identity-provider
+        metadata (admin-only; a client can never set or clear it). It is never
+        derived from a self-asserted name or from the client ID, and an
         unverified client may still be allowed. The server classifies each
         registered redirect URI by its scheme into exactly one of the two
         lists, and at least one of them is non-empty.
@@ -286,7 +300,9 @@ components:
           type: string
           description: >-
             Display name the client registered. Empty when it registered
-            none. Self-asserted by the client; only `verified` marks trust.
+            none. Self-asserted by a dynamically registered client; set by
+            the operator for an operator-managed client. Only `verified`
+            marks trust.
           maxLength: 255
           x-order: 2
         redirectHosts:
@@ -296,10 +312,13 @@ components:
             decision: the host of each https redirect URI (for example
             `app.example.com`) and of each loopback redirect URI (`127.0.0.1`
             or `[::1]`), without duplicates. Only redirect URIs whose scheme
-            is `https`, or `http` on a loopback IP literal, are listed here;
-            the `localhost` hostname is never registered (RFC 8252 section
-            8.3), and a private-use app redirect is listed in `appSchemes`
-            instead. Lowercase ASCII, with no scheme, port or path; an
+            is `https`, or `http` on a loopback IP literal, are listed here,
+            and a private-use app redirect is listed in `appSchemes`
+            instead. The `localhost` hostname is never registered through
+            dynamic registration (RFC 8252 section 8.3); the single entry
+            `localhost` appears only for an operator-managed client that the
+            operator registered with an `http://localhost` redirect, because
+            some official desktop hosts use a fixed localhost callback. Lowercase ASCII, with no scheme, port or path; an
             internationalized hostname is sent in IDNA A-label (punycode)
             form. Empty when the client registered only app redirects;
             `redirectHosts` and `appSchemes` are never both empty.
@@ -312,12 +331,14 @@ components:
               last label starts with a letter, in IDNA A-label (punycode)
               form when internationalized, a dotted-decimal IPv4 literal,
               or a bracketed hexadecimal IPv6 literal. A colon appears only
-              inside IPv6 brackets, so no entry carries a port, and a bare
-              single-label name such as `localhost` or an app scheme
-              (`vscode`) is not a host.
+              inside IPv6 brackets, so no entry carries a port. The one
+              single-label entry allowed is the exact lowercase `localhost`,
+              present only for an operator-managed client registered with an
+              `http://localhost` redirect; any other bare single-label name
+              or an app scheme (`vscode`) is not a host.
             minLength: 1
             maxLength: 253
-            pattern: '^(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z](?:[a-z0-9-]*[a-z0-9])?|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\])$'
+            pattern: '^(?:localhost|(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z](?:[a-z0-9-]*[a-z0-9])?|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\])$'
           x-order: 3
         appSchemes:
           type: array
@@ -350,13 +371,27 @@ components:
         verified:
           type: boolean
           description: >-
-            Derived only from the client's redirect targets, never from
-            `clientName` or `clientId`: true only when every redirect URI of
-            the client matches one operator-listed known-client entry (that
-            entry's https hosts or its app schemes). Marks trust and never
-            blocks: a false value is shown as an unverified client, and the
-            user may still allow it.
+            Marks trust and never blocks. For a dynamically registered client
+            it is true only when every redirect URI of the client matches one
+            operator-listed known-client entry (that entry's https hosts or
+            its app schemes). For an operator-managed client it is true when
+            the operator set the verified mark in the client's
+            identity-provider metadata, which only the admin API can write; a
+            client can never set or clear it. It is never derived from a
+            self-asserted name or from the client ID. A false value is shown
+            as an unverified client, and the user may still allow it.
           x-order: 5
+        logoUri:
+          type: string
+          format: uri
+          description: >-
+            An https URL of the client's logo image. Sent only for an
+            operator-managed client whose operator set one; never sent for a
+            dynamically registered client, whose self-asserted logo is not
+            shown. Omitted when there is none.
+          maxLength: 2048
+          pattern: '^https://'
+          x-order: 6
     OauthConsentDecisionPayload:
       type: object
       additionalProperties: false

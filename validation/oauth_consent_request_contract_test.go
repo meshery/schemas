@@ -198,9 +198,9 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 	if got := redirect.Properties["redirectTo"].Value.Format; got != "uri" {
 		t.Errorf("OauthConsentRedirect.redirectTo format = %q, want uri", got)
 	}
-	// verified is the only trust mark: no self-asserted home page or logo, and
-	// no second flag about how the client registered.
-	if got := slices.Sorted(maps.Keys(client.Properties)); !reflect.DeepEqual(got, []string{"appSchemes", "clientId", "clientName", "redirectHosts", "verified"}) {
+	// verified is the only trust mark: no self-asserted home page, no second
+	// flag about how the client registered, and logoUri is optional.
+	if got := slices.Sorted(maps.Keys(client.Properties)); !reflect.DeepEqual(got, []string{"appSchemes", "clientId", "clientName", "logoUri", "redirectHosts", "verified"}) {
 		t.Errorf("OauthConsentClient properties = %v", got)
 	}
 	if got, want := slices.Sorted(slices.Values(client.Required)), []string{"appSchemes", "clientId", "clientName", "redirectHosts", "verified"}; !reflect.DeepEqual(got, want) {
@@ -249,7 +249,18 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 		{"duplicate app schemes", consentRequest, request(func(b map[string]any) { client0(b)["appSchemes"] = []any{"vscode", "vscode"} }), true},
 		{"names an audience", consentRequest, request(func(b map[string]any) { b["requestedAudience"] = []any{"https://api.example.com"} }), true},
 		{"carries a client home page", consentRequest, request(func(b map[string]any) { client0(b)["clientUri"] = "https://github.com" }), true},
-		{"carries a client logo", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://evil.example.com/logo.png" }), true},
+		{"https logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://cdn.example.com/logo.png" }), false},
+		{"http logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "http://cdn.example.com/logo.png" }), true},
+		{"javascript logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "javascript:alert(1)" }), true},
+		{"data logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "data:image/png;base64,AAAA" }), true},
+		{"over-long logoUri", consentRequest, request(func(b map[string]any) {
+			client0(b)["logoUri"] = "https://cdn.example.com/" + strings.Repeat("a", 2048)
+		}), true},
+		{"logoUri at maxLength", consentRequest, request(func(b map[string]any) {
+			client0(b)["logoUri"] = "https://cdn.example.com/" + strings.Repeat("a", 2048-len("https://cdn.example.com/"))
+		}), false},
+		{"localhost redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"localhost"} }), false},
+		{"localhost with a port", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"localhost:8787"} }), true},
 		{"carries dynamicallyRegistered", consentRequest, request(func(b map[string]any) { client0(b)["dynamicallyRegistered"] = true }), true},
 		{"unknown client field", consentRequest, request(func(b map[string]any) { client0(b)["secret"] = "x" }), true},
 		{"redirect", redirect, map[string]any{"redirectTo": "https://cloud.example.com/oauth2/auth?consent_verifier=v"}, false},
@@ -307,12 +318,16 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"127.0.0.1",
 				"[::1]",
 				"[2001:db8:0:0:0:0:0:1]",
+				"localhost", // only an operator-managed client registered with an http://localhost redirect
 			},
 			rejected: []string{
 				"",
-				"vscode",                  // an app scheme is not a host
-				"com-example-app",         // nor is any other single label
-				"localhost",               // loopback redirects use an IP literal (RFC 8252 section 8.3)
+				"vscode",          // an app scheme is not a host
+				"com-example-app", // nor is any other single label
+				"foo",             // only the exact single label localhost is allowed
+				"LOCALHOST",
+				"localhost.",
+				"localhost/cb",
 				"https://app.example.com", // no scheme
 				"app.example.com/cb",      // no path
 				"app.example.com:8080",    // no port

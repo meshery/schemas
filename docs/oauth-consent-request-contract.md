@@ -67,24 +67,40 @@ response of the authentication middleware.
   identity provider) to finish: after an accept it continues the authorization,
   after a reject it returns the user to the client with an `access_denied`
   error.
-- **The verified mark marks trust, never blocks.** `client.verified` is
-  derived only from the client's redirect targets, never from `clientName` or
-  `clientId`: it is true only when every redirect URI of the client matches one
-  operator-listed known-client entry (that entry's https hosts or its app
-  schemes). A client that registers a known client's name, or only some of its
-  redirect targets alongside its own, is not verified. An unverified client is
-  shown as unverified; the user may still allow it. It is the only trust
-  mark. The page is shown only for dynamically registered clients, whose
-  name is self-asserted, so the construct carries no
-  client-chosen home page or logo that could help a client pose as a known
-  brand, and no logo URL the browser would fetch from a host the client chose.
+- **Two kinds of client get the page.** A *dynamically registered* client
+  registered itself (RFC 7591), so its name is self-asserted. An
+  *operator-managed* client is created by an operator through the identity
+  provider's admin API, never through dynamic registration. It is not
+  first-party and is not auto-accepted, so it still gets the consent page; its
+  name (`clientName`) and logo (`logoUri`) are operator-set client metadata.
+  The schema does not carry which kind a client is.
+- **The verified mark marks trust, never blocks.** `client.verified` is never
+  derived from a self-asserted name or from the client ID. For a dynamically
+  registered client it is true only when every redirect URI of the client
+  matches one operator-listed known-client entry (that entry's https hosts or
+  its app schemes); a client that registers a known client's name, or only some
+  of its redirect targets alongside its own, is not verified. For an
+  operator-managed client it is true when the operator set the verified mark in
+  the client's identity-provider metadata. Only the admin API can write that
+  metadata, so a client can never set or clear the mark. An unverified client
+  is shown as unverified; the user may still allow it. It is the only trust
+  mark. Because a dynamically registered client's name and logo are
+  self-asserted, `logoUri` is never sent for one: no logo URL the browser would
+  fetch from a host the client chose, and no client-chosen home page, is
+  carried.
 
 ## The client the page names
 
 `OauthConsentClient` carries what the user needs to recognise the client and
 where it will send them: `clientId` (an identity provider identifier, not a
-UUID), `clientName` (self-asserted, may be empty), `redirectHosts`,
-`appSchemes` and `verified`.
+UUID), `clientName` (may be empty; self-asserted for a dynamically registered
+client, set by the operator for an operator-managed one, and never a trust
+mark), `redirectHosts`, `appSchemes`, `verified` and the optional `logoUri`.
+
+`logoUri` is an `https` URL (at most 2048 characters) of the client's logo
+image. It is sent only for an operator-managed client whose operator set one,
+and omitted otherwise; a dynamically registered client never has one. It is
+optional, so a response without it stays valid.
 
 Where the client can send the user is split by kind, so the page never shows an
 app as a host. The server classifies each registered redirect URI by its scheme
@@ -95,16 +111,20 @@ into exactly one list:
   whose last label starts with a letter (`app.example.com`,
   `1password.example.com`), a dotted-decimal IPv4 literal (`127.0.0.1`) or a
   bracketed hexadecimal IPv6 literal (`[::1]`). Loopback hosts appear as
-  `127.0.0.1` or `[::1]`: Cloud rejects the `localhost` hostname at
-  registration (loopback redirects must use an IP literal, RFC 8252 section
-  8.3), so `localhost` is never registered and never listed. Entries are
+  `127.0.0.1` or `[::1]`: dynamic registration rejects the `localhost`
+  hostname (loopback redirects must use an IP literal, RFC 8252 section 8.3),
+  so a dynamically registered client never has it. The one exception is the
+  exact entry `localhost`, listed only for an operator-managed client that the
+  operator registered with an `http://localhost:<port>/...` redirect, because
+  some official desktop hosts use a fixed localhost callback. Entries are
   lowercase ASCII with no scheme, port or path, and an internationalized
   hostname appears in IDNA A-label (punycode) form (`xn--bcher-kva.example`,
   never `bücher.example`), so a look-alike Unicode host cannot pass for a
   familiar one. A colon appears only inside IPv6 brackets, so
   `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are rejected.
-  A bare single-label name is not a host, so `localhost` and `vscode` are
-  rejected here.
+  Apart from the exact lowercase `localhost`, a bare single-label name is not
+  a host, so `vscode` and `foo` are rejected here, as are `LOCALHOST` and
+  `localhost:8787`.
 - **`appSchemes`** lists the private-use URI scheme (RFC 8252 section 7.1) of
   each app redirect URI, in lowercase RFC 3986 scheme form with no `:` or `//`
   (`vscode`, `com.example.app`). Cloud accepts a private-use scheme at
