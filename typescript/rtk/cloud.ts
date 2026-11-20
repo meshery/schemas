@@ -1042,6 +1042,37 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
+      reportDesktopPlatformSessions: build.mutation<
+        ReportDesktopPlatformSessionsApiResponse,
+        ReportDesktopPlatformSessionsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/desktop/${queryArg.installationId}/platform-sessions`,
+          method: "PUT",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      getPlatformSessions: build.query<GetPlatformSessionsApiResponse, GetPlatformSessionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/platform-sessions`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            platform: queryArg?.platform,
+            handle: queryArg?.handle,
+            state: queryArg?.state,
+            installationId: queryArg?.installationId,
+          },
+        }),
+        providesTags: ["Connection_API_Connections"],
+      }),
       recordConnectionHeartbeat: build.mutation<RecordConnectionHeartbeatApiResponse, RecordConnectionHeartbeatApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections/${queryArg.connectionId}/heartbeat`,
@@ -11656,6 +11687,153 @@ export type DeregisterDesktopConnectionApiArg = {
   /** Organization whose connection for this install is deleted. Absent, or `all`, deletes the install's connections in every organization. A value that is neither an organization id nor `all` is refused with 400. An organization id where the caller has no connection for this install deletes nothing and is 404. Membership is not checked: a non-member with no connection there gets the same 404, so the response does not disclose membership, and a connection the caller still owns in an organization it has left is deleted (204). The schema is a plain string, not `format: uuid` as on `registerConnection`, because `all` is a legal value here.
    */
   "X-Current-Orgid"?: string;
+};
+export type ReportDesktopPlatformSessionsApiResponse = /** status 200 The stored report */ {
+  /** Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+  installationId: string;
+  /** Server time the report was stored. */
+  reportedAt: string;
+  /** Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+  sessions: {
+    /** A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.
+     */
+    platform: string;
+    /** The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+    handle?: string;
+    /** What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+     */
+    state: "signed_in" | "signed_out" | "unknown";
+    /** When the install last checked this sign-in, as the install read it. */
+    lastVerifiedAt: string;
+    /** The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+    blowhornProfile?: string;
+    /** The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+    chromeProfile?: {
+      /** Chrome's profile directory name, for example `Profile 1`. */
+      directory: string;
+      /** The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+      displayName?: string;
+    };
+    /** Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+     */
+    identity?: "ok" | "drift" | "missing" | "unknown";
+    /** The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection. */
+    socialConnectionId?: string;
+  }[];
+};
+export type ReportDesktopPlatformSessionsApiArg = {
+  /** Installation identifier from `metadata.installationId`. */
+  installationId: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
+  body: {
+    /** Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+    sessions: {
+      /** A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.
+       */
+      platform: string;
+      /** The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+      handle?: string;
+      /** What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+       */
+      state: "signed_in" | "signed_out" | "unknown";
+      /** When the install last checked this sign-in, as the install read it. */
+      lastVerifiedAt: string;
+      /** The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+      blowhornProfile?: string;
+      /** The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+      chromeProfile?: {
+        /** Chrome's profile directory name, for example `Profile 1`. */
+        directory: string;
+        /** The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+        displayName?: string;
+      };
+      /** Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+       */
+      identity?: "ok" | "drift" | "missing" | "unknown";
+      /** The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection. */
+      socialConnectionId?: string;
+    }[];
+  };
+};
+export type GetPlatformSessionsApiResponse = /** status 200 Where the matching accounts are signed in */ {
+  /** Matches on this page. */
+  locations: {
+    /** The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here. */
+    desktop: {
+      /** The `desktop` connection of the install. */
+      connectionId: string;
+      /** Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+      installationId: string;
+      hostname?: string;
+      os?: string;
+      /** Connection Status Value */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Server time of the connection's last registration or heartbeat. */
+      lastSeenAt?: string;
+      /** Server time the install's report was stored. */
+      reportedAt?: string;
+    };
+    /** One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.
+     */
+    session: {
+      /** A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.
+       */
+      platform: string;
+      /** The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+      handle?: string;
+      /** What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+       */
+      state: "signed_in" | "signed_out" | "unknown";
+      /** When the install last checked this sign-in, as the install read it. */
+      lastVerifiedAt: string;
+      /** The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+      blowhornProfile?: string;
+      /** The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+      chromeProfile?: {
+        /** Chrome's profile directory name, for example `Profile 1`. */
+        directory: string;
+        /** The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+        displayName?: string;
+      };
+      /** Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+       */
+      identity?: "ok" | "drift" | "missing" | "unknown";
+      /** The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection. */
+      socialConnectionId?: string;
+    };
+  }[];
+  /** Total number of matches on all pages. */
+  totalCount: number;
+  /** Current page number. */
+  page: number;
+  /** Number of elements per page. */
+  pageSize: number;
+};
+export type GetPlatformSessionsApiArg = {
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pageSize?: number;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+  "X-Current-Orgid"?: string;
+  /** Only sessions on this platform, for example `x`, `linkedin` or `reddit`. */
+  platform?: string;
+  /** Only sessions of this account handle, compared case-insensitively and without a leading `@`, for example `blowhorn_ai`.
+   */
+  handle?: string;
+  /** Only sessions in this state, for example `signed_in`. */
+  state?: "signed_in" | "signed_out" | "unknown";
+  /** Only sessions reported by this desktop install. */
+  installationId?: string;
 };
 export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection after the heartbeat */ {
   /** Connection ID */
@@ -24759,6 +24937,9 @@ export const {
   useGetDesktopConnectionsOfOrganizationQuery,
   useLazyGetDesktopConnectionsOfOrganizationQuery,
   useDeregisterDesktopConnectionMutation,
+  useReportDesktopPlatformSessionsMutation,
+  useGetPlatformSessionsQuery,
+  useLazyGetPlatformSessionsQuery,
   useRecordConnectionHeartbeatMutation,
   useGetKubernetesContextQuery,
   useLazyGetKubernetesContextQuery,
