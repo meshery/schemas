@@ -368,6 +368,20 @@ func TestRule48_ValueShape(t *testing.T) {
         description: "Lists things."`
 		requireMcpViolation(t, lintMcpOp(t, op), "description must start with")
 	})
+	t.Run("a write description needs no Read-only prefix", func(t *testing.T) {
+		for _, method := range []string{"post", "put", "patch"} {
+			op := passingMcpOp()
+			op.method = method
+			op.operationID = "operationId: changeThing"
+			op.xmcp = `x-mcp:
+        expose: true
+        scope: content:read
+        description: "Changes a thing."`
+			if vs := lintMcpOp(t, op); len(vs) != 0 {
+				t.Errorf("%s: a write description without the Read-only prefix must pass, got %v", method, vs)
+			}
+		}
+	})
 	t.Run("not an object", func(t *testing.T) {
 		op := passingMcpOp()
 		op.xmcp = `x-mcp: true`
