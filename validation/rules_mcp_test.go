@@ -359,6 +359,7 @@ func TestRule48_ValueShape(t *testing.T) {
         description: ""`
 		requireMcpViolation(t, lintMcpOp(t, op), "description must be a non-empty string")
 	})
+	// passingMcpOp is a GET; a GET description must start with "Read-only."
 	t.Run("description without the Read-only prefix", func(t *testing.T) {
 		op := passingMcpOp()
 		op.xmcp = `x-mcp:

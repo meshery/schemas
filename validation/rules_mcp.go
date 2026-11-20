@@ -33,15 +33,17 @@ import (
 //     organization the call acts in, or
 //   - has a value outside the extension schema (a missing `expose`, an unknown
 //     key such as a hand-written read-only or destructive flag, or a
-//     `description` that is empty, too long or does not start with
+//     `description` that is empty, too long, or, on a GET, does not start with
 //     "Read-only.").
 const (
 	mcpExtension         = "x-mcp"
 	mcpExtensionSchema   = "schemas/extensions/mcp-operation.yaml"
 	mcpOrganizationField = "X-Current-Orgid"
 
-	// mcpDescriptionPrefix opens every tool description: the hosted tools are
-	// reads, and the description says so before anything else.
+	// mcpDescriptionPrefix opens every GET tool description: today's hosted
+	// tools are reads, and the description says so before anything else.
+	// Write tools may be annotated later; they must not be forced into this
+	// prefix.
 	mcpDescriptionPrefix    = "Read-only."
 	mcpDescriptionMaxLength = 2000
 )
@@ -243,8 +245,8 @@ func lintMcpOperations(filePath string, doc *openapi3.T, scopes map[string]bool)
 					fail("description must be a non-empty string when present")
 				case len(s) > mcpDescriptionMaxLength:
 					fail("description must be at most %d characters", mcpDescriptionMaxLength)
-				case !strings.HasPrefix(s, mcpDescriptionPrefix):
-					fail("description must start with %q", mcpDescriptionPrefix)
+				case method == "get" && !strings.HasPrefix(s, mcpDescriptionPrefix):
+					fail("GET description must start with %q", mcpDescriptionPrefix)
 				}
 			}
 			scope, hasScope := value["scope"]

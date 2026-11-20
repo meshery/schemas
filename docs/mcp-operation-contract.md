@@ -62,8 +62,8 @@ server maps only the JSON body into the tool result. A shared OpenAPI
 description may therefore say things that are true of the HTTP API and wrong
 for a tool (`getScheduleById` names the `ETag` header). `x-mcp.description`
 is the MCP-facing text, so the shared description stays accurate for HTTP
-clients. Every MCP description starts with "Read-only." (Rule 48 enforces
-it), and must not advertise an HTTP-only header such as `ETag` unless the tool
+clients. Every GET tool's MCP description starts with "Read-only." (Rule 48
+enforces it), and must not advertise an HTTP-only header such as `ETag` unless the tool
 result actually includes it. Every annotated operation sets one.
 
 ## What the lint enforces (Rule 48)
@@ -81,7 +81,7 @@ An operation with `x-mcp` fails `make validate-schemas` unless:
 6. It accepts the optional `X-Current-Orgid` header (below).
 7. Its value matches the extension schema: `expose` is a boolean, `title` is a
    non-empty string when present, `description` is a non-empty string of at
-   most 2000 characters that starts with "Read-only." when present, and no
+   most 2000 characters that, on a GET, starts with "Read-only." when present, and no
    other key appears.
 
 The rule scans every non-deprecated construct `api.yml` of every version, not
@@ -173,7 +173,7 @@ compared. Both operation descriptions reference this section and declare the
 `400` and the `403`.
 
 A UUID-constrained parameter that is not a UUID answers `400` on every hosted
-read: `X-Current-Orgid` on all six, `threadId` on `listContentItems`. Each
+read: `X-Current-Orgid` on every x-mcp read, `threadId` on `listContentItems`. Each
 hosted read declares the `400`, as does `getRequest` for `requestId`.
 
 This rule covers the operations that declare `X-Current-Orgid`. An operation
