@@ -103,36 +103,35 @@ and omitted otherwise; a dynamically registered client never has one. It is
 optional, so a response without it stays valid.
 
 Where the client can send the user is split by kind, so the page never shows an
-app as a host. The server classifies each registered redirect URI by its scheme
-into exactly one list:
+app as a host. The server puts each registered redirect URI in exactly one list:
+the host of one that has a host in `redirectHosts`, the scheme of one that has
+none in `appSchemes`. For a dynamically registered client the registration
+policy limits what can appear (below). For an operator-managed client every
+registered redirect URI is shown as registered, with no extra constraint (no
+app-scheme screening, no https-only or loopback-only rule, no special handling
+of `localhost`): the identity provider's exact-match `redirect_uri` check is the
+only gate.
 
-- **`redirectHosts`** lists the network host of each `https` redirect URI and
-  of each loopback `http` redirect URI (a loopback IP literal or, for an
-  operator-managed client only, the exact host `localhost`): a DNS hostname of at least two labels
-  whose last label starts with a letter (`app.example.com`,
-  `1password.example.com`), a dotted-decimal IPv4 literal (`127.0.0.1`) or a
-  bracketed hexadecimal IPv6 literal (`[::1]`). Loopback hosts appear as
-  `127.0.0.1` or `[::1]`: dynamic registration rejects the `localhost`
-  hostname (loopback redirects must use an IP literal, RFC 8252 section 8.3),
-  so a dynamically registered client never has it. The one exception is the
-  exact entry `localhost`, listed only for an operator-managed client that the
-  operator registered with an `http://localhost:<port>/...` redirect, because
-  some official desktop hosts use a fixed localhost callback. Entries are
-  lowercase ASCII with no scheme, port or path, and an internationalized
-  hostname appears in IDNA A-label (punycode) form (`xn--bcher-kva.example`,
-  never `bücher.example`), so a look-alike Unicode host cannot pass for a
-  familiar one. A colon appears only inside IPv6 brackets, so
-  `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are rejected.
-  Apart from the exact lowercase `localhost`, a bare single-label name is not
-  a host, so `vscode` and `foo` are rejected here, as are `LOCALHOST` and
-  `localhost:8787`.
-- **`appSchemes`** lists the private-use URI scheme (RFC 8252 section 7.1) of
-  each app redirect URI, in lowercase RFC 3986 scheme form with no `:` or `//`
-  (`vscode`, `com.example.app`). Cloud accepts a private-use scheme at
-  registration only when it is on the server-side app-scheme allowlist, read
-  from configuration (defaults `vscode` and `cursor`), so `appSchemes` only
-  ever holds allowlisted schemes. `http` and `https` are rejected here; their
-  redirects belong in `redirectHosts`.
+- **`redirectHosts`** lists the host of each redirect URI that has one, as a
+  hostname only: lowercase, no scheme, port or path. An entry is a DNS hostname
+  of one or more labels (`app.example.com`, `1password.example.com`, and for an
+  operator-managed client a single label such as `localhost`), a
+  dotted-decimal IPv4 literal (`127.0.0.1`) or a bracketed hexadecimal IPv6
+  literal (`[::1]`). An internationalized hostname appears in IDNA A-label
+  (punycode) form (`xn--bcher-kva.example`, never `bücher.example`), so a
+  look-alike Unicode host cannot pass for a familiar one. A colon appears only
+  inside IPv6 brackets, so `app.example.com:8080`, `127.0.0.1:8080` and
+  `[::1]:8080` are rejected. For a dynamically registered client, registration
+  policy allows only `https` hosts and loopback IP literals, and rejects the
+  `localhost` hostname (RFC 8252 section 8.3).
+- **`appSchemes`** lists the scheme of each redirect URI that has no host, in
+  lowercase RFC 3986 scheme form with no `:` or `//` (`vscode`,
+  `com.example.app`). For a dynamically registered client, Cloud accepts a
+  private-use scheme (RFC 8252 section 7.1) at registration only when it is on
+  the server-side app-scheme allowlist, read from configuration (defaults
+  `vscode` and `cursor`), so `appSchemes` only ever holds allowlisted schemes.
+  `http` and `https` are rejected here; their redirects belong in
+  `redirectHosts`.
 
 Both lists are deduplicated, and either may be empty, but never both: every
 client has at least one redirect URI, and the server guarantees it. The two

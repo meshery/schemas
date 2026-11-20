@@ -322,13 +322,13 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"127.0.0.1",
 				"[::1]",
 				"[2001:db8:0:0:0:0:0:1]",
-				"localhost", // only an operator-managed client registered with an http://localhost redirect
+				"localhost", // an operator-managed client's redirects are shown as registered
+				"vscode",    // any single-label name is a valid host
+				"foo",
+				"256.0.0.1", // matches the hostname form; the identity provider owns redirect validity
 			},
 			rejected: []string{
 				"",
-				"vscode",          // an app scheme is not a host
-				"com-example-app", // nor is any other single label
-				"foo",             // only the exact single label localhost is allowed
 				"LOCALHOST",
 				"localhost.",
 				"localhost/cb",
@@ -338,8 +338,7 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"127.0.0.1:8080",
 				"[::1]:8080",
 				"localhost:3000",
-				"::1",       // IPv6 must be bracketed
-				"256.0.0.1", // not an IPv4 literal, and not a hostname
+				"::1", // IPv6 must be bracketed
 				"App.Example.com",
 				"bücher.example", // internationalized hosts are sent as IDNA A-labels
 				"app.example.com.",
