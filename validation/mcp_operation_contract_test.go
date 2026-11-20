@@ -876,8 +876,8 @@ var hostedMcpDescriptions = map[string]string{
 	"listContentItems": "Read-only. Returns a paginated list of the live content items in the organization of the authenticated session, ordered by `rowNumber` unless `order` names another column (`rowNumber`, `createdAt`, `updatedAt`). `search` matches the profile or the content values, case-insensitively. `threadId` returns one whole thread: the root item it names and every live item whose `threadId` names it, ordered by `threadIndex` (the root first) unless `order` names another column. A `threadId` or `X-Current-Orgid` that is not a UUID answers 400.",
 }
 
-// Every x-mcp operation carries a description that starts with "Read-only.",
-// the six live tools carry exactly the pinned text, and none advertises the
+// Every GET x-mcp operation carries a description that starts with
+// "Read-only.", the six live tools carry exactly the pinned text, and none advertises the
 // HTTP-only ETag header.
 func TestHostedMcpDescriptions(t *testing.T) {
 	root := repoRootDir(t)
@@ -900,7 +900,7 @@ func TestHostedMcpDescriptions(t *testing.T) {
 				value, _ := raw.(map[string]any)
 				desc, _ := value["description"].(string)
 				seen[op.OperationID] = true
-				if !strings.HasPrefix(desc, "Read-only.") {
+				if method == "get" && !strings.HasPrefix(desc, "Read-only.") {
 					t.Errorf("%s: x-mcp.description must start with \"Read-only.\", got %q", op.OperationID, desc)
 				}
 				if strings.Contains(desc, "ETag") {

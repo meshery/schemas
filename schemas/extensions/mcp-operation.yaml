@@ -36,7 +36,7 @@ properties:
       The tool description shown to the connecting app. When present, the hosted
       MCP tool uses it instead of the operation's OpenAPI `description` (or its
       `summary` when there is no description); when absent, the tool falls back
-      to those. It starts with "Read-only." and must not advertise HTTP-only
+      to those. On a GET operation it starts with "Read-only.". It must not advertise HTTP-only
       behavior such as response headers (`ETag`), which MCP clients never see.
     minLength: 1
     maxLength: 2000

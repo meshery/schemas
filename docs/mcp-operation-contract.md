@@ -64,7 +64,7 @@ for a tool (`getScheduleById` names the `ETag` header). `x-mcp.description`
 is the MCP-facing text, so the shared description stays accurate for HTTP
 clients. Every GET tool's MCP description starts with "Read-only." (Rule 48
 enforces it), and must not advertise an HTTP-only header such as `ETag` unless the tool
-result actually includes it. Every annotated operation sets one.
+result actually includes it. Every operation annotated today sets one.
 
 ## What the lint enforces (Rule 48)
 
