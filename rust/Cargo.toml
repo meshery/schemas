@@ -18,7 +18,10 @@
 name = "meshery-schemas"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.97"
+# The floor is the toolchain rust-toolchain.toml pins (1.99.1): CI builds
+# against exactly that release and there is no separate MSRV job, so do not
+# claim an older floor here without adding a build that checks it.
+rust-version = "1.99.1"
 description = "Rust models and a typed client generated from the Meshery schemas OpenAPI constructs."
 license = "Apache-2.0"
 repository = "https://github.com/meshery/schemas"

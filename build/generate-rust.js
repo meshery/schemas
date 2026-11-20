@@ -297,17 +297,13 @@ function checkRustToolchain() {
 function checkRustPrerequisites(pilotPackages) {
   const buildDir = paths.fromRoot(config.paths.buildDir);
   if (!paths.dirExists(buildDir)) {
-    logger.error("_openapi_build/ directory not found.");
-    logger.info("Run 'node build/bundle-openapi.js' first.");
-    process.exit(1);
+    throw new Error("_openapi_build/ directory not found. Run 'node build/bundle-openapi.js' first.");
   }
 
   for (const pkg of pilotPackages) {
     const specPath = paths.fromRoot(config.getBundledOutputPath(pkg));
     if (!paths.fileExists(specPath)) {
-      logger.error(`${config.getBundledOutputPath(pkg)} not found.`);
-      logger.info("Run 'node build/bundle-openapi.js' first.");
-      process.exit(1);
+      throw new Error(`${config.getBundledOutputPath(pkg)} not found. Run 'node build/bundle-openapi.js' first.`);
     }
   }
 

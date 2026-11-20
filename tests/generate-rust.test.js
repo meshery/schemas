@@ -85,6 +85,18 @@ test("rust generator and toolchain pins are exact and agree with each other", ()
   const pin = glueDeps.find((line) => line.startsWith("progenitor ="));
   assert.ok(pin && pin.includes(`"=${config.rust.generatorVersion}"`), `glue must pin progenitor =${config.rust.generatorVersion}`);
 
+  // Every glue dependency is exact-pinned, so a `cargo update` cannot move
+  // one without this test noticing.
+  for (const line of glueDeps) {
+    assert.match(line, /"=/, `glue dependency must be exact-pinned: ${line}`);
+  }
+
+  // The crate's rust-version floor is the pinned toolchain: CI builds
+  // against exactly that release and there is no separate MSRV job.
+  const toolchainChannel = parseToolchainChannel(readRoot(config.paths.rustToolchainFile));
+  const rustVersion = readRoot(config.paths.rustDir, "Cargo.toml").match(/^rust-version = "([^"]+)"$/m)?.[1];
+  assert.equal(rustVersion, toolchainChannel, "rust/Cargo.toml rust-version must match the pinned toolchain");
+
   const lock = readRoot(config.paths.rustGenDir, "Cargo.lock");
   assert.deepEqual(lockedVersions(lock, "progenitor"), [config.rust.generatorVersion]);
   assert.deepEqual(lockedVersions(lock, "progenitor-impl"), [config.rust.generatorVersion]);
