@@ -3,15 +3,22 @@
 package component
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"hash/fnv"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
+	"sync"
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
 	core "github.com/meshery/schemas/models/core"
+	"gopkg.in/yaml.v3"
 	"gorm.io/gorm/clause"
 )
 
@@ -81,20 +88,141 @@ func (m *ComponentDefinition) UpdateStatus(db *database.Handler, status entity.E
 	return nil
 }
 
+// WriteComponentDefinition writes the component to componentDirPath as
+// <Kind>.<fileType> ("json" or "yaml"). It returns true, and writes nothing,
+// when the component is already there, so generating into an existing
+// directory is safe.
+//
+// Kubernetes allows the same Kind in different API groups, for example the
+// Gateway API HTTPRoute (gateway.networking.k8s.io) and Linkerd's HTTPRoute
+// (policy.linkerd.io). When <Kind>.<fileType> already holds a component from
+// another group, this component is written to <Kind>.<group>.<fileType>
+// instead, so neither is dropped. Two groups can get the same <group> part
+// (the core group is named "core", and so is a group called "core"); the
+// later one is then written to <Kind>.<group>.<hash>.<fileType>, where <hash>
+// comes from the exact group. A component from the same group, in any version, still counts
+// as already there, whichever of these files holds it.
 func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, fileType string) (bool, error) {
 	if c.Component.Kind == "" {
 		return false, nil
 	}
-	componentPath := filepath.Join(componentDirPath, c.Component.Kind+"."+fileType)
-	if _, err := os.Stat(componentPath); err != nil {
-		if fileType == "yaml" {
-			err := utils.WriteYamlToFile[ComponentDefinition](componentPath, c)
-			return false, err
+	unlock := lockComponentKind(c.Component.Kind)
+	defer unlock()
+
+	group := apiGroup(c.Component.Version)
+	freePath := ""
+	for _, name := range componentFileNames(c.Component.Kind, group, fileType) {
+		path := filepath.Join(componentDirPath, name)
+		if _, err := os.Stat(path); err != nil {
+			if !errors.Is(err, fs.ErrNotExist) {
+				// For example no permission on the directory, or the
+				// directory is a file: report it, do not drop the component.
+				return false, err
+			}
+			if freePath == "" {
+				freePath = path
+			}
+			continue
 		}
-		err := utils.WriteJSONToFile[ComponentDefinition](componentPath, c)
-		return false, err
+		storedGroup, err := apiGroupInFile(path, fileType)
+		if err != nil || storedGroup == group {
+			// Same group, or a file that exists but cannot be read or parsed
+			// (which has always been treated as present): nothing to write.
+			return true, nil
+		}
 	}
-	return true, nil
+	if freePath == "" {
+		return false, fmt.Errorf("no free file name for component %s (%s) in %s", c.Component.Kind, c.Component.Version, componentDirPath)
+	}
+	return false, c.writeToFile(freePath, fileType)
+}
+
+// componentFileNames lists, in order of preference, the names a component of
+// this Kind and API group can be stored under: <Kind>.<fileType>, then
+// <Kind>.<group>.<fileType>, then <Kind>.<group>.<hash>.<fileType>. The last
+// one is for a group whose label is already used by another group.
+func componentFileNames(kind, group, fileType string) []string {
+	label := groupFileLabel(group)
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(group))
+	return []string{
+		kind + "." + fileType,
+		kind + "." + label + "." + fileType,
+		fmt.Sprintf("%s.%s.%08x.%s", kind, label, h.Sum32(), fileType),
+	}
+}
+
+// componentKindLocks serializes WriteComponentDefinition for components of the
+// same Kind, so two goroutines cannot both pick the same free file name. Kinds
+// share a fixed set of locks by hash, which keeps memory constant. The Kind is
+// lowercased because case-insensitive file systems treat Foo.json and
+// foo.json as one file. Separate processes are not coordinated.
+var componentKindLocks [64]sync.Mutex
+
+// lockComponentKind takes the lock for kind and returns the function that
+// releases it.
+func lockComponentKind(kind string) func() {
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(strings.ToLower(kind)))
+	mu := &componentKindLocks[h.Sum32()%uint32(len(componentKindLocks))]
+	mu.Lock()
+	return mu.Unlock
+}
+
+// writeToFile writes the component to path as YAML when fileType is "yaml",
+// and as JSON otherwise.
+func (c ComponentDefinition) writeToFile(path string, fileType string) error {
+	if fileType == "yaml" {
+		return utils.WriteYamlToFile[ComponentDefinition](path, c)
+	}
+	return utils.WriteJSONToFile[ComponentDefinition](path, c)
+}
+
+// apiGroupInFile returns the API group of the component stored at path.
+func apiGroupInFile(path string, fileType string) (string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	var stored struct {
+		Component struct {
+			Version string `json:"version" yaml:"version"`
+		} `json:"component" yaml:"component"`
+	}
+	if fileType == "yaml" {
+		err = yaml.Unmarshal(data, &stored)
+	} else {
+		err = json.Unmarshal(data, &stored)
+	}
+	if err != nil {
+		return "", err
+	}
+	return apiGroup(stored.Component.Version), nil
+}
+
+// apiGroup returns the API group of a Kubernetes apiVersion: "apps" for
+// "apps/v1", and "" for the core group ("v1").
+func apiGroup(apiVersion string) string {
+	if i := strings.LastIndex(apiVersion, "/"); i >= 0 {
+		return apiVersion[:i]
+	}
+	return ""
+}
+
+// groupFileLabel turns an API group into part of a file name. The core group
+// has no name, so it becomes "core". Characters other than letters, digits,
+// '.', '-' and '_' become '-', so the name always stays inside the directory.
+func groupFileLabel(group string) string {
+	if group == "" {
+		return "core"
+	}
+	return strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9', r == '.', r == '-', r == '_':
+			return r
+		}
+		return '-'
+	}, group)
 }
 
 func (c *ComponentDefinition) ReplaceSVGData(baseDir string) error {
