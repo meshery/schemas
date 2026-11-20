@@ -1,7 +1,10 @@
 package validation
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -50,6 +53,26 @@ func TestProviderCapabilityContract(t *testing.T) {
 	if _, ok := mappingValue(responses, "400"); !ok {
 		t.Error("getProviderCapabilities must declare a 400 response for a malformed X-Current-Orgid")
 	}
+
+	t.Run("Provider capability document advertises contractVersion 1.2 indicating support for permissionKeys in ProviderSession", func(t *testing.T) {
+		tmplPath := filepath.Join(root, "schemas/constructs/v1beta3/provider_capability/templates/provider_capability_template.json")
+		raw, err := os.ReadFile(tmplPath)
+		if err != nil {
+			t.Fatalf("read template: %v", err)
+		}
+		var tmpl map[string]any
+		if err := json.Unmarshal(raw, &tmpl); err != nil {
+			t.Fatalf("unmarshal template: %v", err)
+		}
+		if got := tmpl["contractVersion"]; got != "1.2" {
+			t.Errorf("provider_capability_template.json contractVersion = %v, want 1.2", got)
+		}
+
+		desc, _ := entity["description"].(string)
+		if !strings.Contains(desc, "1.2") || !strings.Contains(desc, "permissionKeys") {
+			t.Errorf("provider_capability.yaml description must note 1.2 added permissionKeys to session, got %q", desc)
+		}
+	})
 }
 
 func requiredHas(t *testing.T, schema map[string]any, name string) bool {

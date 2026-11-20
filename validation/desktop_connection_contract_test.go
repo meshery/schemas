@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"fmt"
 	"path/filepath"
 	"testing"
 )
@@ -76,6 +77,7 @@ func TestDesktopConnectionContract(t *testing.T) {
 // accepted and describes the authenticated caller's session; register and
 // heartbeat refuse an outdated client with 426 and a typed body.
 func TestClientHandshakeContract(t *testing.T) {
+	spec := loadSpec(t, "schemas/constructs/v1beta3/provider_capability/api.yml")
 	root := repoRootDir(t)
 	doc := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/provider_capability/api.yml"))
 
@@ -129,4 +131,89 @@ func TestClientHandshakeContract(t *testing.T) {
 	if !found {
 		t.Error("getProviderCapabilities must take the client query parameter")
 	}
+
+	sessionSchema := schemaOf(t, spec, "ProviderSession")
+
+	t.Run("Authenticated client with live organization context receives ProviderSession with permissionKeys containing up to 1000 unique UUIDs representing effective keychain-scoped keys", func(t *testing.T) {
+		keys1000 := make([]any, 1000)
+		for i := 0; i < 1000; i++ {
+			keys1000[i] = fmt.Sprintf("11111111-1111-4111-8111-%012x", i)
+		}
+		validSession := map[string]any{
+			"userId":            sampleUUID,
+			"providerRoles":     []any{"admin"},
+			"organizationRoles": []any{"member"},
+			"permissionKeys":    keys1000,
+		}
+		if err := sessionSchema.VisitJSON(validSession); err != nil {
+			t.Fatalf("valid session with 1000 permission keys failed validation: %v", err)
+		}
+	})
+
+	t.Run("Authenticated caller holding no keys receives empty permissionKeys array whereas request without organization or from older provider omits the property entirely", func(t *testing.T) {
+		// Omitted permissionKeys (caller without organization or older provider)
+		omittedKeys := map[string]any{
+			"userId":        sampleUUID,
+			"providerRoles": []any{"admin"},
+		}
+		if err := sessionSchema.VisitJSON(omittedKeys); err != nil {
+			t.Errorf("session with omitted permissionKeys failed validation: %v", err)
+		}
+
+		// Empty permissionKeys (caller holds no keys in organization)
+		emptyKeys := map[string]any{
+			"userId":         sampleUUID,
+			"providerRoles":  []any{"admin"},
+			"permissionKeys": []any{},
+		}
+		if err := sessionSchema.VisitJSON(emptyKeys); err != nil {
+			t.Errorf("session with empty permissionKeys failed validation: %v", err)
+		}
+	})
+
+	t.Run("ProviderSession schema enforces permissionKeys bounds (maxItems: 1000, uniqueItems: true, item Uuid reference) rejecting invalid or unbounded key sets", func(t *testing.T) {
+		// Exceeds maxItems: 1000 (1001 items)
+		keys1001 := make([]any, 1001)
+		for i := 0; i < 1001; i++ {
+			keys1001[i] = fmt.Sprintf("11111111-1111-4111-8111-%012x", i)
+		}
+		exceededKeys := map[string]any{
+			"userId":         sampleUUID,
+			"providerRoles":  []any{"admin"},
+			"permissionKeys": keys1001,
+		}
+		if err := sessionSchema.VisitJSON(exceededKeys); err == nil {
+			t.Error("expected error for permissionKeys exceeding maxItems 1000, got nil")
+		}
+
+		// Non-UUID format item
+		malformedKey := map[string]any{
+			"userId":         sampleUUID,
+			"providerRoles":  []any{"admin"},
+			"permissionKeys": []any{"not-a-valid-uuid"},
+		}
+		if err := sessionSchema.VisitJSON(malformedKey); err == nil {
+			t.Error("expected error for non-UUID permissionKey, got nil")
+		}
+
+		// Duplicate UUIDs (uniqueItems: true)
+		duplicateKeys := map[string]any{
+			"userId":         sampleUUID,
+			"providerRoles":  []any{"admin"},
+			"permissionKeys": []any{sampleUUID, sampleUUID},
+		}
+		if err := sessionSchema.VisitJSON(duplicateKeys); err == nil {
+			t.Error("expected error for duplicate permissionKeys, got nil")
+		}
+
+		// Extra unexpected properties (additionalProperties: false)
+		extraProp := map[string]any{
+			"userId":        sampleUUID,
+			"providerRoles": []any{"admin"},
+			"unexpected":    true,
+		}
+		if err := sessionSchema.VisitJSON(extraProp); err == nil {
+			t.Error("expected error for extra properties on ProviderSession, got nil")
+		}
+	})
 }
