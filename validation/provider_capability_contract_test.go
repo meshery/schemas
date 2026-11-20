@@ -68,6 +68,25 @@ func TestProviderCapabilityContract(t *testing.T) {
 			t.Errorf("provider_capability_template.json contractVersion = %v, want 1.2", got)
 		}
 
+		spec := loadSpec(t, "schemas/constructs/v1beta3/provider_capability/api.yml")
+		capSchema := schemaOf(t, spec, "ProviderCapability")
+		if err := capSchema.VisitJSON(tmpl); err != nil {
+			t.Fatalf("provider_capability_template.json failed schema validation: %v", err)
+		}
+
+		tmplWithSession := map[string]any{
+			"providerType":    "remote",
+			"contractVersion": "1.2",
+			"session": map[string]any{
+				"userId":         sampleUUID,
+				"providerRoles":  []any{"admin"},
+				"permissionKeys": []any{sampleUUID},
+			},
+		}
+		if err := capSchema.VisitJSON(tmplWithSession); err != nil {
+			t.Errorf("ProviderCapability with 1.2 session containing permissionKeys failed schema validation: %v", err)
+		}
+
 		desc, _ := entity["description"].(string)
 		if !strings.Contains(desc, "1.2") || !strings.Contains(desc, "permissionKeys") {
 			t.Errorf("provider_capability.yaml description must note 1.2 added permissionKeys to session, got %q", desc)
