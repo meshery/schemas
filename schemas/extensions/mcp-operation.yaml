@@ -7,7 +7,8 @@ description: |
   by hand: GET is read-only, POST and PUT are not destructive, and a create
   that declares the `Idempotency-Key` header is idempotent. The value carries
   no readOnly or destructive flag for that reason.
-  Every operation that carries it must have an `operationId`, a 2xx response
+  The optional `description` replaces the OpenAPI description as the tool
+  description. Every operation that carries it must have an `operationId`, a 2xx response
   whose `application/json` content has a schema, a `scope` defined below, and
   an optional `X-Current-Orgid` header parameter, and it must not be a DELETE,
   `approveRequest` or `denyRequest`. validate-schemas Rule 48 enforces these
@@ -29,6 +30,16 @@ properties:
     description: Human-readable tool title shown to the person connecting an AI app. Defaults to the operation's `summary`.
     minLength: 1
     maxLength: 120
+  description:
+    type: string
+    description: >
+      The tool description shown to the connecting app. When present, the hosted
+      MCP tool uses it instead of the operation's OpenAPI `description` (or its
+      `summary` when there is no description); when absent, the tool falls back
+      to those. It starts with "Read-only." and must not advertise HTTP-only
+      behavior such as response headers (`ETag`), which MCP clients never see.
+    minLength: 1
+    maxLength: 2000
   scope:
     $ref: "#/definitions/McpScope"
 definitions:

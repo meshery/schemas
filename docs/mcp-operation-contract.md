@@ -36,6 +36,8 @@ get:
     expose: true
     title: List content items
     scope: content:read
+    description: >-
+      Read-only. Returns a paginated list of the live content items ...
   parameters:
     - $ref: "#/components/parameters/currentOrgId"
 ```
@@ -44,14 +46,25 @@ get:
 | --- | --- | --- |
 | `expose` | boolean, required | The hosted server lists and serves the operation as a tool. `false` keeps it annotated and hidden. Same name as the local MCP server's `x-mcp.expose`. |
 | `title` | string, optional | Tool title shown to the person connecting an AI app. Defaults to the operation's `summary`. |
+| `description` | string, optional, 1-2000 characters | The tool description shown to the connecting app. When present it replaces the operation's OpenAPI `description` (or `summary` when there is none); when absent the tool falls back to those. |
 | `scope` | enum, required | The OAuth scope a token needs to call the operation. |
 
-The value is closed. There is no `readOnly` or `destructive` flag, and the
+The value is closed: `expose`, `title`, `scope` and `description` are the only
+keys. There is no `readOnly` or `destructive` flag, and the
 lint refuses one.
 
 **The tool name is the `operationId`.** **Hints derive from the HTTP method**:
 GET is read-only, POST and PUT are not destructive, and a create that declares
 the `Idempotency-Key` header is idempotent. Nothing is written by hand.
+
+**Descriptions.** MCP clients never see HTTP response headers; the hosted
+server maps only the JSON body into the tool result. A shared OpenAPI
+description may therefore say things that are true of the HTTP API and wrong
+for a tool (`getScheduleById` names the `ETag` header). `x-mcp.description`
+is the MCP-facing text, so the shared description stays accurate for HTTP
+clients. Every MCP description starts with "Read-only." (Rule 48 enforces
+it), and must not advertise an HTTP-only header such as `ETag` unless the tool
+result actually includes it. Every annotated operation sets one.
 
 ## What the lint enforces (Rule 48)
 
@@ -67,7 +80,9 @@ An operation with `x-mcp` fails `make validate-schemas` unless:
 5. It is not a DELETE. The hosted server exposes no delete tool.
 6. It accepts the optional `X-Current-Orgid` header (below).
 7. Its value matches the extension schema: `expose` is a boolean, `title` is a
-   non-empty string when present, and no other key appears.
+   non-empty string when present, `description` is a non-empty string of at
+   most 2000 characters that starts with "Read-only." when present, and no
+   other key appears.
 
 The rule scans every non-deprecated construct `api.yml` of every version, not
 only the newest version of each construct, because an operation can be served
@@ -78,7 +93,7 @@ cannot hide unchecked operations; only a spec that loads and carries
 `validation/rules_mcp_test.go` (each failure case and the passing case) and
 `validation/mcp_operation_contract_test.go` (the real tree).
 
-## The six operations that carry it
+## The eight operations that carry it
 
 | `operationId` | Version | Route | Scope |
 | --- | --- | --- | --- |
@@ -86,6 +101,8 @@ cannot hide unchecked operations; only a spec that loads and carries
 | `getContentItem` | v1beta3/content_item | `GET /api/content-items/{contentItemId}` | `content:read` |
 | `getConnections` | v1beta3/connection | `GET /api/integrations/connections` | `connections:read` |
 | `getEvents` | v1beta3/event | `GET /api/events/list` | `events:read` |
+| `listSchedules` | v1beta3/schedule | `GET /api/schedules` | `schedule:read` |
+| `getScheduleById` | v1beta3/schedule | `GET /api/schedules/{scheduleId}` | `schedule:read` |
 | `getUser` | v1beta2/user | `GET /api/identity/users/profile` | `account:read` |
 | `getFeaturesByOrganization` | v1beta1/feature | `GET /api/entitlement/subscriptions/organizations/{orgId}/features` | `account:read` |
 

@@ -341,6 +341,32 @@ func TestRule48_ValueShape(t *testing.T) {
 			requireMcpViolation(t, lintMcpOp(t, op), `unknown key "`+key+`"`)
 		}
 	})
+	t.Run("description is allowed", func(t *testing.T) {
+		op := passingMcpOp()
+		op.xmcp = `x-mcp:
+        expose: true
+        scope: content:read
+        description: "Read-only. Lists things."`
+		if v := lintMcpOp(t, op); len(v) != 0 {
+			t.Errorf("a Read-only description must pass, got %v", v)
+		}
+	})
+	t.Run("empty description", func(t *testing.T) {
+		op := passingMcpOp()
+		op.xmcp = `x-mcp:
+        expose: true
+        scope: content:read
+        description: ""`
+		requireMcpViolation(t, lintMcpOp(t, op), "description must be a non-empty string")
+	})
+	t.Run("description without the Read-only prefix", func(t *testing.T) {
+		op := passingMcpOp()
+		op.xmcp = `x-mcp:
+        expose: true
+        scope: content:read
+        description: "Lists things."`
+		requireMcpViolation(t, lintMcpOp(t, op), "description must start with")
+	})
 	t.Run("not an object", func(t *testing.T) {
 		op := passingMcpOp()
 		op.xmcp = `x-mcp: true`
