@@ -58,6 +58,11 @@ jobs:
             "ruff==$(node -p "require('./build/lib/config.js').python.ruffVersion")" \
             pytest
 
+      # `generate-rust`/`test-rust` also run after `make build`; rustup reads
+      # the toolchain (with rustfmt, clippy and the wasm32 target) from
+      # rust-toolchain.toml.
+      - name: Install Rust toolchain
+        run: rustup toolchain install
 
       - name: Run Make build
         shell: bash
@@ -73,6 +78,16 @@ jobs:
         shell: bash
         run: |
           make test-python
+
+      - name: Generate Rust client
+        shell: bash
+        run: |
+          make generate-rust
+
+      - name: Rust client tests
+        shell: bash
+        run: |
+          make test-rust
 
       - name: Site data tests
         shell: bash

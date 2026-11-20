@@ -14077,7 +14077,11 @@ const ConnectionSchema: Record<string, unknown> = {
           "slack",
           "bluesky",
           "github",
-          "blog"
+          "blog",
+          "youtube",
+          "tiktok",
+          "instagram",
+          "facebook"
         ],
         "x-enum-varnames": [
           "DestinationKindLinkedin",
@@ -14087,7 +14091,11 @@ const ConnectionSchema: Record<string, unknown> = {
           "DestinationKindSlack",
           "DestinationKindBluesky",
           "DestinationKindGithub",
-          "DestinationKindBlog"
+          "DestinationKindBlog",
+          "DestinationKindYoutube",
+          "DestinationKindTiktok",
+          "DestinationKindInstagram",
+          "DestinationKindFacebook"
         ]
       },
       "ConnectionDefinition": {

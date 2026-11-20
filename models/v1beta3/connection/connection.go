@@ -72,14 +72,18 @@ const (
 
 // Defines values for DestinationKind.
 const (
-	DestinationKindBlog     DestinationKind = "blog"
-	DestinationKindBluesky  DestinationKind = "bluesky"
-	DestinationKindGithub   DestinationKind = "github"
-	DestinationKindHn       DestinationKind = "hn"
-	DestinationKindLinkedin DestinationKind = "linkedin"
-	DestinationKindReddit   DestinationKind = "reddit"
-	DestinationKindSlack    DestinationKind = "slack"
-	DestinationKindX        DestinationKind = "x"
+	DestinationKindBlog      DestinationKind = "blog"
+	DestinationKindBluesky   DestinationKind = "bluesky"
+	DestinationKindFacebook  DestinationKind = "facebook"
+	DestinationKindGithub    DestinationKind = "github"
+	DestinationKindHn        DestinationKind = "hn"
+	DestinationKindInstagram DestinationKind = "instagram"
+	DestinationKindLinkedin  DestinationKind = "linkedin"
+	DestinationKindReddit    DestinationKind = "reddit"
+	DestinationKindSlack     DestinationKind = "slack"
+	DestinationKindTiktok    DestinationKind = "tiktok"
+	DestinationKindX         DestinationKind = "x"
+	DestinationKindYoutube   DestinationKind = "youtube"
 )
 
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
