@@ -19,8 +19,9 @@ Everything here is in `schemas/constructs/v1beta3/connection/api.yml`.
 
 No new store: the report is kept in the `desktop` connection's metadata, in the
 two server-written fields `platformSessions` and `platformSessionsReportedAt`,
-as `tokenId` is. A `desktop` registration ignores a value for either, so a
-reconnect never wipes a report.
+as `tokenId` is. A `desktop` registration and `updateConnection` both ignore a
+value for either (the server carries them forward from the stored row), so a
+reconnect or an edit never wipes a report; only the report writes them.
 
 ## What a session carries
 
@@ -46,8 +47,9 @@ is the contract; the desktop projects its own output onto it.
 A cookie, a token, a credential, a session directory path, a lock pid, or the
 Google account email of a Chrome profile. Every shape sets
 `additionalProperties: false`, so a body that names any other key is refused,
-and `TestPlatformSessionShapesCarryNoSecrets` fails when a property with a
-secret-looking name is added.
+`handle`, `blowhornProfile` and `displayName` refuse an `@` so an email cannot
+ride in them, and `TestPlatformSessionShapesCarryNoSecrets` fails when a
+property with a secret-looking name is added.
 
 ## Tenancy
 
@@ -68,17 +70,29 @@ filter nothing. Cloud runs the same membership and permission checks as
 - the report is scoped the same way: an install reports only to the caller's
   own connection, in one organization, and a connection of another user is 404.
 
-Cloud tests must show each of these (see the brief for the three required
-cases: another user's install is never returned, a non-member organization is
-404, a member without permission is refused).
+The permission is `View Connections` (Workspace Management), the key behind the
+`connections:read` scope. Cloud does not key Connections routes today (see
+[mcp-operation-contract.md](mcp-operation-contract.md), "Routes with no key
+today"), so Cloud must key both new routes with it; until then the default-deny
+gate refuses a scoped token with 403 on the read.
+
+Cloud tests must show each of these, and at least the three that matter most:
+another user's install is never returned to a non-administrator, a
+non-member organization is 404, and a member without permission is refused.
+`totalCount` is counted after the scoping and the filters, so it never reveals
+another user's installs. Rows are ordered by `lastVerifiedAt` (the install's
+own clock), newest first, then by `connectionId`, `platform` and `handle`.
 
 ## Read rules
 
 `getPlatformSessions` reads `metadata.platformSessions` of the session
-organization's live `desktop` connections and returns nothing else of their
-metadata. It follows the visibility rule of `DesktopConnectionMetadata`: a
+organization's live `desktop` connections and returns of their metadata only
+those sessions, `platformSessionsReportedAt`, `hostname`, `os` and
+`lastSeenAt`. (`getConnections`, also a tool, returns a connection's full
+metadata, `platformSessions` included, to its owner and organization admins:
+the same visibility.) It follows the visibility rule of `DesktopConnectionMetadata`: a
 caller sees the connections it owns and, as an organization admin, all of the
-organization's. Rows are ordered by `lastVerifiedAt`, newest first. The
+organization's. The
 computer's `status` and `lastSeenAt` follow the heartbeat rule, so a client can
 tell that a session was reported by a computer that is offline now.
 
@@ -126,9 +140,11 @@ computer whose app has not reported yet.
 
 - **Schemas (this repository)**: the contract, the lint and the tests.
 - **Cloud**: validate and store the report (replace in full, owner-scoped,
-  organization-scoped, 404 when nothing matches), ignore the two fields in a
-  registration, serve `getPlatformSessions` with the visibility rule, and add
-  the tool to the hosted catalog.
+  organization-scoped, 404 when nothing matches, 400 for duplicates, an
+  unknown `socialConnectionId` or an extra key, 403 for an MCP-only token),
+  carry the two fields forward in a registration and in `updateConnection`,
+  key both routes with `View Connections`, serve `getPlatformSessions` with the
+  visibility rule, and add the tool to the hosted catalog.
 - **Desktop app**: send the report after each session check and after each
   Chrome mapping change, and once on connect.
 - **Hosted MCP gateway and docs**: nothing in the Worker (it forwards the

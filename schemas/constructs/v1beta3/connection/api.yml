@@ -300,7 +300,12 @@ paths:
         `installations`, `installationId` and `installationsVerifiedAt` are
         carried forward from the stored row: a client edit can neither set nor
         erase them (other metadata keys are written as sent). Their shape is
-        `GithubConnectionMetadata` in the v1beta3 `github` construct.
+        `GithubConnectionMetadata` in the v1beta3 `github` construct. On a
+        `desktop` connection the server-written metadata keys `tokenId`,
+        `lastSeenAt`, `platformSessions` and `platformSessionsReportedAt` are
+        likewise carried forward from the stored row: an edit can neither set
+        nor erase them, so a report can only be written through
+        `reportDesktopPlatformSessions`.
         `organizationId` is not in the body. The server keeps the organization
         assigned at registration.
       parameters:
@@ -529,10 +534,17 @@ paths:
         not found. An install registers one connection per organization, so
         the report applies to the install's connection in the session
         organization (`X-Current-Orgid`, then the caller's selected
-        organization). The report carries no cookie, token, credential or
-        Google account email, and servers must refuse a body that carries any
-        key the schema does not name. When nothing matches, the server answers
-        404 and stores nothing.
+        organization), and the caller must be a live member of it: a caller
+        who is not, or who has no such connection there, receives `404` and
+        nothing is stored. A token bound only to the hosted MCP resource
+        (scope `connections:read`) is refused with `403`: no tool writes. The
+        report carries no cookie, token, credential or Google account email,
+        and servers must refuse a body that carries any key the schema does
+        not name. Servers must also refuse with `400` a report that lists two
+        sessions with the same `platform` and `handle` (or two without a
+        `handle` on one platform), and a `socialConnectionId` that does not
+        name a connection of the session organization the caller may see.
+        When nothing matches, the server answers 404 and stores nothing.
       parameters:
         - $ref: "#/components/parameters/installationId"
         - $ref: "#/components/parameters/currentOrgId"
@@ -553,6 +565,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "../../v1beta2/core/api.yml#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "429":
@@ -579,32 +593,37 @@ paths:
         it was last verified, the Blowhorn profile and the Chrome profile
         that hold it, and the connection of the account itself). Servers
         implementing this contract read `metadata.platformSessions` of the
-        session organization's live `desktop` connections and never return any
-        other part of their metadata, a credential, a cookie, a token or a
-        Google account email. The `status` and `lastSeenAt` of the computer
+        session organization's live `desktop` connections and return of their
+        metadata only those sessions, `platformSessionsReportedAt`, `hostname`,
+        `os` and `lastSeenAt`, never any other part of it, a credential, a
+        cookie, a token or a Google account email. The `status` and `lastSeenAt` of the computer
         follow the heartbeat rule of `recordConnectionHeartbeat`, so a client
         can tell a session reported by a computer that is offline now. A
         caller sees the connections it owns and, when it is an organization
         admin, every connection in the organization: the visibility rule of
-        `DesktopConnectionMetadata`. Rows are ordered by `lastVerifiedAt`,
-        newest first.
+        `DesktopConnectionMetadata`. Rows are ordered by `lastVerifiedAt`
+        (a time the install reported, by its own clock), newest first, then by
+        `connectionId`, `platform` and `handle`, so pages are stable.
 
 
         Tenancy is enforced by the server that implements this contract
         (Blowhorn Cloud), never by a client, a gateway or an MCP tool, which
         pass the caller's identity and the organization selector through
         unchanged. The server runs the same organization membership and
-        permission checks as `getConnections`, for the organization named by
+        permission checks as `getConnections`, keyed by the permission
+        `View Connections` (Workspace Management), the one behind the
+        `connections:read` scope, for the organization named by
         `X-Current-Orgid` (for the hosted MCP tool, the optional
         `organizationId` argument), else the caller's selected organization:
         a caller who is not a live member of that organization receives `404`,
         the same answer as for an unknown organization, and a member without
-        the permission for the route is refused with `403`. It returns only
+        that permission is refused with `403`. It returns only
         sessions reported by `desktop` connections of that organization that
         the caller may see, and never one of another user's installs unless
         the caller administers the organization. A filter never widens the
         scope: `installationId` naming an install the caller may not see
-        matches nothing.
+        matches nothing. `totalCount` counts only rows the caller may see, after
+        that scoping and every filter, so it never reveals another user's installs.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -1514,14 +1533,12 @@ components:
           format: date-time
           description: Server time of the last registration or heartbeat.
         platformSessions:
-          type: array
           description: >
             Server-written browser sign-ins the install last reported through
-            `reportDesktopPlatformSessions`. A value sent in a registration is
-            ignored. Read it through `getPlatformSessions`.
-          maxItems: 64
-          items:
-            $ref: "#/components/schemas/PlatformSession"
+            `reportDesktopPlatformSessions`. A value sent in a registration or
+            an update is ignored. Read it through `getPlatformSessions`, or, for
+            its owner, `getConnections`.
+          $ref: "#/components/schemas/PlatformSessionList"
         platformSessionsReportedAt:
           type: string
           format: date-time
@@ -1573,8 +1590,9 @@ components:
           maxLength: 255
         displayName:
           type: string
-          description: The name Chrome shows for the profile.
+          description: The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.
           maxLength: 255
+          pattern: '^[^@]*$'
 
     PlatformSession:
       type: object
@@ -1593,9 +1611,10 @@ components:
           $ref: "#/components/schemas/PlatformSessionPlatform"
         handle:
           type: string
-          description: The account handle on the platform, without a leading `@`. Absent when the check could not read it.
+          description: The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.
           minLength: 1
           maxLength: 255
+          pattern: '^[^@\s]+$'
         state:
           $ref: "#/components/schemas/PlatformSessionState"
         lastVerifiedAt:
@@ -1604,9 +1623,10 @@ components:
           description: When the install last checked this sign-in, as the install read it.
         blowhornProfile:
           type: string
-          description: The name of the Blowhorn profile the account is mapped to on this computer.
+          description: The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.
           minLength: 1
           maxLength: 255
+          pattern: '^[^@]+$'
         chromeProfile:
           $ref: "#/components/schemas/PlatformSessionChromeProfile"
         identity:
@@ -1616,6 +1636,13 @@ components:
           format: uuid
           description: The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
 
+    PlatformSessionList:
+      type: array
+      description: Browser sign-ins of one install, at most one per platform and handle.
+      maxItems: 64
+      items:
+        $ref: "#/components/schemas/PlatformSession"
+
     PlatformSessionsReport:
       type: object
       description: The body a desktop install sends to report its browser sign-ins. It replaces the earlier report in full.
@@ -1624,11 +1651,7 @@ components:
         - sessions
       properties:
         sessions:
-          type: array
-          description: One entry per platform account the install checked. At most one entry per platform and handle.
-          maxItems: 64
-          items:
-            $ref: "#/components/schemas/PlatformSession"
+          $ref: "#/components/schemas/PlatformSessionList"
 
     DesktopPlatformSessions:
       type: object
@@ -1646,10 +1669,7 @@ components:
           format: date-time
           description: Server time the report was stored.
         sessions:
-          type: array
-          maxItems: 64
-          items:
-            $ref: "#/components/schemas/PlatformSession"
+          $ref: "#/components/schemas/PlatformSessionList"
 
     PlatformSessionHost:
       type: object

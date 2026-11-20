@@ -24,7 +24,7 @@ func TestPlatformSessionOperations(t *testing.T) {
 	if _, ok := mappingValue(put, "x-mcp"); ok {
 		t.Error("reportDesktopPlatformSessions writes; it must never carry x-mcp")
 	}
-	for _, code := range []string{"200", "400", "401", "404", "429", "500"} {
+	for _, code := range []string{"200", "400", "401", "403", "404", "429", "500"} {
 		if _, ok := mappingValue(mustLookup(t, put, "responses"), code); !ok {
 			t.Errorf("reportDesktopPlatformSessions must document a %s response", code)
 		}
@@ -79,6 +79,21 @@ func TestPlatformSessionOperations(t *testing.T) {
 		}
 	}
 
+	// Only the report writes the stored sessions: an edit carries them forward.
+	upd := mustLookup(t, doc, "paths", "/api/integrations/connections/{connectionId}", "put")
+	updDesc := strings.Join(strings.Fields(mustValue(upd, "description").(string)), " ")
+	for _, want := range []string{"`platformSessions`", "`platformSessionsReportedAt`", "carried forward from the stored row", "reportDesktopPlatformSessions"} {
+		if !strings.Contains(updDesc, want) {
+			t.Errorf("updateConnection description must say %q", want)
+		}
+	}
+	// The permission behind the read is named, and totalCount is counted after scoping.
+	for _, want := range []string{"`View Connections`", "`totalCount` counts only rows the caller may see"} {
+		if !strings.Contains(strings.Join(strings.Fields(desc), " "), want) {
+			t.Errorf("getPlatformSessions description must state %q", want)
+		}
+	}
+
 	meta := mustLookup(t, doc, "components", "schemas", "DesktopConnectionMetadata", "properties")
 	for _, name := range []string{"platformSessions", "platformSessionsReportedAt"} {
 		if _, ok := mappingValue(meta, name); !ok {
@@ -89,8 +104,8 @@ func TestPlatformSessionOperations(t *testing.T) {
 
 // secretKeys are property names no platform session shape may define.
 var platformSessionSecretKeys = []string{
-	"cookie", "cookies", "token", "accessToken", "password", "secret", "credential",
-	"credentials", "authorization", "email", "account", "gaiaName", "sessionDir",
+	"cookie", "token", "password", "secret", "credential", "authorization", "email",
+	"account", "gaia", "sessiondir", "lockpid",
 }
 
 func TestPlatformSessionShapesCarryNoSecrets(t *testing.T) {
@@ -105,7 +120,7 @@ func TestPlatformSessionShapesCarryNoSecrets(t *testing.T) {
 		}
 		for prop := range schema.Properties {
 			for _, bad := range platformSessionSecretKeys {
-				if strings.EqualFold(prop, bad) {
+				if strings.Contains(strings.ToLower(prop), bad) {
 					t.Errorf("%s defines %q, which could carry a secret or a Google account email", name, prop)
 				}
 			}
@@ -176,6 +191,30 @@ func TestPlatformSessionSamplesValidate(t *testing.T) {
 		if err := schemaOf(t, doc, "PlatformSession").VisitJSON(session); err == nil {
 			t.Errorf("a session with %s validated; it must be refused", name)
 		}
+	}
+	// An email cannot ride in a free-text field, and every closed shape refuses an extra key.
+	for name, bad := range map[string]map[string]any{
+		"handle email":     {"handle": "someone@example.com"},
+		"handle with @":    {"handle": "@blowhorn_ai"},
+		"profile email":    {"blowhornProfile": "someone@example.com"},
+		"chrome with mail": {"chromeProfile": map[string]any{"directory": "Profile 1", "displayName": "someone@example.com"}},
+		"chrome extra key": {"chromeProfile": map[string]any{"directory": "Profile 1", "account": "someone@example.com"}},
+	} {
+		session := map[string]any{"platform": "x", "state": "signed_in", "lastVerifiedAt": "2026-11-20T21:30:00Z"}
+		for k, v := range bad {
+			session[k] = v
+		}
+		if err := schemaOf(t, doc, "PlatformSession").VisitJSON(session); err == nil {
+			t.Errorf("a session with %s validated; it must be refused", name)
+		}
+	}
+	if err := schemaOf(t, doc, "PlatformSessionsReport").VisitJSON(map[string]any{"sessions": []any{}, "cookie": "x"}); err == nil {
+		t.Error("a report with an extra key validated; it must be refused")
+	}
+	if err := schemaOf(t, doc, "PlatformSessionHost").VisitJSON(map[string]any{
+		"connectionId": "0b9c1f7e-3d4a-4e8b-a6c2-5f7d8e9a1b23", "installationId": "i", "status": "connected", "metadata": map[string]any{},
+	}); err == nil {
+		t.Error("a host with an extra key validated; it must be refused")
 	}
 	// The report is bounded.
 	many := make([]any, 65)

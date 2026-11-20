@@ -99,7 +99,7 @@ func readScopeFile(t *testing.T, root string) scopeFile {
 	return sf
 }
 
-// Only the six hosted reads carry x-mcp, every one exposed with its scope,
+// Only the hosted reads carry x-mcp, every one exposed with its scope,
 // and the real tree passes Rule 48.
 func TestHostedMcpOperationsAreExactlyTheSixReads(t *testing.T) {
 	root := repoRootDir(t)
@@ -661,7 +661,7 @@ func anyStrings(v any) []string {
 
 // Every operation that takes a UUID-constrained parameter declares the 400
 // that a malformed UUID answers (core responses/400: "Invalid request body
-// or request param"). The six hosted reads take X-Current-Orgid
+// or request param"). The hosted reads take X-Current-Orgid
 // (listContentItems also takes threadId), and getRequest also takes
 // requestId; listRequests, approveRequest and denyRequest already declared
 // it. A missing 400 leaves clients without a documented answer for invalid
