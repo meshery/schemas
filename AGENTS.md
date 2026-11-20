@@ -227,6 +227,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
 - **[`docs/design-event-metadata-contract.md`](docs/design-event-metadata-contract.md)** - the named shapes of design event metadata, its banned keys and 16 KB guard, the `status` `error` rule for an operation that did not complete, and why they have no `*Payload` twins.
 - **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
+- **[`docs/resource-envelope-contract.md`](docs/resource-envelope-contract.md)** - the platform-agnostic `resource` envelope MeshSync's discoverers emit, its MeshSync mirror, and payloads carried beside it.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 - **[`docs/schedule-visibility-and-public-feed-contract.md`](docs/schedule-visibility-and-public-feed-contract.md)** - the schedule visibility enum and the unauthenticated public activity feed wire contract.

@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  title: Resource
+  description: |
+    OpenAPI schema for the platform-agnostic resource envelope: one resource
+    that a discoverer observed on a platform (a Kubernetes cluster, a Docker
+    daemon, a cloud account), carried in the same shape whatever the
+    platform. MeshSync's discoverers emit it (meshery/meshsync#582). The
+    construct has no endpoints and no stored row: the envelope is produced
+    in process by a discoverer and handed to MeshSync's output writers, and
+    no server reads or writes it over HTTP. See docs/resource-envelope-contract.md.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+paths: {}
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Resource:
+      $ref: "./resource.yaml"

@@ -1,0 +1,11 @@
+{
+  "id": "",
+  "platform": "kubernetes",
+  "scopeId": "",
+  "kind": "Pod",
+  "name": "",
+  "labels": {},
+  "metadata": {},
+  "connectionId": "",
+  "schemaVersion": "resources.meshery.io/v1beta1"
+}

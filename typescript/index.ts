@@ -21,6 +21,7 @@ import { components as FeatureComponents } from "./generated/v1beta1/feature/Fea
 import { components as KeyComponents } from "./generated/v1beta1/key/Key";
 import { components as KeychainComponents } from "./generated/v1beta1/keychain/Keychain";
 import { components as OrganizationComponents } from "./generated/v1beta1/organization/Organization";
+import { components as ResourceComponents } from "./generated/v1beta1/resource/Resource";
 import { components as RoleComponents } from "./generated/v1beta1/role/Role";
 import { components as ScheduleComponents } from "./generated/v1beta1/schedule/Schedule";
 import { components as SystemComponents } from "./generated/v1beta1/system/System";
@@ -170,6 +171,7 @@ export namespace v1beta1 {
   export type Model = ModelComponents["schemas"]["ModelDefinition"];
   export type Organization =
     OrganizationComponents["schemas"]["Organization"];
+  export type Resource = ResourceComponents["schemas"]["Resource"];
   export type Role = RoleComponents["schemas"]["Role"];
   export type Schedule = ScheduleComponents["schemas"]["Schedule"];
   export type Subcategory =
