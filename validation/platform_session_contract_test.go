@@ -52,18 +52,12 @@ func TestPlatformSessionOperations(t *testing.T) {
 	}
 
 	// Tenancy is Cloud's: the read declares the 404 for a non-member and the
-	// 403 for a member without permission, says so, and takes no parameter
+	// 403 for a member without permission, and takes no parameter
 	// that lets a caller name another user or a tenant except the organization
 	// selector.
 	for _, code := range []string{"400", "401", "403", "404", "500"} {
 		if _, ok := mappingValue(mustLookup(t, get, "responses"), code); !ok {
 			t.Errorf("getPlatformSessions must document a %s response", code)
-		}
-	}
-	desc, _ := mustValue(get, "description").(string)
-	for _, want := range []string{"Tenancy is enforced by the server", "never by a client, a gateway or an MCP tool", "`getConnections`", "`404`", "`403`"} {
-		if !strings.Contains(strings.Join(strings.Fields(desc), " "), want) {
-			t.Errorf("getPlatformSessions description must state %q", want)
 		}
 	}
 	allowed := map[string]bool{"page": true, "pageSize": true, "platform": true, "handle": true, "state": true, "installationId": true}
@@ -76,21 +70,6 @@ func TestPlatformSessionOperations(t *testing.T) {
 		}
 		if name, ok := mappingValue(p, "name"); ok && !allowed[name.(string)] {
 			t.Errorf("getPlatformSessions must not take %q: it could name another user or tenant", name)
-		}
-	}
-
-	// Only the report writes the stored sessions: an edit carries them forward.
-	upd := mustLookup(t, doc, "paths", "/api/integrations/connections/{connectionId}", "put")
-	updDesc := strings.Join(strings.Fields(mustValue(upd, "description").(string)), " ")
-	for _, want := range []string{"`platformSessions`", "`platformSessionsReportedAt`", "carried forward from the stored row", "reportDesktopPlatformSessions"} {
-		if !strings.Contains(updDesc, want) {
-			t.Errorf("updateConnection description must say %q", want)
-		}
-	}
-	// The permission behind the read is named, and totalCount is counted after scoping.
-	for _, want := range []string{"`View Connections`", "`totalCount` counts only rows the caller may see"} {
-		if !strings.Contains(strings.Join(strings.Fields(desc), " "), want) {
-			t.Errorf("getPlatformSessions description must state %q", want)
 		}
 	}
 

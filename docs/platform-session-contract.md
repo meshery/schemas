@@ -140,7 +140,8 @@ computer whose app has not reported yet.
 
 - **Schemas (this repository)**: the contract, the lint and the tests.
 - **Cloud**: validate and store the report (replace in full, owner-scoped,
-  organization-scoped, 404 when nothing matches, 400 for duplicates, an
+  organization-scoped, 404 when nothing matches, 400 for duplicates (same platform and handle, handles
+  compared case-insensitively), an
   unknown `socialConnectionId` or an extra key, 403 for an MCP-only token),
   carry the two fields forward in a registration and in `updateConnection`,
   key both routes with `View Connections`, serve `getPlatformSessions` with the

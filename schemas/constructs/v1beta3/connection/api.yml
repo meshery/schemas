@@ -126,7 +126,10 @@ paths:
         is not a live member of that organization with `403`. They must
         deduplicate on (organization, owner, `metadata.installationId`):
         registering the same install again updates that connection and returns
-        `200`, while a new connection returns `201`. A `desktop` body whose
+        `200`, while a new connection returns `201`. A repeat registration
+        carries the stored `metadata.platformSessions` and
+        `metadata.platformSessionsReportedAt` forward from the stored row: it
+        can neither set nor erase them. A `desktop` body whose
         metadata lacks `installationId` is refused with `400`. Installs on one
         computer share `metadata.computerId`, so a server can group them by
         computer. The kind names the connection type,
@@ -541,7 +544,8 @@ paths:
         report carries no cookie, token, credential or Google account email,
         and servers must refuse a body that carries any key the schema does
         not name. Servers must also refuse with `400` a report that lists two
-        sessions with the same `platform` and `handle` (or two without a
+        sessions with the same `platform` and `handle`, handles compared
+        case-insensitively (or two without a
         `handle` on one platform), and a `socialConnectionId` that does not
         name a connection of the session organization the caller may see.
         When nothing matches, the server answers 404 and stores nothing.
@@ -1536,13 +1540,13 @@ components:
           description: >
             Server-written browser sign-ins the install last reported through
             `reportDesktopPlatformSessions`. A value sent in a registration or
-            an update is ignored. Read it through `getPlatformSessions`, or, for
+            an update is ignored, and the stored value is carried forward. Read it through `getPlatformSessions`, or, for
             its owner, `getConnections`.
           $ref: "#/components/schemas/PlatformSessionList"
         platformSessionsReportedAt:
           type: string
           format: date-time
-          description: Server time of the report in `platformSessions`. A value sent in a registration is ignored.
+          description: Server time of the report in `platformSessions`. A value sent in a registration or an update is ignored, and the stored value is carried forward.
 
     PlatformSessionPlatform:
       type: string
@@ -1638,7 +1642,7 @@ components:
 
     PlatformSessionList:
       type: array
-      description: Browser sign-ins of one install, at most one per platform and handle.
+      description: Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.
       maxItems: 64
       items:
         $ref: "#/components/schemas/PlatformSession"

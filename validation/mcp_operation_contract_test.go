@@ -101,7 +101,7 @@ func readScopeFile(t *testing.T, root string) scopeFile {
 
 // Only the hosted reads carry x-mcp, every one exposed with its scope,
 // and the real tree passes Rule 48.
-func TestHostedMcpOperationsAreExactlyTheSixReads(t *testing.T) {
+func TestHostedMcpOperationsAreExactlyTheHostedReads(t *testing.T) {
 	root := repoRootDir(t)
 	got := map[string]string{}
 	var violations []Violation
