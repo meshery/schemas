@@ -112,6 +112,52 @@ async fn get_key_by_id_puts_the_id_in_the_path() {
 }
 
 #[tokio::test]
+async fn trailing_slash_in_base_url_does_not_double_the_separator() {
+    let server = MockServer::start().await;
+    let key_id = "11111111-2222-3333-4444-555555555555";
+    let mut stored = template();
+    stored["id"] = json!(key_id);
+
+    Mock::given(method("GET"))
+        .and(path(format!("/api/auth/keys/{key_id}")))
+        .respond_with(ResponseTemplate::new(200).set_body_json(&stored))
+        .expect(1)
+        .mount(&server)
+        .await;
+
+    let key = authenticated_client(&format!("{}/", server.uri()))
+        .get_key_by_id(&key_id.parse().unwrap())
+        .await
+        .expect("get succeeds with a trailing-slash base URL")
+        .into_inner();
+
+    assert_eq!(key.id.to_string(), key_id);
+}
+
+#[tokio::test]
+async fn path_stem_with_trailing_slash_is_normalized() {
+    let server = MockServer::start().await;
+    let key_id = "11111111-2222-3333-4444-555555555555";
+    let mut stored = template();
+    stored["id"] = json!(key_id);
+
+    Mock::given(method("GET"))
+        .and(path(format!("/meshery/api/auth/keys/{key_id}")))
+        .respond_with(ResponseTemplate::new(200).set_body_json(&stored))
+        .expect(1)
+        .mount(&server)
+        .await;
+
+    let key = authenticated_client(&format!("{}/meshery/", server.uri()))
+        .get_key_by_id(&key_id.parse().unwrap())
+        .await
+        .expect("get succeeds with a path stem and trailing slash")
+        .into_inner();
+
+    assert_eq!(key.id.to_string(), key_id);
+}
+
+#[tokio::test]
 async fn a_documented_error_status_surfaces_as_an_error() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))

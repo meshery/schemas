@@ -9,6 +9,7 @@ const paths = require("../build/lib/paths");
 const {
   MANIFEST_FILENAME,
   dependencyTableLines,
+  findGlueExecutable,
   generatedFileDigests,
   generatedHeader,
   getPilotPackages,
@@ -27,6 +28,26 @@ test("parseToolchainChannel accepts only an exact x.y.z release", () => {
   assert.throws(() => parseToolchainChannel('[toolchain]\nchannel = "stable"\n'), /exact release/);
   assert.throws(() => parseToolchainChannel('[toolchain]\nchannel = "1.99"\n'), /exact release/);
   assert.throws(() => parseToolchainChannel("[toolchain]\n"), /no \[toolchain\] channel/);
+});
+
+test("findGlueExecutable reads the binary path from cargo JSON artifacts", () => {
+  const artifact = (name, kind, executable) =>
+    JSON.stringify({ reason: "compiler-artifact", target: { name, kind }, executable });
+  const stdout = [
+    artifact("meshery-schemas-rust-gen", ["lib"], null),
+    "this line is not JSON and is skipped",
+    artifact("meshery-schemas-rust-gen", ["bin"], "/repo/build/rust-gen/target/x86_64-unknown-linux-gnu/debug/meshery-schemas-rust-gen"),
+  ].join("\n");
+
+  // A CARGO_BUILD_TARGET layout reports the triple-prefixed path, which a
+  // hardcoded target/debug assumption would miss.
+  assert.equal(
+    findGlueExecutable(stdout),
+    "/repo/build/rust-gen/target/x86_64-unknown-linux-gnu/debug/meshery-schemas-rust-gen",
+  );
+  assert.equal(findGlueExecutable(""), null);
+  assert.equal(findGlueExecutable(artifact("other-crate", ["bin"], "/x/other-crate")), null);
+  assert.equal(findGlueExecutable(artifact("meshery-schemas-rust-gen", ["bin"], null)), null);
 });
 
 test("lockedVersions reads one package's versions from a Cargo.lock", () => {

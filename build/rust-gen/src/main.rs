@@ -12,7 +12,10 @@
 //! text rustfmt never re-indents. `rustfmt` is the one on PATH, run from the
 //! caller's working directory, so rustup picks the toolchain pinned in
 //! `rust-toolchain.toml` when `build/generate-rust.js` runs this from the
-//! repository root.
+//! repository root. It also trims a trailing slash off `baseurl` in the
+//! generated client's shared constructor: progenitor stores it verbatim and
+//! every operation formats `{baseurl}/api/...`, so a trailing slash would
+//! double the separator.
 //!
 //! The client lands in `mod.rs` and the models in `types/`. The
 //! dependencies the generated code needs are printed to stdout as JSON for
@@ -62,13 +65,16 @@ fn run() -> Result<()> {
     for (path, tokens) in sdk.into_files() {
         let formatted = rustfmt(&tokens.to_string())
             .with_context(|| format!("formatting {}", path.display()))?;
-        let text = progenitor_impl::space_out_items(formatted)?;
+        let mut text = progenitor_impl::space_out_items(formatted)?;
         // The root module is the construct's module, not a crate root.
         let name = if path.as_path() == Path::new("lib.rs") {
             PathBuf::from("mod.rs")
         } else {
             path
         };
+        if name.as_path() == Path::new("mod.rs") {
+            text = normalize_baseurl(&text)?;
+        }
         let dest = output.join(&name);
         if let Some(parent) = dest.parent() {
             fs::create_dir_all(parent)?;
@@ -81,6 +87,26 @@ fn run() -> Result<()> {
         serde_json::to_string(&json!({ "dependencies": dependencies }))?
     );
     Ok(())
+}
+
+/// Progenitor stores `baseurl` verbatim and every operation formats
+/// `{baseurl}/api/...`, so a caller passing a trailing slash (or a path stem
+/// with one) gets a doubled separator and a route that never matches. Trim
+/// it in the shared constructor (`new_with_client`, which `new` also uses)
+/// so every operation inherits the fix. The match must be exactly one
+/// occurrence: a progenitor upgrade that changes the constructor shape fails
+/// loudly here instead of silently shipping the old behaviour.
+fn normalize_baseurl(text: &str) -> Result<String> {
+    const NEEDLE: &str = "baseurl: baseurl.to_string(),";
+    const REPLACEMENT: &str = "baseurl: baseurl.trim_end_matches('/').to_string(),";
+    let count = text.matches(NEEDLE).count();
+    if count != 1 {
+        bail!(
+            "expected exactly one `{NEEDLE}` in the generated client, found {count}; \
+             the progenitor output shape changed, update normalize_baseurl"
+        );
+    }
+    Ok(text.replacen(NEEDLE, REPLACEMENT, 1))
 }
 
 /// Format Rust source with the `rustfmt` on PATH, as `cargo-progenitor` does

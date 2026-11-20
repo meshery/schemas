@@ -30,7 +30,9 @@ use meshery_schemas::reqwest::header::{AUTHORIZATION, HeaderMap, HeaderValue};
 
 # async fn example() -> Result<(), Box<dyn std::error::Error>> {
 let mut headers = HeaderMap::new();
-headers.insert(AUTHORIZATION, HeaderValue::from_str("Bearer <token>")?);
+let mut token = HeaderValue::from_str("Bearer <token>")?;
+token.set_sensitive(true);
+headers.insert(AUTHORIZATION, token);
 let http = meshery_schemas::reqwest::Client::builder().default_headers(headers).build()?;
 let client = Client::new_with_client("https://cloud.example.com", http);
 let key = client.get_key_by_id(&"00000000-0000-0000-0000-000000000000".parse()?).await?;
@@ -49,6 +51,10 @@ println!("{}", key.into_inner().description.as_str());
   `maxLength` limits are checked when deserializing.
 
 ## Develop
+
+Set up the repository first: `make setup && npm install`
+([CONTRIBUTING.md](../CONTRIBUTING.md#quick-start)). `rustup toolchain install`
+alone does not install the Node packages `make generate-rust` needs.
 
 From the repository root:
 

@@ -316,6 +316,38 @@ function checkRustPrerequisites(pilotPackages) {
 }
 
 /**
+ * Find the glue executable in `cargo build --message-format=json` output.
+ * CARGO_BUILD_TARGET (environment or .cargo/config.toml) moves the binary
+ * under target/<triple>/debug, so the path is read from Cargo's artifact
+ * report instead of assuming target/debug.
+ *
+ * @param {string} cargoStdout - stdout of the cargo build
+ * @returns {string|null} Absolute path of the glue binary, or null when no
+ *   matching artifact was reported
+ */
+function findGlueExecutable(cargoStdout) {
+  for (const line of String(cargoStdout).split("\n")) {
+    let message;
+    try {
+      message = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    if (
+      message.reason === "compiler-artifact" &&
+      message.executable &&
+      message.target &&
+      message.target.name === GLUE_BINARY &&
+      Array.isArray(message.target.kind) &&
+      message.target.kind.includes("bin")
+    ) {
+      return message.executable;
+    }
+  }
+  return null;
+}
+
+/**
  * Build the glue crate once (locked) and return its binary path.
  *
  * @returns {string} Absolute path of the glue binary
@@ -324,10 +356,21 @@ function buildGlue() {
   const manifestPath = paths.fromRoot(config.paths.rustGenDir, CARGO_TOML);
   const targetDir = paths.fromRoot(config.paths.rustGenDir, "target");
   logger.step(`Building ${config.paths.rustGenDir} (${config.rust.generatorCrate} ${config.rust.generatorVersion})...`);
-  run("cargo", ["build", "--locked", "--quiet", "--manifest-path", manifestPath], {
+  // --message-format=json (not --quiet) so the binary is located from
+  // Cargo's artifact report: an inherited CARGO_BUILD_TARGET moves it under
+  // target/<triple>/debug, and assuming target/debug would run a stale
+  // binary or fail outright. The glue runs on this machine, so the host
+  // artifact is the one to take; no --target flag is passed.
+  const { stdout } = run("cargo", ["build", "--locked", "--message-format=json", "--manifest-path", manifestPath], {
     env: { ...process.env, CARGO_TARGET_DIR: targetDir },
   });
-  return path.join(targetDir, "debug", process.platform === "win32" ? `${GLUE_BINARY}.exe` : GLUE_BINARY);
+  const glue = findGlueExecutable(stdout);
+  if (!glue) {
+    throw new Error(
+      `cargo build reported no ${GLUE_BINARY} executable artifact; run 'cargo build --locked --manifest-path ${manifestPath}' to see why`,
+    );
+  }
+  return glue;
 }
 
 /**
@@ -336,7 +379,7 @@ function buildGlue() {
  * @param {string} glue - Glue binary path
  * @param {Object} pkg - Package definition
  * @param {string} stagingRoot - Temp directory holding per-package output
- * @returns {{dependencies: string[], stagedDir: string}} Generator record
+ * @returns {{dependencies: string[], stagedDir: string, specSnapshot: string}} Generator record
  */
 function generatePilotPackage(glue, pkg, stagingRoot) {
   const specRelative = config.getBundledOutputPath(pkg);
@@ -344,7 +387,14 @@ function generatePilotPackage(glue, pkg, stagingRoot) {
 
   logger.step(`Generating Rust client: ${pkg.name} (${pkg.version})...`);
 
-  const { stdout, stderr } = run(glue, [paths.fromRoot(specRelative), stagedDir]);
+  // Copy the bundled spec into staging and hand the glue that snapshot:
+  // the manifest digest must describe exactly the bytes the glue read,
+  // not whatever the repository path holds when the digest is computed
+  // later in assembleCrate.
+  const specSnapshot = path.join(stagingRoot, `${pkg.version}-${pkg.dirName}-spec.json`);
+  fs.copyFileSync(paths.fromRoot(specRelative), specSnapshot);
+
+  const { stdout, stderr } = run(glue, [specSnapshot, stagedDir]);
   if (stderr.trim() !== "") {
     throw new Error(`Rust generation for ${pkg.version}/${pkg.dirName} wrote to stderr (treated as an error):\n${stderr}`);
   }
@@ -368,7 +418,7 @@ function generatePilotPackage(glue, pkg, stagingRoot) {
   run("rustfmt", ["--edition", "2024", path.join(stagedDir, "mod.rs")]);
 
   logger.success(`Generated: ${pkg.version}/${pkg.name} (${files.length} file(s))`);
-  return { dependencies, stagedDir };
+  return { dependencies, stagedDir, specSnapshot };
 }
 
 /**
@@ -425,7 +475,11 @@ function assembleCrate(pilotPackages, stagedByKey, toolchain) {
     const key = `${pkg.version}/${pkg.dirName}`;
     const record = stagedByKey.get(key);
     const specRelative = config.getBundledOutputPath(pkg);
-    specs[key] = { spec: specRelative, sha256: specDigest(paths.fromRoot(specRelative)) };
+    // Digest the staged snapshot the glue actually read, not the
+    // repository path: the two are byte-identical at generation time, but
+    // only the snapshot is proof of what the code was generated from. The
+    // manifest keeps the repository path as `spec`.
+    specs[key] = { spec: specRelative, sha256: specDigest(record.specSnapshot) };
     dependencies[key] = record.dependencies;
 
     const destDir = path.join(crateRoot, "src", pkg.name);
@@ -495,6 +549,7 @@ module.exports = {
   checkRustToolchain,
   copyStagedTree,
   dependencyTableLines,
+  findGlueExecutable,
   generatedFileDigests,
   generatedHeader,
   getPilotPackages,

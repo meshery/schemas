@@ -52,7 +52,7 @@ impl Client {
     #[doc = r" as well as port and a path stem if applicable."]
     pub fn new_with_client(baseurl: &str, client: reqwest::Client) -> Self {
         Self {
-            baseurl: baseurl.to_string(),
+            baseurl: baseurl.trim_end_matches('/').to_string(),
             client,
         }
     }

@@ -11,7 +11,7 @@
     }
   },
   "files": {
-    "src/key/mod.rs": "68d8b248f74b369c45e059ab661699ea83056673287d9b616e16097bf9bdd227",
+    "src/key/mod.rs": "d81dc073738aeacfd06768c69dd543498999eb8768720bbbf6eefc7b5aa558e9",
     "src/key/types/error.rs": "f409112d0062d08bf304780198647c1b6ff48f50e2582cf7dc858202b9acb75f",
     "src/key/types/mod.rs": "5a71e29995b18f003d5cc7f7cee439c86de4d75994e2866ff24f838f2c120bd7"
   },
