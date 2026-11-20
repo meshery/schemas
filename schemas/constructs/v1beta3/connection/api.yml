@@ -932,7 +932,10 @@ components:
     # connection carries the public URL of the target (profile, page,
     # channel, repository, blog) in `metadata.url`, an absolute https URL; its
     # secret stays in the credential named by `credentialId` and never
-    # appears in the connection.
+    # appears in the connection. Consumers (Layer5 Cloud, Blowhorn) refuse a
+    # destination credential on a connection whose kind is not listed here, so
+    # every platform a publishing client targets must be added to this enum;
+    # validation/destination_kind_contract_test.go pins the set.
     DestinationKind:
       type: string
       description: A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
@@ -948,6 +951,10 @@ components:
         - bluesky
         - github
         - blog
+        - youtube
+        - tiktok
+        - instagram
+        - facebook
       x-enum-varnames:
         - DestinationKindLinkedin
         - DestinationKindX
@@ -957,6 +964,10 @@ components:
         - DestinationKindBluesky
         - DestinationKindGithub
         - DestinationKindBlog
+        - DestinationKindYoutube
+        - DestinationKindTiktok
+        - DestinationKindInstagram
+        - DestinationKindFacebook
 
     ConnectionDefinition:
       description: A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
