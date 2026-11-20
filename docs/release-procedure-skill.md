@@ -178,6 +178,14 @@ Common issues:
 - Dependency installation failures (Node/Go)
 - oapi-codegen not found (check PATH in workflow)
 - Git auth issues (check MESHERY_CI token)
+- `GH006: Protected branch update failed ... Required status check "PR must be raised via no-mistakes" is expected` on a workflow's commit-back step. `master` requires that check, so a workflow can push to it only with a token that bypasses branch protection (`MESHERY_CI` or `GH_ACCESS_TOKEN`). `stefanzweifel/git-auto-commit-action@v7` has no `token` input; it pushes with whatever credential `actions/checkout` persisted, so the token must be set on the checkout step, not on the commit step.
+
+If `publish-npm-package.yml` fails after its `npm publish` step succeeded, the package is already on npm and must not be republished. Re-running the failed run would attempt the same version again and fail. Instead, run the jobs that were skipped:
+
+```bash
+gh workflow run notify-dependents.yml -f release_version=<TAG>
+gh workflow run publish-openapi-docs.yml
+```
 
 Contact the team if the error is not obvious.
 
