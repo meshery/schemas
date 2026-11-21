@@ -418,7 +418,13 @@ func TestOrganizationSelectionRequiredIsDeclared(t *testing.T) {
 	if got := fmt.Sprint(mustLookup(t, body, "properties", "message", "minLength")); got != "1" {
 		t.Errorf("message minLength = %v, want 1", got)
 	}
-	items := mustLookup(t, body, "properties", "choices", "items")
+	if got := mustValue(mustLookup(t, body, "properties", "choices", "items"), "$ref"); got != "#/components/schemas/OrganizationSelectionChoice" {
+		t.Errorf("choices items $ref = %v, want the named OrganizationSelectionChoice", got)
+	}
+	items := mustLookup(t, core, "components", "schemas", "OrganizationSelectionChoice")
+	if mirror := mustLookup(t, v1alpha1, "components", "schemas", "OrganizationSelectionChoice"); !reflect.DeepEqual(items, mirror) {
+		t.Error("v1alpha1/core OrganizationSelectionChoice differs from v1beta2/core; keep the mirror identical")
+	}
 	if got := anyStrings(mustValue(items, "required")); !reflect.DeepEqual(got, []string{"id", "name", "description"}) {
 		t.Errorf("choices item required = %v, want [id name description]", got)
 	}
