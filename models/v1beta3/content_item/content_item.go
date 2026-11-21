@@ -354,6 +354,9 @@ type InsertConflict struct {
 // CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError429 = core.MeshkitError
 
+// CoreOrganizationSelectionRequired The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type CoreOrganizationSelectionRequired = core.OrganizationSelectionRequiredError
+
 // AsContentItemInsertConflict returns the union data inside the InsertConflict as a ContentItemInsertConflict
 func (t InsertConflict) AsContentItemInsertConflict() (ContentItemInsertConflict, error) {
 	var body ContentItemInsertConflict

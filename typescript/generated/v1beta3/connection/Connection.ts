@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get all connections
-         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
+         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, a sent `orgId` query names the acting organization (subject to the live-membership rule) and does not have to equal a selected organization.
          */
         get: operations["getConnections"];
         put?: never;
@@ -2382,6 +2382,35 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+        OrganizationSelectionRequired: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /**
+                     * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                     * @enum {string}
+                     */
+                    code: "organization_selection_required";
+                    /** @description The sentence the caller is shown. */
+                    message: string;
+                    /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                    choices: {
+                        /**
+                         * Format: uuid
+                         * @description Organization ID.
+                         */
+                        id: string;
+                        /** @description Name of the organization. */
+                        name: string;
+                        /** @description Description of the organization. */
+                        description: string;
+                    }[];
+                };
+            };
+        };
         /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
         MeshkitError429: {
             headers: {
@@ -2432,7 +2461,7 @@ export interface components {
         };
     };
     parameters: {
-        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
         currentOrgId: string;
         /** @description Connection ID */
         connectionId: string;
@@ -2488,7 +2517,7 @@ export interface operations {
                 name?: string;
             };
             header?: {
-                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
                 "X-Current-Orgid"?: string;
             };
             path?: never;
@@ -2907,6 +2936,35 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                         * @enum {string}
+                         */
+                        code: "organization_selection_required";
+                        /** @description The sentence the caller is shown. */
+                        message: string;
+                        /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                        choices: {
+                            /**
+                             * Format: uuid
+                             * @description Organization ID.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Description of the organization. */
+                            description: string;
+                        }[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -5869,7 +5927,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
                 "X-Current-Orgid"?: string;
             };
             path: {
@@ -6063,7 +6121,7 @@ export interface operations {
                 installationId?: string;
             };
             header?: {
-                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
                 "X-Current-Orgid"?: string;
             };
             path?: never;
@@ -6187,6 +6245,35 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                         * @enum {string}
+                         */
+                        code: "organization_selection_required";
+                        /** @description The sentence the caller is shown. */
+                        message: string;
+                        /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                        choices: {
+                            /**
+                             * Format: uuid
+                             * @description Organization ID.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Description of the organization. */
+                            description: string;
+                        }[];
+                    };
                 };
             };
             /** @description Internal server error */

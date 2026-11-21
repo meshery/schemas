@@ -520,3 +520,6 @@ type TeamId = uuid.UUID
 
 // UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type UserId = core.Uuid
+
+// CoreOrganizationSelectionRequired The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type CoreOrganizationSelectionRequired = core.OrganizationSelectionRequiredError

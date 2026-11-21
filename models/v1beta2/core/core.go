@@ -183,6 +183,11 @@ const (
 	Fatal     MeshkitErrorSeverity = "fatal"
 )
 
+// Defines values for OrganizationSelectionRequiredErrorCode.
+const (
+	OrganizationSelectionRequiredErrorCodeOrganizationSelectionRequired OrganizationSelectionRequiredErrorCode = "organization_selection_required"
+)
+
 // Defines values for RelationshipStyles1TextTransform.
 const (
 	RelationshipStyles1TextTransformLowercase RelationshipStyles1TextTransform = "lowercase"
@@ -707,6 +712,30 @@ type OperationID = uuid.UUID
 // OrganizationId defines model for OrganizationId.
 type OrganizationId = uuid.UUID
 
+// OrganizationSelectionRequiredError The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type OrganizationSelectionRequiredError struct {
+	// Choices The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.
+	Choices []struct {
+		// Description Description of the organization.
+		Description string `json:"description" yaml:"description"`
+
+		// ID Organization ID.
+		ID uuid.UUID `json:"id" yaml:"id"`
+
+		// Name Name of the organization.
+		Name string `json:"name" yaml:"name"`
+	} `json:"choices" yaml:"choices"`
+
+	// Code Machine-readable reason. Always `organization_selection_required` for this body.
+	Code OrganizationSelectionRequiredErrorCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// OrganizationSelectionRequiredErrorCode Machine-readable reason. Always `organization_selection_required` for this body.
+type OrganizationSelectionRequiredErrorCode string
+
 // OwnershipTransferPayload Request body for transferring ownership of a resource to another user. Used uniformly across all ownable resource constructs.
 type OwnershipTransferPayload struct {
 	// NewOwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -1043,6 +1072,9 @@ type MeshkitError500 = MeshkitError
 
 // MeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError502 = MeshkitError
+
+// OrganizationSelectionRequired The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type OrganizationSelectionRequired = OrganizationSelectionRequiredError
 
 // Getter for additional properties for ComponentStyles. Returns the specified
 // element and whether it was found

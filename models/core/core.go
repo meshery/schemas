@@ -37,6 +37,11 @@ const (
 	Fatal     MeshkitErrorSeverity = "fatal"
 )
 
+// Defines values for OrganizationSelectionRequiredErrorCode.
+const (
+	OrganizationSelectionRequired OrganizationSelectionRequiredErrorCode = "organization_selection_required"
+)
+
 // Defines values for Visibility.
 const (
 	Private   Visibility = "private"
@@ -255,6 +260,30 @@ type NonResolvedAlias struct {
 	// RelationshipId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	RelationshipId Uuid `json:"relationship_id" yaml:"relationship_id"`
 }
+
+// OrganizationSelectionRequiredError The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type OrganizationSelectionRequiredError struct {
+	// Choices The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.
+	Choices []struct {
+		// Description Description of the organization.
+		Description string `json:"description" yaml:"description"`
+
+		// ID Organization ID.
+		ID uuid.UUID `json:"id" yaml:"id"`
+
+		// Name Name of the organization.
+		Name string `json:"name" yaml:"name"`
+	} `json:"choices" yaml:"choices"`
+
+	// Code Machine-readable reason. Always `organization_selection_required` for this body.
+	Code OrganizationSelectionRequiredErrorCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// OrganizationSelectionRequiredErrorCode Machine-readable reason. Always `organization_selection_required` for this body.
+type OrganizationSelectionRequiredErrorCode string
 
 // ResolvedAlias defines model for ResolvedAlias.
 type ResolvedAlias struct {
