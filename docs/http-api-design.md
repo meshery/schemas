@@ -463,6 +463,13 @@ scope is a keychain. Full contract:
   answers `409` with the body `code` `idempotency_key_in_flight`. An in-flight
   claim expires after the same 24 hours. `insertContentItem` and
   `createSchedule` take it.
+- A call that needs an acting organization, where the caller named none and
+  more than one of the caller's live organizations qualifies, answers `409`
+  with the body `code` `organization_selection_required` and a `choices` list
+  (`OrganizationSelectionRequiredError`, shared as the
+  `OrganizationSelectionRequired` response in `v1beta2/core`), beside the
+  in-flight body above. A missing organization is never `401`. Resolution
+  order and body: [`mcp-operation-contract.md`](mcp-operation-contract.md#the-organization-selector).
 - `v1beta3/request` is the one generic request-for-a-decision construct:
   `listRequests`, `getRequest`, `approveRequest`, `denyRequest`, with
   `approve` and `deny` as POST action sub-resources like the claim routes.
