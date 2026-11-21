@@ -261,19 +261,22 @@ type NonResolvedAlias struct {
 	RelationshipId Uuid `json:"relationship_id" yaml:"relationship_id"`
 }
 
+// OrganizationSelectionChoice An organization the call could act in. Same fields as AvailableOrganization.
+type OrganizationSelectionChoice struct {
+	// Description Description of the organization.
+	Description string `json:"description" yaml:"description"`
+
+	// ID Organization ID.
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// Name Name of the organization.
+	Name string `json:"name" yaml:"name"`
+}
+
 // OrganizationSelectionRequiredError The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
 type OrganizationSelectionRequiredError struct {
 	// Choices The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.
-	Choices []struct {
-		// Description Description of the organization.
-		Description string `json:"description" yaml:"description"`
-
-		// ID Organization ID.
-		ID uuid.UUID `json:"id" yaml:"id"`
-
-		// Name Name of the organization.
-		Name string `json:"name" yaml:"name"`
-	} `json:"choices" yaml:"choices"`
+	Choices []OrganizationSelectionChoice `json:"choices" yaml:"choices"`
 
 	// Code Machine-readable reason. Always `organization_selection_required` for this body.
 	Code OrganizationSelectionRequiredErrorCode `json:"code" yaml:"code"`

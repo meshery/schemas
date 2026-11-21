@@ -691,6 +691,18 @@ export interface components {
                 description: string;
             }[];
         };
+        /** @description An organization the call could act in. Same fields as AvailableOrganization. */
+        OrganizationSelectionChoice: {
+            /**
+             * Format: uuid
+             * @description Organization ID.
+             */
+            id: string;
+            /** @description Name of the organization. */
+            name: string;
+            /** @description Description of the organization. */
+            description: string;
+        };
         /** @description A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way. */
         MeshkitError: {
             /** @description The sentence the caller is shown. */

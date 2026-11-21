@@ -1711,6 +1711,36 @@ const CoreSchema: Record<string, unknown> = {
           }
         }
       },
+      "OrganizationSelectionChoice": {
+        "type": "object",
+        "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "description": "Organization ID.",
+            "x-go-name": "ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the organization."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the organization."
+          }
+        }
+      },
       "MeshkitError": {
         "type": "object",
         "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
