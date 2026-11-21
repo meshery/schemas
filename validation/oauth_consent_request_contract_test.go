@@ -294,14 +294,14 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 	}
 }
 
-// Where the client sends the user is split by kind, so the consent page never
-// shows an app as a host: redirectHosts holds the host of each redirect URI
-// that has one, appSchemes the scheme of one that has none. The patterns only
-// check each entry's shape (a host has no scheme, path, userinfo or
-// whitespace, and an optional :port; a scheme is an RFC 3986 token, never http or https). They do not
-// keep a value out of the wrong list: a reverse-domain scheme such as
-// github.com is valid in both, and only the server's classification by
-// redirect URI places it (in appSchemes).
+// Where the client sends the user is split by scheme, so the consent page never
+// shows an app as a host: redirectHosts holds the host (with an optional :port)
+// of each http or https redirect URI, appSchemes the scheme of every other
+// redirect URI. The patterns only check each entry's shape (a host has no
+// scheme, path, userinfo or whitespace, and an optional :port; a scheme is an
+// RFC 3986 token, never http or https). They do not keep a value out of the
+// wrong list: a reverse-domain scheme such as github.com is valid in both, and
+// only the server's classification by redirect URI places it (in appSchemes).
 func TestOauthConsentClientRedirectTargets(t *testing.T) {
 	spec := loadOauthConsentRequestSpec(t)
 	client := spec.Components.Schemas["OauthConsentClient"].Value
