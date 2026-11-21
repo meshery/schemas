@@ -101,9 +101,11 @@ Pick a token that exists in exactly one of the two versions, then count it in
   [`casing-rules.md`](casing-rules.md): `accepted_by` vs `acceptedBy`, `price_per_unit` vs
   `pricePerUnit`. Prefer construct-unique fields; `created_at`/`updatedAt` appear across many
   constructs and will not discriminate.
-- **Operations added in the successor** - e.g. `v1beta3/event` adds `createEvent`,
-  `deleteEvent`, `bulkDeleteEvents`, `bulkUpdateEventStatus`, `updateEventStatus`; the
-  presence of those `operationId`s proves v1beta3 won.
+- **Operations added in the successor** - e.g. the Cloud provider in `v1beta3/event`
+  adds `createEvent`, `deleteEvent`, `bulkDeleteEvents`, `bulkUpdateEventStatus`, and
+  `updateEventStatus`; their presence in `cloudApi` proves v1beta3 won. They are
+  intentionally absent from `mesheryApi`; see
+  [Event mutations during the Meshery Server migration](http-api-design.md#event-mutations-during-the-meshery-server-migration).
 - **Operations absent in the predecessor** - `v1beta1/keychain` declares paths but no
   `operationId`s at all, so any `getKeychains` in the bundle is v1beta2.
 
