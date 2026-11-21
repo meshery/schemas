@@ -13,6 +13,8 @@ on:
       - 'schemas/**'
       - 'models/**'
       - 'python/**'
+      - 'rust/**'
+      - 'rust-toolchain.toml'
       - 'tests/**'
       - 'typescript/**'
       - 'package.json'
@@ -32,6 +34,8 @@ on:
       - 'schemas/**'
       - 'models/**'
       - 'python/**'
+      - 'rust/**'
+      - 'rust-toolchain.toml'
       - 'tests/**'
       - 'typescript/**'
       - 'package.json'
@@ -107,6 +111,25 @@ jobs:
 
       - name: Run Python guard tests
         run: make test-python
+
+      # `test-rust` does not regenerate either: it guards the committed pilot
+      # crate against its manifest (bundled-spec and generated-file digests,
+      # generator and toolchain pins), then runs cargo fmt --check, clippy
+      # with -D warnings, cargo test, and a wasm32-unknown-unknown build.
+      # rust-toolchain.toml is the single source of truth for the toolchain;
+      # `rustup toolchain install` with no argument installs what it pins.
+      - name: Install Rust toolchain
+        run: rustup toolchain install
+
+      - name: Cache Rust build output
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
+            build/rust-gen
+
+      - name: Run Rust guard tests
+        run: make test-rust
 
   advisory-audit:
     name: Full schema audit

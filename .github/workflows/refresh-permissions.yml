@@ -82,4 +82,3 @@ jobs:
             models/permissions/permissions.go
             typescript/permissions.ts
             permissions_history/*-permissions_index.json
-          token: ${{ secrets.MESHERY_CI }}

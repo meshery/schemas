@@ -25,6 +25,9 @@ const paths = {
   modelsDir: "models",
   typescriptDir: "typescript/generated",
   pythonDir: "python/generated",
+  rustDir: "rust",
+  rustGenDir: "build/rust-gen",
+  rustToolchainFile: "rust-toolchain.toml",
 
   // Build config files
   openapiConfig: "build/openapi.config.yml",
@@ -75,6 +78,32 @@ const python = {
   // build/generate-python.js); generation fails on any warning that is
   // not listed here.
   warningAllowlist: [],
+};
+
+/**
+ * Rust client generation settings (pilot, mirrors the Python pilot above).
+ *
+ * The models and client come from progenitor (Oxide), run as a library by
+ * the thin glue crate in build/rust-gen/ because the cargo-progenitor
+ * binary formats with nightly-only rustfmt options. The generator pin lives
+ * in build/rust-gen/Cargo.toml (`=` requirement) and its Cargo.lock; this
+ * object restates it so build/generate-rust.js and
+ * tests/generate-rust.test.js can refuse any other version. The Rust
+ * toolchain (which also provides the rustfmt that shapes the output) is
+ * pinned in rust-toolchain.toml at the repository root.
+ */
+const rust = {
+  generatorCrate: "progenitor",
+  generatorVersion: "0.17.0",
+  // progenitor GenerationSettings, as cargo-progenitor names them.
+  interface: "positional",
+  tags: "merged",
+  // Pilot scope, as "version/dirName" keys: the same constructs the Python
+  // pilot covers (config.python.pilotPackages). Widen both together.
+  pilotPackages: ["v1beta2/key"],
+  // Crate identity for rust/Cargo.toml (crates.io name and Rust lib name).
+  crateName: "meshery-schemas",
+  libName: "meshery_schemas",
 };
 
 /**
@@ -344,6 +373,7 @@ module.exports = {
   paths,
   mergedConstructFilename,
   python,
+  rust,
   packageNameOverrides,
   excludePackages,
   excludeFromMerge,
