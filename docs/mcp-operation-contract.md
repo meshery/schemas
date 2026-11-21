@@ -168,8 +168,9 @@ run in that organization exactly as for any other call.
 in this order:
 
 1. the `X-Current-Orgid` header (the `organizationId` tool argument), when sent;
-2. otherwise the caller's selected organization, when it is not nil;
-3. otherwise server-side defaulting among the caller's live memberships.
+2. otherwise the path or query `orgId`, on an operation that takes one, when sent;
+3. otherwise the caller's selected organization, when it is not nil;
+4. otherwise server-side defaulting among the caller's live memberships.
 
 When exactly one live organization qualifies, it is used. A server never uses
 an organization the caller is not a live member of. When several qualify
