@@ -38,10 +38,11 @@ const ConnectionSchema: Record<string, unknown> = {
         "x-mcp": {
           "expose": true,
           "title": "Get connections",
-          "scope": "connections:read"
+          "scope": "connections:read",
+          "description": "Read-only. Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, a sent `orgId` query names the acting organization (subject to the live-membership rule) and does not have to equal a selected organization."
         },
         "summary": "Get all connections",
-        "description": "Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.\n",
+        "description": "Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, a sent `orgId` query names the acting organization (subject to the live-membership rule) and does not have to equal a selected organization.\n",
         "parameters": [
           {
             "name": "page",
@@ -99,7 +100,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "name": "X-Current-Orgid",
             "in": "header",
             "required": false,
-            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
             "schema": {
               "type": "string",
               "minLength": 36,
@@ -1343,6 +1344,72 @@ const ConnectionSchema: Record<string, unknown> = {
               }
             }
           },
+          "409": {
+            "description": "Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+                  "required": [
+                    "code",
+                    "message",
+                    "choices"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+                      "enum": [
+                        "organization_selection_required"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+                      "items": {
+                        "type": "object",
+                        "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+                        "required": [
+                          "id",
+                          "name",
+                          "description"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "description": "Organization ID.",
+                            "x-go-name": "ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the organization."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the organization."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1365,7 +1432,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "registerConnection",
         "summary": "Register a new connection",
-        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nEvery connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body. When the session names none, the server may use the caller's only organization (Meshery Cloud: the only live organization the caller belongs to, else the only one of those the caller owns); it must not guess between several, and answers 400 instead.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. One sign-in can back one install's connections in several organizations, so a token is revoked only once no live connection of the same owner still links it: removing or superseding one organization's connection must not sign the install out of another. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
+        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nEvery connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body. When the session names none, the server may use the caller's only organization (Meshery Cloud: the only live organization the caller belongs to, else the only one of those the caller owns); it must not guess between several, and answers 400 instead.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A repeat registration carries the stored `metadata.platformSessions` and `metadata.platformSessionsReportedAt` forward from the stored row: it can neither set nor erase them. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. One sign-in can back one install's connections in several organizations, so a token is revoked only once no live connection of the same owner still links it: removing or superseding one organization's connection must not sign the install out of another. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
         "parameters": [
           {
             "name": "X-Current-Orgid",
@@ -5711,7 +5778,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "updateConnection",
         "summary": "Update a connection",
-        "description": "Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct. `organizationId` is not in the body. The server keeps the organization assigned at registration.\n",
+        "description": "Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct. On a `desktop` connection the server-written metadata keys `tokenId`, `lastSeenAt`, `platformSessions` and `platformSessionsReportedAt` are likewise carried forward from the stored row: an edit can neither set nor erase them, so a report can only be written through `reportDesktopPlatformSessions`. `organizationId` is not in the body. The server keeps the organization assigned at registration.\n",
         "parameters": [
           {
             "name": "connectionId",
@@ -9078,6 +9145,798 @@ const ConnectionSchema: Record<string, unknown> = {
                       "description": "MeshKit's suggested remediations for the error.",
                       "items": {
                         "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/connections/desktop/{installationId}/platform-sessions": {
+      "put": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "operationId": "reportDesktopPlatformSessions",
+        "summary": "Report which social accounts a desktop install is signed in to",
+        "description": "A desktop app install reports, for the computer it runs on, each browser sign-in it has checked: the platform, the account handle, the Blowhorn profile and Chrome profile that hold it, and when the sign-in was last verified. Servers implementing this contract must store the report as `metadata.platformSessions` of the caller's `desktop` connection whose `metadata.installationId` matches, replace any earlier report in full (an empty `sessions` array clears it), and set `metadata.platformSessionsReportedAt` to the current time. The report is the only writer of those two fields: a `desktop` registration ignores a value for either, as it ignores `tokenId`. Servers must scope the write to the caller: a connection registered by another user is not found. An install registers one connection per organization, so the report applies to the install's connection in the session organization (`X-Current-Orgid`, then the caller's selected organization), and the caller must be a live member of it: a caller who is not, or who has no such connection there, receives `404` and nothing is stored. A token bound only to the hosted MCP resource (scope `connections:read`) is refused with `403`: no tool writes. The report carries no cookie, token, credential or Google account email, and servers must refuse a body that carries any key the schema does not name. Servers must also refuse with `400` a report that lists two sessions with the same `platform` and `handle`, handles compared case-insensitively (or two without a `handle` on one platform), and a `socialConnectionId` that does not name a connection of the session organization the caller may see. When nothing matches, the server answers 404 and stores nothing.\n",
+        "parameters": [
+          {
+            "name": "installationId",
+            "in": "path",
+            "description": "Installation identifier from `metadata.installationId`.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+              "minLength": 1,
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "The body a desktop install sends to report its browser sign-ins. It replaces the earlier report in full.",
+                "additionalProperties": false,
+                "required": [
+                  "sessions"
+                ],
+                "properties": {
+                  "sessions": {
+                    "type": "array",
+                    "description": "Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.",
+                    "maxItems": 64,
+                    "items": {
+                      "type": "object",
+                      "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+                      "additionalProperties": false,
+                      "required": [
+                        "platform",
+                        "state",
+                        "lastVerifiedAt"
+                      ],
+                      "properties": {
+                        "platform": {
+                          "type": "string",
+                          "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        },
+                        "handle": {
+                          "type": "string",
+                          "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+                          "minLength": 1,
+                          "maxLength": 255,
+                          "pattern": "^[^@\\s]+$"
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+                          "enum": [
+                            "signed_in",
+                            "signed_out",
+                            "unknown"
+                          ]
+                        },
+                        "lastVerifiedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "When the install last checked this sign-in, as the install read it."
+                        },
+                        "blowhornProfile": {
+                          "type": "string",
+                          "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+                          "minLength": 1,
+                          "maxLength": 255,
+                          "pattern": "^[^@]+$"
+                        },
+                        "chromeProfile": {
+                          "type": "object",
+                          "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+                          "additionalProperties": false,
+                          "required": [
+                            "directory"
+                          ],
+                          "properties": {
+                            "directory": {
+                              "type": "string",
+                              "description": "Chrome's profile directory name, for example `Profile 1`.",
+                              "minLength": 1,
+                              "maxLength": 255
+                            },
+                            "displayName": {
+                              "type": "string",
+                              "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                              "maxLength": 255,
+                              "pattern": "^[^@]*$"
+                            }
+                          }
+                        },
+                        "identity": {
+                          "type": "string",
+                          "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+                          "enum": [
+                            "ok",
+                            "drift",
+                            "missing",
+                            "unknown"
+                          ]
+                        },
+                        "socialConnectionId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The stored report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "The report stored for one desktop install.",
+                  "additionalProperties": false,
+                  "required": [
+                    "installationId",
+                    "reportedAt",
+                    "sessions"
+                  ],
+                  "properties": {
+                    "installationId": {
+                      "type": "string",
+                      "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "x-go-type": "string"
+                    },
+                    "reportedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Server time the report was stored."
+                    },
+                    "sessions": {
+                      "type": "array",
+                      "description": "Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.",
+                      "maxItems": 64,
+                      "items": {
+                        "type": "object",
+                        "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+                        "additionalProperties": false,
+                        "required": [
+                          "platform",
+                          "state",
+                          "lastVerifiedAt"
+                        ],
+                        "properties": {
+                          "platform": {
+                            "type": "string",
+                            "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "pattern": "^[a-z0-9][a-z0-9-]*$"
+                          },
+                          "handle": {
+                            "type": "string",
+                            "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "pattern": "^[^@\\s]+$"
+                          },
+                          "state": {
+                            "type": "string",
+                            "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+                            "enum": [
+                              "signed_in",
+                              "signed_out",
+                              "unknown"
+                            ]
+                          },
+                          "lastVerifiedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "When the install last checked this sign-in, as the install read it."
+                          },
+                          "blowhornProfile": {
+                            "type": "string",
+                            "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "pattern": "^[^@]+$"
+                          },
+                          "chromeProfile": {
+                            "type": "object",
+                            "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+                            "additionalProperties": false,
+                            "required": [
+                              "directory"
+                            ],
+                            "properties": {
+                              "directory": {
+                                "type": "string",
+                                "description": "Chrome's profile directory name, for example `Profile 1`.",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "displayName": {
+                                "type": "string",
+                                "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                                "maxLength": 255,
+                                "pattern": "^[^@]*$"
+                              }
+                            }
+                          },
+                          "identity": {
+                            "type": "string",
+                            "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+                            "enum": [
+                              "ok",
+                              "drift",
+                              "missing",
+                              "unknown"
+                            ]
+                          },
+                          "socialConnectionId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/platform-sessions": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "operationId": "getPlatformSessions",
+        "x-mcp": {
+          "expose": true,
+          "title": "Where accounts are signed in",
+          "scope": "connections:read",
+          "description": "Read-only. Returns a page of matching social account sessions reported by visible desktop installations in the selected organization, including the computer and session details. Filters never broaden the caller's access. An `X-Current-Orgid` that is not a UUID answers 400."
+        },
+        "summary": "Find where a social account is signed in",
+        "description": "Answers \"where is this social account signed in?\": for each desktop install that reported a browser sign-in matching the filters, returns the computer (connection id, install id, host name, status and last heartbeat) and the session it reported (platform, handle, state, when it was last verified, the Blowhorn profile and the Chrome profile that hold it, and the connection of the account itself). Servers implementing this contract read `metadata.platformSessions` of the session organization's live `desktop` connections and return of their metadata only those sessions, `platformSessionsReportedAt`, `hostname`, `os` and `lastSeenAt`, never any other part of it, a credential, a cookie, a token or a Google account email. The `status` and `lastSeenAt` of the computer follow the heartbeat rule of `recordConnectionHeartbeat`, so a client can tell a session reported by a computer that is offline now. A caller sees the connections it owns and, when it is an organization admin, every connection in the organization: the visibility rule of `DesktopConnectionMetadata`. Rows are ordered by `lastVerifiedAt` (a time the install reported, by its own clock), newest first, then by `connectionId`, `platform` and `handle`, so pages are stable.\n\nTenancy is enforced by the server that implements this contract (Blowhorn Cloud), never by a client, a gateway or an MCP tool, which pass the caller's identity and the organization selector through unchanged. The server runs the same organization membership and permission checks as `getConnections`, keyed by the permission `View Connections` (Workspace Management), the one behind the `connections:read` scope, for the organization named by `X-Current-Orgid` (for the hosted MCP tool, the optional `organizationId` argument), else the caller's selected organization: a caller who is not a live member of that organization receives `404`, the same answer as for an unknown organization, and a member without that permission is refused with `403`. It returns only sessions reported by `desktop` connections of that organization that the caller may see, and never one of another user's installs unless the caller administers the organization. A filter never widens the scope: `installationId` naming an install the caller may not see matches nothing. `totalCount` counts only rows the caller may see, after that scoping and every filter, so it never reveals another user's installs.\n",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "description": "Only sessions on this platform, for example `x`, `linkedin` or `reddit`.",
+            "schema": {
+              "type": "string",
+              "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          {
+            "name": "handle",
+            "in": "query",
+            "required": false,
+            "description": "Only sessions of this account handle, compared case-insensitively and without a leading `@`, for example `blowhorn_ai`.\n",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "description": "Only sessions in this state, for example `signed_in`.",
+            "schema": {
+              "type": "string",
+              "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+              "enum": [
+                "signed_in",
+                "signed_out",
+                "unknown"
+              ]
+            }
+          },
+          {
+            "name": "installationId",
+            "in": "query",
+            "required": false,
+            "description": "Only sessions reported by this desktop install.",
+            "schema": {
+              "type": "string",
+              "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+              "minLength": 1,
+              "maxLength": 255
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Where the matching accounts are signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Page of the places matching accounts are signed in.",
+                  "additionalProperties": false,
+                  "required": [
+                    "locations",
+                    "totalCount",
+                    "page",
+                    "pageSize"
+                  ],
+                  "properties": {
+                    "locations": {
+                      "type": "array",
+                      "description": "Matches on this page.",
+                      "items": {
+                        "type": "object",
+                        "description": "One account signed in on one computer.",
+                        "additionalProperties": false,
+                        "required": [
+                          "desktop",
+                          "session"
+                        ],
+                        "properties": {
+                          "desktop": {
+                            "type": "object",
+                            "description": "The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here.",
+                            "additionalProperties": false,
+                            "required": [
+                              "connectionId",
+                              "installationId",
+                              "status"
+                            ],
+                            "properties": {
+                              "connectionId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "The `desktop` connection of the install."
+                              },
+                              "installationId": {
+                                "type": "string",
+                                "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+                                "minLength": 1,
+                                "maxLength": 255,
+                                "x-go-type": "string"
+                              },
+                              "hostname": {
+                                "type": "string",
+                                "maxLength": 255
+                              },
+                              "os": {
+                                "type": "string",
+                                "maxLength": 64
+                              },
+                              "status": {
+                                "type": "string",
+                                "description": "Connection Status Value",
+                                "x-go-name": "ConnectionStatusValue",
+                                "enum": [
+                                  "discovered",
+                                  "registered",
+                                  "connected",
+                                  "ignored",
+                                  "maintenance",
+                                  "disconnected",
+                                  "deleted",
+                                  "not found"
+                                ]
+                              },
+                              "lastSeenAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Server time of the connection's last registration or heartbeat."
+                              },
+                              "reportedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Server time the install's report was stored."
+                              }
+                            }
+                          },
+                          "session": {
+                            "type": "object",
+                            "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+                            "additionalProperties": false,
+                            "required": [
+                              "platform",
+                              "state",
+                              "lastVerifiedAt"
+                            ],
+                            "properties": {
+                              "platform": {
+                                "type": "string",
+                                "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+                                "minLength": 1,
+                                "maxLength": 64,
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              },
+                              "handle": {
+                                "type": "string",
+                                "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+                                "minLength": 1,
+                                "maxLength": 255,
+                                "pattern": "^[^@\\s]+$"
+                              },
+                              "state": {
+                                "type": "string",
+                                "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+                                "enum": [
+                                  "signed_in",
+                                  "signed_out",
+                                  "unknown"
+                                ]
+                              },
+                              "lastVerifiedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "When the install last checked this sign-in, as the install read it."
+                              },
+                              "blowhornProfile": {
+                                "type": "string",
+                                "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+                                "minLength": 1,
+                                "maxLength": 255,
+                                "pattern": "^[^@]+$"
+                              },
+                              "chromeProfile": {
+                                "type": "object",
+                                "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+                                "additionalProperties": false,
+                                "required": [
+                                  "directory"
+                                ],
+                                "properties": {
+                                  "directory": {
+                                    "type": "string",
+                                    "description": "Chrome's profile directory name, for example `Profile 1`.",
+                                    "minLength": 1,
+                                    "maxLength": 255
+                                  },
+                                  "displayName": {
+                                    "type": "string",
+                                    "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                                    "maxLength": 255,
+                                    "pattern": "^[^@]*$"
+                                  }
+                                }
+                              },
+                              "identity": {
+                                "type": "string",
+                                "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+                                "enum": [
+                                  "ok",
+                                  "drift",
+                                  "missing",
+                                  "unknown"
+                                ]
+                              },
+                              "socialConnectionId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of matches on all pages.",
+                      "minimum": 0
+                    },
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of elements per page.",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+                  "required": [
+                    "code",
+                    "message",
+                    "choices"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+                      "enum": [
+                        "organization_selection_required"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+                      "items": {
+                        "type": "object",
+                        "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+                        "required": [
+                          "id",
+                          "name",
+                          "description"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "description": "Organization ID.",
+                            "x-go-name": "ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the organization."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the organization."
+                          }
+                        }
                       }
                     }
                   }
@@ -12731,6 +13590,72 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         }
       },
+      "OrganizationSelectionRequired": {
+        "description": "Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+              "required": [
+                "code",
+                "message",
+                "choices"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+                  "enum": [
+                    "organization_selection_required"
+                  ]
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "choices": {
+                  "type": "array",
+                  "minItems": 2,
+                  "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+                  "items": {
+                    "type": "object",
+                    "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+                    "required": [
+                      "id",
+                      "name",
+                      "description"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        },
+                        "description": "Organization ID.",
+                        "x-go-name": "ID"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the organization."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the organization."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "MeshkitError429": {
         "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
         "headers": {
@@ -12856,7 +13781,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "name": "X-Current-Orgid",
         "in": "header",
         "required": false,
-        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
         "schema": {
           "type": "string",
           "minLength": 36,
@@ -16271,6 +17196,926 @@ const ConnectionSchema: Record<string, unknown> = {
             "type": "string",
             "format": "date-time",
             "description": "Server time of the last registration or heartbeat."
+          },
+          "platformSessions": {
+            "type": "array",
+            "description": "Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.",
+            "maxItems": 64,
+            "items": {
+              "type": "object",
+              "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+              "additionalProperties": false,
+              "required": [
+                "platform",
+                "state",
+                "lastVerifiedAt"
+              ],
+              "properties": {
+                "platform": {
+                  "type": "string",
+                  "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "handle": {
+                  "type": "string",
+                  "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "pattern": "^[^@\\s]+$"
+                },
+                "state": {
+                  "type": "string",
+                  "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+                  "enum": [
+                    "signed_in",
+                    "signed_out",
+                    "unknown"
+                  ]
+                },
+                "lastVerifiedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the install last checked this sign-in, as the install read it."
+                },
+                "blowhornProfile": {
+                  "type": "string",
+                  "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "pattern": "^[^@]+$"
+                },
+                "chromeProfile": {
+                  "type": "object",
+                  "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+                  "additionalProperties": false,
+                  "required": [
+                    "directory"
+                  ],
+                  "properties": {
+                    "directory": {
+                      "type": "string",
+                      "description": "Chrome's profile directory name, for example `Profile 1`.",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                      "maxLength": 255,
+                      "pattern": "^[^@]*$"
+                    }
+                  }
+                },
+                "identity": {
+                  "type": "string",
+                  "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+                  "enum": [
+                    "ok",
+                    "drift",
+                    "missing",
+                    "unknown"
+                  ]
+                },
+                "socialConnectionId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+                }
+              }
+            }
+          },
+          "platformSessionsReportedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Server time of the report in `platformSessions`. A value sent in a registration or an update is ignored, and the stored value is carried forward."
+          }
+        }
+      },
+      "PlatformSessionPlatform": {
+        "type": "string",
+        "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "PlatformSessionState": {
+        "type": "string",
+        "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+        "enum": [
+          "signed_in",
+          "signed_out",
+          "unknown"
+        ]
+      },
+      "PlatformSessionIdentity": {
+        "type": "string",
+        "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+        "enum": [
+          "ok",
+          "drift",
+          "missing",
+          "unknown"
+        ]
+      },
+      "PlatformSessionChromeProfile": {
+        "type": "object",
+        "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+        "additionalProperties": false,
+        "required": [
+          "directory"
+        ],
+        "properties": {
+          "directory": {
+            "type": "string",
+            "description": "Chrome's profile directory name, for example `Profile 1`.",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "displayName": {
+            "type": "string",
+            "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+            "maxLength": 255,
+            "pattern": "^[^@]*$"
+          }
+        }
+      },
+      "PlatformSession": {
+        "type": "object",
+        "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+        "additionalProperties": false,
+        "required": [
+          "platform",
+          "state",
+          "lastVerifiedAt"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "handle": {
+            "type": "string",
+            "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[^@\\s]+$"
+          },
+          "state": {
+            "type": "string",
+            "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+            "enum": [
+              "signed_in",
+              "signed_out",
+              "unknown"
+            ]
+          },
+          "lastVerifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the install last checked this sign-in, as the install read it."
+          },
+          "blowhornProfile": {
+            "type": "string",
+            "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[^@]+$"
+          },
+          "chromeProfile": {
+            "type": "object",
+            "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+            "additionalProperties": false,
+            "required": [
+              "directory"
+            ],
+            "properties": {
+              "directory": {
+                "type": "string",
+                "description": "Chrome's profile directory name, for example `Profile 1`.",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "displayName": {
+                "type": "string",
+                "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                "maxLength": 255,
+                "pattern": "^[^@]*$"
+              }
+            }
+          },
+          "identity": {
+            "type": "string",
+            "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+            "enum": [
+              "ok",
+              "drift",
+              "missing",
+              "unknown"
+            ]
+          },
+          "socialConnectionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+          }
+        }
+      },
+      "PlatformSessionList": {
+        "type": "array",
+        "description": "Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.",
+        "maxItems": 64,
+        "items": {
+          "type": "object",
+          "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+          "additionalProperties": false,
+          "required": [
+            "platform",
+            "state",
+            "lastVerifiedAt"
+          ],
+          "properties": {
+            "platform": {
+              "type": "string",
+              "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "handle": {
+              "type": "string",
+              "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+              "minLength": 1,
+              "maxLength": 255,
+              "pattern": "^[^@\\s]+$"
+            },
+            "state": {
+              "type": "string",
+              "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+              "enum": [
+                "signed_in",
+                "signed_out",
+                "unknown"
+              ]
+            },
+            "lastVerifiedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the install last checked this sign-in, as the install read it."
+            },
+            "blowhornProfile": {
+              "type": "string",
+              "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+              "minLength": 1,
+              "maxLength": 255,
+              "pattern": "^[^@]+$"
+            },
+            "chromeProfile": {
+              "type": "object",
+              "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+              "additionalProperties": false,
+              "required": [
+                "directory"
+              ],
+              "properties": {
+                "directory": {
+                  "type": "string",
+                  "description": "Chrome's profile directory name, for example `Profile 1`.",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                "displayName": {
+                  "type": "string",
+                  "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                  "maxLength": 255,
+                  "pattern": "^[^@]*$"
+                }
+              }
+            },
+            "identity": {
+              "type": "string",
+              "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+              "enum": [
+                "ok",
+                "drift",
+                "missing",
+                "unknown"
+              ]
+            },
+            "socialConnectionId": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+            }
+          }
+        }
+      },
+      "PlatformSessionsReport": {
+        "type": "object",
+        "description": "The body a desktop install sends to report its browser sign-ins. It replaces the earlier report in full.",
+        "additionalProperties": false,
+        "required": [
+          "sessions"
+        ],
+        "properties": {
+          "sessions": {
+            "type": "array",
+            "description": "Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.",
+            "maxItems": 64,
+            "items": {
+              "type": "object",
+              "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+              "additionalProperties": false,
+              "required": [
+                "platform",
+                "state",
+                "lastVerifiedAt"
+              ],
+              "properties": {
+                "platform": {
+                  "type": "string",
+                  "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "handle": {
+                  "type": "string",
+                  "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "pattern": "^[^@\\s]+$"
+                },
+                "state": {
+                  "type": "string",
+                  "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+                  "enum": [
+                    "signed_in",
+                    "signed_out",
+                    "unknown"
+                  ]
+                },
+                "lastVerifiedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the install last checked this sign-in, as the install read it."
+                },
+                "blowhornProfile": {
+                  "type": "string",
+                  "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "pattern": "^[^@]+$"
+                },
+                "chromeProfile": {
+                  "type": "object",
+                  "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+                  "additionalProperties": false,
+                  "required": [
+                    "directory"
+                  ],
+                  "properties": {
+                    "directory": {
+                      "type": "string",
+                      "description": "Chrome's profile directory name, for example `Profile 1`.",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                      "maxLength": 255,
+                      "pattern": "^[^@]*$"
+                    }
+                  }
+                },
+                "identity": {
+                  "type": "string",
+                  "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+                  "enum": [
+                    "ok",
+                    "drift",
+                    "missing",
+                    "unknown"
+                  ]
+                },
+                "socialConnectionId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+                }
+              }
+            }
+          }
+        }
+      },
+      "DesktopPlatformSessions": {
+        "type": "object",
+        "description": "The report stored for one desktop install.",
+        "additionalProperties": false,
+        "required": [
+          "installationId",
+          "reportedAt",
+          "sessions"
+        ],
+        "properties": {
+          "installationId": {
+            "type": "string",
+            "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-go-type": "string"
+          },
+          "reportedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Server time the report was stored."
+          },
+          "sessions": {
+            "type": "array",
+            "description": "Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.",
+            "maxItems": 64,
+            "items": {
+              "type": "object",
+              "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+              "additionalProperties": false,
+              "required": [
+                "platform",
+                "state",
+                "lastVerifiedAt"
+              ],
+              "properties": {
+                "platform": {
+                  "type": "string",
+                  "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "handle": {
+                  "type": "string",
+                  "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "pattern": "^[^@\\s]+$"
+                },
+                "state": {
+                  "type": "string",
+                  "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+                  "enum": [
+                    "signed_in",
+                    "signed_out",
+                    "unknown"
+                  ]
+                },
+                "lastVerifiedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the install last checked this sign-in, as the install read it."
+                },
+                "blowhornProfile": {
+                  "type": "string",
+                  "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "pattern": "^[^@]+$"
+                },
+                "chromeProfile": {
+                  "type": "object",
+                  "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+                  "additionalProperties": false,
+                  "required": [
+                    "directory"
+                  ],
+                  "properties": {
+                    "directory": {
+                      "type": "string",
+                      "description": "Chrome's profile directory name, for example `Profile 1`.",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                      "maxLength": 255,
+                      "pattern": "^[^@]*$"
+                    }
+                  }
+                },
+                "identity": {
+                  "type": "string",
+                  "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+                  "enum": [
+                    "ok",
+                    "drift",
+                    "missing",
+                    "unknown"
+                  ]
+                },
+                "socialConnectionId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+                }
+              }
+            }
+          }
+        }
+      },
+      "PlatformSessionHost": {
+        "type": "object",
+        "description": "The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here.",
+        "additionalProperties": false,
+        "required": [
+          "connectionId",
+          "installationId",
+          "status"
+        ],
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The `desktop` connection of the install."
+          },
+          "installationId": {
+            "type": "string",
+            "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-go-type": "string"
+          },
+          "hostname": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "os": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "description": "Connection Status Value",
+            "x-go-name": "ConnectionStatusValue",
+            "enum": [
+              "discovered",
+              "registered",
+              "connected",
+              "ignored",
+              "maintenance",
+              "disconnected",
+              "deleted",
+              "not found"
+            ]
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Server time of the connection's last registration or heartbeat."
+          },
+          "reportedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Server time the install's report was stored."
+          }
+        }
+      },
+      "PlatformSessionLocation": {
+        "type": "object",
+        "description": "One account signed in on one computer.",
+        "additionalProperties": false,
+        "required": [
+          "desktop",
+          "session"
+        ],
+        "properties": {
+          "desktop": {
+            "type": "object",
+            "description": "The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here.",
+            "additionalProperties": false,
+            "required": [
+              "connectionId",
+              "installationId",
+              "status"
+            ],
+            "properties": {
+              "connectionId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The `desktop` connection of the install."
+              },
+              "installationId": {
+                "type": "string",
+                "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+                "minLength": 1,
+                "maxLength": 255,
+                "x-go-type": "string"
+              },
+              "hostname": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "os": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "status": {
+                "type": "string",
+                "description": "Connection Status Value",
+                "x-go-name": "ConnectionStatusValue",
+                "enum": [
+                  "discovered",
+                  "registered",
+                  "connected",
+                  "ignored",
+                  "maintenance",
+                  "disconnected",
+                  "deleted",
+                  "not found"
+                ]
+              },
+              "lastSeenAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Server time of the connection's last registration or heartbeat."
+              },
+              "reportedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Server time the install's report was stored."
+              }
+            }
+          },
+          "session": {
+            "type": "object",
+            "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+            "additionalProperties": false,
+            "required": [
+              "platform",
+              "state",
+              "lastVerifiedAt"
+            ],
+            "properties": {
+              "platform": {
+                "type": "string",
+                "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "handle": {
+                "type": "string",
+                "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+                "minLength": 1,
+                "maxLength": 255,
+                "pattern": "^[^@\\s]+$"
+              },
+              "state": {
+                "type": "string",
+                "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+                "enum": [
+                  "signed_in",
+                  "signed_out",
+                  "unknown"
+                ]
+              },
+              "lastVerifiedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the install last checked this sign-in, as the install read it."
+              },
+              "blowhornProfile": {
+                "type": "string",
+                "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+                "minLength": 1,
+                "maxLength": 255,
+                "pattern": "^[^@]+$"
+              },
+              "chromeProfile": {
+                "type": "object",
+                "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+                "additionalProperties": false,
+                "required": [
+                  "directory"
+                ],
+                "properties": {
+                  "directory": {
+                    "type": "string",
+                    "description": "Chrome's profile directory name, for example `Profile 1`.",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                    "maxLength": 255,
+                    "pattern": "^[^@]*$"
+                  }
+                }
+              },
+              "identity": {
+                "type": "string",
+                "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+                "enum": [
+                  "ok",
+                  "drift",
+                  "missing",
+                  "unknown"
+                ]
+              },
+              "socialConnectionId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+              }
+            }
+          }
+        }
+      },
+      "PlatformSessionLocationPage": {
+        "type": "object",
+        "description": "Page of the places matching accounts are signed in.",
+        "additionalProperties": false,
+        "required": [
+          "locations",
+          "totalCount",
+          "page",
+          "pageSize"
+        ],
+        "properties": {
+          "locations": {
+            "type": "array",
+            "description": "Matches on this page.",
+            "items": {
+              "type": "object",
+              "description": "One account signed in on one computer.",
+              "additionalProperties": false,
+              "required": [
+                "desktop",
+                "session"
+              ],
+              "properties": {
+                "desktop": {
+                  "type": "object",
+                  "description": "The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here.",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "installationId",
+                    "status"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "The `desktop` connection of the install."
+                    },
+                    "installationId": {
+                      "type": "string",
+                      "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "x-go-type": "string"
+                    },
+                    "hostname": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "os": {
+                      "type": "string",
+                      "maxLength": 64
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Connection Status Value",
+                      "x-go-name": "ConnectionStatusValue",
+                      "enum": [
+                        "discovered",
+                        "registered",
+                        "connected",
+                        "ignored",
+                        "maintenance",
+                        "disconnected",
+                        "deleted",
+                        "not found"
+                      ]
+                    },
+                    "lastSeenAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Server time of the connection's last registration or heartbeat."
+                    },
+                    "reportedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Server time the install's report was stored."
+                    }
+                  }
+                },
+                "session": {
+                  "type": "object",
+                  "description": "One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "platform",
+                    "state",
+                    "lastVerifiedAt"
+                  ],
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "description": "A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.\n",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "handle": {
+                      "type": "string",
+                      "description": "The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "pattern": "^[^@\\s]+$"
+                    },
+                    "state": {
+                      "type": "string",
+                      "description": "What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).\n",
+                      "enum": [
+                        "signed_in",
+                        "signed_out",
+                        "unknown"
+                      ]
+                    },
+                    "lastVerifiedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "When the install last checked this sign-in, as the install read it."
+                    },
+                    "blowhornProfile": {
+                      "type": "string",
+                      "description": "The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "pattern": "^[^@]+$"
+                    },
+                    "chromeProfile": {
+                      "type": "object",
+                      "description": "The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.",
+                      "additionalProperties": false,
+                      "required": [
+                        "directory"
+                      ],
+                      "properties": {
+                        "directory": {
+                          "type": "string",
+                          "description": "Chrome's profile directory name, for example `Profile 1`.",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "description": "The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.",
+                          "maxLength": 255,
+                          "pattern": "^[^@]*$"
+                        }
+                      }
+                    },
+                    "identity": {
+                      "type": "string",
+                      "description": "Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.\n",
+                      "enum": [
+                        "ok",
+                        "drift",
+                        "missing",
+                        "unknown"
+                      ]
+                    },
+                    "socialConnectionId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of matches on all pages.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of elements per page.",
+            "minimum": 1
           }
         }
       },

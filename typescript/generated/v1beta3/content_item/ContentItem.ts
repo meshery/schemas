@@ -747,6 +747,35 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+        OrganizationSelectionRequired: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /**
+                     * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                     * @enum {string}
+                     */
+                    code: "organization_selection_required";
+                    /** @description The sentence the caller is shown. */
+                    message: string;
+                    /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                    choices: {
+                        /**
+                         * Format: uuid
+                         * @description Organization ID.
+                         */
+                        id: string;
+                        /** @description Name of the organization. */
+                        name: string;
+                        /** @description Description of the organization. */
+                        description: string;
+                    }[];
+                };
+            };
+        };
         /** @description Conflict on insert. The body's `code` says which: `row_number_taken` or `thread_index_taken` is permanent for this payload, and `idempotency_key_in_flight` is a retry whose first request with the same Idempotency-Key is still being processed. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Nothing is inserted in any case. */
         InsertConflict: {
             headers: {
@@ -809,7 +838,7 @@ export interface components {
          *     whose `threadId` names it.
          */
         threadId: string;
-        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
         currentOrgId: string;
         /** @description Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
         idempotencyKey: string;
@@ -862,7 +891,7 @@ export interface operations {
                 threadId?: string;
             };
             header?: {
-                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
                 "X-Current-Orgid"?: string;
             };
             path?: never;
@@ -1032,6 +1061,35 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                         * @enum {string}
+                         */
+                        code: "organization_selection_required";
+                        /** @description The sentence the caller is shown. */
+                        message: string;
+                        /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                        choices: {
+                            /**
+                             * Format: uuid
+                             * @description Organization ID.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Description of the organization. */
+                            description: string;
+                        }[];
+                    };
                 };
             };
             /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
@@ -1427,7 +1485,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
                 "X-Current-Orgid"?: string;
             };
             path: {
@@ -1591,6 +1649,35 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                         * @enum {string}
+                         */
+                        code: "organization_selection_required";
+                        /** @description The sentence the caller is shown. */
+                        message: string;
+                        /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                        choices: {
+                            /**
+                             * Format: uuid
+                             * @description Organization ID.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Description of the organization. */
+                            description: string;
+                        }[];
+                    };
                 };
             };
             /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */

@@ -98,7 +98,6 @@ jobs:
           file_pattern: |
             schemas/base_cloud.yml
             schemas/base_meshery.yml
-          token: ${{ secrets.MESHERY_CI }}
 
   publish-npm-package:
     needs: update-schema-version

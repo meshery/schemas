@@ -1791,7 +1791,8 @@ const UserSchema: Record<string, unknown> = {
         "x-mcp": {
           "expose": true,
           "title": "Get the current user profile",
-          "scope": "account:read"
+          "scope": "account:read",
+          "description": "Read-only. Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400."
         },
         "summary": "Get current user profile",
         "description": "Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400.\n",
@@ -1800,7 +1801,7 @@ const UserSchema: Record<string, unknown> = {
             "name": "X-Current-Orgid",
             "in": "header",
             "required": false,
-            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
             "schema": {
               "type": "string",
               "minLength": 36,
@@ -2596,6 +2597,72 @@ const UserSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+                  "required": [
+                    "code",
+                    "message",
+                    "choices"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+                      "enum": [
+                        "organization_selection_required"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+                      "items": {
+                        "type": "object",
+                        "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+                        "required": [
+                          "id",
+                          "name",
+                          "description"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "description": "Organization ID.",
+                            "x-go-name": "ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the organization."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the organization."
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -4520,6 +4587,72 @@ const UserSchema: Record<string, unknown> = {
           }
         }
       },
+      "OrganizationSelectionRequired": {
+        "description": "Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+              "required": [
+                "code",
+                "message",
+                "choices"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+                  "enum": [
+                    "organization_selection_required"
+                  ]
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "choices": {
+                  "type": "array",
+                  "minItems": 2,
+                  "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+                  "items": {
+                    "type": "object",
+                    "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+                    "required": [
+                      "id",
+                      "name",
+                      "description"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        },
+                        "description": "Organization ID.",
+                        "x-go-name": "ID"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the organization."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the organization."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "AccountDeletionConflict": {
         "description": "Deletion preconditions were not met. Returned when the target organization is the shared Layer5 provider organization, has an active paid subscription, the caller is not its sole active member, the typed organizationNameConfirmation did not match, or destruction of shared resources was required but not confirmed.",
         "content": {
@@ -4536,7 +4669,7 @@ const UserSchema: Record<string, unknown> = {
         "name": "X-Current-Orgid",
         "in": "header",
         "required": false,
-        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies.",
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
         "schema": {
           "type": "string",
           "minLength": 36,

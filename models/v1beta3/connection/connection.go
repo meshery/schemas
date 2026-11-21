@@ -86,6 +86,21 @@ const (
 	DestinationKindYoutube   DestinationKind = "youtube"
 )
 
+// Defines values for PlatformSessionIdentity.
+const (
+	PlatformSessionIdentityDrift   PlatformSessionIdentity = "drift"
+	PlatformSessionIdentityMissing PlatformSessionIdentity = "missing"
+	PlatformSessionIdentityOk      PlatformSessionIdentity = "ok"
+	PlatformSessionIdentityUnknown PlatformSessionIdentity = "unknown"
+)
+
+// Defines values for PlatformSessionState.
+const (
+	PlatformSessionStateSignedIn  PlatformSessionState = "signed_in"
+	PlatformSessionStateSignedOut PlatformSessionState = "signed_out"
+	PlatformSessionStateUnknown   PlatformSessionState = "unknown"
+)
+
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -446,8 +461,26 @@ type DesktopConnectionMetadata struct {
 	// OsVersion Operating system version, for example `26.0.1`.
 	OsVersion *string `json:"osVersion,omitempty" yaml:"osVersion,omitempty"`
 
+	// PlatformSessions Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.
+	PlatformSessions *PlatformSessionList `json:"platformSessions,omitempty" yaml:"platformSessions,omitempty"`
+
+	// PlatformSessionsReportedAt Server time of the report in `platformSessions`. A value sent in a registration or an update is ignored, and the stored value is carried forward.
+	PlatformSessionsReportedAt *time.Time `json:"platformSessionsReportedAt,omitempty" yaml:"platformSessionsReportedAt,omitempty"`
+
 	// TokenId Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token, unless another live connection of the same owner still links it. A value sent by the client is ignored.
 	TokenId *uuid.UUID `json:"tokenId,omitempty" yaml:"tokenId,omitempty"`
+}
+
+// DesktopPlatformSessions The report stored for one desktop install.
+type DesktopPlatformSessions struct {
+	// InstallationId Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.
+	InstallationId string `json:"installationId" yaml:"installationId"`
+
+	// ReportedAt Server time the report was stored.
+	ReportedAt time.Time `json:"reportedAt" yaml:"reportedAt"`
+
+	// Sessions Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.
+	Sessions PlatformSessionList `json:"sessions" yaml:"sessions"`
 }
 
 // DestinationKind A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
@@ -570,6 +603,104 @@ type MesheryInstancePage struct {
 	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
 
+// PlatformSession One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.
+type PlatformSession struct {
+	// BlowhornProfile The name of the Blowhorn profile the account is mapped to on this computer. Never an email address.
+	BlowhornProfile *string `json:"blowhornProfile,omitempty" yaml:"blowhornProfile,omitempty"`
+
+	// ChromeProfile The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.
+	ChromeProfile *PlatformSessionChromeProfile `json:"chromeProfile,omitempty" yaml:"chromeProfile,omitempty"`
+
+	// Handle The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it.
+	Handle *string `json:"handle,omitempty" yaml:"handle,omitempty"`
+
+	// Identity Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+	Identity *PlatformSessionIdentity `json:"identity,omitempty" yaml:"identity,omitempty"`
+
+	// LastVerifiedAt When the install last checked this sign-in, as the install read it.
+	LastVerifiedAt time.Time `json:"lastVerifiedAt" yaml:"lastVerifiedAt"`
+
+	// Platform A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.
+	Platform PlatformSessionPlatform `json:"platform" yaml:"platform"`
+
+	// SocialConnectionId The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+	SocialConnectionId *uuid.UUID `json:"socialConnectionId,omitempty" yaml:"socialConnectionId,omitempty"`
+
+	// State What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+	State PlatformSessionState `json:"state" yaml:"state"`
+}
+
+// PlatformSessionChromeProfile The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it.
+type PlatformSessionChromeProfile struct {
+	// Directory Chrome's profile directory name, for example `Profile 1`.
+	Directory string `json:"directory" yaml:"directory"`
+
+	// DisplayName The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported.
+	DisplayName *string `json:"displayName,omitempty" yaml:"displayName,omitempty"`
+}
+
+// PlatformSessionHost The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here.
+type PlatformSessionHost struct {
+	// ConnectionId The `desktop` connection of the install.
+	ConnectionId uuid.UUID `json:"connectionId" yaml:"connectionId"`
+	Hostname     *string   `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+
+	// InstallationId Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.
+	InstallationId string `json:"installationId" yaml:"installationId"`
+
+	// LastSeenAt Server time of the connection's last registration or heartbeat.
+	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
+	Os         *string    `json:"os,omitempty" yaml:"os,omitempty"`
+
+	// ReportedAt Server time the install's report was stored.
+	ReportedAt *time.Time `json:"reportedAt,omitempty" yaml:"reportedAt,omitempty"`
+
+	// ConnectionStatusValue Connection Status Value
+	ConnectionStatusValue ConnectionStatusValue `json:"status" yaml:"status"`
+}
+
+// PlatformSessionIdentity Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+type PlatformSessionIdentity string
+
+// PlatformSessionList Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.
+type PlatformSessionList = []PlatformSession
+
+// PlatformSessionLocation One account signed in on one computer.
+type PlatformSessionLocation struct {
+	// Desktop The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here.
+	Desktop PlatformSessionHost `json:"desktop" yaml:"desktop"`
+
+	// Session One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.
+	Session PlatformSession `json:"session" yaml:"session"`
+}
+
+// PlatformSessionLocationPage Page of the places matching accounts are signed in.
+type PlatformSessionLocationPage struct {
+	// Locations Matches on this page.
+	Locations []PlatformSessionLocation `json:"locations" yaml:"locations"`
+
+	// Page Current page number.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of elements per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of matches on all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
+// PlatformSessionPlatform A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.
+type PlatformSessionPlatform = string
+
+// PlatformSessionState What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+type PlatformSessionState string
+
+// PlatformSessionsReport The body a desktop install sends to report its browser sign-ins. It replaces the earlier report in full.
+type PlatformSessionsReport struct {
+	// Sessions Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively.
+	Sessions PlatformSessionList `json:"sessions" yaml:"sessions"`
+}
+
 // ConnectionDefinitionId defines model for connectionDefinitionId.
 type ConnectionDefinitionId = uuid.UUID
 
@@ -612,3 +743,6 @@ type CoreMeshkitError409 = core.MeshkitError
 
 // CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError429 = core.MeshkitError
+
+// CoreOrganizationSelectionRequired The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type CoreOrganizationSelectionRequired = core.OrganizationSelectionRequiredError

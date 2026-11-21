@@ -7,7 +7,7 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "OauthConsentRequest",
-    "description": "OpenAPI schema for the pending OAuth consent requests the consent page\nshows to the signed-in user, and the two decisions the user can make on\none: allow it or deny it.\n\nThe identity provider sends the browser to the consent page with an\nopaque consent challenge. The page reads the request with\ngetOauthConsentRequest, shows which client asks and where it will send\nthe user, and then calls acceptOauthConsentRequest or\nrejectOauthConsentRequest. Both answer an OauthConsentRedirect, and the\nbrowser must navigate to its `redirectTo` to finish the authorization.\n\nThe rules every operation enforces:\n- The caller must be the signed-in user the challenge was issued for. A\n  challenge issued for any other user answers 403 and is neither shown\n  nor decided.\n- A challenge is single use. Once accepted or rejected, or once it has\n  expired, every operation on it answers 404.\n- An accept grants only what the client requested, never more: the\n  scopes in `requestedScopes`, and any audience the client asked the\n  identity provider for. The decision body cannot widen or narrow it.\n- `client.verified` marks trust and never blocks. It is derived only\n  from the client's redirect targets, never from `clientName` or\n  `clientId`: true only when every redirect URI of the client matches one\n  operator-listed known-client entry. An unverified client is shown as\n  unverified and the user may still allow it.\n\nThe server stores nothing of its own for a pending request: it reads the\nrequest from the identity provider on every call, so a 503 means the\nidentity provider could not be reached or did not answer. On a read,\nnothing was read and the call may be retried. On a decision, the outcome\nis unknown: the caller may retry, and a retry that answers 404 means the\nchallenge was already decided, so the user should restart sign-in from\nthe client.\n\nClient registration (RFC 7591) is the identity provider's protocol\nendpoint and is not part of this construct.\n",
+    "description": "OpenAPI schema for the pending OAuth consent requests the consent page\nshows to the signed-in user, and the two decisions the user can make on\none: allow it or deny it.\n\nThe identity provider sends the browser to the consent page with an\nopaque consent challenge. The page reads the request with\ngetOauthConsentRequest, shows which client asks and where it will send\nthe user, and then calls acceptOauthConsentRequest or\nrejectOauthConsentRequest. Both answer an OauthConsentRedirect, and the\nbrowser must navigate to its `redirectTo` to finish the authorization.\n\nThe rules every operation enforces:\n- The caller must be the signed-in user the challenge was issued for. A\n  challenge issued for any other user answers 403 and is neither shown\n  nor decided.\n- A challenge is single use. Once accepted or rejected, or once it has\n  expired, every operation on it answers 404.\n- An accept grants only what the client requested, never more: the\n  scopes in `requestedScopes`, and any audience the client asked the\n  identity provider for. The decision body cannot widen or narrow it.\n- `client.verified` marks trust and never blocks. For a dynamically\n  registered client it is true only when every redirect URI of the client\n  matches one operator-listed known-client entry. For an operator-managed\n  client (pre-registered by an operator through the identity provider's\n  admin API) it is true when the operator set the verified mark in the\n  client's identity-provider metadata, which only the admin API can write:\n  a client can never set or clear it. It is never derived from a\n  self-asserted name or from the client ID. An unverified client is shown\n  as unverified and the user may still allow it.\n\nThe server stores nothing of its own for a pending request: it reads the\nrequest from the identity provider on every call, so a 503 means the\nidentity provider could not be reached or did not answer. On a read,\nnothing was read and the call may be retried. On a decision, the outcome\nis unknown: the caller may retry, and a retry that answers 404 means the\nchallenge was already decided, so the user should restart sign-in from\nthe client.\n\nClient registration (RFC 7591) is the identity provider's protocol\nendpoint and is not part of this construct.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -67,7 +67,7 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "title": "OAuth Consent Request Schema",
-                  "description": "A pending OAuth consent request, as the consent page shows it to the\nsigned-in user: which client asks, where it sends the user afterwards, and\nwhich scopes it asks for. The identity provider issues the request and names it by\n`consentChallenge`; the server reads it from the identity provider and\nstores no row of its own, so the schema has no `id` or timestamps.\n\nThe request belongs to the one signed-in user it was issued for. Only that\nuser may read it or decide it, and a challenge is single use: once accepted\nor rejected it can no longer be read or decided. `client.verified` is\nderived only from the client's redirect targets, never from its name or ID.\nIt marks trust and never blocks: an unverified client is shown as such, and\nthe user may still allow it.\n",
+                  "description": "A pending OAuth consent request, as the consent page shows it to the\nsigned-in user: which client asks, where it sends the user afterwards, and\nwhich scopes it asks for. The identity provider issues the request and names it by\n`consentChallenge`; the server reads it from the identity provider and\nstores no row of its own, so the schema has no `id` or timestamps.\n\nThe request belongs to the one signed-in user it was issued for. Only that\nuser may read it or decide it, and a challenge is single use: once accepted\nor rejected it can no longer be read or decided. `client.verified` marks\ntrust and never blocks. For a dynamically registered client it is true only\nwhen every redirect URI matches one operator-listed known-client entry; for\nan operator-managed client it is true when the operator set the verified\nmark in the client's identity-provider metadata (admin-only; a client can\nnever set or clear it). It is never derived from a self-asserted name or\nfrom the client ID. An unverified client is shown as such, and the user may\nstill allow it.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -108,32 +108,32 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
                         },
                         "clientName": {
                           "type": "string",
-                          "description": "Display name the client registered. Empty when it registered none. Self-asserted by the client; only `verified` marks trust.",
+                          "description": "Display name the client registered. Empty when it registered none. Self-asserted by a dynamically registered client; set by the operator for an operator-managed client. Only `verified` marks trust.",
                           "maxLength": 255,
                           "x-order": 2
                         },
                         "redirectHosts": {
                           "type": "array",
-                          "description": "The network hosts the client can send the user to after the decision: the host of each https redirect URI (for example `app.example.com`) and of each loopback redirect URI (`127.0.0.1` or `[::1]`), without duplicates. Only redirect URIs whose scheme is `https`, or `http` on a loopback IP literal, are listed here; the `localhost` hostname is never registered (RFC 8252 section 8.3), and a private-use app redirect is listed in `appSchemes` instead. Lowercase ASCII, with no scheme, port or path; an internationalized hostname is sent in IDNA A-label (punycode) form. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty.",
+                          "description": "The network hosts the client can send the user to after the decision: the host of each http or https redirect URI, with its port when the redirect has one, without duplicates. For a dynamically registered client, registration policy limits these to `https` hosts and loopback http hosts (`127.0.0.1` or `[::1]`), and never `localhost` (RFC 8252 section 8.3). For an operator-managed client any http or https redirect is listed, so a host may also be a single-label name such as `localhost`. A redirect URI of any other scheme is listed in `appSchemes` instead. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty.",
                           "maxItems": 100,
                           "uniqueItems": true,
                           "items": {
                             "type": "string",
-                            "description": "One network host: a DNS hostname of at least two labels whose last label starts with a letter, in IDNA A-label (punycode) form when internationalized, a dotted-decimal IPv4 literal, or a bracketed hexadecimal IPv6 literal. A colon appears only inside IPv6 brackets, so no entry carries a port, and a bare single-label name such as `localhost` or an app scheme (`vscode`) is not a host.",
+                            "description": "One network host as the server sends it for a registered redirect URI: a hostname or single label, an IPv4 literal, or a bracketed IPv6 literal, with an optional `:port`. No scheme, path, userinfo or whitespace. The pattern checks only that shape, not case or character set. Dynamic registration's own policy limits what a dynamically registered client can have, server-side.",
                             "minLength": 1,
-                            "maxLength": 253,
-                            "pattern": "^(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z](?:[a-z0-9-]*[a-z0-9])?|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|\\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\\])$"
+                            "maxLength": 259,
+                            "pattern": "^(?:[^\\s/?#@:\\[\\]]+|\\[[^\\s/?#@\\[\\]]+\\])(?::[0-9]{1,5})?$"
                           },
                           "x-order": 3
                         },
                         "appSchemes": {
                           "type": "array",
-                          "description": "The private-use URI schemes (RFC 8252 section 7.1) of the client's app redirect URIs, without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. Registration accepts a private-use scheme only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when the client registered only https and loopback redirects; `redirectHosts` and `appSchemes` are never both empty.",
+                          "description": "The URI schemes of the client's app redirect URIs (any scheme other than http and https), without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. For a dynamically registered client, registration accepts a private-use scheme (RFC 8252 section 7.1) only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. For an operator-managed client any other scheme is listed, as registered. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when every redirect URI of the client is http or https; `redirectHosts` and `appSchemes` are never both empty.",
                           "maxItems": 100,
                           "uniqueItems": true,
                           "items": {
                             "type": "string",
-                            "description": "One private-use scheme in lowercase RFC 3986 scheme form, with no `:` or `//`. Never `http` or `https`, whose redirects are listed in `redirectHosts`.",
+                            "description": "One URI scheme in lowercase RFC 3986 scheme form, with no `:` or `//`. Never `http` or `https`, whose redirects are listed in `redirectHosts`.",
                             "minLength": 1,
                             "maxLength": 255,
                             "pattern": "^[a-z][a-z0-9+.-]*$",
@@ -148,8 +148,16 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
                         },
                         "verified": {
                           "type": "boolean",
-                          "description": "Derived only from the client's redirect targets, never from `clientName` or `clientId`: true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). Marks trust and never blocks: a false value is shown as an unverified client, and the user may still allow it.",
+                          "description": "Marks trust and never blocks. For a dynamically registered client it is true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). For an operator-managed client it is true when the operator set the verified mark in the client's identity-provider metadata, which only the admin API can write; a client can never set or clear it. It is never derived from a self-asserted name or from the client ID. A false value is shown as an unverified client, and the user may still allow it.",
                           "x-order": 5
+                        },
+                        "logoUri": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "An https URL of the client's logo image. Sent only for an operator-managed client whose operator set one; never sent for a dynamically registered client, whose self-asserted logo is not shown. Omitted when there is none.",
+                          "maxLength": 2048,
+                          "pattern": "^https://",
+                          "x-order": 6
                         }
                       }
                     },
@@ -1403,7 +1411,7 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
     "schemas": {
       "OauthConsentRequest": {
         "title": "OAuth Consent Request Schema",
-        "description": "A pending OAuth consent request, as the consent page shows it to the\nsigned-in user: which client asks, where it sends the user afterwards, and\nwhich scopes it asks for. The identity provider issues the request and names it by\n`consentChallenge`; the server reads it from the identity provider and\nstores no row of its own, so the schema has no `id` or timestamps.\n\nThe request belongs to the one signed-in user it was issued for. Only that\nuser may read it or decide it, and a challenge is single use: once accepted\nor rejected it can no longer be read or decided. `client.verified` is\nderived only from the client's redirect targets, never from its name or ID.\nIt marks trust and never blocks: an unverified client is shown as such, and\nthe user may still allow it.\n",
+        "description": "A pending OAuth consent request, as the consent page shows it to the\nsigned-in user: which client asks, where it sends the user afterwards, and\nwhich scopes it asks for. The identity provider issues the request and names it by\n`consentChallenge`; the server reads it from the identity provider and\nstores no row of its own, so the schema has no `id` or timestamps.\n\nThe request belongs to the one signed-in user it was issued for. Only that\nuser may read it or decide it, and a challenge is single use: once accepted\nor rejected it can no longer be read or decided. `client.verified` marks\ntrust and never blocks. For a dynamically registered client it is true only\nwhen every redirect URI matches one operator-listed known-client entry; for\nan operator-managed client it is true when the operator set the verified\nmark in the client's identity-provider metadata (admin-only; a client can\nnever set or clear it). It is never derived from a self-asserted name or\nfrom the client ID. An unverified client is shown as such, and the user may\nstill allow it.\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1444,32 +1452,32 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
               },
               "clientName": {
                 "type": "string",
-                "description": "Display name the client registered. Empty when it registered none. Self-asserted by the client; only `verified` marks trust.",
+                "description": "Display name the client registered. Empty when it registered none. Self-asserted by a dynamically registered client; set by the operator for an operator-managed client. Only `verified` marks trust.",
                 "maxLength": 255,
                 "x-order": 2
               },
               "redirectHosts": {
                 "type": "array",
-                "description": "The network hosts the client can send the user to after the decision: the host of each https redirect URI (for example `app.example.com`) and of each loopback redirect URI (`127.0.0.1` or `[::1]`), without duplicates. Only redirect URIs whose scheme is `https`, or `http` on a loopback IP literal, are listed here; the `localhost` hostname is never registered (RFC 8252 section 8.3), and a private-use app redirect is listed in `appSchemes` instead. Lowercase ASCII, with no scheme, port or path; an internationalized hostname is sent in IDNA A-label (punycode) form. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty.",
+                "description": "The network hosts the client can send the user to after the decision: the host of each http or https redirect URI, with its port when the redirect has one, without duplicates. For a dynamically registered client, registration policy limits these to `https` hosts and loopback http hosts (`127.0.0.1` or `[::1]`), and never `localhost` (RFC 8252 section 8.3). For an operator-managed client any http or https redirect is listed, so a host may also be a single-label name such as `localhost`. A redirect URI of any other scheme is listed in `appSchemes` instead. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty.",
                 "maxItems": 100,
                 "uniqueItems": true,
                 "items": {
                   "type": "string",
-                  "description": "One network host: a DNS hostname of at least two labels whose last label starts with a letter, in IDNA A-label (punycode) form when internationalized, a dotted-decimal IPv4 literal, or a bracketed hexadecimal IPv6 literal. A colon appears only inside IPv6 brackets, so no entry carries a port, and a bare single-label name such as `localhost` or an app scheme (`vscode`) is not a host.",
+                  "description": "One network host as the server sends it for a registered redirect URI: a hostname or single label, an IPv4 literal, or a bracketed IPv6 literal, with an optional `:port`. No scheme, path, userinfo or whitespace. The pattern checks only that shape, not case or character set. Dynamic registration's own policy limits what a dynamically registered client can have, server-side.",
                   "minLength": 1,
-                  "maxLength": 253,
-                  "pattern": "^(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z](?:[a-z0-9-]*[a-z0-9])?|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|\\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\\])$"
+                  "maxLength": 259,
+                  "pattern": "^(?:[^\\s/?#@:\\[\\]]+|\\[[^\\s/?#@\\[\\]]+\\])(?::[0-9]{1,5})?$"
                 },
                 "x-order": 3
               },
               "appSchemes": {
                 "type": "array",
-                "description": "The private-use URI schemes (RFC 8252 section 7.1) of the client's app redirect URIs, without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. Registration accepts a private-use scheme only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when the client registered only https and loopback redirects; `redirectHosts` and `appSchemes` are never both empty.",
+                "description": "The URI schemes of the client's app redirect URIs (any scheme other than http and https), without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. For a dynamically registered client, registration accepts a private-use scheme (RFC 8252 section 7.1) only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. For an operator-managed client any other scheme is listed, as registered. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when every redirect URI of the client is http or https; `redirectHosts` and `appSchemes` are never both empty.",
                 "maxItems": 100,
                 "uniqueItems": true,
                 "items": {
                   "type": "string",
-                  "description": "One private-use scheme in lowercase RFC 3986 scheme form, with no `:` or `//`. Never `http` or `https`, whose redirects are listed in `redirectHosts`.",
+                  "description": "One URI scheme in lowercase RFC 3986 scheme form, with no `:` or `//`. Never `http` or `https`, whose redirects are listed in `redirectHosts`.",
                   "minLength": 1,
                   "maxLength": 255,
                   "pattern": "^[a-z][a-z0-9+.-]*$",
@@ -1484,8 +1492,16 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
               },
               "verified": {
                 "type": "boolean",
-                "description": "Derived only from the client's redirect targets, never from `clientName` or `clientId`: true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). Marks trust and never blocks: a false value is shown as an unverified client, and the user may still allow it.",
+                "description": "Marks trust and never blocks. For a dynamically registered client it is true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). For an operator-managed client it is true when the operator set the verified mark in the client's identity-provider metadata, which only the admin API can write; a client can never set or clear it. It is never derived from a self-asserted name or from the client ID. A false value is shown as an unverified client, and the user may still allow it.",
                 "x-order": 5
+              },
+              "logoUri": {
+                "type": "string",
+                "format": "uri",
+                "description": "An https URL of the client's logo image. Sent only for an operator-managed client whose operator set one; never sent for a dynamically registered client, whose self-asserted logo is not shown. Omitted when there is none.",
+                "maxLength": 2048,
+                "pattern": "^https://",
+                "x-order": 6
               }
             }
           },
@@ -1508,7 +1524,7 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
       "OauthConsentClient": {
         "type": "object",
         "additionalProperties": false,
-        "description": "The OAuth client that asks for consent, as the consent page names it: its ID and registered name, where it can send the user afterwards (`redirectHosts` for https and loopback redirects, `appSchemes` for private-use app redirects), and the `verified` mark. `verified` marks trust and never blocks: it is true only when every redirect URI of the client matches one operator-listed known-client entry, and an unverified client may still be allowed. The server classifies each registered redirect URI by its scheme into exactly one of the two lists, and at least one of them is non-empty.",
+        "description": "The OAuth client that asks for consent, as the consent page names it: its ID and registered name, where it can send the user afterwards (`redirectHosts` for http and https redirects, `appSchemes` for any other scheme), an optional `logoUri`, and the `verified` mark. The client is one of two kinds. A dynamically registered client registered itself (RFC 7591), so its name is self-asserted. An operator-managed client was created by an operator through the identity provider's admin API, never through dynamic registration; it still gets the consent page, is not first-party and is not auto-accepted, and its name and logo are operator-set. `verified` marks trust and never blocks: for a dynamically registered client it is true only when every redirect URI matches one operator-listed known-client entry; for an operator-managed client it is true when the operator set the verified mark in the client's identity-provider metadata (admin-only; a client can never set or clear it). It is never derived from a self-asserted name or from the client ID, and an unverified client may still be allowed. The server classifies each registered redirect URI by its scheme into exactly one of the two lists, and at least one of them is non-empty. For a dynamically registered client the registration policy limits what can appear: https and loopback http redirects, and allowlisted private-use schemes. For an operator-managed client there is no extra constraint (the identity provider's exact-match redirect check is the only gate): an http or https redirect is listed in `redirectHosts`, any other scheme in `appSchemes`. This is display only, so the page never shows an app as a host.",
         "required": [
           "clientId",
           "clientName",
@@ -1528,32 +1544,32 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
           },
           "clientName": {
             "type": "string",
-            "description": "Display name the client registered. Empty when it registered none. Self-asserted by the client; only `verified` marks trust.",
+            "description": "Display name the client registered. Empty when it registered none. Self-asserted by a dynamically registered client; set by the operator for an operator-managed client. Only `verified` marks trust.",
             "maxLength": 255,
             "x-order": 2
           },
           "redirectHosts": {
             "type": "array",
-            "description": "The network hosts the client can send the user to after the decision: the host of each https redirect URI (for example `app.example.com`) and of each loopback redirect URI (`127.0.0.1` or `[::1]`), without duplicates. Only redirect URIs whose scheme is `https`, or `http` on a loopback IP literal, are listed here; the `localhost` hostname is never registered (RFC 8252 section 8.3), and a private-use app redirect is listed in `appSchemes` instead. Lowercase ASCII, with no scheme, port or path; an internationalized hostname is sent in IDNA A-label (punycode) form. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty.",
+            "description": "The network hosts the client can send the user to after the decision: the host of each http or https redirect URI, with its port when the redirect has one, without duplicates. For a dynamically registered client, registration policy limits these to `https` hosts and loopback http hosts (`127.0.0.1` or `[::1]`), and never `localhost` (RFC 8252 section 8.3). For an operator-managed client any http or https redirect is listed, so a host may also be a single-label name such as `localhost`. A redirect URI of any other scheme is listed in `appSchemes` instead. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty.",
             "maxItems": 100,
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "description": "One network host: a DNS hostname of at least two labels whose last label starts with a letter, in IDNA A-label (punycode) form when internationalized, a dotted-decimal IPv4 literal, or a bracketed hexadecimal IPv6 literal. A colon appears only inside IPv6 brackets, so no entry carries a port, and a bare single-label name such as `localhost` or an app scheme (`vscode`) is not a host.",
+              "description": "One network host as the server sends it for a registered redirect URI: a hostname or single label, an IPv4 literal, or a bracketed IPv6 literal, with an optional `:port`. No scheme, path, userinfo or whitespace. The pattern checks only that shape, not case or character set. Dynamic registration's own policy limits what a dynamically registered client can have, server-side.",
               "minLength": 1,
-              "maxLength": 253,
-              "pattern": "^(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z](?:[a-z0-9-]*[a-z0-9])?|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|\\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\\])$"
+              "maxLength": 259,
+              "pattern": "^(?:[^\\s/?#@:\\[\\]]+|\\[[^\\s/?#@\\[\\]]+\\])(?::[0-9]{1,5})?$"
             },
             "x-order": 3
           },
           "appSchemes": {
             "type": "array",
-            "description": "The private-use URI schemes (RFC 8252 section 7.1) of the client's app redirect URIs, without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. Registration accepts a private-use scheme only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when the client registered only https and loopback redirects; `redirectHosts` and `appSchemes` are never both empty.",
+            "description": "The URI schemes of the client's app redirect URIs (any scheme other than http and https), without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. For a dynamically registered client, registration accepts a private-use scheme (RFC 8252 section 7.1) only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. For an operator-managed client any other scheme is listed, as registered. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when every redirect URI of the client is http or https; `redirectHosts` and `appSchemes` are never both empty.",
             "maxItems": 100,
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "description": "One private-use scheme in lowercase RFC 3986 scheme form, with no `:` or `//`. Never `http` or `https`, whose redirects are listed in `redirectHosts`.",
+              "description": "One URI scheme in lowercase RFC 3986 scheme form, with no `:` or `//`. Never `http` or `https`, whose redirects are listed in `redirectHosts`.",
               "minLength": 1,
               "maxLength": 255,
               "pattern": "^[a-z][a-z0-9+.-]*$",
@@ -1568,8 +1584,16 @@ const OauthConsentRequestSchema: Record<string, unknown> = {
           },
           "verified": {
             "type": "boolean",
-            "description": "Derived only from the client's redirect targets, never from `clientName` or `clientId`: true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). Marks trust and never blocks: a false value is shown as an unverified client, and the user may still allow it.",
+            "description": "Marks trust and never blocks. For a dynamically registered client it is true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). For an operator-managed client it is true when the operator set the verified mark in the client's identity-provider metadata, which only the admin API can write; a client can never set or clear it. It is never derived from a self-asserted name or from the client ID. A false value is shown as an unverified client, and the user may still allow it.",
             "x-order": 5
+          },
+          "logoUri": {
+            "type": "string",
+            "format": "uri",
+            "description": "An https URL of the client's logo image. Sent only for an operator-managed client whose operator set one; never sent for a dynamically registered client, whose self-asserted logo is not shown. Omitted when there is none.",
+            "maxLength": 2048,
+            "pattern": "^https://",
+            "x-order": 6
           }
         }
       },
