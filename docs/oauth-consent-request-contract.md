@@ -120,9 +120,8 @@ special handling of `localhost`): the identity provider's exact-match
   by `:port` (`app.example.com:8443`, `[::1]:8080`). It carries no scheme,
   path, userinfo or whitespace, and a bare `:port` is not a host. An item is
   at most 259 characters, so a 253-character hostname can still carry `:65535`.
-  The pattern
-  checks only that shape: it does not promise a case or character set, so an
-  internationalized hostname may arrive as the server sends it. For a
+  The pattern checks only that shape: it does not promise a case or character
+  set, so an internationalized hostname may arrive as the server sends it. For a
   dynamically registered client, registration policy (enforced server-side)
   allows only `https` hosts and loopback IP literals, and rejects the
   `localhost` hostname (RFC 8252 section 8.3).
