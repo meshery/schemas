@@ -968,10 +968,7 @@ components:
     # Its code is a contract value, not a MeshKit code, so it is a small body of
     # its own: MeshkitError's code is an unstable component-scoped identifier.
     # A missing organization is never a 401; 401 stays reserved for token and
-    # audience failures. `choices` items repeat the `id`, `name` and `description`
-    # fields of AvailableOrganization (v1beta2/organization, the row of
-    # GET /api/identity/orgs) inline rather than by $ref: the organization
-    # construct refers to core, so a reference back from core would be a cycle.
+    # audience failures. `choices` items are OrganizationSelectionChoice, below.
     # Keep the two in step.
     OrganizationSelectionRequiredError:
       type: object
@@ -1000,28 +997,35 @@ components:
           minItems: 2
           description: The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.
           items:
-            type: object
-            description: An organization the call could act in. Same fields as AvailableOrganization.
-            required:
-              - id
-              - name
-              - description
-            additionalProperties: false
-            properties:
-              id:
-                type: string
-                format: uuid
-                x-go-type: uuid.UUID
-                x-go-type-import:
-                  path: github.com/gofrs/uuid
-                description: Organization ID.
-                x-go-name: ID
-              name:
-                type: string
-                description: Name of the organization.
-              description:
-                type: string
-                description: Description of the organization.
+            $ref: "#/components/schemas/OrganizationSelectionChoice"
+
+    # One organization the caller may name. It repeats the `id`, `name` and
+    # `description` fields of AvailableOrganization (v1beta2/organization) rather
+    # than referring to it: the organization construct refers to core, so a
+    # reference back from core would be a cycle. Keep the two in step.
+    OrganizationSelectionChoice:
+      type: object
+      description: An organization the call could act in. Same fields as AvailableOrganization.
+      required:
+        - id
+        - name
+        - description
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          description: Organization ID.
+          x-go-name: ID
+        name:
+          type: string
+          description: Name of the organization.
+        description:
+          type: string
+          description: Description of the organization.
 
     MeshkitError:
       type: object
