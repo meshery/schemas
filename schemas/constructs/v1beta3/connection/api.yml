@@ -25,12 +25,12 @@ paths:
         title: Get connections
         scope: connections:read
         description: >-
-          Read-only. Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
+          Read-only. Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, a sent `orgId` query names the acting organization (subject to the live-membership rule) and does not have to equal a selected organization.
       summary: Get all connections
       description: >
         Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support.
         When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md).
-        When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
+        When `X-Current-Orgid` is omitted, a sent `orgId` query names the acting organization (subject to the live-membership rule) and does not have to equal a selected organization.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -93,6 +93,8 @@ paths:
           $ref: "../../v1beta2/core/api.yml#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "500":
           $ref: "#/components/responses/500"
 
@@ -678,6 +680,8 @@ paths:
           $ref: "../../v1beta2/core/api.yml#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "500":
           $ref: "#/components/responses/500"
 
@@ -934,6 +938,8 @@ paths:
 
 components:
   responses:
+    OrganizationSelectionRequired:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/OrganizationSelectionRequired"
     400:
       $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     401:

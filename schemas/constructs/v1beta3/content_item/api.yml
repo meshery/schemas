@@ -103,6 +103,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -242,6 +244,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -390,6 +394,8 @@ components:
       bearerFormat: JWT
 
   responses:
+    OrganizationSelectionRequired:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/OrganizationSelectionRequired"
     422:
       $ref: "../../v1beta2/core/api.yml#/components/responses/422"
     400:

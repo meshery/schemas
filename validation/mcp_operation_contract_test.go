@@ -316,6 +316,161 @@ func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	}
 }
 
+type hostedMcpRead struct {
+	id   string
+	file string
+	op   any
+}
+
+// hostedMcpReadOperations returns every operation that carries x-mcp with
+// expose true and accepts the currentOrgId parameter, across all constructs
+// (api.yml and split operation files such as feature_operations.yml).
+// Operations live under paths in api.yml, but some constructs keep them in a
+// sidecar file under keys other than paths, so this walks the document.
+func hostedMcpReadOperations(t *testing.T, root string) []hostedMcpRead {
+	t.Helper()
+	var files []string
+	for _, pat := range []string{
+		filepath.Join(root, "schemas/constructs/*/*/api.yml"),
+		filepath.Join(root, "schemas/constructs/*/*/*_operations.yml"),
+	} {
+		found, err := filepath.Glob(pat)
+		if err != nil {
+			t.Fatal(err)
+		}
+		files = append(files, found...)
+	}
+	var out []hostedMcpRead
+	seen := map[string]bool{}
+	var current string
+	var walk func(any)
+	walk = func(node any) {
+		switch n := node.(type) {
+		case map[string]any:
+			if _, hasID := n["operationId"]; hasID {
+				mcp, ok := mappingValue(n, "x-mcp")
+				if ok {
+					if expose, _ := mappingValue(mcp, "expose"); expose == true {
+						params, _ := mustValue(n, "parameters").([]any)
+						takesOrg := false
+						for _, p := range params {
+							if ref, ok := mappingValue(p, "$ref"); ok && strings.HasSuffix(fmt.Sprint(ref), "components/parameters/currentOrgId") {
+								takesOrg = true
+							}
+						}
+						if takesOrg {
+							id := fmt.Sprint(mustValue(n, "operationId"))
+							if !seen[id] {
+								seen[id] = true
+								out = append(out, hostedMcpRead{id: id, file: current, op: n})
+							}
+						}
+					}
+				}
+				return
+			}
+			for _, v := range n {
+				walk(v)
+			}
+		case []any:
+			for _, v := range n {
+				walk(v)
+			}
+		}
+	}
+	for _, file := range files {
+		current = file
+		walk(loadOpenAPIDocument(t, file))
+	}
+	return out
+}
+
+// A hosted read that takes X-Current-Orgid answers 409 with the selection body
+// when the caller named no organization and several of the caller's live
+// organizations qualify. Every x-mcp read declares it through the shared
+// OrganizationSelectionRequired response in v1beta2 core, and the body's code,
+// required fields and choices bound are pinned here.
+func TestOrganizationSelectionRequiredIsDeclared(t *testing.T) {
+	root := repoRootDir(t)
+	core := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta2/core/api.yml"))
+	const code = "organization_selection_required"
+
+	body := mustLookup(t, core, "components", "schemas", "OrganizationSelectionRequiredError")
+	v1alpha1 := loadOpenAPIDocument(t, filepath.Join(root, coreV1alpha1Spec))
+	if mirror := mustLookup(t, v1alpha1, "components", "schemas", "OrganizationSelectionRequiredError"); !reflect.DeepEqual(body, mirror) {
+		t.Error("v1alpha1/core OrganizationSelectionRequiredError differs from v1beta2/core; keep the mirror identical")
+	}
+	if got := anyStrings(mustLookup(t, body, "properties", "code", "enum")); !reflect.DeepEqual(got, []string{code}) {
+		t.Errorf("OrganizationSelectionRequiredError code enum = %v, want [%s]", got, code)
+	}
+	if got := anyStrings(mustLookup(t, body, "required")); !reflect.DeepEqual(got, []string{"code", "message", "choices"}) {
+		t.Errorf("OrganizationSelectionRequiredError required = %v, want [code message choices]", got)
+	}
+	if got := mustValue(body, "additionalProperties"); got != false {
+		t.Errorf("OrganizationSelectionRequiredError additionalProperties = %v, want false", got)
+	}
+	if got := fmt.Sprint(mustLookup(t, body, "properties", "choices", "minItems")); got != "2" {
+		t.Errorf("choices minItems = %v, want 2", got)
+	}
+	if got := mustValue(mustLookup(t, body, "properties", "choices"), "type"); got != "array" {
+		t.Errorf("choices type = %v, want array", got)
+	}
+	if got := fmt.Sprint(mustLookup(t, body, "properties", "message", "minLength")); got != "1" {
+		t.Errorf("message minLength = %v, want 1", got)
+	}
+	items := mustLookup(t, body, "properties", "choices", "items")
+	if got := anyStrings(mustValue(items, "required")); !reflect.DeepEqual(got, []string{"id", "name", "description"}) {
+		t.Errorf("choices item required = %v, want [id name description]", got)
+	}
+	if got := mustValue(items, "additionalProperties"); got != false {
+		t.Errorf("choices item additionalProperties = %v, want false", got)
+	}
+	if got := fmt.Sprint(mustLookup(t, items, "properties", "id", "format")); got != "uuid" {
+		t.Errorf("choices[].id format = %v, want uuid", got)
+	}
+	if got := mustValue(mustLookup(t, core, "components", "responses", "OrganizationSelectionRequired", "content", "application/json", "schema"), "$ref"); got != "../../v1beta2/core/api.yml#/components/schemas/OrganizationSelectionRequiredError" {
+		t.Errorf("core OrganizationSelectionRequired must carry the selection body, got %v", got)
+	}
+
+	// Every x-mcp read that accepts currentOrgId declares the 409, except
+	// getFeaturesByOrganization: its path orgId always names the acting
+	// organization, so the 409 can never apply.
+	const pathOrgException = "getFeaturesByOrganization"
+	checked := 0
+	seen := map[string]bool{}
+	for _, op := range hostedMcpReadOperations(t, root) {
+		if op.id == pathOrgException {
+			if responses, ok := mappingValue(op.op, "responses"); ok {
+				if _, has409 := mappingValue(responses, "409"); has409 {
+					t.Errorf("%s must not declare 409 OrganizationSelectionRequired; the path already names the organization", op.id)
+				}
+			}
+			seen[op.id] = true
+			continue
+		}
+		ref := mustLookup(t, op.op, "responses", "409", "$ref")
+		if ref != "#/components/responses/OrganizationSelectionRequired" {
+			t.Errorf("%s 409 $ref = %v, want OrganizationSelectionRequired", op.id, ref)
+		}
+		aliasFile := op.file
+		if strings.HasSuffix(op.file, "_operations.yml") {
+			aliasFile = filepath.Join(filepath.Dir(op.file), "api.yml")
+		}
+		alias := fmt.Sprint(mustLookup(t, loadOpenAPIDocument(t, aliasFile), "components", "responses", "OrganizationSelectionRequired", "$ref"))
+		if !strings.HasSuffix(alias, "v1beta2/core/api.yml#/components/responses/OrganizationSelectionRequired") {
+			t.Errorf("%s OrganizationSelectionRequired alias $ref = %v, want a v1beta2/core OrganizationSelectionRequired response", op.id, alias)
+		}
+		seen[op.id] = true
+		checked++
+	}
+	if _, ok := seen[pathOrgException]; !ok {
+		t.Errorf("hosted reads did not include %s; scan would miss the path-org exception", pathOrgException)
+	}
+	if want := len(hostedMcpReads) - 1; checked != want {
+		t.Errorf("checked %d hosted reads, want %d (every x-mcp read except %s)", checked, want, pathOrgException)
+	}
+}
+
 func sortedBoolKeys(m map[string]bool) []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
@@ -709,8 +864,8 @@ func TestOperationsWithUuidParametersDeclare400(t *testing.T) {
 // The organization selector (docs/mcp-operation-contract.md, "The organization
 // selector"): an operation that takes an organization in its path or query also
 // takes X-Current-Orgid, its description points at the rule, and it declares the
-// 400 that a header-and-path mismatch answers and the 403 that a mismatch with
-// the session organization answers. The rule itself is stated once, in the doc.
+// 400 that a header-and-path mismatch answers and the 403 that a membership or
+// permission refusal answers. The rule itself is stated once, in the doc.
 func TestOrganizationSelectorIsDeclared(t *testing.T) {
 	root := repoRootDir(t)
 	features := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta1/feature/feature_operations.yml"))
@@ -871,7 +1026,7 @@ func stringKeyed(node any) any {
 var hostedMcpDescriptions = map[string]string{
 	"listSchedules":    "Read-only. Returns a paginated list of the schedules in the organization of the authenticated session, optionally filtered by workspace or status. If a worker currently holds a schedule, that entry includes the live claim, which names the connection (typically a desktop app install) that is running it.",
 	"getScheduleById":  "Read-only. Returns the schedule in the organization of the authenticated session. If a worker currently holds it, the result includes the live claim, which names the connection (typically a desktop app install) that is running it.",
-	"getConnections":   "Read-only. Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.",
+	"getConnections":   "Read-only. Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, a sent `orgId` query names the acting organization (subject to the live-membership rule) and does not have to equal a selected organization.",
 	"getEvents":        "Read-only. Returns a page of events. An `X-Current-Orgid` that is not a UUID answers 400.",
 	"getContentItem":   "Read-only. Returns the content item with the given ID in the organization of the authenticated session. An `X-Current-Orgid` that is not a UUID answers 400.",
 	"listContentItems": "Read-only. Returns a paginated list of the live content items in the organization of the authenticated session, ordered by `rowNumber` unless `order` names another column (`rowNumber`, `createdAt`, `updatedAt`). `search` matches the profile or the content values, case-insensitively. `threadId` returns one whole thread: the root item it names and every live item whose `threadId` names it, ordered by `threadIndex` (the root first) unless `order` names another column. A `threadId` or `X-Current-Orgid` that is not a UUID answers 400.",

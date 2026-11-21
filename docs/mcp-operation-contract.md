@@ -164,17 +164,52 @@ organization the call acts in (decision 5). It is defined once, as
 construct aliases it with a `$ref`. Cloud's membership and permission checks
 run in that organization exactly as for any other call.
 
+**How the acting organization is resolved.** A server resolves it per request,
+in this order:
+
+1. the `X-Current-Orgid` header (the `organizationId` tool argument), when sent;
+2. otherwise the path or query `orgId`, on an operation that takes one, when sent;
+3. otherwise the caller's selected organization, when it is not nil;
+4. otherwise server-side defaulting among the caller's live memberships.
+
+When exactly one live organization qualifies, it is used. A server never uses
+an organization the caller is not a live member of. When the call needs an
+acting organization, the caller named none and several qualify, an operation
+that declares the `OrganizationSelectionRequired` response answers `409` with
+the body
+`OrganizationSelectionRequiredError` in `v1beta2/core`: `code` is always
+`organization_selection_required`, `message` is the sentence the caller is
+shown, and `choices` lists at least two of the caller's own live organizations,
+each with its `id`, `name` and `description` (the fields of the
+`AvailableOrganization` row of `GET /api/identity/orgs`). The caller repeats
+the call with one `choices[].id` as `X-Current-Orgid`. Like the in-flight body
+it is not a `MeshkitError`, because a MeshKit `code` is an unstable
+component-scoped identifier. The body's `choices` items repeat three fields of
+`AvailableOrganization` inline rather than by `$ref`, since the organization
+construct refers to core and a reference back would be a cycle; the
+`v1alpha1/core` mirror is kept identical.
+
+A missing organization is never answered `401`: `401` stays reserved for token
+and audience failures. Every hosted read that accepts `X-Current-Orgid` declares
+the `409` through the shared `OrganizationSelectionRequired` response in
+`v1beta2/core`, aliased in each construct. `getFeaturesByOrganization` does not,
+because its path `orgId` always names the acting organization. Declaring the
+`409` does not oblige an operation to demand an organization: a call that can
+run without one, such as `getUser`, runs without one. `TestOrganizationSelectionRequiredIsDeclared`
+pins the body and the declaration.
+
 An operation that also takes an organization in its path or query (`orgId`:
 `getFeaturesByOrganization` in its path, `getConnections` in its query) must
 name the same organization as `X-Current-Orgid` when both are sent. A mismatch
 answers `400` and returns nothing; neither value wins, so the header never
-overrides the path or query `orgId`. When the header is omitted, the path or
-query `orgId` must equal the organization the call acts in (the session's
-selected organization); a mismatch answers `403` and returns nothing. The
-comparison is on the parsed UUID and is case-insensitive, so the same
-organization written in upper or lower case matches; the raw strings are never
-compared. Both operation descriptions reference this section and declare the
-`400` and the `403`.
+overrides the path or query `orgId`. When the header is omitted, a path or
+query `orgId` that is sent names the acting organization: it is still subject
+to the live-membership rule and does not have to equal a selected organization.
+The comparison, when both are sent, is on the parsed UUID and is
+case-insensitive, so the same organization written in upper or lower case
+matches; the raw strings are never compared. Both operation descriptions
+reference this section and declare the `400`. A `403` on these operations is a
+membership or permission refusal, not a mismatch against a selected organization.
 
 A UUID-constrained parameter that is not a UUID answers `400` on every hosted
 read: `X-Current-Orgid` on every x-mcp read, `threadId` on `listContentItems`. Each
