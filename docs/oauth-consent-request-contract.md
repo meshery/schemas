@@ -118,7 +118,9 @@ special handling of `localhost`): the identity provider's exact-match
   operator-managed client `localhost`), an IPv4 literal (`127.0.0.1`) or a
   bracketed IPv6 literal (`[::1]`, `[::ffff:127.0.0.1]`), optionally followed
   by `:port` (`app.example.com:8443`, `[::1]:8080`). It carries no scheme,
-  path, userinfo or whitespace, and a bare `:port` is not a host. The pattern
+  path, userinfo or whitespace, and a bare `:port` is not a host. An item is
+  at most 259 characters, so a 253-character hostname can still carry `:65535`.
+  The pattern
   checks only that shape: it does not promise a case or character set, so an
   internationalized hostname may arrive as the server sends it. For a
   dynamically registered client, registration policy (enforced server-side)
