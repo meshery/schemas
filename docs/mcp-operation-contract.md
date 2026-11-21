@@ -184,10 +184,12 @@ each with its `id`, `name` and `description` (the fields of the
 `AvailableOrganization` row of `GET /api/identity/orgs`). The caller repeats
 the call with one `choices[].id` as `X-Current-Orgid`. Like the in-flight body
 it is not a `MeshkitError`, because a MeshKit `code` is an unstable
-component-scoped identifier. The body's `choices` items repeat three fields of
-`AvailableOrganization` inline rather than by `$ref`, since the organization
-construct refers to core and a reference back would be a cycle; the
-`v1alpha1/core` mirror is kept identical.
+component-scoped identifier. Each `choices` item is an
+`OrganizationSelectionChoice`, a named schema in `v1beta2/core` mirrored
+identically in `v1alpha1/core`, so generated Go and TypeScript carry a named
+type. It copies the `id`, `name` and `description` fields of
+`AvailableOrganization` rather than referring to it, since the organization
+construct refers to core and a reference back would be a cycle.
 
 A missing organization is never answered `401`: `401` stays reserved for token
 and audience failures. Every hosted read that accepts `X-Current-Orgid` declares
@@ -196,7 +198,8 @@ the `409` through the shared `OrganizationSelectionRequired` response in
 because its path `orgId` always names the acting organization. Declaring the
 `409` does not oblige an operation to demand an organization: a call that can
 run without one, such as `getUser`, runs without one. `TestOrganizationSelectionRequiredIsDeclared`
-pins the body and the declaration.
+pins the body, the named `OrganizationSelectionChoice` item and its
+`v1alpha1/core` mirror, and the declaration.
 
 An operation that also takes an organization in its path or query (`orgId`:
 `getFeaturesByOrganization` in its path, `getConnections` in its query) must
