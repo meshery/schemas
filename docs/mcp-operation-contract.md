@@ -173,8 +173,10 @@ in this order:
 4. otherwise server-side defaulting among the caller's live memberships.
 
 When exactly one live organization qualifies, it is used. A server never uses
-an organization the caller is not a live member of. When several qualify
-and the caller named none, the call answers `409` with the body
+an organization the caller is not a live member of. When the call needs an
+acting organization, the caller named none and several qualify, an operation
+that declares the `OrganizationSelectionRequired` response answers `409` with
+the body
 `OrganizationSelectionRequiredError` in `v1beta2/core`: `code` is always
 `organization_selection_required`, `message` is the sentence the caller is
 shown, and `choices` lists at least two of the caller's own live organizations,
@@ -191,7 +193,9 @@ A missing organization is never answered `401`: `401` stays reserved for token
 and audience failures. Every hosted read that accepts `X-Current-Orgid` declares
 the `409` through the shared `OrganizationSelectionRequired` response in
 `v1beta2/core`, aliased in each construct. `getFeaturesByOrganization` does not,
-because its path `orgId` always names the acting organization. `TestOrganizationSelectionRequiredIsDeclared`
+because its path `orgId` always names the acting organization. Declaring the
+`409` does not oblige an operation to demand an organization: a call that can
+run without one, such as `getUser`, runs without one. `TestOrganizationSelectionRequiredIsDeclared`
 pins the body and the declaration.
 
 An operation that also takes an organization in its path or query (`orgId`:
