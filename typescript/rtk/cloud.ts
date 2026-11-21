@@ -20998,7 +20998,7 @@ export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities
     /** Where the client can get an update, when the provider knows one. */
     upgradeUrl?: string;
   };
-  /** The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.
+  /** The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request.
    */
   session?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -21074,6 +21074,9 @@ export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities
       /** Timestamp when the resource was updated. */
       updated_at: string;
     }[];
+    /** The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty.
+     */
+    permissionKeys?: string[];
     /** Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.
      */
     deviceUsage?: {
