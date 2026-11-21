@@ -430,7 +430,8 @@ owned by `schemas/constructs/v1beta3/connection/api.yml` and
 `GET /{version}/capabilities` (`v1beta3/provider_capability`) is the first
 call a native client makes after it authenticates. Besides the provider's
 features and their endpoints, it carries `contractVersion` (`MAJOR.MINOR`;
-a client refuses a different major) and, on an authenticated request that
+a client refuses a different major; 1.1 added `compatibility` and `session`,
+1.2 added `permissionKeys` to `session`) and, on an authenticated request that
 sends `X-Current-Orgid`, `membership { organizationId, bound }`. The three
 cases stay distinguishable: no `contractVersion` means an older provider, no
 `membership` means the request was not authenticated or named no
@@ -440,9 +441,15 @@ its `{version}` meets the provider's minimum for that client; an outdated
 client still gets `200` with `compatible: false` and must update before it
 registers or keeps a connection alive. An authenticated request also receives
 `session` (the caller's roles, plan and entitlements, and the organization's
-plan, entitlements and device usage for a live member of `X-Current-Orgid`).
-A client reads paths from `capabilities` instead of hard-coding them, and does
-not use a separate health endpoint.
+plan, entitlements, permission keys and device usage for a live member of
+`X-Current-Orgid`). `permissionKeys` (up to 1000 unique UUIDs) is present only
+when the caller is a live member of that organization (`bound: true`). For a
+keychain-scoped token, it is the effective intersection of keys, so actions the
+token cannot perform are not displayed. An empty array indicates the caller holds
+no keys in that organization; an absent property indicates not reported (e.g. an
+older provider or when no organization is named); clients must not read absent as
+empty. A client reads paths from `capabilities` instead of hard-coding them, and
+does not use a separate health endpoint.
 
 ## Hosted MCP tools, requests and idempotent creates
 

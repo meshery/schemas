@@ -22,8 +22,8 @@ info:
     from it that it must update. An authenticated request additionally
     receives `session`: the caller's roles, the plan and the entitlements of
     the caller's roles and, when the caller is a live member of the
-    organization in `X-Current-Orgid`, that organization's plan, entitlements
-    and registered device usage.
+    organization in `X-Current-Orgid`, that organization's plan, entitlements,
+    permission keys and registered device usage.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -263,8 +263,8 @@ components:
         The authenticated caller's session as the provider sees it: who the
         caller is, the caller's roles, and, for the organization named by
         `X-Current-Orgid` when the caller is a live member of it, that
-        organization's roles, plan, entitlements and device usage. Present
-        only on an authenticated request.
+        organization's roles, plan, entitlements, permission keys and device
+        usage. Present only on an authenticated request.
       additionalProperties: false
       required:
         - userId
@@ -301,5 +301,20 @@ components:
             x-go-type-import:
               path: github.com/meshery/schemas/models/v1beta1/feature
               name: featurev1beta1
+        permissionKeys:
+          type: array
+          description: >
+            The IDs of the permission keys the caller holds in the organization
+            named by `X-Current-Orgid`. Present only when the caller is a live
+            member of that organization. For a keychain-scoped token, this is
+            the effective intersection of keys, so actions the token cannot
+            perform are not displayed. An empty array indicates the caller holds
+            no keys; an absent property indicates not reported (e.g., an older
+            provider or when no organization is named). Clients must not read
+            absent as empty.
+          items:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          maxItems: 1000
+          uniqueItems: true
         deviceUsage:
           $ref: "#/components/schemas/ProviderDeviceUsage"
