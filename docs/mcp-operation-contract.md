@@ -186,8 +186,11 @@ the call with one `choices[].id` as `X-Current-Orgid`. Like the in-flight body
 it is not a `MeshkitError`, because a MeshKit `code` is an unstable
 component-scoped identifier. Each `choices` item is an
 `OrganizationSelectionChoice`, a named schema in `v1beta2/core` mirrored
-identically in `v1alpha1/core`, so generated Go and TypeScript carry a named
-type. It copies the `id`, `name` and `description` fields of
+identically in `v1alpha1/core`, so generated Go carries a named struct and
+`choices` is a slice of it. Generated TypeScript exports the standalone
+`OrganizationSelectionChoice` type, but its generator dereferences every `$ref`,
+so `OrganizationSelectionRequiredError.choices` there is still the inline
+`{id, name, description}` shape, structurally identical to the named type. It copies the `id`, `name` and `description` fields of
 `AvailableOrganization` rather than referring to it, since the organization
 construct refers to core and a reference back would be a cycle.
 
