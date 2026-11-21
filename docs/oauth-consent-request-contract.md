@@ -102,35 +102,37 @@ image. It is sent only for an operator-managed client whose operator set one,
 and omitted otherwise; a dynamically registered client never has one. It is
 optional, so a response without it stays valid.
 
-Where the client can send the user is split by kind, so the page never shows an
-app as a host. The server puts each registered redirect URI in exactly one list:
-the host of one that has a host in `redirectHosts`, the scheme of one that has
-none in `appSchemes`. For a dynamically registered client the registration
-policy limits what can appear (below). For an operator-managed client every
-registered redirect URI is shown as registered, with no extra constraint (no
-app-scheme screening, no https-only or loopback-only rule, no special handling
-of `localhost`): the identity provider's exact-match `redirect_uri` check is the
-only gate.
+Where the client can send the user is split by scheme, so the page never shows
+an app as a host. The server puts each registered redirect URI in exactly one
+list: an `http` or `https` redirect in `redirectHosts`, any other scheme in
+`appSchemes`. For a dynamically registered client the registration policy
+limits what can appear: `https` and loopback `http` redirects, and allowlisted
+private-use schemes. For an operator-managed client there is no extra
+constraint (no app-scheme screening, no https-only or loopback-only rule, no
+special handling of `localhost`): the identity provider's exact-match
+`redirect_uri` check is the only gate, and the split is display only.
 
-- **`redirectHosts`** lists the host of each redirect URI that has one, as a
-  hostname only, as the server reports it: no scheme, port, path, userinfo or
-  whitespace. An entry is a hostname or single label (`app.example.com`,
-  `1password.example.com`, `my_host`, and for an operator-managed client
-  `localhost`), an IPv4 literal (`127.0.0.1`) or a bracketed IPv6 literal
-  (`[::1]`, `[::ffff:127.0.0.1]`). A colon appears only inside IPv6 brackets,
-  so `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are rejected.
-  The pattern checks only that shape. For a dynamically registered client,
-  registration policy (enforced server-side) allows only `https` hosts and
-  loopback IP literals, and rejects the `localhost` hostname (RFC 8252 section
-  8.3).
-- **`appSchemes`** lists the scheme of each redirect URI that has no host, in
-  lowercase RFC 3986 scheme form with no `:` or `//` (`vscode`,
-  `com.example.app`). For a dynamically registered client, Cloud accepts a
-  private-use scheme (RFC 8252 section 7.1) at registration only when it is on
-  the server-side app-scheme allowlist, read from configuration (defaults
-  `vscode` and `cursor`), so `appSchemes` only ever holds allowlisted schemes.
-  `http` and `https` are rejected here; their redirects belong in
-  `redirectHosts`.
+- **`redirectHosts`** lists the host of each `http` or `https` redirect URI,
+  with its port when the redirect has one, as the server sends it. An entry is
+  a hostname or single label (`app.example.com`, `my_host`, and for an
+  operator-managed client `localhost`), an IPv4 literal (`127.0.0.1`) or a
+  bracketed IPv6 literal (`[::1]`, `[::ffff:127.0.0.1]`), optionally followed
+  by `:port` (`app.example.com:8443`, `[::1]:8080`). It carries no scheme,
+  path, userinfo or whitespace, and a bare `:port` is not a host. The pattern
+  checks only that shape: it does not promise a case or character set, so an
+  internationalized hostname may arrive as the server sends it. For a
+  dynamically registered client, registration policy (enforced server-side)
+  allows only `https` hosts and loopback IP literals, and rejects the
+  `localhost` hostname (RFC 8252 section 8.3).
+- **`appSchemes`** lists the scheme of each redirect URI whose scheme is not
+  `http` or `https`, in lowercase RFC 3986 scheme form with no `:` or `//`
+  (`vscode`, `com.example.app`). For a dynamically registered client, Cloud
+  accepts a private-use scheme (RFC 8252 section 7.1) at registration only
+  when it is on the server-side app-scheme allowlist, read from configuration
+  (defaults `vscode` and `cursor`), so `appSchemes` only ever holds
+  allowlisted schemes. For an operator-managed client any other scheme is
+  listed, as registered. `http` and `https` are rejected here; their redirects
+  belong in `redirectHosts`.
 
 Both lists are deduplicated, and either may be empty, but never both: every
 client has at least one redirect URI, and the server guarantees it. The two

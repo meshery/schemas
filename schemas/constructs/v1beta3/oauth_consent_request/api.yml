@@ -262,8 +262,8 @@ components:
       description: >-
         The OAuth client that asks for consent, as the consent page names it:
         its ID and registered name, where it can send the user afterwards
-        (`redirectHosts` for a redirect URI that has a host, `appSchemes` for
-        one that has none), an optional `logoUri`, and the `verified`
+        (`redirectHosts` for http and https redirects, `appSchemes` for any
+        other scheme), an optional `logoUri`, and the `verified`
         mark. The client is one of two kinds. A dynamically registered client
         registered itself (RFC 7591), so its name is self-asserted. An
         operator-managed client was created by an operator through the
@@ -277,12 +277,15 @@ components:
         metadata (admin-only; a client can never set or clear it). It is never
         derived from a self-asserted name or from the client ID, and an
         unverified client may still be allowed. The server classifies each
-        registered redirect URI into exactly one of the two lists, and at
-        least one of them is non-empty. For a dynamically registered client
-        the registration policy limits what can appear. For an operator-managed
-        client every registered redirect URI is shown as registered, with no
-        extra constraint: the identity provider's exact-match redirect check
-        is the only gate.
+        registered redirect URI by its scheme into exactly one of the two
+        lists, and at least one of them is non-empty. For a dynamically
+        registered client the registration policy limits what can appear:
+        https and loopback http redirects, and allowlisted private-use
+        schemes. For an operator-managed client there is no extra constraint
+        (the identity provider's exact-match redirect check is the only
+        gate): an http or https redirect is listed in `redirectHosts`, any
+        other scheme in `appSchemes`. This is display only, so the page never
+        shows an app as a host.
       required:
         - clientId
         - clientName
@@ -313,56 +316,54 @@ components:
           type: array
           description: >-
             The network hosts the client can send the user to after the
-            decision: the host of each registered redirect URI that has one,
-            hostname only (no scheme, port or path), without duplicates. For a dynamically registered client, registration
-            policy limits these to `https` hosts and loopback IP literals
-            (`127.0.0.1` or `[::1]`), and never `localhost` (RFC 8252 section
-            8.3). For an operator-managed client every registered redirect
-            URI is shown as registered, so a host may also be a single-label
-            name such as `localhost`. A redirect URI that has no host is
-            listed in `appSchemes` instead. An internationalized hostname is
-            sent in IDNA A-label (punycode) form. Empty when the client
-            registered only app redirects; `redirectHosts` and `appSchemes`
-            are never both empty.
+            decision: the host of each http or https redirect URI, with its
+            port when the redirect has one, without duplicates. For a
+            dynamically registered client, registration policy limits these
+            to `https` hosts and loopback http hosts (`127.0.0.1` or `[::1]`),
+            and never `localhost` (RFC 8252 section 8.3). For an
+            operator-managed client any http or https redirect is listed, so a
+            host may also be a single-label name such as `localhost`. A
+            redirect URI of any other scheme is listed in `appSchemes`
+            instead. Empty when the client registered only app redirects;
+            `redirectHosts` and `appSchemes` are never both empty.
           maxItems: 100
           uniqueItems: true
           items:
             type: string
             description: >-
-              One network host as the server reports it for a registered
+              One network host as the server sends it for a registered
               redirect URI: a hostname or single label, an IPv4 literal, or a
-              bracketed IPv6 literal. No scheme, port, path, userinfo or
-              whitespace; a colon appears only inside IPv6 brackets. The
-              pattern checks only that shape. Dynamic registration's own
+              bracketed IPv6 literal, with an optional `:port`. No scheme,
+              path, userinfo or whitespace. The pattern checks only that
+              shape, not case or character set. Dynamic registration's own
               policy limits what a dynamically registered client can have,
               server-side.
             minLength: 1
             maxLength: 253
-            pattern: '^(?:[^\s/?#@:\[\]]+|\[[^\s/?#@\[\]]+\])$'
+            pattern: '^(?:[^\s/?#@:\[\]]+|\[[^\s/?#@\[\]]+\])(?::[0-9]{1,5})?$'
           x-order: 3
         appSchemes:
           type: array
           description: >-
-            The private-use URI schemes (RFC 8252 section 7.1) of the client's
-            app redirect URIs, without duplicates, for example `vscode` or
-            `com.example.app`: the app that claims the scheme on the user's
-            device receives the user after the decision: the scheme of each
-            registered redirect URI that has no host. For a dynamically
-            registered client, registration accepts a private-use scheme only
-            when it is on the server-side app-scheme allowlist read from
-            configuration (defaults `vscode` and `cursor`), so only
-            allowlisted schemes appear here. An operator-managed client's
-            redirects are shown as registered. A reverse-domain
-            scheme such as `com.example.app` names an app, not a host, and
-            must not be shown as one. Empty when every redirect URI of the
-            client has a host; `redirectHosts` and `appSchemes` are never both
-            empty.
+            The URI schemes of the client's app redirect URIs (any scheme
+            other than http and https), without duplicates, for example
+            `vscode` or `com.example.app`: the app that claims the scheme on
+            the user's device receives the user after the decision. For a
+            dynamically registered client, registration accepts a private-use
+            scheme (RFC 8252 section 7.1) only when it is on the server-side
+            app-scheme allowlist read from configuration (defaults `vscode`
+            and `cursor`), so only allowlisted schemes appear here. For an
+            operator-managed client any other scheme is listed, as
+            registered. A reverse-domain scheme such as `com.example.app`
+            names an app, not a host, and must not be shown as one. Empty when
+            every redirect URI of the client is http or https;
+            `redirectHosts` and `appSchemes` are never both empty.
           maxItems: 100
           uniqueItems: true
           items:
             type: string
             description: >-
-              One private-use scheme in lowercase RFC 3986 scheme form, with
+              One URI scheme in lowercase RFC 3986 scheme form, with
               no `:` or `//`. Never `http` or `https`, whose redirects are
               listed in `redirectHosts`.
             minLength: 1

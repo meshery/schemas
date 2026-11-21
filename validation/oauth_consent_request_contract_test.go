@@ -260,7 +260,7 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 			client0(b)["logoUri"] = "https://cdn.example.com/" + strings.Repeat("a", 2048-len("https://cdn.example.com/"))
 		}), false},
 		{"localhost redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"localhost"} }), false},
-		{"localhost with a port", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"localhost:8787"} }), true},
+		{"localhost with a port", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"localhost:8787"} }), false},
 		{"carries dynamicallyRegistered", consentRequest, request(func(b map[string]any) { client0(b)["dynamicallyRegistered"] = true }), true},
 		{"unknown client field", consentRequest, request(func(b map[string]any) { client0(b)["secret"] = "x" }), true},
 		{"redirect", redirect, map[string]any{"redirectTo": "https://cloud.example.com/oauth2/auth?consent_verifier=v"}, false},
@@ -297,8 +297,8 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 // Where the client sends the user is split by kind, so the consent page never
 // shows an app as a host: redirectHosts holds the host of each redirect URI
 // that has one, appSchemes the scheme of one that has none. The patterns only
-// check each entry's shape (a host has no scheme, port, path, userinfo or
-// whitespace; a scheme is an RFC 3986 token, never http or https). They do not
+// check each entry's shape (a host has no scheme, path, userinfo or
+// whitespace, and an optional :port; a scheme is an RFC 3986 token, never http or https). They do not
 // keep a value out of the wrong list: a reverse-domain scheme such as
 // github.com is valid in both, and only the server's classification by
 // redirect URI places it (in appSchemes).
@@ -322,6 +322,11 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"[::1]",
 				"[2001:db8:0:0:0:0:0:1]",
 				"[::ffff:127.0.0.1]",
+				"app.example.com:8443", // an optional port
+				"app.example.com:8080",
+				"127.0.0.1:8080",
+				"[::1]:8080",
+				"localhost:3000",
 				"localhost", // an operator-managed client's redirects are shown as registered
 				"vscode",    // any single-label name is a valid host
 			},
@@ -330,10 +335,10 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"https://app.example.com", // no scheme
 				"app.example.com/cb",      // no path
 				"app.example.com?x=1",
-				"app.example.com:8080", // no port
-				"127.0.0.1:8080",
-				"[::1]:8080",
-				"localhost:3000",
+				":8080", // a bare port is not a host
+				"app.example.com:",
+				"app.example.com:port",
+				"[::1]:",
 				"::1", // IPv6 must be bracketed
 				"app example.com",
 				"user@app.example.com", // no userinfo
