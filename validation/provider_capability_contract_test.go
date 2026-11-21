@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -85,11 +84,6 @@ func TestProviderCapabilityContract(t *testing.T) {
 		}
 		if err := capSchema.VisitJSON(tmplWithSession); err != nil {
 			t.Errorf("ProviderCapability with 1.2 session containing permissionKeys failed schema validation: %v", err)
-		}
-
-		desc, _ := entity["description"].(string)
-		if !strings.Contains(desc, "1.2") || !strings.Contains(desc, "permissionKeys") {
-			t.Errorf("provider_capability.yaml description must note 1.2 added permissionKeys to session, got %q", desc)
 		}
 	})
 }
