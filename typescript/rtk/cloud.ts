@@ -41,6 +41,7 @@ export const addTagTypes = [
   "Plan_Plans",
   "Profile_profiles",
   "ProviderCapability_capabilities",
+  "Recognition_recognition",
   "Request_requests",
   "Schedule_schedules",
   "Subscription_Subscriptions",
@@ -2160,6 +2161,18 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["ProviderCapability_capabilities"],
+      }),
+      getCommunityGuideCandidates: build.query<
+        GetCommunityGuideCandidatesApiResponse,
+        GetCommunityGuideCandidatesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/recognition/community-guide/candidates`,
+          params: {
+            month: queryArg?.month,
+          },
+        }),
+        providesTags: ["Recognition_recognition"],
       }),
       listRequests: build.query<ListRequestsApiResponse, ListRequestsApiArg>({
         query: (queryArg) => ({
@@ -21116,6 +21129,40 @@ export type GetProviderCapabilitiesApiArg = {
   /** Operating system of the client, used to select packages. */
   os?: string;
 };
+export type GetCommunityGuideCandidatesApiResponse = /** status 200 Community Guide candidates for the month */ {
+  /** The UTC calendar month counted, formatted `YYYY-MM`. */
+  month: string;
+  /** Minimum number of distinct givers a recipient needed to be listed. */
+  minGivers: number;
+  /** Slug of the badge the candidates are being considered for. */
+  badge: string;
+  /** Recipients resolved to a Layer5 user, most givers first. */
+  candidates: {
+    /** Layer5 user ID the recipient resolved to. */
+    userId: string;
+    /** Email address of the resolved Layer5 user. */
+    email: string;
+    /** Identity provider the kudos recipient was recorded under, for example `github`. */
+    provider: string;
+    /** The recipient's identifier at the provider, for example a numeric GitHub ID. */
+    externalId: string;
+    /** Number of distinct givers who gave the recipient valid kudos in the month. */
+    givers: number;
+  }[];
+  /** Recipients who could not be resolved to a Layer5 user. */
+  needsInfo: {
+    /** Identity provider the kudos recipient was recorded under, for example `github` or `slack`. */
+    provider: string;
+    /** The recipient's identifier at the provider. */
+    externalId: string;
+    /** Number of distinct givers who gave the recipient valid kudos in the month. */
+    givers: number;
+  }[];
+};
+export type GetCommunityGuideCandidatesApiArg = {
+  /** UTC calendar month to count, formatted `YYYY-MM`. Defaults to the previous month. */
+  month?: string;
+};
 export type ListRequestsApiResponse = /** status 200 Requests page */ {
   /** Current page number of the result set. */
   page: number;
@@ -25132,6 +25179,8 @@ export const {
   useRemoveConnectionFromProfileMutation,
   useGetProviderCapabilitiesQuery,
   useLazyGetProviderCapabilitiesQuery,
+  useGetCommunityGuideCandidatesQuery,
+  useLazyGetCommunityGuideCandidatesQuery,
   useListRequestsQuery,
   useLazyListRequestsQuery,
   useGetRequestQuery,
