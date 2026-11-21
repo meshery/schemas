@@ -339,7 +339,7 @@ components:
               policy limits what a dynamically registered client can have,
               server-side.
             minLength: 1
-            maxLength: 253
+            maxLength: 259
             pattern: '^(?:[^\s/?#@:\[\]]+|\[[^\s/?#@\[\]]+\])(?::[0-9]{1,5})?$'
           x-order: 3
         appSchemes:

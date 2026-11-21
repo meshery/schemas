@@ -306,6 +306,7 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 	spec := loadOauthConsentRequestSpec(t)
 	client := spec.Components.Schemas["OauthConsentClient"].Value
 	response := []openapi3.SchemaValidationOption{openapi3.VisitAsResponse()}
+	longestHostname := strings.Repeat(strings.Repeat("a", 63)+".", 3) + strings.Repeat("a", 61)
 
 	lists := []struct {
 		field              string
@@ -327,8 +328,10 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"127.0.0.1:8080",
 				"[::1]:8080",
 				"localhost:3000",
-				"localhost", // an operator-managed client's redirects are shown as registered
-				"vscode",    // any single-label name is a valid host
+				"localhost",                // an operator-managed client's redirects are shown as registered
+				"vscode",                   // any single-label name is a valid host
+				longestHostname,            // the 253-character DNS maximum (RFC 1035)
+				longestHostname + ":65535", // the longest hostname with the largest port
 			},
 			rejected: []string{
 				"",
@@ -342,6 +345,7 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"::1", // IPv6 must be bracketed
 				"app example.com",
 				"user@app.example.com", // no userinfo
+				"a" + longestHostname + ":65535",
 			},
 		},
 		{
