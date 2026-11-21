@@ -190,8 +190,9 @@ identically in `v1alpha1/core`, so generated Go carries a named struct and
 `choices` is a slice of it. Generated TypeScript exports the standalone
 `OrganizationSelectionChoice` type, but its generator dereferences every `$ref`,
 so `OrganizationSelectionRequiredError.choices` there is still the inline
-`{id, name, description}` shape, structurally identical to the named type. It copies the `id`, `name` and `description` fields of
-`AvailableOrganization` rather than referring to it, since the organization
+`{id, name, description}` shape, structurally identical to the named type.
+`OrganizationSelectionChoice` copies the `id`, `name` and `description` fields
+of `AvailableOrganization` rather than referring to it, since the organization
 construct refers to core and a reference back would be a cycle.
 
 A missing organization is never answered `401`: `401` stays reserved for token
