@@ -357,10 +357,10 @@ declared paths carry no `/api` prefix:
 body `OauthConsentDecisionPayload`) decide it, answering the `redirectTo` the browser must navigate
 to. Only the signed-in user the challenge was issued for may read or decide it (`403` otherwise), a
 challenge is single use (`404` once decided or expired), an accept grants only what the client
-requested, and `client.verified` marks trust without blocking. `client.redirectHosts` (https and
-loopback hosts) and `client.appSchemes` (private-use app schemes) are separate lists, so an app is
-never shown as a host. A `503` on a decision means the outcome is unknown: a retry that answers
-`404` means the challenge was already decided. Full contract:
+requested, and `client.verified` marks trust without blocking. `client.redirectHosts` (hosts of
+http and https redirects, with an optional `:port`) and `client.appSchemes` (schemes of every other
+redirect) are separate lists, so an app is never shown as a host. A `503` on a decision means the
+outcome is unknown: a retry that answers `404` means the challenge was already decided. Full contract:
 [`oauth-consent-request-contract.md`](oauth-consent-request-contract.md).
 
 ## Schedules and claims
@@ -392,13 +392,16 @@ The rules a consumer must enforce:
   "Release claims of other members" releases; anyone else gets 409 and the claim is never taken back.
 - A claim past `expiresAt` reads as `expired` and the resource is claimable again; at most one claim
   per resource is active in an organization.
-- Only organization admins may set or lift the organization-wide pause. A create or update that
-  changes `schedulePause` from anyone else is refused with 403. Omitting `schedulePause` from a
-  preferences write keeps the current pause unchanged. Lifting it (`paused` false) clears
+- An `updateOrg` or `patchOrgPreferences` write that changes `schedulePause` requires organization
+  admin; a write from anyone else that changes it is refused with 403. Omitting `schedulePause`
+  from a preferences write keeps the current pause unchanged. Lifting it (`paused` false) clears
   `reason`, `pausedAt` and `pausedBy`, so a stored `paused` false never carries a stale pause.
 - Pause state is data, never a path segment: a schedule is paused or resumed by setting `paused`
   (and optionally `pauseReason`) on `PUT /api/schedules/{scheduleId}`, and the organization-wide
-  pause is set or lifted by updating the organization's preferences. There are no `/pause` or
+  pause is set or lifted by updating the organization's preferences, or alone through the
+  sub-resource `PUT /api/identity/orgs/{orgId}/schedule-pause` (`updateOrgSchedulePause`, gated by
+  its own permission key so an OAuth scope can carry it; see
+  [`schedule-pause-contract.md`](schedule-pause-contract.md)). There are no `/pause` or
   `/resume` routes.
 - To change one preference member without resending the others, use
   `PATCH /api/identity/orgs/{orgId}/preferences` (`PreferencesPatchPayload`): a present member
@@ -429,7 +432,8 @@ owned by `schemas/constructs/v1beta3/connection/api.yml` and
 `GET /{version}/capabilities` (`v1beta3/provider_capability`) is the first
 call a native client makes after it authenticates. Besides the provider's
 features and their endpoints, it carries `contractVersion` (`MAJOR.MINOR`;
-a client refuses a different major) and, on an authenticated request that
+a client refuses a different major; 1.1 added `compatibility` and `session`,
+1.2 added `permissionKeys` to `session`) and, on an authenticated request that
 sends `X-Current-Orgid`, `membership { organizationId, bound }`. The three
 cases stay distinguishable: no `contractVersion` means an older provider, no
 `membership` means the request was not authenticated or named no
@@ -439,9 +443,47 @@ its `{version}` meets the provider's minimum for that client; an outdated
 client still gets `200` with `compatible: false` and must update before it
 registers or keeps a connection alive. An authenticated request also receives
 `session` (the caller's roles, plan and entitlements, and the organization's
-plan, entitlements and device usage for a live member of `X-Current-Orgid`).
-A client reads paths from `capabilities` instead of hard-coding them, and does
-not use a separate health endpoint.
+plan, entitlements, permission keys and device usage for a live member of
+`X-Current-Orgid`). `permissionKeys` (up to 1000 unique UUIDs) is present only
+when the caller is a live member of that organization (`bound: true`). For a
+keychain-scoped token, it is the effective intersection of keys, so actions the
+token cannot perform are not displayed. An empty array indicates the caller holds
+no keys in that organization; an absent property indicates not reported (e.g. an
+older provider or when no organization is named); clients must not read absent as
+empty. A client reads paths from `capabilities` instead of hard-coding them, and
+does not use a separate health endpoint.
+
+## Hosted MCP tools, requests and idempotent creates
+
+An operation becomes a tool of the hosted MCP server with the operation-level
+`x-mcp` extension (`expose`, optional `title` and `description`, required OAuth
+`scope`). The tool
+name is the `operationId` and the hints derive from the method, so nothing is
+hand-written. Rule 48 of `make validate-schemas` enforces the contract, and a
+scope is a keychain. Full contract:
+[`mcp-operation-contract.md`](mcp-operation-contract.md).
+
+- Every `x-mcp` operation accepts the optional `X-Current-Orgid` header, the
+  shared `currentOrgId` parameter in `v1beta2/core/api.yml`.
+- A create that is safe to retry takes the optional `Idempotency-Key` header
+  (the shared `idempotencyKey` parameter): within 24 hours the same key and the
+  same request hash return the stored response, a different hash answers
+  `422`, and a retry that arrives while the first request is still in flight
+  answers `409` with the body `code` `idempotency_key_in_flight`. An in-flight
+  claim expires after the same 24 hours. `insertContentItem` and
+  `createSchedule` take it.
+- A call that needs an acting organization, where the caller named none and
+  more than one of the caller's live organizations qualifies, answers `409`
+  with the body `code` `organization_selection_required` and a `choices` list
+  (`OrganizationSelectionRequiredError`, shared as the
+  `OrganizationSelectionRequired` response in `v1beta2/core`), beside the
+  in-flight body above. A missing organization is never `401`. Resolution
+  order and body: [`mcp-operation-contract.md`](mcp-operation-contract.md#the-organization-selector).
+- `v1beta3/request` is the one generic request-for-a-decision construct:
+  `listRequests`, `getRequest`, `approveRequest`, `denyRequest`, with
+  `approve` and `deny` as POST action sub-resources like the claim routes.
+  Deciding is a human act and never a tool. Full contract:
+  [`request-contract.md`](request-contract.md).
 
 ## Media assets
 

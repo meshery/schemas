@@ -13,7 +13,12 @@ on:
       - 'schemas/**'
       - 'models/**'
       - 'python/**'
+      - 'rust/**'
+      - 'rust-toolchain.toml'
       - 'tests/**'
+      - 'typescript/**'
+      - 'package.json'
+      - 'package-lock.json'
       - 'go.mod'
       - 'go.sum'
   push:
@@ -29,7 +34,12 @@ on:
       - 'schemas/**'
       - 'models/**'
       - 'python/**'
+      - 'rust/**'
+      - 'rust-toolchain.toml'
       - 'tests/**'
+      - 'typescript/**'
+      - 'package.json'
+      - 'package-lock.json'
       - 'go.mod'
       - 'go.sum'
 
@@ -54,11 +64,18 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          # >= 22.6 for `node --test` native TypeScript type-stripping.
+          # >= 22.18 for `node --test` type stripping without a flag.
           node-version: '22'
 
       - name: Install Node dependencies
         run: npm ci
+
+      # The TypeScript unit tests (typescript/**/*.test.ts) read schema YAML
+      # from source and import generated output only as types, so they need
+      # no build. Without this step they ran only after merge, in
+      # generate-artifacts-from-schemas.yml.
+      - name: Run TypeScript unit tests
+        run: make test-ts
 
       - name: Run generated-output guard tests
         run: make test-generated-outputs
@@ -94,6 +111,25 @@ jobs:
 
       - name: Run Python guard tests
         run: make test-python
+
+      # `test-rust` does not regenerate either: it guards the committed pilot
+      # crate against its manifest (bundled-spec and generated-file digests,
+      # generator and toolchain pins), then runs cargo fmt --check, clippy
+      # with -D warnings, cargo test, and a wasm32-unknown-unknown build.
+      # rust-toolchain.toml is the single source of truth for the toolchain;
+      # `rustup toolchain install` with no argument installs what it pins.
+      - name: Install Rust toolchain
+        run: rustup toolchain install
+
+      - name: Cache Rust build output
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
+            build/rust-gen
+
+      - name: Run Rust guard tests
+        run: make test-rust
 
   advisory-audit:
     name: Full schema audit

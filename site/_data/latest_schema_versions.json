@@ -323,6 +323,13 @@
     "extension": true
   },
   {
+    "construct": "recognition",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/recognition/community_guide_candidate.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "registry",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/registry/api.yml",
@@ -336,6 +343,13 @@
     "docs_href": "https://docs.meshery.io/concepts/logical/relationships",
     "core": false,
     "extension": false
+  },
+  {
+    "construct": "request",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/request/request.yaml",
+    "core": false,
+    "extension": true
   },
   {
     "construct": "role",

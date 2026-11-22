@@ -98,7 +98,18 @@ paths:
       tags:
         - users
       operationId: getUser
+      x-mcp:
+        expose: true
+        title: Get the current user profile
+        scope: account:read
+        description: >-
+          Read-only. Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400.
       summary: Get current user profile
+      description: >
+        Returns the profile of the signed-in user. An `X-Current-Orgid`
+        that is not a UUID answers 400.
+      parameters:
+        - $ref: "#/components/parameters/currentOrgId"
       responses:
         "200":
           description: Current user profile and role context
@@ -106,10 +117,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
           $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "500":
           $ref: "#/components/responses/500"
 
@@ -433,6 +450,8 @@ paths:
           $ref: "#/components/responses/500"
 components:
   responses:
+    OrganizationSelectionRequired:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/OrganizationSelectionRequired"
     400:
       $ref: "../core/api.yml#/components/responses/400"
     401:
@@ -458,6 +477,8 @@ components:
             type: string
 
   parameters:
+    currentOrgId:
+      $ref: "../core/api.yml#/components/parameters/currentOrgId"
     id:
       name: id
       in: path

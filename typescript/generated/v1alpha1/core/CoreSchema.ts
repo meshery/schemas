@@ -1629,6 +1629,118 @@ const CoreSchema: Record<string, unknown> = {
           "k8s-kustomize"
         ]
       },
+      "IdempotencyKeyInFlightError": {
+        "type": "object",
+        "description": "A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.",
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Machine-readable reason. Always `idempotency_key_in_flight` for this body.",
+            "enum": [
+              "idempotency_key_in_flight"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The sentence the caller is shown."
+          }
+        }
+      },
+      "OrganizationSelectionRequiredError": {
+        "type": "object",
+        "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+        "required": [
+          "code",
+          "message",
+          "choices"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+            "enum": [
+              "organization_selection_required"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The sentence the caller is shown."
+          },
+          "choices": {
+            "type": "array",
+            "minItems": 2,
+            "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+            "items": {
+              "type": "object",
+              "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+              "required": [
+                "id",
+                "name",
+                "description"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "description": "Organization ID.",
+                  "x-go-name": "ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the organization."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the organization."
+                }
+              }
+            }
+          }
+        }
+      },
+      "OrganizationSelectionChoice": {
+        "type": "object",
+        "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "description": "Organization ID.",
+            "x-go-name": "ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the organization."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the organization."
+          }
+        }
+      },
       "MeshkitError": {
         "type": "object",
         "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",

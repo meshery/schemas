@@ -19,7 +19,7 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 		responses                 []string
 	}{
 		{"/revoke", "post", "revokeToken", []string{"200", "400", "500", "503"}},
-		{"/introspect", "post", "introspectToken", []string{"200", "400", "401", "503"}},
+		{"/introspect", "post", "introspectToken", []string{"200", "400", "401", "500", "503"}},
 		{"/logout", "get", "logoutUser", []string{"302", "303", "500"}},
 	}
 	for _, op := range ops {

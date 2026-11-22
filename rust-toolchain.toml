@@ -1,0 +1,10 @@
+# Pinned Rust toolchain for the Rust client pilot: the meshery-schemas crate
+# under rust/ and its generation glue under build/rust-gen/. rustfmt runs as
+# part of generation, so this pin shapes the committed output, like the ruff
+# pin does for Python (build/lib/config.js). Change it only together with a
+# `make generate-rust` run whose output is committed in the same PR.
+[toolchain]
+channel = "1.99.1"
+components = ["rustfmt", "clippy"]
+targets = ["wasm32-unknown-unknown"]
+profile = "minimal"

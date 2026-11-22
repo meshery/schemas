@@ -4,9 +4,35 @@
 package content_item
 
 import (
+	"encoding/json"
+
 	"github.com/lib/pq"
 	core "github.com/meshery/schemas/models/core"
 	posturev1beta3 "github.com/meshery/schemas/models/v1beta3/posture"
+	"github.com/oapi-codegen/runtime"
+)
+
+// Defines values for ApprovalPolicy.
+const (
+	ApprovalPolicyInherit     ApprovalPolicy = "inherit"
+	ApprovalPolicyNotRequired ApprovalPolicy = "not_required"
+	ApprovalPolicyRequired    ApprovalPolicy = "required"
+)
+
+// Defines values for ContentItemApprovalPolicySource.
+const (
+	ApprovalPolicySourceFallback     ContentItemApprovalPolicySource = "fallback"
+	ApprovalPolicySourceItem         ContentItemApprovalPolicySource = "item"
+	ApprovalPolicySourceOrganization ContentItemApprovalPolicySource = "organization"
+	ApprovalPolicySourcePlatform     ContentItemApprovalPolicySource = "platform"
+	ApprovalPolicySourceProfile      ContentItemApprovalPolicySource = "profile"
+	ApprovalPolicySourceWorkspace    ContentItemApprovalPolicySource = "workspace"
+)
+
+// Defines values for ContentItemInsertConflictCode.
+const (
+	RowNumberTaken   ContentItemInsertConflictCode = "row_number_taken"
+	ThreadIndexTaken ContentItemInsertConflictCode = "thread_index_taken"
 )
 
 // Defines values for ContentItemRulesOfEngagementDialsPace.
@@ -15,6 +41,22 @@ const (
 	ContentItemPaceNormal ContentItemRulesOfEngagementDialsPace = "normal"
 	ContentItemPaceSlow   ContentItemRulesOfEngagementDialsPace = "slow"
 )
+
+// ApprovalPolicy Whether an item needs a person's approval before it runs. `required`
+// and `not_required` are explicit and win over every higher-level
+// setting. `inherit`, and an absent value, inherit from higher-level
+// settings (platform, workspace, profile), hierarchy defined in
+// https://github.com/layer5io/meshery-cloud/issues/6365. When no level
+// sets a value, approval is required (fail closed); this fallback is
+// still open for confirmation in that issue. The effective result is
+// resolved at insert, again at each content edit, and again when the
+// stored value changes. AI apps can never set
+// `approved`; this value only says whether approval is needed.
+// Interim: until the upstream platform, workspace and profile policies
+// exist, `inherit` and an absent value resolve to `required`, with
+// approval source `fallback`. The user preference
+// `agentsActWithoutApproval` is not consulted during the interim.
+type ApprovalPolicy string
 
 // ContentItem Server-returned content item as persisted by the owning service.
 // Content items carry a row number and a server-computed fingerprint over
@@ -72,7 +114,50 @@ type ContentItem struct {
 
 	// MediaAssetIds The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
 	MediaAssetIds pq.StringArray `db:"media_asset_ids" json:"mediaAssetIds,omitempty" yaml:"mediaAssetIds,omitempty"`
+
+	// Approved Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+	Approved bool `db:"approved" json:"approved" yaml:"approved"`
+
+	// CreatedByClient OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+	CreatedByClient *string `db:"created_by_client" json:"createdByClient,omitempty" yaml:"createdByClient,omitempty"`
+
+	// ApprovalPolicy Whether an item needs a person's approval before it runs. `required`
+	// and `not_required` are explicit and win over every higher-level
+	// setting. `inherit`, and an absent value, inherit from higher-level
+	// settings (platform, workspace, profile), hierarchy defined in
+	// https://github.com/layer5io/meshery-cloud/issues/6365. When no level
+	// sets a value, approval is required (fail closed); this fallback is
+	// still open for confirmation in that issue. The effective result is
+	// resolved at insert, again at each content edit, and again when the
+	// stored value changes. AI apps can never set
+	// `approved`; this value only says whether approval is needed.
+	// Interim: until the upstream platform, workspace and profile policies
+	// exist, `inherit` and an absent value resolve to `required`, with
+	// approval source `fallback`. The user preference
+	// `agentsActWithoutApproval` is not consulted during the interim.
+	ApprovalPolicy *ApprovalPolicy `db:"approval_policy" json:"approvalPolicy,omitempty" yaml:"approvalPolicy,omitempty"`
+
+	// ApprovalRequired Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+	ApprovalRequired *bool `db:"approval_required" json:"approvalRequired,omitempty" yaml:"approvalRequired,omitempty"`
+
+	// ApprovalPolicySource Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+	ApprovalPolicySource *ContentItemApprovalPolicySource `db:"approval_policy_source" json:"approvalPolicySource,omitempty" yaml:"approvalPolicySource,omitempty"`
 }
+
+// ContentItemApprovalPolicySource Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+type ContentItemApprovalPolicySource string
+
+// ContentItemInsertConflict Body of an insert refused for a permanent conflict with the content. `code` is the machine-readable reason and `message` the sentence the caller is shown. The in-flight retry body is `IdempotencyKeyInFlightError` in v1beta2 core.
+type ContentItemInsertConflict struct {
+	// Code `row_number_taken`: a live item of the organization holds the `rowNumber`. `thread_index_taken`: a live item of the same thread holds the `threadIndex`.
+	Code ContentItemInsertConflictCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// ContentItemInsertConflictCode `row_number_taken`: a live item of the organization holds the `rowNumber`. `thread_index_taken`: a live item of the same thread holds the `threadIndex`.
+type ContentItemInsertConflictCode string
 
 // ContentItemPage Paginated collection of content items.
 type ContentItemPage struct {
@@ -92,9 +177,31 @@ type ContentItemPage struct {
 // ContentItemPayload Payload for inserting or updating a content item.
 // Contains only client-settable fields; the owning
 // `organizationId` (derived from the authenticated session), the
-// server-computed `fingerprint` and the server-generated
-// `createdAt` / `updatedAt` timestamps are intentionally excluded.
+// server-computed `fingerprint`, the server-set `createdByClient`,
+// `approved` (set only by `approveRequest` in the request construct),
+// the server-computed `approvalRequired` and `approvalPolicySource`
+// and the server-generated `createdAt` / `updatedAt` timestamps are
+// intentionally excluded. `approvalPolicy` is the one approval field a
+// write carries; a caller without Decide Content Item Approvals may send
+// only the stored value, or omit it (docs/content-item-contract.md,
+// Approval policy).
 type ContentItemPayload struct {
+	// ApprovalPolicy Whether an item needs a person's approval before it runs. `required`
+	// and `not_required` are explicit and win over every higher-level
+	// setting. `inherit`, and an absent value, inherit from higher-level
+	// settings (platform, workspace, profile), hierarchy defined in
+	// https://github.com/layer5io/meshery-cloud/issues/6365. When no level
+	// sets a value, approval is required (fail closed); this fallback is
+	// still open for confirmation in that issue. The effective result is
+	// resolved at insert, again at each content edit, and again when the
+	// stored value changes. AI apps can never set
+	// `approved`; this value only says whether approval is needed.
+	// Interim: until the upstream platform, workspace and profile policies
+	// exist, `inherit` and an absent value resolve to `required`, with
+	// approval source `fallback`. The user preference
+	// `agentsActWithoutApproval` is not consulted during the interim.
+	ApprovalPolicy *ApprovalPolicy `json:"approvalPolicy,omitempty" yaml:"approvalPolicy,omitempty"`
+
 	// Data Content values, stored as a JSON blob.
 	Data core.Map `json:"data,omitempty" yaml:"data,omitempty"`
 
@@ -212,8 +319,14 @@ type ContentItemRulesOfEngagementDialsPace string
 // ContentItemId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type ContentItemId = core.Uuid
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // ExpectedFingerprint defines model for expectedFingerprint.
 type ExpectedFingerprint = string
+
+// IdempotencyKey defines model for idempotencyKey.
+type IdempotencyKey = string
 
 // Order defines model for order.
 type Order = string
@@ -233,5 +346,75 @@ type Search = string
 // ThreadId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type ThreadId = core.Uuid
 
+// InsertConflict defines model for InsertConflict.
+type InsertConflict struct {
+	union json.RawMessage
+}
+
 // CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError429 = core.MeshkitError
+
+// CoreOrganizationSelectionRequired The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type CoreOrganizationSelectionRequired = core.OrganizationSelectionRequiredError
+
+// AsContentItemInsertConflict returns the union data inside the InsertConflict as a ContentItemInsertConflict
+func (t InsertConflict) AsContentItemInsertConflict() (ContentItemInsertConflict, error) {
+	var body ContentItemInsertConflict
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromContentItemInsertConflict overwrites any union data inside the InsertConflict as the provided ContentItemInsertConflict
+func (t *InsertConflict) FromContentItemInsertConflict(v ContentItemInsertConflict) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeContentItemInsertConflict performs a merge with any union data inside the InsertConflict, using the provided ContentItemInsertConflict
+func (t *InsertConflict) MergeContentItemInsertConflict(v ContentItemInsertConflict) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsExternalRef0IdempotencyKeyInFlightError returns the union data inside the InsertConflict as a core.IdempotencyKeyInFlightError
+func (t InsertConflict) AsExternalRef0IdempotencyKeyInFlightError() (core.IdempotencyKeyInFlightError, error) {
+	var body core.IdempotencyKeyInFlightError
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromExternalRef0IdempotencyKeyInFlightError overwrites any union data inside the InsertConflict as the provided core.IdempotencyKeyInFlightError
+func (t *InsertConflict) FromExternalRef0IdempotencyKeyInFlightError(v core.IdempotencyKeyInFlightError) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeExternalRef0IdempotencyKeyInFlightError performs a merge with any union data inside the InsertConflict, using the provided core.IdempotencyKeyInFlightError
+func (t *InsertConflict) MergeExternalRef0IdempotencyKeyInFlightError(v core.IdempotencyKeyInFlightError) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t InsertConflict) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *InsertConflict) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}

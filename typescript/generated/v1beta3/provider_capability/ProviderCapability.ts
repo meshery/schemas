@@ -45,9 +45,10 @@ export interface components {
          *     native client gate on the provider's contract and on its organization
          *     membership after authenticating; `compatibility` tells a client that
          *     named itself whether its version is still accepted, and `session`
-         *     describes the authenticated caller's roles, plan and entitlements. New
-         *     fields arrive only with a new `contractVersion` (1.1 added
-         *     `compatibility` and `session`).
+         *     describes the authenticated caller's roles, plan, entitlements and
+         *     permission keys. New fields arrive only with a new `contractVersion`
+         *     (1.1 added `compatibility` and `session`; 1.2 added `permissionKeys` to
+         *     `session`).
          */
         ProviderCapability: {
             /** @description Provider type, for example `remote`. */
@@ -100,7 +101,7 @@ export interface components {
                 /** @description Where the client can get an update, when the provider knows one. */
                 upgradeUrl?: string;
             };
-            /** @description The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request. */
+            /** @description The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request. */
             session?: {
                 /**
                  * Format: uuid
@@ -208,6 +209,8 @@ export interface components {
                      */
                     updated_at: string;
                 }[];
+                /** @description The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty. */
+                permissionKeys?: string[];
                 /** @description Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead. */
                 deviceUsage?: {
                     /** @description Live `desktop` connections registered in the organization. */
@@ -299,7 +302,7 @@ export interface components {
             /** @description True when `limit` is present and `registered` exceeds it. */
             overLimit: boolean;
         };
-        /** @description The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request. */
+        /** @description The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request. */
         ProviderSession: {
             /**
              * Format: uuid
@@ -407,6 +410,8 @@ export interface components {
                  */
                 updated_at: string;
             }[];
+            /** @description The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty. */
+            permissionKeys?: string[];
             /** @description Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead. */
             deviceUsage?: {
                 /** @description Live `desktop` connections registered in the organization. */
@@ -572,7 +577,7 @@ export interface operations {
                             /** @description Where the client can get an update, when the provider knows one. */
                             upgradeUrl?: string;
                         };
-                        /** @description The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request. */
+                        /** @description The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request. */
                         session?: {
                             /**
                              * Format: uuid
@@ -680,6 +685,8 @@ export interface operations {
                                  */
                                 updated_at: string;
                             }[];
+                            /** @description The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty. */
+                            permissionKeys?: string[];
                             /** @description Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead. */
                             deviceUsage?: {
                                 /** @description Live `desktop` connections registered in the organization. */

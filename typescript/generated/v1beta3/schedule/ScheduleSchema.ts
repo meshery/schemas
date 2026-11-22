@@ -41,8 +41,26 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "List schedules",
         "operationId": "listSchedules",
-        "description": "Returns a paginated list of the schedules in the organization of the\nauthenticated session, optionally filtered by workspace or status. Each\nschedule carries its live claim, when one is held.\n",
+        "x-mcp": {
+          "expose": true,
+          "title": "List schedules",
+          "scope": "schedule:read",
+          "description": "Read-only. Returns a paginated list of the schedules in the organization of the authenticated session, optionally filtered by workspace or status. If a worker currently holds a schedule, that entry includes the live claim, which names the connection (typically a desktop app install) that is running it."
+        },
+        "description": "Returns a paginated list of the schedules in the organization of the\nauthenticated session, optionally filtered by workspace or status. Each\nschedule carries its live claim, when one is held. The live claim names\nthe connection (typically a desktop app install) that is currently\nrunning the schedule.\n",
         "parameters": [
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          },
           {
             "name": "page",
             "in": "query",
@@ -818,6 +836,72 @@ const ScheduleSchema: Record<string, unknown> = {
               }
             }
           },
+          "409": {
+            "description": "Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+                  "required": [
+                    "code",
+                    "message",
+                    "choices"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+                      "enum": [
+                        "organization_selection_required"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+                      "items": {
+                        "type": "object",
+                        "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+                        "required": [
+                          "id",
+                          "name",
+                          "description"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "description": "Organization ID.",
+                            "x-go-name": "ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the organization."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the organization."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "429": {
             "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
             "headers": {
@@ -900,7 +984,20 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Create a schedule",
         "operationId": "createSchedule",
-        "description": "Creates a schedule in the organization of the authenticated session,\nowned by the session user (`createdBy`). `status` accepts only\n`pending`, `scheduled` and `cancelled`; omitted, the server picks\n`scheduled` when the schedule has a due time and `pending` otherwise.\n`nextRunAt` defaults to `runAt`. A `targetId` must name a live\nresource of `targetType` in the organization, else 400. Send\n`paused: true` to create the schedule already paused. `visibility`\ndefaults to `public`.\n",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
+            }
+          }
+        ],
+        "description": "Creates a schedule in the organization of the authenticated session,\nowned by the session user (`createdBy`). `status` accepts only\n`pending`, `scheduled` and `cancelled`; omitted, the server picks\n`scheduled` when the schedule has a due time and `pending` otherwise.\n`nextRunAt` defaults to `runAt`. A `targetId` must name a live\nresource of `targetType` in the organization, else 400. Send\n`paused: true` to create the schedule already paused. `visibility`\ndefaults to `public`.\nThe optional `Idempotency-Key` header makes the create safe to\nretry: within 24 hours the same key with the same request hash\nreturns the first response without creating another schedule, and\nthe same key with a different request hash answers 422 and creates\nnothing. A retry with the same key that arrives while the first request\nwith that key is still being processed answers 409 and creates nothing.\nOnce the first request has finished without a 5xx, a retry receives the\nstored response; after a 5xx, a retry is processed as new.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -1782,6 +1879,46 @@ const ScheduleSchema: Record<string, unknown> = {
               }
             }
           },
+          "409": {
+            "description": "Conflict - an earlier request with the same Idempotency-Key is still being processed. Nothing is created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. The body's `code` is `idempotency_key_in_flight`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Machine-readable reason. Always `idempotency_key_in_flight` for this body.",
+                      "enum": [
+                        "idempotency_key_in_flight"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable - the Idempotency-Key was already used with a different request body",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "429": {
             "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
             "headers": {
@@ -1866,6 +2003,12 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Get a schedule by ID",
         "operationId": "getScheduleById",
+        "x-mcp": {
+          "expose": true,
+          "title": "Get a schedule by ID",
+          "scope": "schedule:read",
+          "description": "Read-only. Returns the schedule in the organization of the authenticated session. If a worker currently holds it, the result includes the live claim, which names the connection (typically a desktop app install) that is running it."
+        },
         "description": "Returns the schedule with its live claim, when one is held, and its\nentity tag in the `ETag` header.\n",
         "parameters": [
           {
@@ -1881,6 +2024,18 @@ const ScheduleSchema: Record<string, unknown> = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               }
+            }
+          },
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36,
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             }
           }
         ],
@@ -2534,6 +2689,16 @@ const ScheduleSchema: Record<string, unknown> = {
               }
             }
           },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
             "content": {
@@ -2550,6 +2715,72 @@ const ScheduleSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+                  "required": [
+                    "code",
+                    "message",
+                    "choices"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+                      "enum": [
+                        "organization_selection_required"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "choices": {
+                      "type": "array",
+                      "minItems": 2,
+                      "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+                      "items": {
+                        "type": "object",
+                        "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+                        "required": [
+                          "id",
+                          "name",
+                          "description"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "description": "Organization ID.",
+                            "x-go-name": "ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the organization."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the organization."
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -5848,12 +6079,118 @@ const ScheduleSchema: Record<string, unknown> = {
           }
         }
       },
+      "422": {
+        "description": "Unprocessable - the Idempotency-Key was already used with a different request body",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "500": {
         "description": "Internal server error",
         "content": {
           "text/plain": {
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      },
+      "OrganizationSelectionRequired": {
+        "description": "Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).",
+              "required": [
+                "code",
+                "message",
+                "choices"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Machine-readable reason. Always `organization_selection_required` for this body.",
+                  "enum": [
+                    "organization_selection_required"
+                  ]
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "choices": {
+                  "type": "array",
+                  "minItems": 2,
+                  "description": "The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.",
+                  "items": {
+                    "type": "object",
+                    "description": "An organization the call could act in. Same fields as AvailableOrganization.",
+                    "required": [
+                      "id",
+                      "name",
+                      "description"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        },
+                        "description": "Organization ID.",
+                        "x-go-name": "ID"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the organization."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the organization."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "IdempotencyKeyInFlight": {
+        "description": "Conflict - an earlier request with the same Idempotency-Key is still being processed. Nothing is created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. The body's `code` is `idempotency_key_in_flight`.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.",
+              "required": [
+                "code",
+                "message"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Machine-readable reason. Always `idempotency_key_in_flight` for this body.",
+                  "enum": [
+                    "idempotency_key_in_flight"
+                  ]
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                }
+              }
             }
           }
         }
@@ -5929,6 +6266,29 @@ const ScheduleSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "currentOrgId": {
+        "name": "X-Current-Orgid",
+        "in": "header",
+        "required": false,
+        "description": "Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector.",
+        "schema": {
+          "type": "string",
+          "minLength": 36,
+          "maxLength": 36,
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
+      "idempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "description": "Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      },
       "ifMatch": {
         "name": "If-Match",
         "in": "header",

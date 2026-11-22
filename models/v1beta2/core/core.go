@@ -170,12 +170,22 @@ const (
 	MesheryDesign IaCFileTypes = "meshery-design"
 )
 
+// Defines values for IdempotencyKeyInFlightErrorCode.
+const (
+	IdempotencyKeyInFlightErrorCodeIdempotencyKeyInFlight IdempotencyKeyInFlightErrorCode = "idempotency_key_in_flight"
+)
+
 // Defines values for MeshkitErrorSeverity.
 const (
 	Alert     MeshkitErrorSeverity = "alert"
 	Critical  MeshkitErrorSeverity = "critical"
 	Emergency MeshkitErrorSeverity = "emergency"
 	Fatal     MeshkitErrorSeverity = "fatal"
+)
+
+// Defines values for OrganizationSelectionRequiredErrorCode.
+const (
+	OrganizationSelectionRequiredErrorCodeOrganizationSelectionRequired OrganizationSelectionRequiredErrorCode = "organization_selection_required"
 )
 
 // Defines values for RelationshipStyles1TextTransform.
@@ -630,6 +640,18 @@ type IaCFileTypes string
 // Id defines model for id.
 type Id = uuid.UUID
 
+// IdempotencyKeyInFlightError A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type IdempotencyKeyInFlightError struct {
+	// Code Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+	Code IdempotencyKeyInFlightErrorCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// IdempotencyKeyInFlightErrorCode Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+type IdempotencyKeyInFlightErrorCode string
+
 // InputString A string starting with an alphanumeric character. Spaces and hyphens allowed.
 type InputString = string
 
@@ -689,6 +711,33 @@ type OperationID = uuid.UUID
 
 // OrganizationId defines model for OrganizationId.
 type OrganizationId = uuid.UUID
+
+// OrganizationSelectionChoice An organization the call could act in. Same fields as AvailableOrganization.
+type OrganizationSelectionChoice struct {
+	// Description Description of the organization.
+	Description string `json:"description" yaml:"description"`
+
+	// ID Organization ID.
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// Name Name of the organization.
+	Name string `json:"name" yaml:"name"`
+}
+
+// OrganizationSelectionRequiredError The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type OrganizationSelectionRequiredError struct {
+	// Choices The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.
+	Choices []OrganizationSelectionChoice `json:"choices" yaml:"choices"`
+
+	// Code Machine-readable reason. Always `organization_selection_required` for this body.
+	Code OrganizationSelectionRequiredErrorCode `json:"code" yaml:"code"`
+
+	// Message The sentence the caller is shown.
+	Message string `json:"message" yaml:"message"`
+}
+
+// OrganizationSelectionRequiredErrorCode Machine-readable reason. Always `organization_selection_required` for this body.
+type OrganizationSelectionRequiredErrorCode string
 
 // OwnershipTransferPayload Request body for transferring ownership of a resource to another user. Used uniformly across all ownable resource constructs.
 type OwnershipTransferPayload struct {
@@ -943,8 +992,14 @@ type ContentType = string
 // Cumulative defines model for cumulative.
 type Cumulative = string
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // Filter defines model for filter.
 type Filter = string
+
+// IdempotencyKey defines model for idempotencyKey.
+type IdempotencyKey = string
 
 // IsOAuth defines model for isOAuth.
 type IsOAuth = string
@@ -997,6 +1052,9 @@ type Type = string
 // UserId defines model for userId.
 type UserId = string
 
+// IdempotencyKeyInFlight A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new.
+type IdempotencyKeyInFlight = IdempotencyKeyInFlightError
+
 // MeshkitError400 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError400 = MeshkitError
 
@@ -1017,6 +1075,9 @@ type MeshkitError500 = MeshkitError
 
 // MeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshkitError502 = MeshkitError
+
+// OrganizationSelectionRequired The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type OrganizationSelectionRequired = OrganizationSelectionRequiredError
 
 // Getter for additional properties for ComponentStyles. Returns the specified
 // element and whether it was found

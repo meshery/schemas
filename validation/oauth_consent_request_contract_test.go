@@ -198,9 +198,9 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 	if got := redirect.Properties["redirectTo"].Value.Format; got != "uri" {
 		t.Errorf("OauthConsentRedirect.redirectTo format = %q, want uri", got)
 	}
-	// verified is the only trust mark: no self-asserted home page or logo, and
-	// no second flag about how the client registered.
-	if got := slices.Sorted(maps.Keys(client.Properties)); !reflect.DeepEqual(got, []string{"appSchemes", "clientId", "clientName", "redirectHosts", "verified"}) {
+	// verified is the only trust mark: no self-asserted home page, no second
+	// flag about how the client registered, and logoUri is optional.
+	if got := slices.Sorted(maps.Keys(client.Properties)); !reflect.DeepEqual(got, []string{"appSchemes", "clientId", "clientName", "logoUri", "redirectHosts", "verified"}) {
 		t.Errorf("OauthConsentClient properties = %v", got)
 	}
 	if got, want := slices.Sorted(slices.Values(client.Required)), []string{"appSchemes", "clientId", "clientName", "redirectHosts", "verified"}; !reflect.DeepEqual(got, want) {
@@ -249,7 +249,18 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 		{"duplicate app schemes", consentRequest, request(func(b map[string]any) { client0(b)["appSchemes"] = []any{"vscode", "vscode"} }), true},
 		{"names an audience", consentRequest, request(func(b map[string]any) { b["requestedAudience"] = []any{"https://api.example.com"} }), true},
 		{"carries a client home page", consentRequest, request(func(b map[string]any) { client0(b)["clientUri"] = "https://github.com" }), true},
-		{"carries a client logo", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://evil.example.com/logo.png" }), true},
+		{"https logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://cdn.example.com/logo.png" }), false},
+		{"http logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "http://cdn.example.com/logo.png" }), true},
+		{"javascript logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "javascript:alert(1)" }), true},
+		{"data logoUri", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "data:image/png;base64,AAAA" }), true},
+		{"over-long logoUri", consentRequest, request(func(b map[string]any) {
+			client0(b)["logoUri"] = "https://cdn.example.com/" + strings.Repeat("a", 2048)
+		}), true},
+		{"logoUri at maxLength", consentRequest, request(func(b map[string]any) {
+			client0(b)["logoUri"] = "https://cdn.example.com/" + strings.Repeat("a", 2048-len("https://cdn.example.com/"))
+		}), false},
+		{"localhost redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"localhost"} }), false},
+		{"localhost with a port", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"localhost:8787"} }), false},
 		{"carries dynamicallyRegistered", consentRequest, request(func(b map[string]any) { client0(b)["dynamicallyRegistered"] = true }), true},
 		{"unknown client field", consentRequest, request(func(b map[string]any) { client0(b)["secret"] = "x" }), true},
 		{"redirect", redirect, map[string]any{"redirectTo": "https://cloud.example.com/oauth2/auth?consent_verifier=v"}, false},
@@ -283,16 +294,19 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 	}
 }
 
-// Where the client sends the user is split by kind, so the consent page never
-// shows an app as a host: redirectHosts holds only network hosts of https and
-// loopback redirects, appSchemes only private-use app schemes. The patterns
-// keep each value out of the wrong list where the forms differ; a
-// reverse-domain scheme such as github.com is valid in both, and only the
-// server's classification by redirect URI scheme places it (in appSchemes).
+// Where the client sends the user is split by scheme, so the consent page never
+// shows an app as a host: redirectHosts holds the host (with an optional :port)
+// of each http or https redirect URI, appSchemes the scheme of every other
+// redirect URI. The patterns only check each entry's shape (a host has no
+// scheme, path, userinfo or whitespace, and an optional :port; a scheme is an
+// RFC 3986 token, never http or https). They do not keep a value out of the
+// wrong list: a reverse-domain scheme such as github.com is valid in both, and
+// only the server's classification by redirect URI places it (in appSchemes).
 func TestOauthConsentClientRedirectTargets(t *testing.T) {
 	spec := loadOauthConsentRequestSpec(t)
 	client := spec.Components.Schemas["OauthConsentClient"].Value
 	response := []openapi3.SchemaValidationOption{openapi3.VisitAsResponse()}
+	longestHostname := strings.Repeat(strings.Repeat("a", 63)+".", 3) + strings.Repeat("a", 61)
 
 	lists := []struct {
 		field              string
@@ -304,27 +318,34 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"app.example.com",
 				"1password.example.com",
 				"xn--bcher-kva.example",
+				"my_host.example.com",
 				"127.0.0.1",
 				"[::1]",
 				"[2001:db8:0:0:0:0:0:1]",
-			},
-			rejected: []string{
-				"",
-				"vscode",                  // an app scheme is not a host
-				"com-example-app",         // nor is any other single label
-				"localhost",               // loopback redirects use an IP literal (RFC 8252 section 8.3)
-				"https://app.example.com", // no scheme
-				"app.example.com/cb",      // no path
-				"app.example.com:8080",    // no port
+				"[::ffff:127.0.0.1]",
+				"app.example.com:8443", // an optional port
+				"app.example.com:8080",
 				"127.0.0.1:8080",
 				"[::1]:8080",
 				"localhost:3000",
-				"::1",       // IPv6 must be bracketed
-				"256.0.0.1", // not an IPv4 literal, and not a hostname
-				"App.Example.com",
-				"bücher.example", // internationalized hosts are sent as IDNA A-labels
-				"app.example.com.",
-				"-app.example.com",
+				"localhost",                // an operator-managed client's redirects are shown as registered
+				"vscode",                   // any single-label name is a valid host
+				longestHostname,            // the 253-character DNS maximum (RFC 1035)
+				longestHostname + ":65535", // the longest hostname with the largest port
+			},
+			rejected: []string{
+				"",
+				"https://app.example.com", // no scheme
+				"app.example.com/cb",      // no path
+				"app.example.com?x=1",
+				":8080", // a bare port is not a host
+				"app.example.com:",
+				"app.example.com:port",
+				"[::1]:",
+				"::1", // IPv6 must be bracketed
+				"app example.com",
+				"user@app.example.com", // no userinfo
+				"a" + longestHostname + ":65535",
 			},
 		},
 		{

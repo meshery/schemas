@@ -845,6 +845,94 @@ components:
         - docker-compose
         - k8s-kustomize
 
+    # Mirror of v1beta2/core IdempotencyKeyInFlightError, for the same reason as
+    # MeshkitError below: a v1beta2/core schema that another construct refers
+    # to resolves to models/core. Keep the two definitions identical
+    # (TestIdempotencyKeyInFlightIsDeclared pins it).
+    IdempotencyKeyInFlightError:
+      type: object
+      description: >-
+        A retry whose Idempotency-Key is still in flight. Nothing was created
+        by this request. Once the first request has finished without a 5xx, a
+        retry receives the stored response; after a 5xx, a retry is processed as new.
+      required:
+        - code
+        - message
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          description: Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+          enum:
+            - idempotency_key_in_flight
+        message:
+          type: string
+          minLength: 1
+          description: The sentence the caller is shown.
+
+    # The body of a call that needs an acting organization, where the caller
+    # named none and more than one of the caller's live organizations qualifies.
+    # Its code is a contract value, not a MeshKit code, so it is a small body of
+    # its own: MeshkitError's code is an unstable component-scoped identifier.
+    # A missing organization is never a 401; 401 stays reserved for token and
+    # audience failures. `choices` items are OrganizationSelectionChoice, below.
+    # Mirror of v1beta2/core (TestOrganizationSelectionRequiredIsDeclared pins it).
+    OrganizationSelectionRequiredError:
+      type: object
+      description: >-
+        The call needs an acting organization, the caller named none, and more
+        than one of the caller's live organizations qualifies. Nothing was done
+        by this request. Repeat it naming one of `choices` as `X-Current-Orgid`
+        (the `organizationId` tool argument).
+      required:
+        - code
+        - message
+        - choices
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          description: Machine-readable reason. Always `organization_selection_required` for this body.
+          enum:
+            - organization_selection_required
+        message:
+          type: string
+          minLength: 1
+          description: The sentence the caller is shown.
+        choices:
+          type: array
+          minItems: 2
+          description: The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`.
+          items:
+            $ref: "#/components/schemas/OrganizationSelectionChoice"
+
+    # One organization the caller may name. Mirror of v1beta2/core
+    # OrganizationSelectionChoice (TestOrganizationSelectionRequiredIsDeclared
+    # pins it).
+    OrganizationSelectionChoice:
+      type: object
+      description: An organization the call could act in. Same fields as AvailableOrganization.
+      required:
+        - id
+        - name
+        - description
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          description: Organization ID.
+          x-go-name: ID
+        name:
+          type: string
+          description: Name of the organization.
+        description:
+          type: string
+          description: Description of the organization.
+
     # Mirror of v1beta2/core MeshkitError: the unversioned models/core Go
     # package is generated from this file, and every $ref to a v1beta2/core
     # schema resolves to models/core. Keep the two definitions identical

@@ -41,6 +41,8 @@ export const addTagTypes = [
   "Plan_Plans",
   "Profile_profiles",
   "ProviderCapability_capabilities",
+  "Recognition_recognition",
+  "Request_requests",
   "Schedule_schedules",
   "Subscription_Subscriptions",
   "Subscription_Payment Processors",
@@ -71,7 +73,12 @@ const injectedRtkApi = api
         providesTags: ["Feature_Features"],
       }),
       getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
-        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features` }),
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["Feature_Features"],
       }),
       getOrganizationSmtpEnvironment: build.query<
@@ -433,6 +440,14 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Organization_Organizations"],
       }),
+      updateOrgSchedulePause: build.mutation<UpdateOrgSchedulePauseApiResponse, UpdateOrgSchedulePauseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/schedule-pause`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
@@ -647,7 +662,12 @@ const injectedRtkApi = api
         providesTags: ["User_users"],
       }),
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
-        query: () => ({ url: `/api/identity/users/profile` }),
+        query: (queryArg) => ({
+          url: `/api/identity/users/profile`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["User_users"],
       }),
       updateUserPreferences: build.mutation<UpdateUserPreferencesApiResponse, UpdateUserPreferencesApiArg>({
@@ -944,6 +964,9 @@ const injectedRtkApi = api
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -1019,6 +1042,37 @@ const injectedRtkApi = api
           },
         }),
         invalidatesTags: ["Connection_API_Connections"],
+      }),
+      reportDesktopPlatformSessions: build.mutation<
+        ReportDesktopPlatformSessionsApiResponse,
+        ReportDesktopPlatformSessionsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/desktop/${queryArg.installationId}/platform-sessions`,
+          method: "PUT",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      getPlatformSessions: build.query<GetPlatformSessionsApiResponse, GetPlatformSessionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/platform-sessions`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            platform: queryArg?.platform,
+            handle: queryArg?.handle,
+            state: queryArg?.state,
+            installationId: queryArg?.installationId,
+          },
+        }),
+        providesTags: ["Connection_API_Connections"],
       }),
       recordConnectionHeartbeat: build.mutation<RecordConnectionHeartbeatApiResponse, RecordConnectionHeartbeatApiArg>({
         query: (queryArg) => ({
@@ -1100,6 +1154,9 @@ const injectedRtkApi = api
       listContentItems: build.query<ListContentItemsApiResponse, ListContentItemsApiArg>({
         query: (queryArg) => ({
           url: `/api/content-items`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -1113,11 +1170,23 @@ const injectedRtkApi = api
         providesTags: ["ContentItem_contentItems"],
       }),
       insertContentItem: build.mutation<InsertContentItemApiResponse, InsertContentItemApiArg>({
-        query: (queryArg) => ({ url: `/api/content-items`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/content-items`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "Idempotency-Key": queryArg["Idempotency-Key"],
+          },
+        }),
         invalidatesTags: ["ContentItem_contentItems"],
       }),
       getContentItem: build.query<GetContentItemApiResponse, GetContentItemApiArg>({
-        query: (queryArg) => ({ url: `/api/content-items/${queryArg.contentItemId}` }),
+        query: (queryArg) => ({
+          url: `/api/content-items/${queryArg.contentItemId}`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["ContentItem_contentItems"],
       }),
       updateContentItem: build.mutation<UpdateContentItemApiResponse, UpdateContentItemApiArg>({
@@ -1397,6 +1466,10 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/events/delete`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
+      markAllEventsRead: build.mutation<MarkAllEventsReadApiResponse, MarkAllEventsReadApiArg>({
+        query: () => ({ url: `/api/events/mark-all-read`, method: "POST" }),
+        invalidatesTags: ["Events_events"],
+      }),
       bulkUpdateEventStatus: build.mutation<BulkUpdateEventStatusApiResponse, BulkUpdateEventStatusApiArg>({
         query: (queryArg) => ({ url: `/api/events/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
@@ -1434,6 +1507,9 @@ const injectedRtkApi = api
       getEvents: build.query<GetEventsApiResponse, GetEventsApiArg>({
         query: (queryArg) => ({
           url: `/api/events/list`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pagesize: queryArg?.pagesize,
@@ -2086,9 +2162,71 @@ const injectedRtkApi = api
         }),
         providesTags: ["ProviderCapability_capabilities"],
       }),
+      getCommunityGuideCandidates: build.query<
+        GetCommunityGuideCandidatesApiResponse,
+        GetCommunityGuideCandidatesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/recognition/community-guide/candidates`,
+          params: {
+            month: queryArg?.month,
+          },
+        }),
+        providesTags: ["Recognition_recognition"],
+      }),
+      listRequests: build.query<ListRequestsApiResponse, ListRequestsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/requests`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            order: queryArg?.order,
+            kind: queryArg?.kind,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Request_requests"],
+      }),
+      getRequest: build.query<GetRequestApiResponse, GetRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/requests/${queryArg.requestId}`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
+        providesTags: ["Request_requests"],
+      }),
+      approveRequest: build.mutation<ApproveRequestApiResponse, ApproveRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/requests/${queryArg.requestId}/approve`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
+        invalidatesTags: ["Request_requests"],
+      }),
+      denyRequest: build.mutation<DenyRequestApiResponse, DenyRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/requests/${queryArg.requestId}/deny`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
+        invalidatesTags: ["Request_requests"],
+      }),
       listSchedules: build.query<ListSchedulesApiResponse, ListSchedulesApiArg>({
         query: (queryArg) => ({
           url: `/api/schedules`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -2101,11 +2239,23 @@ const injectedRtkApi = api
         providesTags: ["Schedule_schedules"],
       }),
       createSchedule: build.mutation<CreateScheduleApiResponse, CreateScheduleApiArg>({
-        query: (queryArg) => ({ url: `/api/schedules`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/schedules`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "Idempotency-Key": queryArg["Idempotency-Key"],
+          },
+        }),
         invalidatesTags: ["Schedule_schedules"],
       }),
       getScheduleById: build.query<GetScheduleByIdApiResponse, GetScheduleByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}` }),
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         providesTags: ["Schedule_schedules"],
       }),
       updateSchedule: build.mutation<UpdateScheduleApiResponse, UpdateScheduleApiArg>({
@@ -2696,6 +2846,8 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
 export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
   orgId: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
 };
 export type GetOrganizationSmtpEnvironmentApiResponse =
   /** status 200 The organization has its own mail-relay environment. The canonical Environment shape, not a bespoke one: this endpoint returns an ordinary environment row that happens to carry the well-known name. */ {
@@ -4228,7 +4380,7 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -4373,7 +4525,7 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -4494,7 +4646,7 @@ export type CreateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -4644,7 +4796,7 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -4786,7 +4938,7 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
-        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
         schedulePause?: {
           /** Whether every schedule in the organization is paused. */
           paused?: boolean;
@@ -4909,7 +5061,7 @@ export type UpdateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -5065,7 +5217,7 @@ export type CreateChildOrgApiResponse =
           };
           /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
           showAuthCarousel?: boolean;
-          /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+          /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
           schedulePause?: {
             /** Whether every schedule in the organization is paused. */
             paused?: boolean;
@@ -5188,7 +5340,7 @@ export type CreateChildOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
-      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
       schedulePause?: {
         /** Whether every schedule in the organization is paused. */
         paused: boolean;
@@ -5286,7 +5438,7 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused?: boolean;
@@ -5391,7 +5543,7 @@ export type PatchOrgPreferencesApiResponse = /** status 200 Organization metadat
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused?: boolean;
@@ -5495,13 +5647,33 @@ export type PatchOrgPreferencesApiArg = {
     };
     /** Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
     showAuthCarousel?: boolean;
-    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+    /** Organization-wide schedule pause. Changing it through updateOrg or patchOrgPreferences requires organization admin; a write from anyone else that changes it is refused with 403. updateOrgSchedulePause sets it under the Pause schedules key instead. Omitted keeps the current pause unchanged; it does not lift the pause. */
     schedulePause?: {
       /** Whether every schedule in the organization is paused. */
       paused: boolean;
       /** Reason given for the pause. Cleared when the pause is lifted. */
       reason?: string;
     };
+  };
+};
+export type UpdateOrgSchedulePauseApiResponse = /** status 200 The organization schedule pause after the change */ {
+  /** Whether every schedule in the organization is paused. */
+  paused?: boolean;
+  /** Reason given for the pause. Cleared when the pause is lifted. */
+  reason?: string;
+  /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+  pausedAt?: string;
+  /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+  pausedBy?: string;
+};
+export type UpdateOrgSchedulePauseApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  body: {
+    /** Whether every schedule in the organization is paused. */
+    paused: boolean;
+    /** Reason given for the pause. Cleared when the pause is lifted. */
+    reason?: string;
   };
 };
 export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
@@ -6666,7 +6838,10 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
     totalCount?: number | null;
   };
 };
-export type GetUserApiArg = void;
+export type GetUserApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
+};
 export type UpdateUserPreferencesApiResponse = unknown;
 export type UpdateUserPreferencesApiArg = {
   body: {
@@ -9965,6 +10140,8 @@ export type GetConnectionsApiArg = {
   order?: string;
   /** Organization ID to scope the request. */
   orgId?: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
   /** Filter connections (general filter string) */
   filter?: string;
   /** Filter by connection kind (e.g., kubernetes, prometheus, grafana) */
@@ -11524,6 +11701,153 @@ export type DeregisterDesktopConnectionApiArg = {
    */
   "X-Current-Orgid"?: string;
 };
+export type ReportDesktopPlatformSessionsApiResponse = /** status 200 The stored report */ {
+  /** Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+  installationId: string;
+  /** Server time the report was stored. */
+  reportedAt: string;
+  /** Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+  sessions: {
+    /** A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.
+     */
+    platform: string;
+    /** The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+    handle?: string;
+    /** What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+     */
+    state: "signed_in" | "signed_out" | "unknown";
+    /** When the install last checked this sign-in, as the install read it. */
+    lastVerifiedAt: string;
+    /** The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+    blowhornProfile?: string;
+    /** The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+    chromeProfile?: {
+      /** Chrome's profile directory name, for example `Profile 1`. */
+      directory: string;
+      /** The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+      displayName?: string;
+    };
+    /** Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+     */
+    identity?: "ok" | "drift" | "missing" | "unknown";
+    /** The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection. */
+    socialConnectionId?: string;
+  }[];
+};
+export type ReportDesktopPlatformSessionsApiArg = {
+  /** Installation identifier from `metadata.installationId`. */
+  installationId: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
+  body: {
+    /** Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+    sessions: {
+      /** A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.
+       */
+      platform: string;
+      /** The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+      handle?: string;
+      /** What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+       */
+      state: "signed_in" | "signed_out" | "unknown";
+      /** When the install last checked this sign-in, as the install read it. */
+      lastVerifiedAt: string;
+      /** The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+      blowhornProfile?: string;
+      /** The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+      chromeProfile?: {
+        /** Chrome's profile directory name, for example `Profile 1`. */
+        directory: string;
+        /** The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+        displayName?: string;
+      };
+      /** Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+       */
+      identity?: "ok" | "drift" | "missing" | "unknown";
+      /** The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection. */
+      socialConnectionId?: string;
+    }[];
+  };
+};
+export type GetPlatformSessionsApiResponse = /** status 200 Where the matching accounts are signed in */ {
+  /** Matches on this page. */
+  locations: {
+    /** The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here. */
+    desktop: {
+      /** The `desktop` connection of the install. */
+      connectionId: string;
+      /** Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+      installationId: string;
+      hostname?: string;
+      os?: string;
+      /** Connection Status Value */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Server time of the connection's last registration or heartbeat. */
+      lastSeenAt?: string;
+      /** Server time the install's report was stored. */
+      reportedAt?: string;
+    };
+    /** One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email.
+     */
+    session: {
+      /** A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`.
+       */
+      platform: string;
+      /** The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+      handle?: string;
+      /** What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+       */
+      state: "signed_in" | "signed_out" | "unknown";
+      /** When the install last checked this sign-in, as the install read it. */
+      lastVerifiedAt: string;
+      /** The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+      blowhornProfile?: string;
+      /** The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+      chromeProfile?: {
+        /** Chrome's profile directory name, for example `Profile 1`. */
+        directory: string;
+        /** The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+        displayName?: string;
+      };
+      /** Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+       */
+      identity?: "ok" | "drift" | "missing" | "unknown";
+      /** The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection. */
+      socialConnectionId?: string;
+    };
+  }[];
+  /** Total number of matches on all pages. */
+  totalCount: number;
+  /** Current page number. */
+  page: number;
+  /** Number of elements per page. */
+  pageSize: number;
+};
+export type GetPlatformSessionsApiArg = {
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pageSize?: number;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
+  /** Only sessions on this platform, for example `x`, `linkedin` or `reddit`. */
+  platform?: string;
+  /** Only sessions of this account handle, compared case-insensitively and without a leading `@`, for example `blowhorn_ai`.
+   */
+  handle?: string;
+  /** Only sessions in this state, for example `signed_in`. */
+  state?: "signed_in" | "signed_out" | "unknown";
+  /** Only sessions reported by this desktop install. */
+  installationId?: string;
+};
 export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection after the heartbeat */ {
   /** Connection ID */
   id: string;
@@ -12442,6 +12766,21 @@ export type ListContentItemsApiResponse = /** status 200 Content item page */ {
     /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
      */
     mediaAssetIds?: string[];
+    /** Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+     */
+    approved?: boolean;
+    /** OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+     */
+    createdByClient?: string;
+    /** The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+     */
+    approvalPolicy?: "required" | "not_required" | "inherit";
+    /** Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+     */
+    approvalRequired?: boolean;
+    /** Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+     */
+    approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
   }[];
 };
 export type ListContentItemsApiArg = {
@@ -12463,6 +12802,8 @@ export type ListContentItemsApiArg = {
     whose `threadId` names it.
      */
   threadId?: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
 };
 export type InsertContentItemApiResponse = /** status 201 Content item created */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -12527,8 +12868,25 @@ export type InsertContentItemApiResponse = /** status 201 Content item created *
   /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
    */
   mediaAssetIds?: string[];
+  /** Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+   */
+  approved?: boolean;
+  /** OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+   */
+  createdByClient?: string;
+  /** The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+   */
+  approvalPolicy?: "required" | "not_required" | "inherit";
+  /** Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+   */
+  approvalRequired?: boolean;
+  /** Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+   */
+  approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
 };
 export type InsertContentItemApiArg = {
+  /** Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
+  "Idempotency-Key"?: string;
   body: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
@@ -12600,6 +12958,23 @@ export type InsertContentItemApiArg = {
         clients send the whole item without it); an empty array clears it.
          */
     mediaAssetIds?: string[];
+    /** The item's own approval policy. Optional: omitted on insert, the
+        item inherits; omitted on update, the stored value is kept;
+        `inherit` on update clears an explicit value back to inherit; the
+        field does not accept null.
+        A caller without Decide Content Item Approvals in the session
+        organization is refused with a 403 and nothing changes when it
+        sends a value that would change the stored one: on insert,
+        `required` or `not_required`; on update, a value different from
+        the stored one (absent and `inherit` are one value, since the
+        server stores `inherit` as null). Sending back the unchanged stored value
+        is accepted, and an omitted value on update keeps the stored one and is
+        never refused. An AI app token never carries that key. Interim: until
+        the upstream policies exist, `inherit` or absent resolves to
+        `required`, and the item's approval source is `item` for an
+        explicit value or `fallback` for `inherit` or absent.
+         */
+    approvalPolicy?: "required" | "not_required" | "inherit";
   };
 };
 export type GetContentItemApiResponse = /** status 200 Content item response */ {
@@ -12665,10 +13040,27 @@ export type GetContentItemApiResponse = /** status 200 Content item response */ 
   /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
    */
   mediaAssetIds?: string[];
+  /** Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+   */
+  approved?: boolean;
+  /** OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+   */
+  createdByClient?: string;
+  /** The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+   */
+  approvalPolicy?: "required" | "not_required" | "inherit";
+  /** Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+   */
+  approvalRequired?: boolean;
+  /** Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+   */
+  approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
 };
 export type GetContentItemApiArg = {
   /** Content item ID */
   contentItemId: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
 };
 export type UpdateContentItemApiResponse = /** status 200 Content item updated */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -12733,6 +13125,21 @@ export type UpdateContentItemApiResponse = /** status 200 Content item updated *
   /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
    */
   mediaAssetIds?: string[];
+  /** Whether the item is approved to run. Server-set and read-only: it is not in ContentItemPayload. At insert the server sets it from the effective approval, which is resolved at insert, again at each content edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request when `approvalRequired` is true, and `true` with no request when it is false. Afterwards `approveRequest` in the request construct sets it to true, and so does the one-time backfill of a row written before this field shipped (see below); that operation needs the Decide Content Item Approvals key and is never an AI app tool. A content edit that resolves to required sets it back to false. Any content edit that leaves it unapproved supersedes an open request with a fresh pending one, so after the edit an unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` whose resolved result is required does the same to an approved item. The client that runs the queue reads this field. For one release after this field ships, servers mirror it into the free-form `Approved?` column in `data` for older readers, and backfill `approved` once from that column for rows written before the field shipped, so every row carries a value. A client-sent `Approved?` never approves an item. New readers read this field only. See docs/content-item-contract.md.
+   */
+  approved?: boolean;
+  /** OAuth client ID of the AI app that created the item. Server-set from the access token, never client-settable, and never changed by an update. Empty or omitted on an item a person created.
+   */
+  createdByClient?: string;
+  /** The item's own approval policy. Absent means inherit. An explicit `required` or `not_required` wins over every higher-level setting; `inherit` or absent inherits from higher-level settings (platform, workspace, profile), hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until the upstream policies exist, `inherit` or absent resolves to `required`. Only a person with Decide Content Item Approvals may write a value that changes the stored one; an AI app never can. Changing it alone re-resolves the approval. A change whose result is required (`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request. A change whose result is not required never changes `approved`, and any change leaves an unapproved item with an open request, whatever the result (see updateContentItem). Stored in the nullable `approval_policy` column; null means inherit, and a written `inherit` is stored as null, so reads return it absent.
+   */
+  approvalPolicy?: "required" | "not_required" | "inherit";
+  /** Server-computed and read-only: whether the item needs a person's approval, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level settings (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the `approval_required` column. Never in a payload. A change to `approvalPolicy` alone re-resolves it; a higher-level setting alone does not, and the next content edit resolves it again. Interim: until the upstream policies exist, an absent or `inherit` policy resolves to `true` (approval source `fallback`). Absent on items inserted before this field shipped.
+   */
+  approvalRequired?: boolean;
+  /** Server-computed and read-only: the level that decided `approvalRequired`, resolved at insert, again at each content edit, and again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column. `item` when the item's own `approvalPolicy` was explicit; `fallback` when no level set a value and approval is required. The other levels name the higher level that set the value: `workspace`, `profile`, `organization` and `platform`, listed in their planned order (the hierarchy is defined in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until the upstream policies exist, only `item` and `fallback` are active (an absent or `inherit` policy resolves to `fallback`). The other four levels become active as that hierarchy lands. Never in a payload. Absent on items inserted before this field shipped.
+   */
+  approvalPolicySource?: "item" | "workspace" | "profile" | "organization" | "platform" | "fallback";
 };
 export type UpdateContentItemApiArg = {
   /** Content item ID */
@@ -12808,6 +13215,23 @@ export type UpdateContentItemApiArg = {
         clients send the whole item without it); an empty array clears it.
          */
     mediaAssetIds?: string[];
+    /** The item's own approval policy. Optional: omitted on insert, the
+        item inherits; omitted on update, the stored value is kept;
+        `inherit` on update clears an explicit value back to inherit; the
+        field does not accept null.
+        A caller without Decide Content Item Approvals in the session
+        organization is refused with a 403 and nothing changes when it
+        sends a value that would change the stored one: on insert,
+        `required` or `not_required`; on update, a value different from
+        the stored one (absent and `inherit` are one value, since the
+        server stores `inherit` as null). Sending back the unchanged stored value
+        is accepted, and an omitted value on update keeps the stored one and is
+        never refused. An AI app token never carries that key. Interim: until
+        the upstream policies exist, `inherit` or absent resolves to
+        `required`, and the item's approval source is `item` for an
+        explicit value or `fallback` for `inherit` or absent.
+         */
+    approvalPolicy?: "required" | "not_required" | "inherit";
   };
 };
 export type DeleteContentItemApiResponse = unknown;
@@ -16989,6 +17413,11 @@ export type BulkDeleteEventsApiArg = {
     ids: string[];
   };
 };
+export type MarkAllEventsReadApiResponse = /** status 200 All of the caller's unread events were marked as read */ {
+  /** Human-readable status message. */
+  message: string;
+};
+export type MarkAllEventsReadApiArg = void;
 export type BulkUpdateEventStatusApiResponse = /** status 200 Events updated */ {
   /** UUIDs of events whose status was updated. */
   updated?: string[];
@@ -17415,6 +17844,8 @@ export type GetEventsApiArg = {
   /** Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.
    */
   scope?: "user" | "organization";
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
 };
 export type GetEventFeedApiResponse = /** status 200 Event feed page */ {
   /** Current page number of the result set. */
@@ -19330,14 +19761,16 @@ export type GetOauthConsentRequestApiResponse = /** status 200 The pending OAuth
   client: {
     /** OAuth client ID. An identifier issued by the identity provider, not a UUID. */
     clientId: string;
-    /** Display name the client registered. Empty when it registered none. Self-asserted by the client; only `verified` marks trust. */
+    /** Display name the client registered. Empty when it registered none. Self-asserted by a dynamically registered client; set by the operator for an operator-managed client. Only `verified` marks trust. */
     clientName: string;
-    /** The network hosts the client can send the user to after the decision: the host of each https redirect URI (for example `app.example.com`) and of each loopback redirect URI (`127.0.0.1` or `[::1]`), without duplicates. Only redirect URIs whose scheme is `https`, or `http` on a loopback IP literal, are listed here; the `localhost` hostname is never registered (RFC 8252 section 8.3), and a private-use app redirect is listed in `appSchemes` instead. Lowercase ASCII, with no scheme, port or path; an internationalized hostname is sent in IDNA A-label (punycode) form. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty. */
+    /** The network hosts the client can send the user to after the decision: the host of each http or https redirect URI, with its port when the redirect has one, without duplicates. For a dynamically registered client, registration policy limits these to `https` hosts and loopback http hosts (`127.0.0.1` or `[::1]`), and never `localhost` (RFC 8252 section 8.3). For an operator-managed client any http or https redirect is listed, so a host may also be a single-label name such as `localhost`. A redirect URI of any other scheme is listed in `appSchemes` instead. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty. */
     redirectHosts: string[];
-    /** The private-use URI schemes (RFC 8252 section 7.1) of the client's app redirect URIs, without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. Registration accepts a private-use scheme only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when the client registered only https and loopback redirects; `redirectHosts` and `appSchemes` are never both empty. */
+    /** The URI schemes of the client's app redirect URIs (any scheme other than http and https), without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. For a dynamically registered client, registration accepts a private-use scheme (RFC 8252 section 7.1) only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. For an operator-managed client any other scheme is listed, as registered. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when every redirect URI of the client is http or https; `redirectHosts` and `appSchemes` are never both empty. */
     appSchemes: string[];
-    /** Derived only from the client's redirect targets, never from `clientName` or `clientId`: true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). Marks trust and never blocks: a false value is shown as an unverified client, and the user may still allow it. */
+    /** Marks trust and never blocks. For a dynamically registered client it is true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). For an operator-managed client it is true when the operator set the verified mark in the client's identity-provider metadata, which only the admin API can write; a client can never set or clear it. It is never derived from a self-asserted name or from the client ID. A false value is shown as an unverified client, and the user may still allow it. */
     verified: boolean;
+    /** An https URL of the client's logo image. Sent only for an operator-managed client whose operator set one; never sent for a dynamically registered client, whose self-asserted logo is not shown. Omitted when there is none. */
+    logoUri?: string;
   };
   /** Scopes the client asks for, as the identity provider recorded them. An accept grants only what the client requested, never more: these scopes, and any audience the client asked the identity provider for. Empty when the client asks for none. */
   requestedScopes: string[];
@@ -20578,7 +21011,7 @@ export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities
     /** Where the client can get an update, when the provider knows one. */
     upgradeUrl?: string;
   };
-  /** The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.
+  /** The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request.
    */
   session?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -20654,6 +21087,9 @@ export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities
       /** Timestamp when the resource was updated. */
       updated_at: string;
     }[];
+    /** The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty.
+     */
+    permissionKeys?: string[];
     /** Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.
      */
     deviceUsage?: {
@@ -20692,6 +21128,217 @@ export type GetProviderCapabilitiesApiArg = {
   client?: string;
   /** Operating system of the client, used to select packages. */
   os?: string;
+};
+export type GetCommunityGuideCandidatesApiResponse = /** status 200 Community Guide candidates for the month */ {
+  /** The UTC calendar month counted, formatted `YYYY-MM`. */
+  month: string;
+  /** Minimum number of distinct givers a recipient needed to be listed. */
+  minGivers: number;
+  /** Slug of the badge the candidates are being considered for. */
+  badge: string;
+  /** Recipients resolved to a Layer5 user, most givers first. */
+  candidates: {
+    /** Layer5 user ID the recipient resolved to. */
+    userId: string;
+    /** Email address of the resolved Layer5 user. */
+    email: string;
+    /** Identity provider the kudos recipient was recorded under, for example `github`. */
+    provider: string;
+    /** The recipient's identifier at the provider, for example a numeric GitHub ID. */
+    externalId: string;
+    /** Number of distinct givers who gave the recipient valid kudos in the month. */
+    givers: number;
+  }[];
+  /** Recipients who could not be resolved to a Layer5 user. */
+  needsInfo: {
+    /** Identity provider the kudos recipient was recorded under, for example `github` or `slack`. */
+    provider: string;
+    /** The recipient's identifier at the provider. */
+    externalId: string;
+    /** Number of distinct givers who gave the recipient valid kudos in the month. */
+    givers: number;
+  }[];
+};
+export type GetCommunityGuideCandidatesApiArg = {
+  /** UTC calendar month to count, formatted `YYYY-MM`. Defaults to the previous month. */
+  month?: string;
+};
+export type ListRequestsApiResponse = /** status 200 Requests page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Requests included on this page of results. */
+  requests: {
+    /** Server-generated request ID. */
+    id: string;
+    /** Owning organization ID. Derived from the subject, never client-settable. */
+    organizationId: string;
+    /** What a request asks a person to decide. Each kind fixes the subject type and names the permission key that may decide it, in `x-decision-key` (the generated constant name in models/permissions). A kind is added together with its deciding key and its handling in docs/request-contract.md.
+     */
+    kind: "content_item_approval";
+    /** Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind. */
+    subjectType: string;
+    /** ID of the subject the request is about. */
+    subjectId: string;
+    /** ID of the user on whose behalf the request was made: the user whose session or AI app made the write that needs a decision. Server-set.
+     */
+    requesterId: string;
+    /** OAuth client ID of the AI app that made the write behind the request. Server-set from the access token. Empty or omitted when a person made it.
+     */
+    createdByClient?: string;
+    /** Lifecycle of a request. `pending` until it is decided. `approved` or `denied` once, by a person with the kind's deciding key. `superseded` when a content edit or a delete changes the subject before a decision: the request is closed with `decidedAt` set, no `decidedBy` and no note, and a fresh pending request opens if the edit leaves the item unapproved, whatever the result. Each of `approved`, `denied` and `superseded` is final.
+     */
+    status: "pending" | "approved" | "denied" | "superseded";
+    /** ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it. */
+    decidedBy?: string;
+    /** Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending. */
+    decidedAt?: string | null;
+    /** The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none. */
+    note?: string;
+    /** Timestamp of request creation. */
+    createdAt: string;
+    /** Timestamp of last request modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListRequestsApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by request kind. */
+  kind?: "content_item_approval";
+  /** Filter by request status, for example `superseded` for the requests a content edit or a delete closed before a decision. */
+  status?: "pending" | "approved" | "denied" | "superseded";
+};
+export type GetRequestApiResponse = /** status 200 Request response */ {
+  /** Server-generated request ID. */
+  id: string;
+  /** Owning organization ID. Derived from the subject, never client-settable. */
+  organizationId: string;
+  /** What a request asks a person to decide. Each kind fixes the subject type and names the permission key that may decide it, in `x-decision-key` (the generated constant name in models/permissions). A kind is added together with its deciding key and its handling in docs/request-contract.md.
+   */
+  kind: "content_item_approval";
+  /** Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind. */
+  subjectType: string;
+  /** ID of the subject the request is about. */
+  subjectId: string;
+  /** ID of the user on whose behalf the request was made: the user whose session or AI app made the write that needs a decision. Server-set.
+   */
+  requesterId: string;
+  /** OAuth client ID of the AI app that made the write behind the request. Server-set from the access token. Empty or omitted when a person made it.
+   */
+  createdByClient?: string;
+  /** Lifecycle of a request. `pending` until it is decided. `approved` or `denied` once, by a person with the kind's deciding key. `superseded` when a content edit or a delete changes the subject before a decision: the request is closed with `decidedAt` set, no `decidedBy` and no note, and a fresh pending request opens if the edit leaves the item unapproved, whatever the result. Each of `approved`, `denied` and `superseded` is final.
+   */
+  status: "pending" | "approved" | "denied" | "superseded";
+  /** ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it. */
+  decidedBy?: string;
+  /** Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending. */
+  decidedAt?: string | null;
+  /** The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none. */
+  note?: string;
+  /** Timestamp of request creation. */
+  createdAt: string;
+  /** Timestamp of last request modification. */
+  updatedAt: string;
+};
+export type GetRequestApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
+  /** Request ID */
+  requestId: string;
+};
+export type ApproveRequestApiResponse = /** status 200 Request approved */ {
+  /** Server-generated request ID. */
+  id: string;
+  /** Owning organization ID. Derived from the subject, never client-settable. */
+  organizationId: string;
+  /** What a request asks a person to decide. Each kind fixes the subject type and names the permission key that may decide it, in `x-decision-key` (the generated constant name in models/permissions). A kind is added together with its deciding key and its handling in docs/request-contract.md.
+   */
+  kind: "content_item_approval";
+  /** Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind. */
+  subjectType: string;
+  /** ID of the subject the request is about. */
+  subjectId: string;
+  /** ID of the user on whose behalf the request was made: the user whose session or AI app made the write that needs a decision. Server-set.
+   */
+  requesterId: string;
+  /** OAuth client ID of the AI app that made the write behind the request. Server-set from the access token. Empty or omitted when a person made it.
+   */
+  createdByClient?: string;
+  /** Lifecycle of a request. `pending` until it is decided. `approved` or `denied` once, by a person with the kind's deciding key. `superseded` when a content edit or a delete changes the subject before a decision: the request is closed with `decidedAt` set, no `decidedBy` and no note, and a fresh pending request opens if the edit leaves the item unapproved, whatever the result. Each of `approved`, `denied` and `superseded` is final.
+   */
+  status: "pending" | "approved" | "denied" | "superseded";
+  /** ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it. */
+  decidedBy?: string;
+  /** Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending. */
+  decidedAt?: string | null;
+  /** The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none. */
+  note?: string;
+  /** Timestamp of request creation. */
+  createdAt: string;
+  /** Timestamp of last request modification. */
+  updatedAt: string;
+};
+export type ApproveRequestApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
+  /** Request ID */
+  requestId: string;
+  body?: {
+    /** Optional note left with the decision, shown to the requester. */
+    note?: string;
+  };
+};
+export type DenyRequestApiResponse = /** status 200 Request denied */ {
+  /** Server-generated request ID. */
+  id: string;
+  /** Owning organization ID. Derived from the subject, never client-settable. */
+  organizationId: string;
+  /** What a request asks a person to decide. Each kind fixes the subject type and names the permission key that may decide it, in `x-decision-key` (the generated constant name in models/permissions). A kind is added together with its deciding key and its handling in docs/request-contract.md.
+   */
+  kind: "content_item_approval";
+  /** Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind. */
+  subjectType: string;
+  /** ID of the subject the request is about. */
+  subjectId: string;
+  /** ID of the user on whose behalf the request was made: the user whose session or AI app made the write that needs a decision. Server-set.
+   */
+  requesterId: string;
+  /** OAuth client ID of the AI app that made the write behind the request. Server-set from the access token. Empty or omitted when a person made it.
+   */
+  createdByClient?: string;
+  /** Lifecycle of a request. `pending` until it is decided. `approved` or `denied` once, by a person with the kind's deciding key. `superseded` when a content edit or a delete changes the subject before a decision: the request is closed with `decidedAt` set, no `decidedBy` and no note, and a fresh pending request opens if the edit leaves the item unapproved, whatever the result. Each of `approved`, `denied` and `superseded` is final.
+   */
+  status: "pending" | "approved" | "denied" | "superseded";
+  /** ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it. */
+  decidedBy?: string;
+  /** Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending. */
+  decidedAt?: string | null;
+  /** The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none. */
+  note?: string;
+  /** Timestamp of request creation. */
+  createdAt: string;
+  /** Timestamp of last request modification. */
+  updatedAt: string;
+};
+export type DenyRequestApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
+  /** Request ID */
+  requestId: string;
+  body?: {
+    /** Optional note left with the decision, shown to the requester. */
+    note?: string;
+  };
 };
 export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
   /** Current page number of the result set. */
@@ -20845,6 +21492,8 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
   }[];
 };
 export type ListSchedulesApiArg = {
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
   /** Get responses by page */
   page?: number;
   /** Number of items per page. */
@@ -21010,6 +21659,8 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   visibility: "public" | "org" | "private";
 };
 export type CreateScheduleApiArg = {
+  /** Client-chosen key that makes a create safe to retry. The server keeps the organization, the user, the key, a hash of the request and the final response for 24 hours. Only a final response that is not a 5xx is stored. The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new. A response the server has committed is final and is stored, even if a gateway in front of the server later fails the client's connection. A retry with the same key and the same request hash returns the stored response without creating anything again. A retry with the same key and a different request hash answers 422 and creates nothing. A retry with the same key that arrives while the earlier request with that key is still being processed answers 409 with the body `code` `idempotency_key_in_flight` and creates nothing. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. Precedence: while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422. The in-flight claim of a request that never finished expires 24 hours after it was taken, the same TTL as the stored response; no shorter in-flight lease applies. A retry after that expiry is processed as new. Omitted, the create is not deduplicated. Use a fresh random value (a UUID) per intended create. */
+  "Idempotency-Key"?: string;
   body: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
@@ -21244,6 +21895,8 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
 export type GetScheduleByIdApiArg = {
   /** Schedule ID */
   scheduleId: string;
+  /** Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+  "X-Current-Orgid"?: string;
 };
 export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -24228,6 +24881,7 @@ export const {
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
   usePatchOrgPreferencesMutation,
+  useUpdateOrgSchedulePauseMutation,
   useAddTeamToOrgMutation,
   useGetTeamByIdQuery,
   useLazyGetTeamByIdQuery,
@@ -24335,6 +24989,9 @@ export const {
   useGetDesktopConnectionsOfOrganizationQuery,
   useLazyGetDesktopConnectionsOfOrganizationQuery,
   useDeregisterDesktopConnectionMutation,
+  useReportDesktopPlatformSessionsMutation,
+  useGetPlatformSessionsQuery,
+  useLazyGetPlatformSessionsQuery,
   useRecordConnectionHeartbeatMutation,
   useGetKubernetesContextQuery,
   useLazyGetKubernetesContextQuery,
@@ -24398,6 +25055,7 @@ export const {
   useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
   useBulkDeleteEventsMutation,
+  useMarkAllEventsReadMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
   useGetEventsOfWorkspaceQuery,
@@ -24521,6 +25179,14 @@ export const {
   useRemoveConnectionFromProfileMutation,
   useGetProviderCapabilitiesQuery,
   useLazyGetProviderCapabilitiesQuery,
+  useGetCommunityGuideCandidatesQuery,
+  useLazyGetCommunityGuideCandidatesQuery,
+  useListRequestsQuery,
+  useLazyListRequestsQuery,
+  useGetRequestQuery,
+  useLazyGetRequestQuery,
+  useApproveRequestMutation,
+  useDenyRequestMutation,
   useListSchedulesQuery,
   useLazyListSchedulesQuery,
   useCreateScheduleMutation,

@@ -73,9 +73,12 @@ jobs:
           branch: master
           commit_user_name: alexquincy
           commit_user_email: 227241865+alexquincy@users.noreply.github.com
-          file_pattern: |
+          # Space-separated: git-auto-commit-action passes file_pattern to
+          # `git add` as words, and a YAML block scalar (one path per line)
+          # committed only the CSV, leaving the regenerated constants to the
+          # next artifacts run.
+          file_pattern: >-
             build/permissions.csv
             models/permissions/permissions.go
             typescript/permissions.ts
             permissions_history/*-permissions_index.json
-          token: ${{ secrets.MESHERY_CI }}

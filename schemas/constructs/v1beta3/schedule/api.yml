@@ -55,11 +55,20 @@ paths:
         - schedules
       summary: List schedules
       operationId: listSchedules
+      x-mcp:
+        expose: true
+        title: List schedules
+        scope: schedule:read
+        description: >-
+          Read-only. Returns a paginated list of the schedules in the organization of the authenticated session, optionally filtered by workspace or status. If a worker currently holds a schedule, that entry includes the live claim, which names the connection (typically a desktop app install) that is running it.
       description: |
         Returns a paginated list of the schedules in the organization of the
         authenticated session, optionally filtered by workspace or status. Each
-        schedule carries its live claim, when one is held.
+        schedule carries its live claim, when one is held. The live claim names
+        the connection (typically a desktop app install) that is currently
+        running the schedule.
       parameters:
+        - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
@@ -79,6 +88,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -89,6 +100,8 @@ paths:
         - schedules
       summary: Create a schedule
       operationId: createSchedule
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
       description: |
         Creates a schedule in the organization of the authenticated session,
         owned by the session user (`createdBy`). `status` accepts only
@@ -98,6 +111,14 @@ paths:
         resource of `targetType` in the organization, else 400. Send
         `paused: true` to create the schedule already paused. `visibility`
         defaults to `public`.
+        The optional `Idempotency-Key` header makes the create safe to
+        retry: within 24 hours the same key with the same request hash
+        returns the first response without creating another schedule, and
+        the same key with a different request hash answers 422 and creates
+        nothing. A retry with the same key that arrives while the first request
+        with that key is still being processed answers 409 and creates nothing.
+        Once the first request has finished without a 5xx, a retry receives the
+        stored response; after a 5xx, a retry is processed as new.
       requestBody:
         required: true
         content:
@@ -120,6 +141,10 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "422":
+          $ref: "#/components/responses/422"
+        "409":
+          $ref: "#/components/responses/IdempotencyKeyInFlight"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -132,11 +157,18 @@ paths:
         - schedules
       summary: Get a schedule by ID
       operationId: getScheduleById
+      x-mcp:
+        expose: true
+        title: Get a schedule by ID
+        scope: schedule:read
+        description: >-
+          Read-only. Returns the schedule in the organization of the authenticated session. If a worker currently holds it, the result includes the live claim, which names the connection (typically a desktop app install) that is running it.
       description: |
         Returns the schedule with its live claim, when one is held, and its
         entity tag in the `ETag` header.
       parameters:
         - $ref: "#/components/parameters/scheduleId"
+        - $ref: "#/components/parameters/currentOrgId"
       responses:
         "200":
           description: Schedule response
@@ -147,10 +179,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Schedule"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -382,6 +418,12 @@ components:
       bearerFormat: JWT
 
   responses:
+    OrganizationSelectionRequired:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/OrganizationSelectionRequired"
+    422:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/422"
+    IdempotencyKeyInFlight:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/IdempotencyKeyInFlight"
     400:
       $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     401:
@@ -403,6 +445,10 @@ components:
         type: string
 
   parameters:
+    currentOrgId:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/currentOrgId"
+    idempotencyKey:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/idempotencyKey"
     ifMatch:
       name: If-Match
       in: header

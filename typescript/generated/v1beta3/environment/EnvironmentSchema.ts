@@ -2317,7 +2317,7 @@ const EnvironmentSchema: Record<string, unknown> = {
         ],
         "operationId": "getEnvironments",
         "summary": "Get all environments",
-        "description": "Gets all environments",
+        "description": "Gets the environments of the organization named by orgId. orgId is required: a request that omits it, or names a value that is not a UUID, is answered 400 and lists nothing.",
         "parameters": [
           {
             "name": "search",
@@ -2627,6 +2627,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                       "description": "Environments associated with this resource."
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }

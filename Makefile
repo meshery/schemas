@@ -47,7 +47,7 @@ generate-site-index: site-data-generate
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts generate-enums-ts test-enums-ts test-generated-outputs publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk generate-python test-python test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts generate-enums-ts test-enums-ts test-generated-outputs publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk generate-python test-python generate-rust test-rust test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -116,7 +116,20 @@ test-python: bundle-openapi
 	python3 -m pip install ./python/generated
 	python3 -m pytest python/tests -q
 
-## Run TypeScript unit tests (node --test with native type-stripping; needs Node >= 22.6)
+## Generate Rust models and client, pilot constructs only (requires bundle-openapi and the toolchain pinned in rust-toolchain.toml)
+generate-rust: bundle-openapi
+	node build/generate-rust.js
+
+## Guard the committed Rust crate against its manifest, then fmt, clippy, test it and build it for wasm32 (refresh with generate-rust)
+test-rust: bundle-openapi
+	node --test tests/generate-rust.test.js
+	cd build/rust-gen && cargo fmt --check && cargo clippy --locked --all-targets -- -D warnings
+	cd rust && cargo fmt --check
+	cd rust && cargo clippy --locked --all-targets -- -D warnings
+	cd rust && cargo test --locked
+	cd rust && cargo build --locked --lib --target wasm32-unknown-unknown
+
+## Run TypeScript unit tests (node --test with native type-stripping; needs Node >= 22.18, where it is on by default)
 test-ts:
 	npm test
 
@@ -126,7 +139,7 @@ golang-generate: generate-golang
 #-----------------------------------------------------------------------------
 # Permissions
 #-----------------------------------------------------------------------------
-.PHONY: generate-permissions generate-permissions-go generate-permissions-ts test-golang
+.PHONY: generate-permissions generate-permissions-go generate-permissions-ts test-oauth-scopes test-golang
 
 ## Generate Go permission key constants from permissions.csv
 generate-permissions-go:
@@ -138,6 +151,11 @@ generate-permissions-ts:
 
 ## Generate both Go and TypeScript permission key constants
 generate-permissions: generate-permissions-go generate-permissions-ts
+	$(MAKE) --no-print-directory test-oauth-scopes
+
+## Run OAuth scope map regression tests (scope -> keychain -> permission keys)
+test-oauth-scopes:
+	node --test tests/oauth-scopes.test.js
 
 ## Run Go tests
 test-golang:

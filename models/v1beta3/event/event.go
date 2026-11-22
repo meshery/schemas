@@ -562,6 +562,12 @@ type EventsPage struct {
 	TotalCount core.Number    `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
+// MarkAllEventsReadResponse Response returned after marking the caller's unread events as read.
+type MarkAllEventsReadResponse struct {
+	// Message Human-readable status message.
+	Message string `json:"message" yaml:"message"`
+}
+
 // RelationshipEvaluationEventMetadata Metadata of a relationship evaluation event (category `relationship`, action `evaluation`): the design's identity fields (DesignEventIdentity) plus counts of what the evaluation changed. It summarizes the evaluation; it does not carry it. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields.
 type RelationshipEvaluationEventMetadata struct {
 	// DesignID ID of the design the event is about.
@@ -640,6 +646,9 @@ type UpdateEventStatusResponse struct {
 // Cumulative defines model for cumulative.
 type Cumulative = bool
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // EventId defines model for eventId.
 type EventId = uuid.UUID
 
@@ -684,6 +693,9 @@ type CoreMeshkitError403 = core.MeshkitError
 
 // CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError429 = core.MeshkitError
+
+// CoreOrganizationSelectionRequired The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type CoreOrganizationSelectionRequired = core.OrganizationSelectionRequiredError
 
 // Getter for additional properties for EventPayload. Returns the specified
 // element and whether it was found

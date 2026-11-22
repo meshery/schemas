@@ -617,6 +617,50 @@ export interface components {
          * @enum {string}
          */
         IaCFileTypes: "meshery-design" | "helm-chart" | "k8s-manifest" | "docker-compose" | "k8s-kustomize";
+        /** @description A retry whose Idempotency-Key is still in flight. Nothing was created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. */
+        IdempotencyKeyInFlightError: {
+            /**
+             * @description Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+             * @enum {string}
+             */
+            code: "idempotency_key_in_flight";
+            /** @description The sentence the caller is shown. */
+            message: string;
+        };
+        /** @description The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument). */
+        OrganizationSelectionRequiredError: {
+            /**
+             * @description Machine-readable reason. Always `organization_selection_required` for this body.
+             * @enum {string}
+             */
+            code: "organization_selection_required";
+            /** @description The sentence the caller is shown. */
+            message: string;
+            /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+            choices: {
+                /**
+                 * Format: uuid
+                 * @description Organization ID.
+                 */
+                id: string;
+                /** @description Name of the organization. */
+                name: string;
+                /** @description Description of the organization. */
+                description: string;
+            }[];
+        };
+        /** @description An organization the call could act in. Same fields as AvailableOrganization. */
+        OrganizationSelectionChoice: {
+            /**
+             * Format: uuid
+             * @description Organization ID.
+             */
+            id: string;
+            /** @description Name of the organization. */
+            name: string;
+            /** @description Description of the organization. */
+            description: string;
+        };
         /** @description A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way. */
         MeshkitError: {
             /** @description The sentence the caller is shown. */
