@@ -47,9 +47,10 @@ type ClientUpgradeRequiredError struct {
 // native client gate on the provider's contract and on its organization
 // membership after authenticating; `compatibility` tells a client that
 // named itself whether its version is still accepted, and `session`
-// describes the authenticated caller's roles, plan and entitlements. New
-// fields arrive only with a new `contractVersion` (1.1 added
-// `compatibility` and `session`).
+// describes the authenticated caller's roles, plan, entitlements and
+// permission keys. New fields arrive only with a new `contractVersion`
+// (1.1 added `compatibility` and `session`; 1.2 added `permissionKeys` to
+// `session`).
 type ProviderCapability struct {
 	// Capabilities Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{installationId}` placeholders.
 	Capabilities *[]ProviderFeature `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
@@ -95,7 +96,7 @@ type ProviderCapability struct {
 	// RestrictedAccess Access restrictions applied to this client; shape owned by the provider.
 	RestrictedAccess core.Map `json:"restrictedAccess,omitempty" yaml:"restrictedAccess,omitempty"`
 
-	// Session The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.
+	// Session The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request.
 	Session *ProviderSession `json:"session,omitempty" yaml:"session,omitempty"`
 }
 
@@ -131,7 +132,7 @@ type ProviderMembership struct {
 	OrganizationId core.Uuid `json:"organizationId" yaml:"organizationId"`
 }
 
-// ProviderSession The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.
+// ProviderSession The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request.
 type ProviderSession struct {
 	// DeviceUsage Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.
 	DeviceUsage *ProviderDeviceUsage `json:"deviceUsage,omitempty" yaml:"deviceUsage,omitempty"`
@@ -141,6 +142,9 @@ type ProviderSession struct {
 
 	// OrganizationRoles The caller's role names in the organization.
 	OrganizationRoles *[]string `json:"organizationRoles,omitempty" yaml:"organizationRoles,omitempty"`
+
+	// PermissionKeys The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty.
+	PermissionKeys *[]core.Uuid `json:"permissionKeys,omitempty" yaml:"permissionKeys,omitempty"`
 
 	// Plan Plan entity schema.
 	Plan *planv1beta3.Plan `json:"plan,omitempty" yaml:"plan,omitempty"`

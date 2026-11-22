@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get all environments
-         * @description Gets all environments
+         * @description Gets the environments of the organization named by orgId. orgId is required: a request that omits it, or names a value that is not a UUID, is answered 400 and lists nothing.
          */
         get: operations["getEnvironments"];
         put?: never;
@@ -895,6 +895,15 @@ export interface operations {
                             purpose?: "user" | "administrative";
                         }[];
                     };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */

@@ -7,7 +7,7 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "ProviderCapability",
-    "description": "OpenAPI schema for the remote provider's capabilities document: what the\nprovider supports and where, read by a client right after it\nauthenticates. It is the provider-level manifest (provider identity,\npackage, extensions, advertised features and their endpoints), not the\nmodel capability construct. Besides the features list it carries a\n`contractVersion`, so a client can refuse a provider whose contract major\nit does not speak, and, for an authenticated request that names an\norganization in `X-Current-Orgid`, a `membership` block saying whether the\ncaller is a live member of that organization. An unauthenticated request\nstill receives the document, without `membership`, so a client can tell\n\"not signed in\" from \"signed in but not a member\" from \"old provider\"\n(no `contractVersion`).\n\nA client that names itself with the `client` query parameter also\nreceives `compatibility`: whether its version (the `{version}` path\nparameter) meets the provider's minimum for that client. The document is\nalways answered with 200 for an outdated client, so the client learns\nfrom it that it must update. An authenticated request additionally\nreceives `session`: the caller's roles, the plan and the entitlements of\nthe caller's roles and, when the caller is a live member of the\norganization in `X-Current-Orgid`, that organization's plan, entitlements\nand registered device usage.\n",
+    "description": "OpenAPI schema for the remote provider's capabilities document: what the\nprovider supports and where, read by a client right after it\nauthenticates. It is the provider-level manifest (provider identity,\npackage, extensions, advertised features and their endpoints), not the\nmodel capability construct. Besides the features list it carries a\n`contractVersion`, so a client can refuse a provider whose contract major\nit does not speak, and, for an authenticated request that names an\norganization in `X-Current-Orgid`, a `membership` block saying whether the\ncaller is a live member of that organization. An unauthenticated request\nstill receives the document, without `membership`, so a client can tell\n\"not signed in\" from \"signed in but not a member\" from \"old provider\"\n(no `contractVersion`).\n\nA client that names itself with the `client` query parameter also\nreceives `compatibility`: whether its version (the `{version}` path\nparameter) meets the provider's minimum for that client. The document is\nalways answered with 200 for an outdated client, so the client learns\nfrom it that it must update. An authenticated request additionally\nreceives `session`: the caller's roles, the plan and the entitlements of\nthe caller's roles and, when the caller is a live member of the\norganization in `X-Current-Orgid`, that organization's plan, entitlements,\npermission keys and registered device usage.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -100,7 +100,7 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Provider Capability Schema",
-                  "description": "The remote provider's capabilities document. Existing fields describe the\nprovider and its extensions; `contractVersion` and `membership` let a\nnative client gate on the provider's contract and on its organization\nmembership after authenticating; `compatibility` tells a client that\nnamed itself whether its version is still accepted, and `session`\ndescribes the authenticated caller's roles, plan and entitlements. New\nfields arrive only with a new `contractVersion` (1.1 added\n`compatibility` and `session`).\n",
+                  "description": "The remote provider's capabilities document. Existing fields describe the\nprovider and its extensions; `contractVersion` and `membership` let a\nnative client gate on the provider's contract and on its organization\nmembership after authenticating; `compatibility` tells a client that\nnamed itself whether its version is still accepted, and `session`\ndescribes the authenticated caller's roles, plan, entitlements and\npermission keys. New fields arrive only with a new `contractVersion`\n(1.1 added `compatibility` and `session`; 1.2 added `permissionKeys` to\n`session`).\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -216,7 +216,7 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                     },
                     "session": {
                       "type": "object",
-                      "description": "The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.\n",
+                      "description": "The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request.\n",
                       "additionalProperties": false,
                       "required": [
                         "userId",
@@ -624,6 +624,21 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                             }
                           }
                         },
+                        "permissionKeys": {
+                          "type": "array",
+                          "description": "The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty.\n",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "maxItems": 1000,
+                          "uniqueItems": true
+                        },
                         "deviceUsage": {
                           "type": "object",
                           "description": "Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.\n",
@@ -978,7 +993,7 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
       "ProviderCapability": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Provider Capability Schema",
-        "description": "The remote provider's capabilities document. Existing fields describe the\nprovider and its extensions; `contractVersion` and `membership` let a\nnative client gate on the provider's contract and on its organization\nmembership after authenticating; `compatibility` tells a client that\nnamed itself whether its version is still accepted, and `session`\ndescribes the authenticated caller's roles, plan and entitlements. New\nfields arrive only with a new `contractVersion` (1.1 added\n`compatibility` and `session`).\n",
+        "description": "The remote provider's capabilities document. Existing fields describe the\nprovider and its extensions; `contractVersion` and `membership` let a\nnative client gate on the provider's contract and on its organization\nmembership after authenticating; `compatibility` tells a client that\nnamed itself whether its version is still accepted, and `session`\ndescribes the authenticated caller's roles, plan, entitlements and\npermission keys. New fields arrive only with a new `contractVersion`\n(1.1 added `compatibility` and `session`; 1.2 added `permissionKeys` to\n`session`).\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1094,7 +1109,7 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
           },
           "session": {
             "type": "object",
-            "description": "The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.\n",
+            "description": "The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request.\n",
             "additionalProperties": false,
             "required": [
               "userId",
@@ -1502,6 +1517,21 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                   }
                 }
               },
+              "permissionKeys": {
+                "type": "array",
+                "description": "The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty.\n",
+                "items": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "maxItems": 1000,
+                "uniqueItems": true
+              },
               "deviceUsage": {
                 "type": "object",
                 "description": "Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.\n",
@@ -1752,7 +1782,7 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
       },
       "ProviderSession": {
         "type": "object",
-        "description": "The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.\n",
+        "description": "The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements, permission keys and device usage. Present only on an authenticated request.\n",
         "additionalProperties": false,
         "required": [
           "userId",
@@ -2159,6 +2189,21 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                 }
               }
             }
+          },
+          "permissionKeys": {
+            "type": "array",
+            "description": "The IDs of the permission keys the caller holds in the organization named by `X-Current-Orgid`. Present only when the caller is a live member of that organization. For a keychain-scoped token, this is the effective intersection of keys, so actions the token cannot perform are not displayed. An empty array indicates the caller holds no keys; an absent property indicates not reported (e.g., an older provider or when no organization is named). Clients must not read absent as empty.\n",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "maxItems": 1000,
+            "uniqueItems": true
           },
           "deviceUsage": {
             "type": "object",
