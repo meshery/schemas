@@ -1304,6 +1304,16 @@ components:
           items:
             type: object
             additionalProperties: true
+            properties:
+              apiVersion:
+                type: string
+                description: >-
+                  Resource API version of the registered component, for
+                  example `secrets.infisical.com/v1alpha1`, sourced from the
+                  component's nested `version`. Distinct from `Version`, which
+                  carries the model definition version. Optional: rows
+                  produced before this field was introduced omit it.
+                maxLength: 500
           description: Components successfully imported.
         successfulRelationships:
           type: array
