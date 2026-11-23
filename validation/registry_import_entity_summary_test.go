@@ -9,11 +9,12 @@ import (
 
 // meshery/schemas#1343: each successfulComponents row of the registry import
 // summary may carry the registered component's resource API version (for
-// example secrets.infisical.com/v1alpha1), sourced from the component's nested
-// `version`. The row stays open (additionalProperties: true) because the server
-// also emits keys such as Version - the model definition version, whose meaning
-// this field must not take over - and Component. apiVersion is additive, so
-// older rows that predate it must keep validating.
+// example secrets.infisical.com/v1alpha1), sourced from the component
+// definition's nested `component.version` field. The row stays open
+// (additionalProperties: true) because the server also emits keys such as
+// Version - the model definition version, whose meaning this field must not
+// take over. apiVersion is additive, so older rows that predate it must keep
+// validating.
 
 const registryImportSummarySpec = "schemas/constructs/v1beta1/registry/api.yml"
 
@@ -69,16 +70,22 @@ func TestRegistryImportSuccessfulComponentRowsValidate(t *testing.T) {
 		{
 			name: "row with apiVersion",
 			row: map[string]any{
-				"Component":  map[string]any{"kind": "infisical-secret", "version": "1.2.0"},
-				"Version":    "v1.0.0",
-				"apiVersion": "secrets.infisical.com/v1alpha1",
+				"Model":       "infisical-operator",
+				"Category":    map[string]any{"name": "Security"},
+				"Metadata":    "InfisicalSecret",
+				"DisplayName": "Infisical Secret",
+				"Version":     "v1.0.0",
+				"apiVersion":  "secrets.infisical.com/v1alpha1",
 			},
 		},
 		{
 			name: "older row without apiVersion",
 			row: map[string]any{
-				"Component": map[string]any{"kind": "infisical-secret", "version": "1.2.0"},
-				"Version":   "v1.0.0",
+				"Model":       "couchbase",
+				"Category":    map[string]any{"name": "Database"},
+				"Metadata":    "CouchbaseAutoscaler",
+				"DisplayName": "Couchbase Autoscaler",
+				"Version":     "v1.0.0",
 			},
 		},
 		{
