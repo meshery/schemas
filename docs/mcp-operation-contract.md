@@ -205,6 +205,15 @@ run without one, such as `getUser`, runs without one. `TestOrganizationSelection
 pins the body, the named `OrganizationSelectionChoice` item and its
 `v1alpha1/core` mirror, and the declaration.
 
+`getUserCredentials` (`GET /api/integrations/credentials`, `v1beta2/credential`)
+is not a hosted MCP read but follows the same selector. It lists the caller's own
+credentials in the acting organization (designated for it via `orgOwner`, or used
+by the owner's own live connection in it) plus credentials linked to no
+organization. It takes `X-Current-Orgid` and declares `403` (no organization
+qualifies), `404` (the named organization is not one the caller is a live member
+of, the same answer as an unknown one) and the shared `409`.
+`TestGetUserCredentialsDeclaresOrganizationSelection` pins it.
+
 An operation that also takes an organization in its path or query (`orgId`:
 `getFeaturesByOrganization` in its path, `getConnections` in its query) must
 name the same organization as `X-Current-Orgid` when both are sent. A mismatch
