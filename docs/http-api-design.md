@@ -355,10 +355,10 @@ declared paths carry no `/api` prefix:
 body `OauthConsentDecisionPayload`) decide it, answering the `redirectTo` the browser must navigate
 to. Only the signed-in user the challenge was issued for may read or decide it (`403` otherwise), a
 challenge is single use (`404` once decided or expired), an accept grants only what the client
-requested, and `client.verified` marks trust without blocking. `client.redirectHosts` (https and
-loopback hosts) and `client.appSchemes` (private-use app schemes) are separate lists, so an app is
-never shown as a host. A `503` on a decision means the outcome is unknown: a retry that answers
-`404` means the challenge was already decided. Full contract:
+requested, and `client.verified` marks trust without blocking. `client.redirectHosts` (hosts of
+http and https redirects, with an optional `:port`) and `client.appSchemes` (schemes of every other
+redirect) are separate lists, so an app is never shown as a host. A `503` on a decision means the
+outcome is unknown: a retry that answers `404` means the challenge was already decided. Full contract:
 [`oauth-consent-request-contract.md`](oauth-consent-request-contract.md).
 
 ## Schedules and claims
@@ -430,7 +430,8 @@ owned by `schemas/constructs/v1beta3/connection/api.yml` and
 `GET /{version}/capabilities` (`v1beta3/provider_capability`) is the first
 call a native client makes after it authenticates. Besides the provider's
 features and their endpoints, it carries `contractVersion` (`MAJOR.MINOR`;
-a client refuses a different major) and, on an authenticated request that
+a client refuses a different major; 1.1 added `compatibility` and `session`,
+1.2 added `permissionKeys` to `session`) and, on an authenticated request that
 sends `X-Current-Orgid`, `membership { organizationId, bound }`. The three
 cases stay distinguishable: no `contractVersion` means an older provider, no
 `membership` means the request was not authenticated or named no
@@ -440,14 +441,21 @@ its `{version}` meets the provider's minimum for that client; an outdated
 client still gets `200` with `compatible: false` and must update before it
 registers or keeps a connection alive. An authenticated request also receives
 `session` (the caller's roles, plan and entitlements, and the organization's
-plan, entitlements and device usage for a live member of `X-Current-Orgid`).
-A client reads paths from `capabilities` instead of hard-coding them, and does
-not use a separate health endpoint.
+plan, entitlements, permission keys and device usage for a live member of
+`X-Current-Orgid`). `permissionKeys` (up to 1000 unique UUIDs) is present only
+when the caller is a live member of that organization (`bound: true`). For a
+keychain-scoped token, it is the effective intersection of keys, so actions the
+token cannot perform are not displayed. An empty array indicates the caller holds
+no keys in that organization; an absent property indicates not reported (e.g. an
+older provider or when no organization is named); clients must not read absent as
+empty. A client reads paths from `capabilities` instead of hard-coding them, and
+does not use a separate health endpoint.
 
 ## Hosted MCP tools, requests and idempotent creates
 
 An operation becomes a tool of the hosted MCP server with the operation-level
-`x-mcp` extension (`expose`, optional `title`, required OAuth `scope`). The tool
+`x-mcp` extension (`expose`, optional `title` and `description`, required OAuth
+`scope`). The tool
 name is the `operationId` and the hints derive from the method, so nothing is
 hand-written. Rule 48 of `make validate-schemas` enforces the contract, and a
 scope is a keychain. Full contract:
@@ -462,6 +470,13 @@ scope is a keychain. Full contract:
   answers `409` with the body `code` `idempotency_key_in_flight`. An in-flight
   claim expires after the same 24 hours. `insertContentItem` and
   `createSchedule` take it.
+- A call that needs an acting organization, where the caller named none and
+  more than one of the caller's live organizations qualifies, answers `409`
+  with the body `code` `organization_selection_required` and a `choices` list
+  (`OrganizationSelectionRequiredError`, shared as the
+  `OrganizationSelectionRequired` response in `v1beta2/core`), beside the
+  in-flight body above. A missing organization is never `401`. Resolution
+  order and body: [`mcp-operation-contract.md`](mcp-operation-contract.md#the-organization-selector).
 - `v1beta3/request` is the one generic request-for-a-decision construct:
   `listRequests`, `getRequest`, `approveRequest`, `denyRequest`, with
   `approve` and `deny` as POST action sub-resources like the claim routes.

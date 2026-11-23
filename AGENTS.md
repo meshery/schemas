@@ -31,13 +31,14 @@ make validate-schemas  # run repository schema validation rules
 npm run build    # build TypeScript distribution (dist/)
 ```
 
-Generated artifacts (`models/`, `typescript/generated/`, `python/generated/`) are committed by automation on `master`. The TypeScript distribution in `dist/` is produced by the npm build/publish workflow and is not committed to this repo. Do not edit generated artifacts by hand, and do not manually commit regenerated output in normal PRs unless the change explicitly requires it (a PR that alters a bundled Python pilot spec must commit regenerated `python/generated/` output; see [`docs/schema-tooling.md`](docs/schema-tooling.md#python-client-generation-pilot-issue-1240)).
+Generated artifacts (`models/`, `typescript/generated/`, `python/generated/`, `rust/src/<construct>/`) are committed by automation on `master`. The TypeScript distribution in `dist/` is produced by the npm build/publish workflow and is not committed to this repo. Do not edit generated artifacts by hand, and do not manually commit regenerated output in normal PRs unless the change explicitly requires it (a PR that alters a bundled Python or Rust pilot spec must commit regenerated `python/generated/` or `rust/` output; see [`docs/schema-tooling.md`](docs/schema-tooling.md#python-client-generation-pilot-issue-1240) and [Rust client generation](docs/schema-tooling.md#rust-client-generation-pilot)).
 
 **Never hand-edit generated output:**
 
 - ❌ Generated Go code in `models/`
 - ❌ Generated TypeScript in `typescript/generated/`
 - ❌ Generated Python client in `python/generated/` (`pyproject.toml` and `src/meshery_schemas/__init__.py` are hand-maintained scaffolding, not generator output)
+- ❌ Generated Rust modules in `rust/src/<construct>/` and `rust/.rust-gen-manifest.json` (`rust/Cargo.toml`, `rust/src/lib.rs`, `rust/README.md` and `rust/tests/` are hand-maintained scaffolding, not generator output)
 - ❌ Built files in `dist/`
 
 The Go generators (`build/generate-golang.js`, `build/generate-permission-golang.js`)

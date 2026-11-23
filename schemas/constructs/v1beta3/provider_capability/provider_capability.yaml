@@ -6,9 +6,10 @@ description: |
   native client gate on the provider's contract and on its organization
   membership after authenticating; `compatibility` tells a client that
   named itself whether its version is still accepted, and `session`
-  describes the authenticated caller's roles, plan and entitlements. New
-  fields arrive only with a new `contractVersion` (1.1 added
-  `compatibility` and `session`).
+  describes the authenticated caller's roles, plan, entitlements and
+  permission keys. New fields arrive only with a new `contractVersion`
+  (1.1 added `compatibility` and `session`; 1.2 added `permissionKeys` to
+  `session`).
 type: object
 additionalProperties: false
 required:

@@ -1,0 +1,22 @@
+# Thin glue that runs the pinned progenitor library on one bundled OpenAPI
+# document (see build/generate-rust.js). Not published; not part of the
+# meshery-schemas crate under rust/.
+#
+# The progenitor pin here must equal config.rust.generatorVersion in
+# build/lib/config.js (tests/generate-rust.test.js enforces it). Every direct
+# dependency is exact-pinned, and the test enforces that too, so a
+# `cargo update` cannot move one without the guard test noticing. Cargo.lock
+# is committed so the whole generator dependency tree is exact.
+[package]
+name = "meshery-schemas-rust-gen"
+version = "0.0.0"
+edition = "2024"
+publish = false
+license = "Apache-2.0"
+
+[dependencies]
+anyhow = "=1.0.104"
+openapiv3 = "=2.2.0"
+progenitor = { version = "=0.17.0", default-features = false }
+progenitor-impl = "=0.17.0"
+serde_json = "=1.0.154"

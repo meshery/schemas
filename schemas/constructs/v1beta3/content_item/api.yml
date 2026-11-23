@@ -62,6 +62,8 @@ paths:
         expose: true
         title: List content items
         scope: content:read
+        description: >-
+          Read-only. Returns a paginated list of the live content items in the organization of the authenticated session, ordered by `rowNumber` unless `order` names another column (`rowNumber`, `createdAt`, `updatedAt`). `search` matches the profile or the content values, case-insensitively. `threadId` returns one whole thread: the root item it names and every live item whose `threadId` names it, ordered by `threadIndex` (the root first) unless `order` names another column. A `threadId` or `X-Current-Orgid` that is not a UUID answers 400.
       description: |
         Returns a paginated list of the live content items in the
         organization of the authenticated session, ordered by `rowNumber`
@@ -101,6 +103,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -220,6 +224,8 @@ paths:
         expose: true
         title: Get a content item
         scope: content:read
+        description: >-
+          Read-only. Returns the content item with the given ID in the organization of the authenticated session. An `X-Current-Orgid` that is not a UUID answers 400.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
         - $ref: "#/components/parameters/currentOrgId"
@@ -238,6 +244,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -386,6 +394,8 @@ components:
       bearerFormat: JWT
 
   responses:
+    OrganizationSelectionRequired:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/OrganizationSelectionRequired"
     422:
       $ref: "../../v1beta2/core/api.yml#/components/responses/422"
     400:
