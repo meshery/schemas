@@ -304,6 +304,19 @@ import {
 } from "@meshery/schemas";
 ```
 
+#### Credential forms: lookup by type
+
+Credential forms are keyed by credential type rather than action. Each type
+has a `<Type>CredentialRjsfSchemaV1Beta1` / `<Type>CredentialRjsfUiSchemaV1Beta1`
+pair, and `CredentialRjsfSchemasV1Beta1` / `CredentialRjsfUiSchemasV1Beta1`
+map the lowercase type string (including `"observability and analysis"`) to
+them. Consumers render the form chosen by that lookup with RJSF; they do not
+hand-build credential forms. Each form is a strict subset of the `Credential`
+construct (top-level `name` and `secret` only), secret values are `writeOnly`,
+use the password widget and are not required (an empty value leaves the stored
+secret unchanged), and sealed types are name-only. The empty type and injected
+markup have no form.
+
 ### What goes in a form schema
 
 A form schema is a **strict subset** of the corresponding canonical
