@@ -209,8 +209,8 @@ func TestGetEventsFilter(t *testing.T) {
 	}
 
 	filter := mustLookup(t, doc, "components", "schemas", "EventsFilter")
-	if got := mustValue(filter, "additionalProperties"); got != false {
-		t.Errorf("EventsFilter additionalProperties = %v, want false", got)
+	if got := mustValue(filter, "additionalProperties"); got != true {
+		t.Errorf("EventsFilter additionalProperties = %v, want true", got)
 	}
 	props := mustLookup(t, filter, "properties")
 	gotFields := mappingKeys(props)

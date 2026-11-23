@@ -1339,7 +1339,7 @@ components:
         once meshkit and Cloud add the fields (meshery/schemas#1397), and
         until then they are accepted and ignored. The other fields mirror
         meshkit `models/events.EventsFilter` as it exists today.
-      additionalProperties: false
+      additionalProperties: true
       properties:
         action:
           type: array
