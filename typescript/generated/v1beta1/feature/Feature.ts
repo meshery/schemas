@@ -30,7 +30,7 @@ export interface paths {
         };
         /**
          * Get the active features entitled to an organization through its subscriptions
-         * @description Returns the features the organization's active subscriptions entitle it to. When `X-Current-Orgid` is also sent, it must name the same organization as `orgId`; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, `orgId` must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
+         * @description Returns the features the organization's active subscriptions entitle it to. When `X-Current-Orgid` is also sent, it must name the same organization as `orgId`; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the path `orgId` names the acting organization (subject to the live-membership rule) and does not have to equal a selected organization.
          */
         get: operations["getFeaturesByOrganization"];
         put?: never;
@@ -220,7 +220,7 @@ export interface components {
         };
     };
     parameters: {
-        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
         currentOrgId: string;
         /** @description The ID of the organization */
         orgId: string;
@@ -354,7 +354,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
                 "X-Current-Orgid"?: string;
             };
             path: {

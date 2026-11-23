@@ -102,6 +102,8 @@ paths:
         expose: true
         title: Get the current user profile
         scope: account:read
+        description: >-
+          Read-only. Returns the profile of the signed-in user. An `X-Current-Orgid` that is not a UUID answers 400.
       summary: Get current user profile
       description: >
         Returns the profile of the signed-in user. An `X-Current-Orgid`
@@ -123,6 +125,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/OrganizationSelectionRequired"
         "500":
           $ref: "#/components/responses/500"
 
@@ -446,6 +450,8 @@ paths:
           $ref: "#/components/responses/500"
 components:
   responses:
+    OrganizationSelectionRequired:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/OrganizationSelectionRequired"
     400:
       $ref: "../core/api.yml#/components/responses/400"
     401:

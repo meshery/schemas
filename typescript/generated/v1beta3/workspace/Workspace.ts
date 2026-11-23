@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get all workspaces
-         * @description Gets all workspaces accessible to the current user, optionally scoped to a specific organization.
+         * @description Gets all workspaces accessible to the current user, optionally scoped to a specific organization. Without orgId the listing spans every organization the caller is a member of, so a caller with one organization (an anonymous user, for example) gets that organization's workspaces. An orgId that is not a UUID is answered 400.
          */
         get: operations["getWorkspaces"];
         put?: never;

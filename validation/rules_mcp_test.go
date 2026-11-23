@@ -341,6 +341,59 @@ func TestRule48_ValueShape(t *testing.T) {
 			requireMcpViolation(t, lintMcpOp(t, op), `unknown key "`+key+`"`)
 		}
 	})
+	t.Run("description is allowed", func(t *testing.T) {
+		op := passingMcpOp()
+		op.xmcp = `x-mcp:
+        expose: true
+        scope: content:read
+        description: "Read-only. Lists things."`
+		if v := lintMcpOp(t, op); len(v) != 0 {
+			t.Errorf("a Read-only description must pass, got %v", v)
+		}
+	})
+	t.Run("empty description", func(t *testing.T) {
+		op := passingMcpOp()
+		op.xmcp = `x-mcp:
+        expose: true
+        scope: content:read
+        description: ""`
+		requireMcpViolation(t, lintMcpOp(t, op), "description must be a non-empty string")
+	})
+	// passingMcpOp is a GET; a GET description must start with "Read-only."
+	t.Run("description without the Read-only prefix", func(t *testing.T) {
+		op := passingMcpOp()
+		op.xmcp = `x-mcp:
+        expose: true
+        scope: content:read
+        description: "Lists things."`
+		requireMcpViolation(t, lintMcpOp(t, op), "description must start with")
+	})
+	t.Run("description length counts characters, not bytes", func(t *testing.T) {
+		descriptionOp := func(desc string) mcpOp {
+			op := passingMcpOp()
+			op.xmcp = "x-mcp:\n        expose: true\n        scope: content:read\n        description: \"" + desc + "\""
+			return op
+		}
+		atLimit := "Read-only." + strings.Repeat("é", mcpDescriptionMaxLength-len("Read-only."))
+		if vs := lintMcpOp(t, descriptionOp(atLimit)); len(vs) != 0 {
+			t.Errorf("a %d-character description must pass, got %v", mcpDescriptionMaxLength, vs)
+		}
+		requireMcpViolation(t, lintMcpOp(t, descriptionOp(atLimit+"é")), "description must be at most")
+	})
+	t.Run("a write description needs no Read-only prefix", func(t *testing.T) {
+		for _, method := range []string{"post", "put", "patch"} {
+			op := passingMcpOp()
+			op.method = method
+			op.operationID = "operationId: changeThing"
+			op.xmcp = `x-mcp:
+        expose: true
+        scope: content:read
+        description: "Changes a thing."`
+			if vs := lintMcpOp(t, op); len(vs) != 0 {
+				t.Errorf("%s: a write description without the Read-only prefix must pass, got %v", method, vs)
+			}
+		}
+	})
 	t.Run("not an object", func(t *testing.T) {
 		op := passingMcpOp()
 		op.xmcp = `x-mcp: true`

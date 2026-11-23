@@ -308,7 +308,10 @@ paths:
         - environments
       operationId: getEnvironments
       summary: Get all environments
-      description: Gets all environments
+      description: >-
+        Gets the environments of the organization named by orgId. orgId is
+        required: a request that omits it, or names a value that is not a
+        UUID, is answered 400 and lists nothing.
       parameters:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
@@ -329,6 +332,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EnvironmentPage"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "500":
