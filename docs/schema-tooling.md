@@ -34,9 +34,17 @@ make baseline-consumer-graph  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-clou
 To resolve a baselined violation, migrate the affected resource to the canonical-casing contract and then refresh the baseline:
 
 ```bash
-make audit-schemas-style-full \
+set -o pipefail
+tmp=$(mktemp build/validate-schemas.advisory-baseline.txt.XXXXXX) || exit 1
+trap 'rm -f "$tmp"' EXIT
+make audit-schemas-style-full 2>&1 \
   | awk '/^  schemas\// { f=$1; next } /^    → / { sub(/^    → /, "", $0); if (f) print f "\t" $0 }' \
-  | sort -u > build/validate-schemas.advisory-baseline.txt
+  | sort -u > "$tmp"
+if [ $? -eq 0 ] && [ -s "$tmp" ]; then
+  mv "$tmp" build/validate-schemas.advisory-baseline.txt
+else
+  echo "Baseline refresh failed or produced no output; existing baseline unchanged."
+fi
 ```
 
 Do not add new entries to the baseline by hand - every entry must correspond to a real audit finding that is deferred to a Phase 3 migration.

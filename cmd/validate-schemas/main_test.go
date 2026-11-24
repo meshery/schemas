@@ -36,6 +36,7 @@ func TestExitCode(t *testing.T) {
 		{name: "warn-fail advisory", warnFail: true, result: advisory, want: 1},
 		{name: "warn-fail blocking", warnFail: true, result: blocking, want: 1},
 		{name: "warn-fail both", warnFail: true, result: both, want: 1},
+		{name: "warn and warn-fail advisory", warn: true, warnFail: true, result: advisory, want: 1},
 	}
 
 	for _, tt := range tests {
