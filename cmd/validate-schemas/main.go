@@ -23,7 +23,7 @@ import (
 
 func main() {
 	warn := flag.Bool("warn", false, "Include advisory warnings in output (exit 0)")
-	warnFail := flag.Bool("warn-fail", false, "Include advisory warnings and exit non-zero on unbaselined advisories")
+	warnFail := flag.Bool("warn-fail", false, "Include advisory warnings and exit non-zero on unbaselined advisories (takes precedence over --warn)")
 	noBaseline := flag.Bool("no-baseline", false, "Ignore advisory baseline file")
 	styleDebt := flag.Bool("style-debt", false, "Include legacy style debt")
 	contractDebt := flag.Bool("contract-debt", false, "Include legacy contract debt")
