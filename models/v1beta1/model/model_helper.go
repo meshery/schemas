@@ -103,6 +103,7 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 		}
 		return m.ID, nil
 	}
+	m.ID = model.ID
 	return model.ID, nil
 }
 
