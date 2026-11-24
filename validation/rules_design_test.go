@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -890,5 +891,23 @@ func TestCheckRule47_Valid205(t *testing.T) {
 	vs := checkRule47("api.yml", doc, AuditOptions{})
 	if len(vs) != 0 {
 		t.Errorf("expected 0 violations for 205 response without content, got %d", len(vs))
+	}
+}
+
+func TestCheckRule48_BrokenRefLoadError(t *testing.T) {
+	err := errors.New(`map key "Role" not found`)
+
+	vs := checkRule48(
+		"api.yml",
+		err,
+		AuditOptions{},
+	)
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+
+	if vs[0].RuleNumber != 48 {
+		t.Fatalf("expected Rule 48")
 	}
 }
