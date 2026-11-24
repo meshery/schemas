@@ -93,10 +93,12 @@ func main() {
 	os.Exit(exitCode(*warn, *warnFail, result))
 }
 
-// exitCode returns the process exit status for the selected mode. --warn keeps
-// its historical contract and always exits 0. --warn-fail fails on any blocking
-// violation or any advisory that is not covered by the baseline. The default
-// mode fails on blocking violations only.
+// exitCode returns the process exit status for the selected mode. It is a pure
+// function (no side effects, no os.Exit calls). The actual os.Exit() call is
+// exclusively in main() via: os.Exit(exitCode(*warn, *warnFail, result)).
+// --warn keeps its historical contract and always exits 0. --warn-fail fails on
+// any blocking violation or any advisory that is not covered by the baseline. The
+// default mode fails on blocking violations only.
 func exitCode(warn, warnFail bool, result validation.AuditResult) int {
 	if warnFail {
 		if result.HasBlocking() || len(result.Advisory) > 0 {
