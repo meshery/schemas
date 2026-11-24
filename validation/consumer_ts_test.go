@@ -3,6 +3,7 @@ package validation
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -15,6 +16,9 @@ import (
 type memTree struct {
 	ref   string
 	files map[string]string
+	// defects, when set, are returned by WalkFiltered so tests can simulate
+	// a partially unreadable consumer tree.
+	defects []ScanDefect
 }
 
 func (t *memTree) ReadFile(path string) ([]byte, error) {
@@ -39,6 +43,46 @@ func (t *memTree) Walk(dir string, fn func(path string) error) error {
 		}
 	}
 	return nil
+}
+
+// WalkFiltered mirrors localTree.WalkFiltered for fixtures: skipDirs are
+// pruned by path segment and results are limited to the given extensions.
+// Fixture paths are repo-relative, so "." means the whole tree.
+func (t *memTree) WalkFiltered(dir string, exts []string, fn func(path string) error) ([]ScanDefect, error) {
+	prefix := strings.TrimRight(filepath.ToSlash(dir), "/")
+	if prefix == "." {
+		prefix = ""
+	}
+
+	var paths []string
+	for p := range t.files {
+		if prefix != "" && !strings.HasPrefix(p, prefix+"/") {
+			continue
+		}
+		if !hasExt(p, exts) {
+			continue
+		}
+		skipped := false
+		for _, seg := range strings.Split(path.Dir(p), "/") {
+			if skipDirs[seg] {
+				skipped = true
+				break
+			}
+		}
+		if skipped {
+			continue
+		}
+		paths = append(paths, p)
+	}
+	sort.Strings(paths)
+	for _, p := range paths {
+		if err := fn(p); err != nil {
+			return nil, err
+		}
+	}
+	// In-memory fixtures are always fully readable, so there is nothing to
+	// report as unscanned. Tests that need a defect inject it directly.
+	return t.defects, nil
 }
 
 func (t *memTree) Ref() string {
