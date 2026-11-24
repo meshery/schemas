@@ -179,7 +179,7 @@ type AcademyCurriculaWorkspaceId = core.Uuid
 
 // AcademyRegistration defines model for AcademyRegistration.
 type AcademyRegistration struct {
-	Certificate core.Map `db:"certificate" json:"certificate" yaml:"certificate"`
+	Certificate core.Map `db:"certificate" json:"certificate,omitempty" yaml:"certificate,omitempty"`
 
 	// ContentId ID of the course content
 	ContentId uuid.UUID `db:"content_id" json:"contentId" yaml:"contentId"`
