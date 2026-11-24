@@ -9827,6 +9827,8 @@ export type RegisterRegistryEntitiesApiResponse =
     entityTypeSummary?: {
       /** Components successfully imported. */
       successfulComponents?: {
+        /** Resource API version of the registered component, for example `secrets.infisical.com/v1alpha1`, sourced from the component definition's nested `component.version` field. There is no separate `component.apiVersion` field. Distinct from `Version`, which carries the model definition version. Optional: rows produced before this field was introduced omit it. */
+        apiVersion?: string;
         [key: string]: any;
       }[];
       /** Relationships successfully imported. */
