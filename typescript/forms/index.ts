@@ -64,6 +64,42 @@ import grafanaCredentialSchema from "../../schemas/constructs/v1beta1/credential
 import grafanaCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/grafana.ui.json";
 import prometheusCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/prometheus.json";
 import prometheusCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/prometheus.ui.json";
+import githubCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/github.json";
+import githubCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/github.ui.json";
+import xCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/x.json";
+import xCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/x.ui.json";
+import redditCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/reddit.json";
+import redditCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/reddit.ui.json";
+import linkedinCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/linkedin.json";
+import linkedinCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/linkedin.ui.json";
+import blueskyCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/bluesky.json";
+import blueskyCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/bluesky.ui.json";
+import hnCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/hn.json";
+import hnCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/hn.ui.json";
+import slackCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/slack.json";
+import slackCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/slack.ui.json";
+import youtubeCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/youtube.json";
+import youtubeCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/youtube.ui.json";
+import monitoringCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/monitoring.json";
+import monitoringCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/monitoring.ui.json";
+import observabilityAndAnalysisCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/observability-and-analysis.json";
+import observabilityAndAnalysisCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/observability-and-analysis.ui.json";
+import blogCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/blog.json";
+import blogCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/blog.ui.json";
+import tiktokCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/tiktok.json";
+import tiktokCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/tiktok.ui.json";
+import instagramCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/instagram.json";
+import instagramCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/instagram.ui.json";
+import facebookCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/facebook.json";
+import facebookCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/facebook.ui.json";
+import smtpCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/smtp.json";
+import smtpCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/smtp.ui.json";
+import githubOauthCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/github-oauth.json";
+import githubOauthCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/github-oauth.ui.json";
+import googleOauthCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/google-oauth.json";
+import googleOauthCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/google-oauth.ui.json";
+import oidcOauthCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/oidc-oauth.json";
+import oidcOauthCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/oidc-oauth.ui.json";
 
 export const DesignImportRjsfSchemaV1Beta3 = importDesignSchema as RJSFSchema;
 export const DesignImportRjsfUiSchemaV1Beta3 = importDesignUiSchema as UiSchema;
@@ -103,6 +139,126 @@ export const PrometheusCredentialRjsfSchemaV1Beta1 =
   prometheusCredentialSchema as RJSFSchema;
 export const PrometheusCredentialRjsfUiSchemaV1Beta1 =
   prometheusCredentialUiSchema as UiSchema;
+
+export const GithubCredentialRjsfSchemaV1Beta1 = githubCredentialSchema as RJSFSchema;
+export const GithubCredentialRjsfUiSchemaV1Beta1 =
+  githubCredentialUiSchema as UiSchema;
+
+export const XCredentialRjsfSchemaV1Beta1 = xCredentialSchema as RJSFSchema;
+export const XCredentialRjsfUiSchemaV1Beta1 =
+  xCredentialUiSchema as UiSchema;
+
+export const RedditCredentialRjsfSchemaV1Beta1 = redditCredentialSchema as RJSFSchema;
+export const RedditCredentialRjsfUiSchemaV1Beta1 =
+  redditCredentialUiSchema as UiSchema;
+
+export const LinkedinCredentialRjsfSchemaV1Beta1 = linkedinCredentialSchema as RJSFSchema;
+export const LinkedinCredentialRjsfUiSchemaV1Beta1 =
+  linkedinCredentialUiSchema as UiSchema;
+
+export const BlueskyCredentialRjsfSchemaV1Beta1 = blueskyCredentialSchema as RJSFSchema;
+export const BlueskyCredentialRjsfUiSchemaV1Beta1 =
+  blueskyCredentialUiSchema as UiSchema;
+
+export const HnCredentialRjsfSchemaV1Beta1 = hnCredentialSchema as RJSFSchema;
+export const HnCredentialRjsfUiSchemaV1Beta1 =
+  hnCredentialUiSchema as UiSchema;
+
+export const SlackCredentialRjsfSchemaV1Beta1 = slackCredentialSchema as RJSFSchema;
+export const SlackCredentialRjsfUiSchemaV1Beta1 =
+  slackCredentialUiSchema as UiSchema;
+
+export const YoutubeCredentialRjsfSchemaV1Beta1 = youtubeCredentialSchema as RJSFSchema;
+export const YoutubeCredentialRjsfUiSchemaV1Beta1 =
+  youtubeCredentialUiSchema as UiSchema;
+
+export const MonitoringCredentialRjsfSchemaV1Beta1 = monitoringCredentialSchema as RJSFSchema;
+export const MonitoringCredentialRjsfUiSchemaV1Beta1 =
+  monitoringCredentialUiSchema as UiSchema;
+
+export const ObservabilityAndAnalysisCredentialRjsfSchemaV1Beta1 = observabilityAndAnalysisCredentialSchema as RJSFSchema;
+export const ObservabilityAndAnalysisCredentialRjsfUiSchemaV1Beta1 =
+  observabilityAndAnalysisCredentialUiSchema as UiSchema;
+
+export const BlogCredentialRjsfSchemaV1Beta1 = blogCredentialSchema as RJSFSchema;
+export const BlogCredentialRjsfUiSchemaV1Beta1 =
+  blogCredentialUiSchema as UiSchema;
+
+export const TiktokCredentialRjsfSchemaV1Beta1 = tiktokCredentialSchema as RJSFSchema;
+export const TiktokCredentialRjsfUiSchemaV1Beta1 =
+  tiktokCredentialUiSchema as UiSchema;
+
+export const InstagramCredentialRjsfSchemaV1Beta1 = instagramCredentialSchema as RJSFSchema;
+export const InstagramCredentialRjsfUiSchemaV1Beta1 =
+  instagramCredentialUiSchema as UiSchema;
+
+export const FacebookCredentialRjsfSchemaV1Beta1 = facebookCredentialSchema as RJSFSchema;
+export const FacebookCredentialRjsfUiSchemaV1Beta1 =
+  facebookCredentialUiSchema as UiSchema;
+
+export const SmtpCredentialRjsfSchemaV1Beta1 = smtpCredentialSchema as RJSFSchema;
+export const SmtpCredentialRjsfUiSchemaV1Beta1 =
+  smtpCredentialUiSchema as UiSchema;
+
+export const GithubOauthCredentialRjsfSchemaV1Beta1 = githubOauthCredentialSchema as RJSFSchema;
+export const GithubOauthCredentialRjsfUiSchemaV1Beta1 =
+  githubOauthCredentialUiSchema as UiSchema;
+
+export const GoogleOauthCredentialRjsfSchemaV1Beta1 = googleOauthCredentialSchema as RJSFSchema;
+export const GoogleOauthCredentialRjsfUiSchemaV1Beta1 =
+  googleOauthCredentialUiSchema as UiSchema;
+
+export const OidcOauthCredentialRjsfSchemaV1Beta1 = oidcOauthCredentialSchema as RJSFSchema;
+export const OidcOauthCredentialRjsfUiSchemaV1Beta1 =
+  oidcOauthCredentialUiSchema as UiSchema;
+
+export const CredentialRjsfSchemasV1Beta1: Record<string, RJSFSchema> = {
+  "grafana": GrafanaCredentialRjsfSchemaV1Beta1,
+  "prometheus": PrometheusCredentialRjsfSchemaV1Beta1,
+  "kubernetes": KubernetesCredentialRjsfSchemaV1Beta1,
+  "github": GithubCredentialRjsfSchemaV1Beta1,
+  "x": XCredentialRjsfSchemaV1Beta1,
+  "reddit": RedditCredentialRjsfSchemaV1Beta1,
+  "linkedin": LinkedinCredentialRjsfSchemaV1Beta1,
+  "bluesky": BlueskyCredentialRjsfSchemaV1Beta1,
+  "hn": HnCredentialRjsfSchemaV1Beta1,
+  "slack": SlackCredentialRjsfSchemaV1Beta1,
+  "youtube": YoutubeCredentialRjsfSchemaV1Beta1,
+  "monitoring": MonitoringCredentialRjsfSchemaV1Beta1,
+  "observability and analysis": ObservabilityAndAnalysisCredentialRjsfSchemaV1Beta1,
+  "blog": BlogCredentialRjsfSchemaV1Beta1,
+  "tiktok": TiktokCredentialRjsfSchemaV1Beta1,
+  "instagram": InstagramCredentialRjsfSchemaV1Beta1,
+  "facebook": FacebookCredentialRjsfSchemaV1Beta1,
+  "smtp": SmtpCredentialRjsfSchemaV1Beta1,
+  "github-oauth": GithubOauthCredentialRjsfSchemaV1Beta1,
+  "google-oauth": GoogleOauthCredentialRjsfSchemaV1Beta1,
+  "oidc-oauth": OidcOauthCredentialRjsfSchemaV1Beta1,
+};
+
+export const CredentialRjsfUiSchemasV1Beta1: Record<string, UiSchema> = {
+  "grafana": GrafanaCredentialRjsfUiSchemaV1Beta1,
+  "prometheus": PrometheusCredentialRjsfUiSchemaV1Beta1,
+  "kubernetes": KubernetesCredentialRjsfUiSchemaV1Beta1,
+  "github": GithubCredentialRjsfUiSchemaV1Beta1,
+  "x": XCredentialRjsfUiSchemaV1Beta1,
+  "reddit": RedditCredentialRjsfUiSchemaV1Beta1,
+  "linkedin": LinkedinCredentialRjsfUiSchemaV1Beta1,
+  "bluesky": BlueskyCredentialRjsfUiSchemaV1Beta1,
+  "hn": HnCredentialRjsfUiSchemaV1Beta1,
+  "slack": SlackCredentialRjsfUiSchemaV1Beta1,
+  "youtube": YoutubeCredentialRjsfUiSchemaV1Beta1,
+  "monitoring": MonitoringCredentialRjsfUiSchemaV1Beta1,
+  "observability and analysis": ObservabilityAndAnalysisCredentialRjsfUiSchemaV1Beta1,
+  "blog": BlogCredentialRjsfUiSchemaV1Beta1,
+  "tiktok": TiktokCredentialRjsfUiSchemaV1Beta1,
+  "instagram": InstagramCredentialRjsfUiSchemaV1Beta1,
+  "facebook": FacebookCredentialRjsfUiSchemaV1Beta1,
+  "smtp": SmtpCredentialRjsfUiSchemaV1Beta1,
+  "github-oauth": GithubOauthCredentialRjsfUiSchemaV1Beta1,
+  "google-oauth": GoogleOauthCredentialRjsfUiSchemaV1Beta1,
+  "oidc-oauth": OidcOauthCredentialRjsfUiSchemaV1Beta1,
+};
 
 export const SupportRequestRjsfSchemaV1Beta1 = helpAndSupportSchema as RJSFSchema;
 export const SupportRequestRjsfUiSchemaV1Beta1 = helpAndSupportUiSchema as UiSchema;
