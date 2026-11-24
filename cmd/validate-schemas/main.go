@@ -6,6 +6,7 @@
 //
 //	go run ./cmd/validate-schemas                                    # blocking violations only
 //	go run ./cmd/validate-schemas --warn                             # include advisory warnings
+//	go run ./cmd/validate-schemas --warn-fail                        # fail on unbaselined advisories
 //	go run ./cmd/validate-schemas --warn --no-baseline               # full advisory backlog
 //	go run ./cmd/validate-schemas --warn --no-baseline --style-debt  # include legacy style debt
 //	go run ./cmd/validate-schemas --strict-consistency --style-debt --contract-debt  # fail on all debt
@@ -22,6 +23,7 @@ import (
 
 func main() {
 	warn := flag.Bool("warn", false, "Include advisory warnings in output (exit 0)")
+	warnFail := flag.Bool("warn-fail", false, "Include advisory warnings and exit non-zero on unbaselined advisories")
 	noBaseline := flag.Bool("no-baseline", false, "Ignore advisory baseline file")
 	styleDebt := flag.Bool("style-debt", false, "Include legacy style debt")
 	contractDebt := flag.Bool("contract-debt", false, "Include legacy contract debt")
@@ -43,10 +45,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	warnEnabled := *warn || *warnFail
+
 	opts := validation.AuditOptions{
 		RootDir:      rootDir,
 		Strict:       *strict,
-		Warn:         *warn,
+		Warn:         warnEnabled,
 		NoBaseline:   *noBaseline,
 		StyleDebt:    *styleDebt,
 		ContractDebt: *contractDebt,
@@ -64,7 +68,7 @@ func main() {
 	}
 
 	// Report advisory violations.
-	if *warn && len(result.Advisory) > 0 {
+	if warnEnabled && len(result.Advisory) > 0 {
 		fmt.Fprintf(os.Stderr, "\nvalidate-schemas: %d advisory issue(s) found:\n\n",
 			len(result.Advisory))
 		for _, v := range result.Advisory {
@@ -74,25 +78,39 @@ func main() {
 
 	// Success messages.
 	if !result.HasBlocking() {
-		if *warn && len(result.Advisory) == 0 {
+		if warnEnabled && len(result.Advisory) == 0 {
 			if *noBaseline {
 				fmt.Println("✓ validate-schemas: no advisory issues found.")
 			} else {
 				fmt.Println("✓ validate-schemas: no unbaselined advisory issues found.")
 			}
-		} else if !*warn {
+		} else if !warnEnabled {
 			fmt.Println("✓ validate-schemas: no blocking violations found.")
 		}
 	}
 
 	// Exit code.
-	if *warn {
-		os.Exit(0)
+	os.Exit(exitCode(*warn, *warnFail, result))
+}
+
+// exitCode returns the process exit status for the selected mode. --warn keeps
+// its historical contract and always exits 0. --warn-fail fails on any blocking
+// violation or any advisory that is not covered by the baseline. The default
+// mode fails on blocking violations only.
+func exitCode(warn, warnFail bool, result validation.AuditResult) int {
+	if warnFail {
+		if result.HasBlocking() || len(result.Advisory) > 0 {
+			return 1
+		}
+		return 0
+	}
+	if warn {
+		return 0
 	}
 	if result.HasBlocking() {
-		os.Exit(1)
+		return 1
 	}
-	os.Exit(0)
+	return 0
 }
 
 // findRepoRoot walks up from the current working directory looking for go.mod.

@@ -892,3 +892,28 @@ func TestCheckRule47_Valid205(t *testing.T) {
 		t.Errorf("expected 0 violations for 205 response without content, got %d", len(vs))
 	}
 }
+
+// TestCreateResponseDescription_Deterministic guards the Rule 28 message
+// against map iteration order: two response descriptions match the "new"
+// heuristic ("renew" contains "new"), and the chosen description must not
+// change between runs.
+func TestCreateResponseDescription_Deterministic(t *testing.T) {
+	created := "Claim renewed"
+	conflict := "Conflict - another connection holds the resource's active claim, the claim is not active, or the caller may not renew or release it"
+
+	responses := openapi3.NewResponses()
+	responses.Set("200", &openapi3.ResponseRef{Value: &openapi3.Response{Description: &created}})
+	responses.Set("409", &openapi3.ResponseRef{Value: &openapi3.Response{Description: &conflict}})
+
+	op := &openapi3.Operation{Responses: responses}
+
+	first := createResponseDescription(op)
+	if first != created {
+		t.Fatalf("expected the lowest matching status code description %q, got %q", created, first)
+	}
+	for i := 0; i < 20; i++ {
+		if got := createResponseDescription(op); got != first {
+			t.Fatalf("run %d returned %q, want stable %q", i, got, first)
+		}
+	}
+}

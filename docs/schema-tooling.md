@@ -27,7 +27,9 @@ make baseline-consumer-graph  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-clou
 
 ## Advisory baseline
 
-`make audit-schemas` suppresses violations listed in `build/validate-schemas.advisory-baseline.txt` (one `file\tmessage` per line, `#` comments allowed). This file holds the *pre-canonical* backlog so the `advisory-audit` CI job stays green while Phases 2–3 migrate each resource. **New violations introduced after the baseline was last refreshed block CI** - the baseline is subtractive, not additive, and it is intentional that any new `json:"snake_case"` tag or missing `orgIdQuery` ref on a list endpoint fails the advisory-audit workflow.
+`make audit-schemas` suppresses violations listed in `build/validate-schemas.advisory-baseline.txt` (one `file\tmessage` per line, `#` comments allowed) and always exits 0. This file holds the *pre-canonical* backlog so the `advisory-audit` CI job can report the full backlog while Phases 2–3 migrate each resource.
+
+`make audit-schemas-gate` runs the same audit with `--warn-fail` and is the enforcing gate: it exits 1 on any blocking violation or any advisory not listed in the baseline. **New violations introduced after the baseline was last refreshed block CI** - the baseline is subtractive, not additive, and it is intentional that any new `json:"snake_case"` tag or missing `orgIdQuery` ref on a list endpoint fails the `advisory-gate` workflow.
 
 To resolve a baselined violation, migrate the affected resource to the canonical-casing contract and then refresh the baseline:
 

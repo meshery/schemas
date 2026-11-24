@@ -3,6 +3,7 @@ package validation
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -556,7 +557,15 @@ func createResponseDescription(op *openapi3.Operation) string {
 	if op.Responses == nil {
 		return ""
 	}
-	for _, resp := range op.Responses.Map() {
+	// Iterate in sorted status-code order so the chosen description is stable
+	// across runs; ranging over the responses map directly is nondeterministic.
+	codes := make([]string, 0, len(op.Responses.Map()))
+	for code := range op.Responses.Map() {
+		codes = append(codes, code)
+	}
+	sort.Strings(codes)
+	for _, code := range codes {
+		resp := op.Responses.Value(code)
 		if resp != nil && resp.Value != nil && resp.Value.Description != nil {
 			desc := *resp.Value.Description
 			lower := strings.ToLower(desc)
