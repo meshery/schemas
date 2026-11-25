@@ -98,7 +98,8 @@ fields. So, for this class only:
 `validation/event_metadata_constructs_test.go` pins the payload-entity
 agreement (field names, required list, and each property's type and
 bounds) and the template nulls for every construct in this class. Add a
-new event-metadata construct to its list.
+new event-metadata construct to its list. It also validates which
+follower and content figures accept a negative value.
 
 A metadata shape that is a sub-shape of `Event.metadata` inside the event
 construct itself, rather than a construct with its own directory, is declared

@@ -91,8 +91,7 @@ func TestEventMetadataPayloadMatchesEntity(t *testing.T) {
 				// A producer checks a row against the Payload and a reader checks the
 				// stored row against the entity, so a bound that one carries and the other
 				// lacks lets a row be written that can never be read back (or refuses
-				// a row a reader would accept): the net figures that may be negative
-				// must be unbounded below in both.
+				// a row a reader would accept).
 				for _, bound := range []string{"type", "nullable", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"} {
 					if !reflect.DeepEqual(entityProp[bound], payloadProp[bound]) {
 						t.Errorf("%s.%s %s: entity %v, payload %v - a row one accepts the other refuses", c.entity, name, bound, entityProp[bound], payloadProp[bound])
@@ -103,6 +102,76 @@ func TestEventMetadataPayloadMatchesEntity(t *testing.T) {
 	}
 }
 
+func eventMetadataTemplate(t *testing.T, dir string) map[string]any {
+	t.Helper()
+	raw, err := os.ReadFile(filepath.Join(repoRootDir(t), dir, "templates", path.Base(dir)+"_template.json"))
+	if err != nil {
+		t.Fatalf("read template: %v", err)
+	}
+	var tmpl map[string]any
+	if err := json.Unmarshal(raw, &tmpl); err != nil {
+		t.Fatalf("parse template: %v", err)
+	}
+	return tmpl
+}
+
+// TestEventMetadataNetFiguresAcceptNegatives validates rows against each
+// entity and Payload. LinkedIn nets reversals into the organic figures, and so
+// into the totals and rates built from them; sponsored and auto-invited
+// figures, impressions and clicks are never negative.
+func TestEventMetadataNetFiguresAcceptNegatives(t *testing.T) {
+	cases := []struct {
+		dir, entity      string
+		net, nonNegative []string
+	}{
+		{
+			dir:         "schemas/constructs/v1beta3/follower_metrics",
+			entity:      "FollowerMetrics",
+			net:         []string{"newOrganic", "newTotal"},
+			nonNegative: []string{"newSponsored", "newAutoInvited"},
+		},
+		{
+			dir:    "schemas/constructs/v1beta3/content_metrics",
+			entity: "ContentMetrics",
+			net: []string{
+				"reactionsOrganic", "reactions", "commentsOrganic", "comments",
+				"repostsOrganic", "reposts", "engagementRateOrganic", "engagementRate",
+			},
+			nonNegative: []string{
+				"impressionsOrganic", "impressionsSponsored", "impressions", "uniqueImpressions",
+				"clicksOrganic", "clicksSponsored", "clicks",
+				"reactionsSponsored", "commentsSponsored", "repostsSponsored", "engagementRateSponsored",
+			},
+		},
+	}
+	for _, c := range cases {
+		doc := loadSpec(t, path.Join(c.dir, "api.yml"))
+		for _, name := range []string{c.entity, c.entity + "Payload"} {
+			t.Run(name, func(t *testing.T) {
+				schema := schemaOf(t, doc, name)
+				row := eventMetadataTemplate(t, c.dir)
+				if err := schema.VisitJSON(row); err != nil {
+					t.Fatalf("template row does not validate: %v", err)
+				}
+				check := func(field string, value float64, wantErr bool) {
+					row[field] = value
+					if err := schema.VisitJSON(row); (err != nil) != wantErr {
+						t.Errorf("%s = %v: error = %v, wantErr %v", field, value, err, wantErr)
+					}
+					row[field] = nil
+				}
+				for _, field := range c.net {
+					check(field, -1, false)
+				}
+				for _, field := range c.nonNegative {
+					check(field, 1, false)
+					check(field, -1, true)
+				}
+			})
+		}
+	}
+}
+
 // TestEventMetadataTemplateUsesNullForNullable pins each template to its
 // entity: exactly the entity's properties, and null for every nullable one,
 // because the constructs define a blank source cell as null, never 0 or "".
@@ -110,15 +179,7 @@ func TestEventMetadataTemplateUsesNullForNullable(t *testing.T) {
 	for _, c := range eventMetadataConstructs {
 		t.Run(c.entity, func(t *testing.T) {
 			props := eventMetadataProperties(t, c.entity, eventMetadataSchema(t, c.dir, c.entity))
-			name := path.Base(c.dir)
-			raw, err := os.ReadFile(filepath.Join(repoRootDir(t), c.dir, "templates", name+"_template.json"))
-			if err != nil {
-				t.Fatalf("read template: %v", err)
-			}
-			var tmpl map[string]any
-			if err := json.Unmarshal(raw, &tmpl); err != nil {
-				t.Fatalf("parse template: %v", err)
-			}
+			tmpl := eventMetadataTemplate(t, c.dir)
 			if got, want := sortedKeys(tmpl), sortedKeys(props); !reflect.DeepEqual(got, want) {
 				t.Errorf("template keys = %v, want the entity's %v", got, want)
 			}
