@@ -15,6 +15,7 @@ from meshery_schemas.key.api.key import delete_key, get_key_by_id, get_keys, ups
 from meshery_schemas.key.api.users import get_user_keys
 from meshery_schemas.key.client import AuthenticatedClient, Client
 from meshery_schemas.key.models.key import Key
+from meshery_schemas.key.models.key_page import KeyPage
 from meshery_schemas.key.models.key_payload import KeyPayload
 from meshery_schemas.key.types import UNSET
 
@@ -85,3 +86,41 @@ def test_distribution_identity_and_hatch_wheel_packages():
     assert pyproject["project"]["name"] == "meshery-schemas"
     assert pyproject["build-system"]["build-backend"] == "hatchling.build"
     assert pyproject["tool"]["hatch"]["build"]["targets"]["wheel"]["packages"] == ["src/meshery_schemas"]
+
+
+def test_key_page_wire_mapping_round_trip():
+    payload = {
+        "page": 0,
+        "pageSize": 10,
+        "totalCount": 25,
+        "keys": [
+            {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "owner": "550e8400-e29b-41d4-a716-446655440001",
+                "function": "read",
+                "category": "api",
+                "subcategory": "keys",
+                "description": "Test authorization key",
+                "createdAt": "2026-11-18T10:00:00+00:00",
+                "updatedAt": "2026-11-18T11:00:00+00:00",
+                "deletedAt": None,
+            }
+        ],
+    }
+
+    key_page = KeyPage.from_dict(payload)
+
+    assert key_page.page == 0
+    assert key_page.page_size == 10
+    assert key_page.total_count == 25
+
+    key = key_page.keys[0]
+
+    assert key.created_at.isoformat() == "2026-11-18T10:00:00+00:00"
+    assert key.updated_at.isoformat() == "2026-11-18T11:00:00+00:00"
+    assert key.deleted_at is None
+
+    wire = key_page.to_dict()
+
+    assert wire == payload
+    assert KeyPage.from_dict(wire) == key_page
