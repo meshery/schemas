@@ -17,6 +17,10 @@ import (
 // produced them. The source export's "Total followers" column is a day's
 // total of new followers, not a lifetime count. Every figure is nullable:
 // a blank figure in the source export is not a zero.
+// The organic and total figures are net, follows minus unfollows, and can
+// be negative: LinkedIn counts every unfollow as organic, including one of
+// a follow that sponsored content produced. The sponsored and auto-invited
+// figures count follows only and are never negative.
 type FollowerMetrics struct {
 	// OrganizationID Owning organization ID.
 	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId" yaml:"organizationId"`
@@ -33,13 +37,13 @@ type FollowerMetrics struct {
 	// NewSponsored New followers that day from sponsored content; null when the export's cell is blank.
 	NewSponsored *int `db:"new_sponsored" json:"newSponsored" yaml:"newSponsored"`
 
-	// NewOrganic New followers that day from organic content; null when the export's cell is blank.
+	// NewOrganic Net new followers that day from organic content: follows minus unfollows. LinkedIn counts every unfollow as organic, including one of a follow that sponsored content produced, so the figure is negative on a day the page lost more followers than it gained this way. Null when the export's cell is blank.
 	NewOrganic *int `db:"new_organic" json:"newOrganic" yaml:"newOrganic"`
 
 	// NewAutoInvited New followers that day from auto-invites; null when the export's cell is blank.
 	NewAutoInvited *int `db:"new_auto_invited" json:"newAutoInvited" yaml:"newAutoInvited"`
 
-	// NewTotal All new followers that day; null when the export's cell is blank.
+	// NewTotal Net new followers that day from every source: negative on a day the unfollows the organic figure carries outweigh the day's follows. Null when the export's cell is blank.
 	NewTotal *int `db:"new_total" json:"newTotal" yaml:"newTotal"`
 
 	// SourceFile The export file the row was read from; empty when the row did not come from a file export.
@@ -56,13 +60,13 @@ type FollowerMetricsPayload struct {
 	// NewAutoInvited New followers that day from auto-invites; null when the export's cell is blank.
 	NewAutoInvited *int `json:"newAutoInvited" yaml:"newAutoInvited"`
 
-	// NewOrganic New followers that day from organic content; null when the export's cell is blank.
+	// NewOrganic Net new followers that day from organic content: follows minus unfollows. LinkedIn counts every unfollow as organic, including one of a follow that sponsored content produced, so the figure is negative on a day the page lost more followers than it gained this way. Null when the export's cell is blank.
 	NewOrganic *int `json:"newOrganic" yaml:"newOrganic"`
 
 	// NewSponsored New followers that day from sponsored content; null when the export's cell is blank.
 	NewSponsored *int `json:"newSponsored" yaml:"newSponsored"`
 
-	// NewTotal All new followers that day; null when the export's cell is blank.
+	// NewTotal Net new followers that day from every source: negative on a day the unfollows the organic figure carries outweigh the day's follows. Null when the export's cell is blank.
 	NewTotal *int `json:"newTotal" yaml:"newTotal"`
 
 	// OrganizationID Owning organization ID.
