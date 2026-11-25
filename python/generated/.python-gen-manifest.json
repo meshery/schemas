@@ -39,5 +39,8 @@
   "warnings": {
     "v1beta2/key": []
   },
-  "warningAllowlist": []
+  "warningAllowlist": [
+    "WARNING parsing GET /api/content/patterns/download/{designId} within design_designs.",
+    "WARNING parsing GET /api/content/filters/download/{filterId} within filter_filters."
+  ]
 }
