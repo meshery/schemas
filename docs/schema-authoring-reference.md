@@ -84,9 +84,20 @@ fields. So, for this class only:
 - The template uses `null` for every nullable property. A blank source cell
   is `null`, never `0` or `""`, and the template is the example instance
   producers copy.
+- A figure the source can only add to (impressions, clicks, a cumulative
+  follower count) carries `minimum: 0`. A figure the source nets reversals
+  into carries no `minimum`, and its description says why it can be
+  negative: LinkedIn's daily follower and engagement figures count an
+  unfollow, a withdrawn reaction, a deleted comment or an undone repost
+  against the organic figure (and so the total and the rates built from
+  them), even when the original action came from sponsored content. A
+  producer validates a row before sending it, so a `minimum` the source
+  does not honour refuses real readings rather than catching bad ones. The
+  advisory Rule 39 warning such a figure raises is expected.
 
 `validation/event_metadata_constructs_test.go` pins the payload-entity
-agreement and the template nulls for every construct in this class. Add a
+agreement (field names, required list, and each property's type and
+bounds) and the template nulls for every construct in this class. Add a
 new event-metadata construct to its list.
 
 A metadata shape that is a sub-shape of `Event.metadata` inside the event

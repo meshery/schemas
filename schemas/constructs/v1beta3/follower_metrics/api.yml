@@ -72,8 +72,7 @@ components:
         newOrganic:
           type: integer
           nullable: true
-          minimum: 0
-          description: New followers that day from organic content; null when the export's cell is blank.
+          description: "Net new followers that day from organic content: follows minus unfollows. LinkedIn counts every unfollow as organic, including one of a follow that sponsored content produced, so the figure is negative on a day the page lost more followers than it gained this way. Null when the export's cell is blank."
         newAutoInvited:
           type: integer
           nullable: true
@@ -82,8 +81,7 @@ components:
         newTotal:
           type: integer
           nullable: true
-          minimum: 0
-          description: All new followers that day; null when the export's cell is blank.
+          description: "Net new followers that day from every source: negative on a day the unfollows the organic figure carries outweigh the day's follows. Null when the export's cell is blank."
         sourceFile:
           type: string
           description: The export file the row was read from; empty when the row did not come from a file export.

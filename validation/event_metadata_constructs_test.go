@@ -88,6 +88,16 @@ func TestEventMetadataPayloadMatchesEntity(t *testing.T) {
 				if entityProp["x-go-name"] != payloadProp["x-go-name"] {
 					t.Errorf("%s.%s x-go-name: entity %v, payload %v - the two Go structs would spell the field differently", c.entity, name, entityProp["x-go-name"], payloadProp["x-go-name"])
 				}
+				// A producer checks a row against the Payload and a reader checks the
+				// stored row against the entity, so a bound that one carries and the other
+				// lacks lets a row be written that can never be read back (or refuses
+				// a row a reader would accept): the net figures that may be negative
+				// must be unbounded below in both.
+				for _, bound := range []string{"type", "nullable", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"} {
+					if !reflect.DeepEqual(entityProp[bound], payloadProp[bound]) {
+						t.Errorf("%s.%s %s: entity %v, payload %v - a row one accepts the other refuses", c.entity, name, bound, entityProp[bound], payloadProp[bound])
+					}
+				}
 			}
 		})
 	}
