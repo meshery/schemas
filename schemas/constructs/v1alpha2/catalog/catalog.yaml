@@ -1,4 +1,5 @@
 type: object
+additionalProperties: false
 properties:
   publishedVersion:
     description: Tracks the specific content version that has been made available in the Catalog.

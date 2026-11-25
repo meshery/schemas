@@ -48,7 +48,7 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 		return versionEntries[i].Name() < versionEntries[j].Name()
 	})
 
-	latestByConstruct := make(map[string]constructSpec)
+	var specs []constructSpec
 	for _, vEntry := range versionEntries {
 		if !vEntry.IsDir() {
 			continue
@@ -97,17 +97,14 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 				spec.Doc = doc
 			}
 
-			prev, ok := latestByConstruct[spec.Construct]
-			if !ok || compareAPIVersions(spec.Version, prev.Version) > 0 {
-				latestByConstruct[spec.Construct] = spec
-			}
+			// Validate every non-deprecated version of a construct
+			// independently. Older non-deprecated versions must not be
+			// shadowed by a newer one; only versions marked x-deprecated
+			// are skipped (see the isDeprecatedDoc check above).
+			specs = append(specs, spec)
 		}
 	}
 
-	specs := make([]constructSpec, 0, len(latestByConstruct))
-	for _, spec := range latestByConstruct {
-		specs = append(specs, spec)
-	}
 	sort.Slice(specs, func(i, j int) bool {
 		if specs[i].Construct != specs[j].Construct {
 			return specs[i].Construct < specs[j].Construct
