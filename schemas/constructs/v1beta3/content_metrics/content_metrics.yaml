@@ -12,6 +12,14 @@ description: |
   exists only when the export carries its column — an export without a
   sponsored breakdown records no sponsored figures — and every figure is
   nullable: a blank cell is not a zero.
+  Reactions, comments and reposts are net of the ones withdrawn, deleted
+  or undone that day, and LinkedIn counts each such reversal as organic,
+  even for an engagement with sponsored content (its share-statistics
+  documentation says so of likes). So the organic and total figures of
+  those three, and the organic and total engagement rates built from them,
+  can be negative. Impressions, unique impressions and clicks cannot be
+  taken back, and the sponsored figures count engagements only, so those
+  are never negative.
 type: object
 additionalProperties: false
 required:
@@ -109,8 +117,7 @@ properties:
   reactionsOrganic:
     type: integer
     nullable: true
-    minimum: 0
-    description: Organic reactions that day; null when the export's cell is blank.
+    description: "Organic reactions that day, net of reactions withdrawn. LinkedIn counts a withdrawn reaction as organic even when it was given to sponsored content, so the figure is negative on a day more reactions were withdrawn than given. Null when the export's cell is blank."
     x-oapi-codegen-extra-tags:
       db: reactions_organic
     x-order: 12
@@ -125,16 +132,14 @@ properties:
   reactions:
     type: integer
     nullable: true
-    minimum: 0
-    description: All reactions that day; null when the export's cell is blank.
+    description: "All reactions that day, net of the withdrawals the organic figure carries, so it can be negative. Null when the export's cell is blank."
     x-oapi-codegen-extra-tags:
       db: reactions
     x-order: 14
   commentsOrganic:
     type: integer
     nullable: true
-    minimum: 0
-    description: Organic comments that day; null when the export's cell is blank.
+    description: "Organic comments that day, net of comments deleted. LinkedIn counts a deleted comment as organic even when it was made on sponsored content, so the figure is negative on a day more comments were deleted than made. Null when the export's cell is blank."
     x-oapi-codegen-extra-tags:
       db: comments_organic
     x-order: 15
@@ -149,16 +154,14 @@ properties:
   comments:
     type: integer
     nullable: true
-    minimum: 0
-    description: All comments that day; null when the export's cell is blank.
+    description: "All comments that day, net of the deletions the organic figure carries, so it can be negative. Null when the export's cell is blank."
     x-oapi-codegen-extra-tags:
       db: comments
     x-order: 17
   repostsOrganic:
     type: integer
     nullable: true
-    minimum: 0
-    description: Organic reposts that day; null when the export's cell is blank.
+    description: "Organic reposts that day, net of reposts undone. LinkedIn counts an undone repost as organic even when it was of sponsored content, so the figure is negative on a day more reposts were undone than made. Null when the export's cell is blank."
     x-oapi-codegen-extra-tags:
       db: reposts_organic
     x-order: 18
@@ -173,16 +176,14 @@ properties:
   reposts:
     type: integer
     nullable: true
-    minimum: 0
-    description: All reposts that day; null when the export's cell is blank.
+    description: "All reposts that day, net of the undone reposts the organic figure carries, so it can be negative. Null when the export's cell is blank."
     x-oapi-codegen-extra-tags:
       db: reposts
     x-order: 20
   engagementRateOrganic:
     type: number
     nullable: true
-    minimum: 0
-    description: Organic engagement rate that day, as the export reports it; null when the export's cell is blank.
+    description: "Organic engagement rate that day, as the export reports it: the day's net organic engagements over its impressions, so it is negative when those engagements are. Null when the export's cell is blank."
     x-oapi-codegen-extra-tags:
       db: engagement_rate_organic
     x-order: 21
@@ -197,8 +198,7 @@ properties:
   engagementRate:
     type: number
     nullable: true
-    minimum: 0
-    description: Overall engagement rate that day, as the export reports it; null when the export's cell is blank.
+    description: "Overall engagement rate that day, as the export reports it: negative when the day's net engagements are. Null when the export's cell is blank."
     x-oapi-codegen-extra-tags:
       db: engagement_rate
     x-order: 23
