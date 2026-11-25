@@ -850,6 +850,18 @@ components:
         - docker-compose
         - k8s-kustomize
 
+    TransferOwnershipRequest:
+      type: object
+      description: Request payload for transferring ownership of a resource to another user.
+      required:
+        - newOwnerId
+      properties:
+        newOwnerId:
+          allOf:
+            - $ref: "#/components/schemas/Id"
+          description: The UUID of the user to transfer ownership to.
+          x-go-name: NewOwnerID
+
   parameters:
     id:
       name: id
@@ -1044,6 +1056,12 @@ components:
             type: string
     "404":
       description: Result not found
+      content:
+        text/plain:
+          schema:
+            type: string
+    "403":
+      description: Forbidden - caller has insufficient privilege
       content:
         text/plain:
           schema:
