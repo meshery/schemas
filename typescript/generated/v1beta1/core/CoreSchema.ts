@@ -1906,6 +1906,64 @@ const CoreSchema: Record<string, unknown> = {
           }
         }
       },
+      "403": {
+        "description": "MeshKit error response for forbidden requests.",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "User-facing error message; MeshKit ShortDescription when present."
+                },
+                "code": {
+                  "type": "string",
+                  "description": "MeshKit error code."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit error severity.",
+                  "enum": [
+                    "EMERGENCY",
+                    "ALERT",
+                    "CRITICAL",
+                    "FATAL",
+                    "ERROR"
+                  ],
+                  "x-go-type": "string"
+                },
+                "probableCause": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "longDescription": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "404": {
         "description": "Result not found",
         "content": {
@@ -1932,6 +1990,64 @@ const CoreSchema: Record<string, unknown> = {
           "text/plain": {
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      },
+      "MeshKitError403": {
+        "description": "MeshKit error response for forbidden requests.",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "User-facing error message; MeshKit ShortDescription when present."
+                },
+                "code": {
+                  "type": "string",
+                  "description": "MeshKit error code."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit error severity.",
+                  "enum": [
+                    "EMERGENCY",
+                    "ALERT",
+                    "CRITICAL",
+                    "FATAL",
+                    "ERROR"
+                  ],
+                  "x-go-type": "string"
+                },
+                "probableCause": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "longDescription": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         }
