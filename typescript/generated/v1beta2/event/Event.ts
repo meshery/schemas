@@ -496,7 +496,7 @@ export interface components {
         /** @description EventResult entity schema. */
         EventResult: {
             /** Format: uuid */
-            user_id: string;
+            userId: string;
             /** Format: uuid */
             system_id?: string;
             /** @description The category of the event. */
@@ -529,7 +529,7 @@ export interface components {
             /** @description The data of the eventspage. */
             data?: {
                 /** Format: uuid */
-                user_id: string;
+                userId: string;
                 /** Format: uuid */
                 system_id?: string;
                 /** @description The category of the event. */
@@ -683,7 +683,7 @@ export interface operations {
                         /** @description The data of the eventspage. */
                         data?: {
                             /** Format: uuid */
-                            user_id: string;
+                            userId: string;
                             /** Format: uuid */
                             system_id?: string;
                             /** @description The category of the event. */
@@ -828,7 +828,7 @@ export interface operations {
                         /** @description The data of the eventspage. */
                         data?: {
                             /** Format: uuid */
-                            user_id: string;
+                            userId: string;
                             /** Format: uuid */
                             system_id?: string;
                             /** @description The category of the event. */

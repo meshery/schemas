@@ -2,7 +2,7 @@ type: object
 additionalProperties: false
 description: EventResult entity schema.
 properties:
-  user_id:
+  userId:
     $ref: ../core/api.yml#/components/schemas/UserUuid
     x-oapi-codegen-extra-tags:
       db: user_id
@@ -40,6 +40,6 @@ properties:
     x-oapi-codegen-extra-tags:
       db: created_at
 required:
-- user_id
+- userId
 - category
 - action
