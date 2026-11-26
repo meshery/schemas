@@ -648,8 +648,9 @@ paths:
           in: query
           required: false
           description: >
-            Only sessions of this account handle, compared case-insensitively
-            and without a leading `@`, for example `blowhorn_ai`.
+            Only sessions of this account handle, compared case-insensitively.
+            One leading `@` is ignored; any other `@` is refused. For example
+            `example_handle` and `@example_handle` both match `example_handle`.
           schema:
             type: string
             maxLength: 255
