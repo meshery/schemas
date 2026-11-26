@@ -171,6 +171,12 @@ func checkCrossRefAnnotations(filePath, schemaName string, schemaMap map[string]
 
 		importName, _ := goImport["name"].(string)
 		if importName == "" {
+			out = append(out, Violation{
+				File:       filePath,
+				Message:    fmt.Sprintf(`Schema %q — property %q has x-go-type %q for cross-construct $ref but x-go-type-import.name must be a non-empty string.`, schemaName, propName, goType),
+				Severity:   SeverityBlocking,
+				RuleNumber: 16,
+			})
 			continue
 		}
 		typeStr := goTypePrefixRE.ReplaceAllString(goType, "")

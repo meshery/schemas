@@ -125,20 +125,50 @@ func TestAuditEntitySchemas_DeprecatedOnlyBlockingRules(t *testing.T) {
 func TestAuditAPISpec_DeprecatedOnlyBlockingRules(t *testing.T) {
 	dir := t.TempDir()
 
-	// api.yml missing openapi version -> Rule 2 violation (blocking).
-	badOpenAPI := filepath.Join(dir, "bad_openapi.yml")
-	if err := os.WriteFile(badOpenAPI, []byte("info:\n  title: Test\n  version: \"1.0.0\"\n"), 0o644); err != nil {
-		t.Fatalf("write %s: %v", badOpenAPI, err)
+	content := `openapi: "3.0.0"
+info:
+  title: Test
+  version: "1.0.0"
+  x-deprecated: true
+paths:
+  /delete:
+    delete:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: string
+      responses:
+        "200":
+          description: ok
+components:
+  schemas:
+    Example:
+      type: object
+      properties:
+        snake_case:
+          type: string
+`
+	apiPath := filepath.Join(dir, "api.yml")
+	if err := os.WriteFile(apiPath, []byte(content), 0o644); err != nil {
+		t.Fatalf("write %s: %v", apiPath, err)
+	}
+	doc, err := loadAPISpec(apiPath)
+	if err != nil {
+		t.Fatalf("loadAPISpec %s: %v", apiPath, err)
 	}
 
 	result := &AuditResult{}
-	auditAPISpec(badOpenAPI, dir, AuditOptions{}, make(map[string]bool), result,
-		make(map[string][]schemaLocation), "", nil, true)
+	auditAPISpec(apiPath, dir, AuditOptions{}, make(map[string]bool), result,
+		make(map[string][]schemaLocation), "", doc, true)
 
-	var rule12, rule6 bool
+	var rule5, rule6 bool
 	for _, v := range result.Blocking {
-		if v.RuleNumber == 12 {
-			rule12 = true
+		if v.RuleNumber == 5 {
+			rule5 = true
 		}
 	}
 	for _, v := range result.Advisory {
@@ -147,11 +177,101 @@ func TestAuditAPISpec_DeprecatedOnlyBlockingRules(t *testing.T) {
 		}
 	}
 
-	if !rule12 {
-		t.Errorf("expected Rule 12 blocking violation for deprecated api.yml missing openapi version")
+	if !rule5 {
+		t.Errorf("expected Rule 5 blocking violation for deprecated DELETE with a requestBody")
 	}
 	if rule6 {
 		t.Errorf("expected NO Rule 6 advisory violation for deprecated api.yml")
+	}
+}
+
+// TestAuditAPISpec_Rule2SeverityByDeprecation verifies deprecated APIs retain
+// blocking Rule 2 findings while suppressing its advisory findings. Active APIs
+// keep both existing Rule 2 severities.
+func TestAuditAPISpec_Rule2SeverityByDeprecation(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		deprecated bool
+	}{
+		{name: "active"},
+		{name: "deprecated", deprecated: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			deprecatedExtension := ""
+			if tc.deprecated {
+				deprecatedExtension = "  x-deprecated: true\n"
+			}
+			content := `openapi: "3.0.0"
+info:
+  title: Test
+  version: "1.0.0"
+` + deprecatedExtension + `paths:
+  /legacy:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LegacyBody"
+      responses:
+        "200":
+          description: ok
+  /server-generated:
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id:
+                  type: string
+      responses:
+        "200":
+          description: ok
+components:
+  schemas:
+    LegacyBody:
+      type: object
+      properties:
+        name:
+          type: string
+`
+			path := filepath.Join(dir, "api.yml")
+			if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+				t.Fatalf("write %s: %v", path, err)
+			}
+			doc, err := loadAPISpec(path)
+			if err != nil {
+				t.Fatalf("loadAPISpec %s: %v", path, err)
+			}
+
+			result := &AuditResult{}
+			auditAPISpec(path, dir, AuditOptions{}, make(map[string]bool), result,
+				make(map[string][]schemaLocation), "", doc, tc.deprecated)
+
+			var blocking, advisory bool
+			for _, v := range result.Blocking {
+				if v.RuleNumber == 2 {
+					blocking = true
+				}
+			}
+			for _, v := range result.Advisory {
+				if v.RuleNumber == 2 {
+					advisory = true
+				}
+			}
+			if !blocking {
+				t.Error("expected blocking Rule 2 for required server-generated id")
+			}
+			if advisory != !tc.deprecated {
+				t.Errorf("Rule 2 advisory present = %t, want %t", advisory, !tc.deprecated)
+			}
+		})
 	}
 }
 
@@ -283,11 +403,33 @@ components:
 	}
 }
 
+// TestAuditRule22ValidatesDeprecatedVersionHelper verifies the global helper
+// file audit still runs for model files associated with deprecated versions.
+func TestAuditRule22ValidatesDeprecatedVersionHelper(t *testing.T) {
+	root := t.TempDir()
+	writeTestAPIYML(t, root, "v1beta1", "legacy-construct", true)
+	helperPath := filepath.Join(root, "models", "v1beta1", "legacy_construct", "manual_helper.go")
+	if err := os.MkdirAll(filepath.Dir(helperPath), 0o755); err != nil {
+		t.Fatalf("mkdir helper directory: %v", err)
+	}
+	if err := os.WriteFile(helperPath, []byte("package legacy_construct\n\nfunc helper() {}\n"), 0o644); err != nil {
+		t.Fatalf("write helper: %v", err)
+	}
+
+	result := Audit(AuditOptions{RootDir: root, NoBaseline: true})
+	wantFile := relativeToRoot(helperPath, root)
+	for _, v := range result.Blocking {
+		if v.File == wantFile && v.RuleNumber == 22 && v.Severity == SeverityBlocking {
+			return
+		}
+	}
+	t.Errorf("expected blocking Rule 22 for helper belonging to deprecated version %s", wantFile)
+}
+
 // TestWalkValidatedConstructSpecs_MixedDeprecation verifies that when multiple
 // versions of the same construct exist with different deprecation states,
-// only the latest version is visited and validated, and a selected deprecated
-// version receives blocking-only validation (Rule 27 blocking fires, advisory
-// Rule 6 is suppressed).
+// walkValidatedConstructSpecs visits only the latest version per construct,
+// keeping it unchanged for the consumer-audit indexer.
 func TestWalkValidatedConstructSpecs_MixedDeprecation(t *testing.T) {
 	root := t.TempDir()
 
@@ -352,77 +494,42 @@ components:
 		t.Fatalf("write v1beta2 api.yml: %v", err)
 	}
 
-	// Control: run auditEntitySchemas directly on the v1beta1 directory with
-	// deprecated=false. The v1beta1 entity schema is missing
-	// additionalProperties: false, so Rule 1 must fire when audited directly.
-	v1beta1Direct := &AuditResult{}
-	auditEntitySchemas(v1beta1Dir, AuditOptions{StyleDebt: true},
-		make(map[string]bool), v1beta1Direct, false)
-	var v1beta1Rule1 bool
-	for _, v := range v1beta1Direct.Blocking {
-		if v.Severity == SeverityBlocking && v.RuleNumber == 1 {
-			v1beta1Rule1 = true
-		}
-	}
-	if !v1beta1Rule1 {
-		t.Error("expected Rule 1 blocking violation for active v1beta1 entity missing additionalProperties: false")
-	}
-
-	// Run the full top-level audit orchestration on the temp repo root.
-	// This exercises walkValidatedConstructSpecs -> auditAPISpec with the
-	// Deprecated flag propagated from the construct spec, not hardcoded.
-	result := Audit(AuditOptions{
-		RootDir:   root,
-		StyleDebt: true,
+	// Directly exercise walkValidatedConstructSpecs (kept unchanged for
+	// consumer-audit indexer). It visits only the latest version per construct.
+	var visited []constructSpec
+	err := walkValidatedConstructSpecs(root, func(spec constructSpec) error {
+		visited = append(visited, spec)
+		return nil
 	})
-
-	// Group violations by file path.
-	violationsByFile := make(map[string][]Violation)
-	for _, v := range result.Blocking {
-		violationsByFile[v.File] = append(violationsByFile[v.File], v)
-	}
-	for _, v := range result.Advisory {
-		violationsByFile[v.File] = append(violationsByFile[v.File], v)
+	if err != nil {
+		t.Fatalf("walkValidatedConstructSpecs failed: %v", err)
 	}
 
-	v1beta1APIPath := relativeToRoot(filepath.Join(v1beta1Dir, "api.yml"), root)
-	v1beta1EntityPath := relativeToRoot(filepath.Join(v1beta1Dir, "mixed-construct.yaml"), root)
-	v1beta2Path := relativeToRoot(filepath.Join(v1beta2Dir, "api.yml"), root)
-
-	// Only v1beta2 (deprecated, latest) should be audited; v1beta1 must not appear.
-	if _, ok := violationsByFile[v1beta1APIPath]; ok {
-		t.Errorf("v1beta1 api.yml should not produce audit violations; only latest version v1beta2 should be audited")
+	// Only the latest version (v1beta2, highest version number) should be visited.
+	if len(visited) != 1 {
+		t.Fatalf("expected 1 visited spec (latest version), got %d: visited versions: %v", len(visited), []string{})
 	}
-	if _, ok := violationsByFile[v1beta1EntityPath]; ok {
-		t.Errorf("v1beta1 entity schema should not produce audit violations; only latest version v1beta2 should be audited")
+	if visited[0].Version != "v1beta2" {
+		t.Fatalf("expected visited spec to be v1beta2 (latest), got %s", visited[0].Version)
+	}
+	if !visited[0].Deprecated {
+		t.Error("expected the latest version v1beta2 to be deprecated")
 	}
 
-	// v1beta2 should have a Rule 27 blocking violation (non-snake_case db tag).
-	var rule27Blocking bool
-	for _, v := range violationsByFile[v1beta2Path] {
-		if v.Severity == SeverityBlocking && v.RuleNumber == 27 {
-			rule27Blocking = true
+	// v1beta1 should NOT be visited (it is not the latest version).
+	v1beta1Visited := false
+	for _, spec := range visited {
+		if spec.Version == "v1beta1" {
+			v1beta1Visited = true
 		}
 	}
-	if !rule27Blocking {
-		t.Error("expected Rule 27 blocking violation for deprecated v1beta2 with non-snake_case db tag")
-	}
-
-	// v1beta2 should NOT have a Rule 6 advisory violation (suppressed for deprecated constructs).
-	var rule6Advisory bool
-	for _, v := range violationsByFile[v1beta2Path] {
-		if v.Severity == SeverityAdvisory && v.RuleNumber == 6 {
-			rule6Advisory = true
-		}
-	}
-	if rule6Advisory {
-		t.Error("expected no Rule 6 advisory violation for deprecated v1beta2")
+	if v1beta1Visited {
+		t.Error("expected v1beta1 to NOT be visited (only latest version is visited)")
 	}
 }
 
-// TestAuditEntitySchemas_NonDeprecatedFullValidation verifies that when
-// deprecated=false, auditEntitySchemas runs all rules including advisory
-// rules like Rule 6 (casing).
+// TestAuditEntitySchemas_NonDeprecatedFullValidation verifies active entity
+// schemas receive advisory validation, including Rule 6 (property casing).
 func TestAuditEntitySchemas_NonDeprecatedFullValidation(t *testing.T) {
 	dir := t.TempDir()
 
@@ -445,5 +552,291 @@ func TestAuditEntitySchemas_NonDeprecatedFullValidation(t *testing.T) {
 
 	if !rule6 {
 		t.Error("expected Rule 6 advisory violation for non-deprecated entity with snake_case property")
+	}
+}
+
+// TestWalkAuditConstructSpecs_SingleActive verifies that when a construct
+// has only one active version (no deprecated versions), it is visited
+// with full validation rules.
+func TestWalkAuditConstructSpecs_SingleActive(t *testing.T) {
+	root := t.TempDir()
+
+	// v1beta1: active construct (only version)
+	v1beta1Dir := filepath.Join(root, "schemas", "constructs", "v1beta1", "my-construct")
+	if err := os.MkdirAll(v1beta1Dir, 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", v1beta1Dir, err)
+	}
+	v1beta1Content := `openapi: "3.0.0"
+info:
+  title: My Construct
+  version: "1.0.0"
+paths: {}
+components:
+  schemas:
+    MySchema:
+      type: object
+      properties:
+        prop:
+          type: string
+`
+	if err := os.WriteFile(filepath.Join(v1beta1Dir, "api.yml"), []byte(v1beta1Content), 0o644); err != nil {
+		t.Fatalf("write v1beta1 api.yml: %v", err)
+	}
+
+	// Use the new walkAuditConstructSpecs walker
+	var visited []constructSpec
+	err := walkAuditConstructSpecs(root, func(spec constructSpec) error {
+		visited = append(visited, spec)
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("walkAuditConstructSpecs failed: %v", err)
+	}
+
+	// The single active version should be visited with full validation
+	if len(visited) != 1 {
+		t.Fatalf("expected 1 visited spec, got %d", len(visited))
+	}
+	if visited[0].Construct != "my-construct" {
+		t.Fatalf("expected v1beta1 to be visited, got %s", visited[0].Construct)
+	}
+	if visited[0].Deprecated {
+		t.Error("expected the single version to NOT be deprecated")
+	}
+}
+
+// TestWalkAuditConstructSpecs_IntegrationActiveDeprecated verifies that
+// active constructs receive full validation rules while deprecated constructs
+// receive only blocking-only rules (Issue #730). Uses the same construct name
+// "my-construct" across version directories to exercise version selection.
+func TestWalkAuditConstructSpecs_IntegrationActiveDeprecated(t *testing.T) {
+	root := t.TempDir()
+	// Two active and two deprecated versions of the same construct exercise the
+	// real walker and Audit orchestration. The latest active is v1beta2; v1beta1
+	// must be skipped, while both deprecated versions must be audited.
+	versions := []struct {
+		version    string
+		deprecated bool
+	}{
+		{version: "v1beta1"},
+		{version: "v1beta2"},
+		{version: "v1beta3", deprecated: true},
+		{version: "v1beta4", deprecated: true},
+	}
+
+	for _, tc := range versions {
+		deprecatedExtension := ""
+		if tc.deprecated {
+			deprecatedExtension = "  x-deprecated: true\n"
+		}
+		apiContent := `openapi: "3.0.0"
+info:
+  title: My Construct
+  version: "1.0.0"
+` + deprecatedExtension + `paths: {}
+components:
+  schemas:
+    MySchema:
+      type: object
+      properties:
+        snake_case:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: "Not_Snake"
+            yaml: "snake_case"
+`
+		apiPath := filepath.Join(root, "schemas", "constructs", tc.version, "my-construct", "api.yml")
+		if err := os.MkdirAll(filepath.Dir(apiPath), 0o755); err != nil {
+			t.Fatalf("mkdir api directory for %s: %v", tc.version, err)
+		}
+		if err := os.WriteFile(apiPath, []byte(apiContent), 0o644); err != nil {
+			t.Fatalf("write %s: %v", apiPath, err)
+		}
+		doc, err := loadAPISpec(apiPath)
+		if err != nil {
+			t.Fatalf("loadAPISpec(%s): fixture must be valid YAML/OpenAPI: %v", tc.version, err)
+		}
+		if got := isDeprecatedDoc(doc); got != tc.deprecated {
+			t.Errorf("isDeprecatedDoc(%s) = %t, want %t", tc.version, got, tc.deprecated)
+		}
+
+		entity := `type: object
+properties:
+  snake_case:
+    type: string
+`
+		entityPath := filepath.Join(filepath.Dir(apiPath), "my-construct.yaml")
+		if err := os.WriteFile(entityPath, []byte(entity), 0o644); err != nil {
+			t.Fatalf("write %s: %v", entityPath, err)
+		}
+	}
+
+	// Audit the fixture root, exercising walkAuditConstructSpecs and the same
+	// callback/rule dispatch used for a repository audit.
+	result := Audit(AuditOptions{RootDir: root, StyleDebt: true, NoBaseline: true})
+	violationsByFile := make(map[string][]Violation)
+	for _, v := range append(result.Blocking, result.Advisory...) {
+		violationsByFile[v.File] = append(violationsByFile[v.File], v)
+	}
+
+	for _, tc := range versions {
+		entityFile := filepath.ToSlash(filepath.Join("schemas", "constructs", tc.version, "my-construct", "my-construct.yaml"))
+		apiFile := filepath.ToSlash(filepath.Join("schemas", "constructs", tc.version, "my-construct", "api.yml"))
+		entityViolations := violationsByFile[entityFile]
+		apiViolations := violationsByFile[apiFile]
+		if tc.version == "v1beta1" {
+			if len(entityViolations) != 0 || len(apiViolations) != 0 {
+				t.Errorf("older active version %s should be skipped, got entity violations: %+v, API violations: %+v", tc.version, entityViolations, apiViolations)
+			}
+			continue
+		}
+
+		if !hasRule(entityViolations, 1, SeverityBlocking) {
+			t.Errorf("selected version %s should receive blocking Rule 1", tc.version)
+		}
+		if !hasRule(entityViolations, 20, SeverityBlocking) {
+			t.Errorf("selected version %s should receive blocking Rule 20", tc.version)
+		}
+
+		if !hasRule(apiViolations, 27, SeverityBlocking) {
+			t.Errorf("selected API spec %s should receive blocking Rule 27", tc.version)
+		}
+		if tc.version == "v1beta2" {
+			if !hasRule(entityViolations, 6, SeverityAdvisory) {
+				t.Error("latest active version v1beta2 should receive full entity validation, including advisory Rule 6")
+			}
+			if !hasRule(apiViolations, 6, SeverityAdvisory) || !hasRule(apiViolations, 27, SeverityAdvisory) {
+				t.Error("latest active API spec v1beta2 should receive full validation, including advisory Rules 6 and 27")
+			}
+		} else {
+			if hasRule(entityViolations, 6, SeverityAdvisory) {
+				t.Errorf("deprecated version %s must not receive advisory entity Rule 6", tc.version)
+			}
+			if hasRule(apiViolations, 6, SeverityAdvisory) || hasRule(apiViolations, 27, SeverityAdvisory) {
+				t.Errorf("deprecated API spec %s must suppress advisory Rules 6 and 27", tc.version)
+			}
+		}
+	}
+}
+
+func hasRule(violations []Violation, rule int, severity Severity) bool {
+	for _, v := range violations {
+		if v.RuleNumber == rule && v.Severity == severity {
+			return true
+		}
+	}
+	return false
+}
+
+// TestAuditMalformedAPIReportsBlockingViolation verifies that an existing
+// but malformed api.yml produces a blocking validation violation instead
+// of silently disappearing from the audit.
+func TestAuditMalformedAPIReportsBlockingViolation(t *testing.T) {
+	root := t.TempDir()
+
+	// Create a version directory with a malformed api.yml
+	versionDir := filepath.Join(root, "schemas", "constructs", "v1beta1", "malformed-construct")
+	if err := os.MkdirAll(versionDir, 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", versionDir, err)
+	}
+
+	// Write a malformed api.yml (invalid YAML)
+	malformedContent := `openapi: "3.0.0"
+info:
+  title: Malformed Construct
+  version: "1.0.0"
+paths: {}
+components:
+  schemas:
+    BadSchema:
+      type: object
+      properties:
+        prop:
+          type: string
+  # Invalid YAML: unclosed bracket
+  schemas2: [
+`
+	if err := os.WriteFile(filepath.Join(versionDir, "api.yml"), []byte(malformedContent), 0o644); err != nil {
+		t.Fatalf("write malformed api.yml: %v", err)
+	}
+
+	// Run Audit
+	result := Audit(AuditOptions{
+		RootDir:   root,
+		StyleDebt: true,
+	})
+
+	// Verify a blocking violation was reported with the exact expected attributes
+	var found bool
+	for _, v := range result.Blocking {
+		if v.Severity == SeverityBlocking && v.RuleNumber == 12 && v.Message == "Failed to load api.yml" && v.File == "schemas/constructs/v1beta1/malformed-construct/api.yml" {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		t.Error("expected a blocking violation: File=malformed-construct/api.yml, RuleNumber=12, Message=Failed to load api.yml")
+	}
+}
+
+// TestAuditMalformedNewerAPIDoesNotHideOlderActive verifies a malformed newer
+// api.yml still reports blocking Rule 12 without displacing the latest valid
+// active version or suppressing valid deprecated versions.
+func TestAuditMalformedNewerAPIDoesNotHideOlderActive(t *testing.T) {
+	root := t.TempDir()
+
+	writeEntity := func(version string) string {
+		t.Helper()
+		apiPath := writeTestAPIYML(t, root, version, "selection-construct", version == "v1beta4")
+		entityPath := filepath.Join(filepath.Dir(apiPath), "selection-construct.yaml")
+		entity := "type: object\nproperties:\n  name:\n    type: string\n"
+		if err := os.WriteFile(entityPath, []byte(entity), 0o644); err != nil {
+			t.Fatalf("write %s: %v", entityPath, err)
+		}
+		return entityPath
+	}
+
+	activeEntity := writeEntity("v1beta1")
+	deprecatedEntity := writeEntity("v1beta4")
+
+	malformedDir := filepath.Join(root, "schemas", "constructs", "v1beta3", "selection-construct")
+	if err := os.MkdirAll(malformedDir, 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", malformedDir, err)
+	}
+	malformedPath := filepath.Join(malformedDir, "api.yml")
+	if err := os.WriteFile(malformedPath, []byte("openapi: [invalid\n"), 0o644); err != nil {
+		t.Fatalf("write malformed api.yml: %v", err)
+	}
+
+	result := Audit(AuditOptions{RootDir: root, NoBaseline: true})
+
+	var malformedRule12, activeRule1, activeRule20, deprecatedRule1, deprecatedRule20 bool
+	for _, v := range result.Blocking {
+		if v.File == relativeToRoot(malformedPath, root) && v.RuleNumber == 12 && v.Message == "Failed to load api.yml" {
+			malformedRule12 = true
+		}
+		if v.File == relativeToRoot(activeEntity, root) && v.RuleNumber == 1 {
+			activeRule1 = true
+		}
+		if v.File == relativeToRoot(activeEntity, root) && v.RuleNumber == 20 {
+			activeRule20 = true
+		}
+		if v.File == relativeToRoot(deprecatedEntity, root) && v.RuleNumber == 1 {
+			deprecatedRule1 = true
+		}
+		if v.File == relativeToRoot(deprecatedEntity, root) && v.RuleNumber == 20 {
+			deprecatedRule20 = true
+		}
+	}
+
+	if !malformedRule12 {
+		t.Error("expected malformed newer api.yml to produce blocking Rule 12")
+	}
+	if !activeRule1 || !activeRule20 {
+		t.Error("expected older valid active version to remain audited for Rules 1 and 20")
+	}
+	if !deprecatedRule1 || !deprecatedRule20 {
+		t.Error("expected valid deprecated version to remain audited for Rules 1 and 20")
 	}
 }

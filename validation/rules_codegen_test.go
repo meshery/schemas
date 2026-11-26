@@ -344,6 +344,54 @@ components:
 	}
 }
 
+func TestCheckRule16_EmptyOrInvalidImportName(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		importName string
+	}{
+		{name: "empty", importName: `""`},
+		{name: "non-string", importName: `42`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			yamlContent := `openapi: "3.0.0"
+info:
+  title: Test
+  version: v1
+components:
+  schemas:
+    MySchema:
+      type: object
+      properties:
+        conn:
+          $ref: "../connection/api.yml#/components/schemas/Connection"
+          x-go-type: connectionv1beta1.Connection
+          x-go-type-import:
+            name: ` + tc.importName + `
+            path: github.com/meshery/schemas/models/v1beta1/connection
+`
+			apiPath := filepath.Join(tmpDir, "api.yml")
+			if err := os.WriteFile(apiPath, []byte(yamlContent), 0644); err != nil {
+				t.Fatal(err)
+			}
+
+			result := &AuditResult{}
+			doc := &openapi3.T{OpenAPI: "3.0.0", Info: &openapi3.Info{Title: "Test", Version: "v1"}}
+			auditAPISpec(apiPath, tmpDir, AuditOptions{RootDir: tmpDir}, make(map[string]bool), result,
+				make(map[string][]schemaLocation), "", doc, true)
+			rule16 := false
+			for _, v := range result.Blocking {
+				if v.RuleNumber == 16 && v.Severity == SeverityBlocking {
+					rule16 = true
+				}
+			}
+			if !rule16 {
+				t.Errorf("expected deprecated API dispatch to report blocking Rule 16, got %+v", result.Blocking)
+			}
+		})
+	}
+}
+
 func TestCheckRule15_CrossRefInAllOf(t *testing.T) {
 	tmpDir := t.TempDir()
 
