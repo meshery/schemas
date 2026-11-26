@@ -31,9 +31,11 @@ func writeTestAPIYML(t *testing.T, root, version, construct string, deprecated b
 	return path
 }
 
-// TestWalkValidatedConstructSpecs_IncludesDeprecated verifies that deprecated
-// constructs are no longer skipped by walkValidatedConstructSpecs (issue #730).
-func TestWalkValidatedConstructSpecs_IncludesDeprecated(t *testing.T) {
+// TestWalkValidatedConstructSpecs_SkipsDeprecated verifies that deprecated
+// constructs are skipped by walkValidatedConstructSpecs, keeping it the
+// canonical non-deprecated walker for consumer-audit; deprecated-version
+// selection lives in walkAuditConstructSpecs (issue #730).
+func TestWalkValidatedConstructSpecs_SkipsDeprecated(t *testing.T) {
 	root := t.TempDir()
 
 	writeTestAPIYML(t, root, "v1beta1", "deprecated-construct", true)
@@ -48,31 +50,14 @@ func TestWalkValidatedConstructSpecs_IncludesDeprecated(t *testing.T) {
 		t.Fatalf("walkValidatedConstructSpecs: %v", err)
 	}
 
-	if len(visited) != 2 {
-		t.Fatalf("expected 2 visited specs, got %d", len(visited))
+	if len(visited) != 1 {
+		t.Fatalf("expected 1 visited spec, got %d", len(visited))
 	}
-
-	deprecatedCount := 0
-	activeCount := 0
-	for _, spec := range visited {
-		if spec.Construct == "deprecated-construct" {
-			if !spec.Deprecated {
-				t.Errorf("deprecated-construct should have Deprecated=true")
-			}
-			deprecatedCount++
-		}
-		if spec.Construct == "active-construct" {
-			if spec.Deprecated {
-				t.Errorf("active-construct should have Deprecated=false")
-			}
-			activeCount++
-		}
+	if visited[0].Construct != "active-construct" {
+		t.Fatalf("expected only active-construct to be visited, got %s", visited[0].Construct)
 	}
-	if deprecatedCount != 1 {
-		t.Errorf("expected 1 deprecated spec, got %d", deprecatedCount)
-	}
-	if activeCount != 1 {
-		t.Errorf("expected 1 active spec, got %d", activeCount)
+	if visited[0].Deprecated {
+		t.Errorf("active-construct should have Deprecated=false")
 	}
 }
 
@@ -352,6 +337,119 @@ components:
 	}
 }
 
+// TestAuditAPISpec_DeprecatedRule27NormalAndStrict verifies deprecated Rule 27
+// blocking/advisory behavior in normal and Strict modes: a genuine blocking
+// Rule 27 finding (non-snake_case db tag) is always reported, while advisory
+// findings (manual yaml tag) are suppressed and are never elevated to blocking
+// under Strict for deprecated constructs.
+func TestAuditAPISpec_DeprecatedRule27NormalAndStrict(t *testing.T) {
+	for _, strict := range []bool{false, true} {
+		t.Run(map[bool]string{false: "normal", true: "strict"}[strict], func(t *testing.T) {
+			dir := t.TempDir()
+			content := `openapi: "3.0.0"
+info:
+  title: Test Construct
+  version: "1.0.0"
+  x-deprecated: true
+paths: {}
+components:
+  schemas:
+    TestSchema:
+      type: object
+      properties:
+        myProp:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: CamelCase
+            yaml: myProp
+`
+			path := filepath.Join(dir, "api.yml")
+			if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+				t.Fatalf("write %s: %v", path, err)
+			}
+
+			doc, err := loadAPISpec(path)
+			if err != nil {
+				t.Fatalf("loadAPISpec %s: %v", path, err)
+			}
+
+			result := &AuditResult{}
+			auditAPISpec(path, dir, AuditOptions{Strict: strict}, make(map[string]bool), result,
+				make(map[string][]schemaLocation), "", doc, true)
+
+			var rule27Blocking, rule27Advisory bool
+			for _, v := range result.Blocking {
+				if v.RuleNumber == 27 {
+					rule27Blocking = true
+				}
+			}
+			for _, v := range result.Advisory {
+				if v.RuleNumber == 27 {
+					rule27Advisory = true
+				}
+			}
+
+			if !rule27Blocking {
+				t.Errorf("strict=%t: expected blocking Rule 27 for non-snake_case db tag on deprecated API", strict)
+			}
+			if rule27Advisory {
+				t.Errorf("strict=%t: expected no Rule 27 advisory for deprecated API", strict)
+			}
+		})
+	}
+}
+
+// TestAuditAPISpec_DeprecatedRule27AdvisoryOnlySuppressed verifies that a
+// deprecated construct with only advisory Rule 27 findings (manual yaml tag)
+// reports no Rule 27 in normal mode and is not elevated to blocking in Strict.
+func TestAuditAPISpec_DeprecatedRule27AdvisoryOnlySuppressed(t *testing.T) {
+	for _, strict := range []bool{false, true} {
+		t.Run(map[bool]string{false: "normal", true: "strict"}[strict], func(t *testing.T) {
+			dir := t.TempDir()
+			content := `openapi: "3.0.0"
+info:
+  title: Test Construct
+  version: "1.0.0"
+  x-deprecated: true
+paths: {}
+components:
+  schemas:
+    TestSchema:
+      type: object
+      properties:
+        myProp:
+          type: string
+          x-oapi-codegen-extra-tags:
+            yaml: myProp
+`
+			path := filepath.Join(dir, "api.yml")
+			if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+				t.Fatalf("write %s: %v", path, err)
+			}
+
+			doc, err := loadAPISpec(path)
+			if err != nil {
+				t.Fatalf("loadAPISpec %s: %v", path, err)
+			}
+
+			result := &AuditResult{}
+			auditAPISpec(path, dir, AuditOptions{Strict: strict}, make(map[string]bool), result,
+				make(map[string][]schemaLocation), "", doc, true)
+
+			for _, v := range result.Blocking {
+				if v.RuleNumber == 27 {
+					t.Errorf("strict=%t: expected no blocking Rule 27 for advisory-only manual yaml tag, got %+v", strict, v)
+				}
+			}
+			for _, v := range result.Advisory {
+				if v.RuleNumber == 27 {
+					t.Errorf("strict=%t: expected no advisory Rule 27 for deprecated API, got %+v", strict, v)
+				}
+			}
+		})
+	}
+}
+
 // TestAuditAPISpec_DeprecatedRule5Blocking verifies that when deprecated=true,
 // auditAPISpec reports Rule 5 blocking violations (DELETE with requestBody).
 func TestAuditAPISpec_DeprecatedRule5Blocking(t *testing.T) {
@@ -428,8 +526,8 @@ func TestAuditRule22ValidatesDeprecatedVersionHelper(t *testing.T) {
 
 // TestWalkValidatedConstructSpecs_MixedDeprecation verifies that when multiple
 // versions of the same construct exist with different deprecation states,
-// walkValidatedConstructSpecs visits only the latest version per construct,
-// keeping it unchanged for the consumer-audit indexer.
+// walkValidatedConstructSpecs skips deprecated versions and visits only the
+// latest non-deprecated version per construct for the consumer-audit indexer.
 func TestWalkValidatedConstructSpecs_MixedDeprecation(t *testing.T) {
 	root := t.TempDir()
 
@@ -465,9 +563,7 @@ properties:
 		t.Fatalf("write v1beta1 entity yaml: %v", err)
 	}
 
-	// v1beta2: deprecated (higher version, selected as latest)
-	// Contains a Rule 27 blocking violation (non-snake_case db tag) and would
-	// trigger a Rule 6 advisory (snake_case property name) if audited as active.
+	// v1beta2: deprecated (higher version, but skipped by the walker)
 	v1beta2Dir := filepath.Join(root, "schemas", "constructs", "v1beta2", "mixed-construct")
 	if err := os.MkdirAll(v1beta2Dir, 0o755); err != nil {
 		t.Fatalf("mkdir %s: %v", v1beta2Dir, err)
@@ -494,8 +590,8 @@ components:
 		t.Fatalf("write v1beta2 api.yml: %v", err)
 	}
 
-	// Directly exercise walkValidatedConstructSpecs (kept unchanged for
-	// consumer-audit indexer). It visits only the latest version per construct.
+	// Directly exercise walkValidatedConstructSpecs. It visits only the latest
+	// non-deprecated version per construct; deprecated versions are skipped.
 	var visited []constructSpec
 	err := walkValidatedConstructSpecs(root, func(spec constructSpec) error {
 		visited = append(visited, spec)
@@ -505,26 +601,26 @@ components:
 		t.Fatalf("walkValidatedConstructSpecs failed: %v", err)
 	}
 
-	// Only the latest version (v1beta2, highest version number) should be visited.
+	// Only v1beta1 (latest non-deprecated version) should be visited.
 	if len(visited) != 1 {
-		t.Fatalf("expected 1 visited spec (latest version), got %d: visited versions: %v", len(visited), []string{})
+		t.Fatalf("expected 1 visited spec (latest non-deprecated version), got %d", len(visited))
 	}
-	if visited[0].Version != "v1beta2" {
-		t.Fatalf("expected visited spec to be v1beta2 (latest), got %s", visited[0].Version)
+	if visited[0].Version != "v1beta1" {
+		t.Fatalf("expected visited spec to be v1beta1 (latest non-deprecated), got %s", visited[0].Version)
 	}
-	if !visited[0].Deprecated {
-		t.Error("expected the latest version v1beta2 to be deprecated")
+	if visited[0].Deprecated {
+		t.Error("expected visited version v1beta1 to not be deprecated")
 	}
 
-	// v1beta1 should NOT be visited (it is not the latest version).
-	v1beta1Visited := false
+	// v1beta2 should NOT be visited (it is deprecated).
+	v1beta2Visited := false
 	for _, spec := range visited {
-		if spec.Version == "v1beta1" {
-			v1beta1Visited = true
+		if spec.Version == "v1beta2" {
+			v1beta2Visited = true
 		}
 	}
-	if v1beta1Visited {
-		t.Error("expected v1beta1 to NOT be visited (only latest version is visited)")
+	if v1beta2Visited {
+		t.Error("expected v1beta2 to NOT be visited (deprecated versions are skipped)")
 	}
 }
 
@@ -777,6 +873,72 @@ components:
 
 	if !found {
 		t.Error("expected a blocking violation: File=malformed-construct/api.yml, RuleNumber=12, Message=Failed to load api.yml")
+	}
+}
+
+// TestAuditMalformedAPIStillAuditsEntityAndTemplates verifies that an existing
+// but malformed api.yml keeps its blocking Rule 12 violation while entity
+// schemas and template files in the same construct are still independently
+// audited (Rule 1/20 entity checks and template checks are not suppressed).
+func TestAuditMalformedAPIStillAuditsEntityAndTemplates(t *testing.T) {
+	root := t.TempDir()
+	constructDir := filepath.Join(root, "schemas", "constructs", "v1beta1", "malformed-construct")
+	templatesDir := filepath.Join(constructDir, "templates")
+	if err := os.MkdirAll(templatesDir, 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", templatesDir, err)
+	}
+
+	// Malformed api.yml: unclosed bracket.
+	if err := os.WriteFile(filepath.Join(constructDir, "api.yml"), []byte("openapi: [invalid\n"), 0o644); err != nil {
+		t.Fatalf("write malformed api.yml: %v", err)
+	}
+
+	// Independently loadable entity schema: missing additionalProperties: false
+	// (Rule 1) and missing required (Rule 20).
+	entityPath := filepath.Join(constructDir, "malformed-construct.yaml")
+	entity := "type: object\nproperties:\n  name:\n    type: string\n"
+	if err := os.WriteFile(entityPath, []byte(entity), 0o644); err != nil {
+		t.Fatalf("write entity schema: %v", err)
+	}
+
+	// Independently loadable template file: name is an object but schema
+	// declares type: string (Rule 34).
+	templatePath := filepath.Join(templatesDir, "malformed-construct_template.json")
+	if err := os.WriteFile(templatePath, []byte(`{"name": {}}`), 0o644); err != nil {
+		t.Fatalf("write template: %v", err)
+	}
+
+	result := Audit(AuditOptions{RootDir: root, NoBaseline: true})
+
+	entityFile := relativeToRoot(entityPath, root)
+	apiFile := relativeToRoot(filepath.Join(constructDir, "api.yml"), root)
+	templateFile := relativeToRoot(templatePath, root)
+
+	var rule12, rule1, rule20, rule34 bool
+	for _, v := range result.Blocking {
+		switch {
+		case v.File == apiFile && v.RuleNumber == 12:
+			rule12 = true
+		case v.File == entityFile && v.RuleNumber == 1:
+			rule1 = true
+		case v.File == entityFile && v.RuleNumber == 20:
+			rule20 = true
+		case v.File == templateFile && v.RuleNumber == 34:
+			rule34 = true
+		}
+	}
+
+	if !rule12 {
+		t.Error("expected blocking Rule 12 for malformed api.yml")
+	}
+	if !rule1 {
+		t.Errorf("expected blocking Rule 1 for independently loadable entity %s", entityFile)
+	}
+	if !rule20 {
+		t.Errorf("expected blocking Rule 20 for independently loadable entity %s", entityFile)
+	}
+	if !rule34 {
+		t.Errorf("expected blocking Rule 34 for independently loadable template %s", templateFile)
 	}
 }
 

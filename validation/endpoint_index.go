@@ -20,7 +20,7 @@ type schemaEndpoint struct {
 	RequestShape      *schemaShape       // nil for GET/DELETE without body
 	ResponseShape     *schemaShape       // from primary 2xx response
 	SuccessStatusCode int                // primary 2xx response code (200/201/202/204)
-	Deprecated        bool               // operation-level OR construct-level
+	Deprecated        bool               // operation-level
 	Public            bool               // true if explicitly security: []
 	HasSuccessRef     bool               // true if a 2xx response has a $ref schema
 	Has2xx            bool               // true if there is a 2xx response at all
@@ -68,8 +68,8 @@ type schemaIndex struct {
 
 // buildEndpointIndex walks the meshery/schemas constructs tree and produces
 // a deterministic index of every API endpoint defined across api.yml files.
-// It delegates to walkValidatedConstructSpecs, which is the single canonical
-// walker shared with the schema validator.
+// It delegates to walkValidatedConstructSpecs, the canonical walker for
+// non-deprecated construct specs.
 func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 	index := &schemaIndex{}
 	if err := walkValidatedConstructSpecs(rootDir, func(spec constructSpec) error {

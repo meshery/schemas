@@ -15,7 +15,7 @@ import (
 // Phase 3 migrated all 22 resources in the migration inventory to
 // canonical camelCase wire form (see docs/schema-tooling.md),
 // and Phase 4.A administratively closed with every legacy directory
-// carrying `info.x-deprecated: true`. The audit walker
+// carrying `info.x-deprecated: true`. The canonical walker
 // (validation/audit.go::walkValidatedConstructSpecs) skips deprecated
 // specs and only processes the latest non-deprecated API version per
 // construct, so the historical lowercase-suffix names enumerated by the
