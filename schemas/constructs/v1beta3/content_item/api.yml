@@ -6,8 +6,8 @@ info:
     values keyed by organization and row number, with conditional
     updates.
     A content item may carry its own rules of engagement
-    (`rulesOfEngagement`), which can only tighten the rules its profile and
-    platform run under, and may belong to a thread (`threadId`,
+    (`rulesOfEngagement`), which apply in place of the rules its profile and
+    platform resolve to, looser or stricter, and may belong to a thread (`threadId`,
     `replyToId`, `threadIndex`): the parts of a split post, or the replies
     of a conversation between profiles.
     An item's approval is resolved at insert and again at each content edit
@@ -545,8 +545,8 @@ components:
           allOf:
             - $ref: "#/components/schemas/ContentItemRulesOfEngagement"
           description: |
-            The item's own rules of engagement, which can only tighten the
-            rules its profile and platform run under. Omitted on insert, the
+            The item's own rules of engagement, which apply in place of the
+            rules its profile and platform resolve to. Omitted on insert, the
             item has none; omitted on update, the stored rules are kept;
             `null` on update clears them.
           nullable: true
@@ -684,14 +684,12 @@ components:
       additionalProperties: false
       description: |
         A content item's own rules of engagement: a Posture preset and,
-        optionally, dials changed for this item only. Every value can only
-        tighten. The client that runs the item resolves the effective rules
-        as the stricter of these and the rules that apply to its profile and
-        platform without them (the more cautious preset wins, and each dial
-        applies only where it is stricter than the resolved preset's own);
-        the warm-up and the pause after a sign-in challenge always apply.
-        The server validates the shape and stores the value as given; it
-        never resolves or loosens it.
+        optionally, dials changed for this item only. The client that runs the
+        item applies these in place of the rules its profile and platform
+        resolve to, whether looser or stricter; the warm-up and the pause after
+        a sign-in challenge always apply, as does a limit the platform
+        publishes. The server validates the shape and stores the value as given;
+        it never resolves it.
       required:
         - preset
       properties:
@@ -702,9 +700,8 @@ components:
             path: github.com/meshery/schemas/models/v1beta3/posture
             name: posturev1beta3
           description: |
-            The preset the item asks for. It applies only when it is at
-            least as cautious as the preset its profile and platform
-            resolve to.
+            The preset the item asks for. It applies in place of the preset
+            its profile and platform resolve to.
         dials:
           $ref: "#/components/schemas/ContentItemRulesOfEngagementDials"
           description: |
@@ -716,9 +713,7 @@ components:
       additionalProperties: false
       description: |
         Dials of a content item's rules of engagement. Each is optional and
-        applies only where it is stricter than the resolved preset's own
-        value; a dial that would loosen is ignored by the client that runs
-        the item.
+        applies on top of the item's own preset, as set.
       properties:
         pace:
           type: string

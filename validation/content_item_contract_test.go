@@ -77,8 +77,9 @@ func TestContentItemContract(t *testing.T) {
 	}
 }
 
-// A content item carries its own rules of engagement, which can only tighten,
-// and may belong to a thread (Blowhorn #1319, #1323, #1328). The fields are
+// A content item carries its own rules of engagement, which apply in place
+// of the rules its profile and platform resolve to (looser or stricter), and
+// may belong to a thread (Blowhorn #1319, #1323, #1328). The fields are
 // optional on read and write, the rules object is closed and needs a preset,
 // the thread can be read in one list call, and an update that omits the rules
 // keeps them: clients released before the field existed send the whole item

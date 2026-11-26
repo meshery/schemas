@@ -12730,12 +12730,11 @@ export type ListContentItemsApiResponse = /** status 200 Content item page */ {
     deletedAt?: string | null;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string;
-    /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+    /** The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
      */
     rulesOfEngagement?: {
-      /** The preset the item asks for. It applies only when it is at
-            least as cautious as the preset its profile and platform
-            resolve to.
+      /** The preset the item asks for. It applies in place of the preset
+            its profile and platform resolve to.
              */
       preset: "cautious" | "standard" | "brisk";
       /** Dials changed for this item only. Omitted when none were
@@ -12832,12 +12831,11 @@ export type InsertContentItemApiResponse = /** status 201 Content item created *
   deletedAt?: string | null;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
-  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+  /** The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
    */
   rulesOfEngagement?: {
-    /** The preset the item asks for. It applies only when it is at
-        least as cautious as the preset its profile and platform
-        resolve to.
+    /** The preset the item asks for. It applies in place of the preset
+        its profile and platform resolve to.
          */
     preset: "cautious" | "standard" | "brisk";
     /** Dials changed for this item only. Omitted when none were
@@ -12911,15 +12909,14 @@ export type InsertContentItemApiArg = {
         insert.
          */
     expectedFingerprint?: string;
-    /** The item's own rules of engagement, which can only tighten the
-        rules its profile and platform run under. Omitted on insert, the
+    /** The item's own rules of engagement, which apply in place of the
+        rules its profile and platform resolve to. Omitted on insert, the
         item has none; omitted on update, the stored rules are kept;
         `null` on update clears them.
          */
     rulesOfEngagement?: {
-      /** The preset the item asks for. It applies only when it is at
-            least as cautious as the preset its profile and platform
-            resolve to.
+      /** The preset the item asks for. It applies in place of the preset
+            its profile and platform resolve to.
              */
       preset: "cautious" | "standard" | "brisk";
       /** Dials changed for this item only. Omitted when none were
@@ -13004,12 +13001,11 @@ export type GetContentItemApiResponse = /** status 200 Content item response */ 
   deletedAt?: string | null;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
-  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+  /** The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
    */
   rulesOfEngagement?: {
-    /** The preset the item asks for. It applies only when it is at
-        least as cautious as the preset its profile and platform
-        resolve to.
+    /** The preset the item asks for. It applies in place of the preset
+        its profile and platform resolve to.
          */
     preset: "cautious" | "standard" | "brisk";
     /** Dials changed for this item only. Omitted when none were
@@ -13089,12 +13085,11 @@ export type UpdateContentItemApiResponse = /** status 200 Content item updated *
   deletedAt?: string | null;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
-  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+  /** The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
    */
   rulesOfEngagement?: {
-    /** The preset the item asks for. It applies only when it is at
-        least as cautious as the preset its profile and platform
-        resolve to.
+    /** The preset the item asks for. It applies in place of the preset
+        its profile and platform resolve to.
          */
     preset: "cautious" | "standard" | "brisk";
     /** Dials changed for this item only. Omitted when none were
@@ -13168,15 +13163,14 @@ export type UpdateContentItemApiArg = {
         insert.
          */
     expectedFingerprint?: string;
-    /** The item's own rules of engagement, which can only tighten the
-        rules its profile and platform run under. Omitted on insert, the
+    /** The item's own rules of engagement, which apply in place of the
+        rules its profile and platform resolve to. Omitted on insert, the
         item has none; omitted on update, the stored rules are kept;
         `null` on update clears them.
          */
     rulesOfEngagement?: {
-      /** The preset the item asks for. It applies only when it is at
-            least as cautious as the preset its profile and platform
-            resolve to.
+      /** The preset the item asks for. It applies in place of the preset
+            its profile and platform resolve to.
              */
       preset: "cautious" | "standard" | "brisk";
       /** Dials changed for this item only. Omitted when none were
