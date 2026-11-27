@@ -6,7 +6,9 @@ package system
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
+	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 	connectionv1beta3 "github.com/meshery/schemas/models/v1beta3/connection"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -43,6 +45,24 @@ const (
 	RUNNING     ControllerStatusValue = "RUNNING"
 	UNDEPLOYED  ControllerStatusValue = "UNDEPLOYED"
 	UNKOWN      ControllerStatusValue = "UNKOWN"
+)
+
+// Defines values for MeshSyncResourceActivityActorType.
+const (
+	CONTROLLER  MeshSyncResourceActivityActorType = "CONTROLLER"
+	PROVISIONER MeshSyncResourceActivityActorType = "PROVISIONER"
+	SYSTEM      MeshSyncResourceActivityActorType = "SYSTEM"
+	UNKNOWN     MeshSyncResourceActivityActorType = "UNKNOWN"
+)
+
+// Defines values for MeshSyncResourceActivityEventType.
+const (
+	CREATED              MeshSyncResourceActivityEventType = "CREATED"
+	DELETED              MeshSyncResourceActivityEventType = "DELETED"
+	DRIFTDETECTED        MeshSyncResourceActivityEventType = "DRIFT_DETECTED"
+	INVENTORYDISCOVERY   MeshSyncResourceActivityEventType = "INVENTORY_DISCOVERY"
+	SECRETUPDATEOBSERVED MeshSyncResourceActivityEventType = "SECRET_UPDATE_OBSERVED"
+	UPDATED              MeshSyncResourceActivityEventType = "UPDATED"
 )
 
 // AddKubernetesConfigPayload Multipart form payload for importing a kubeconfig. `contexts` and `selectedContexts` are JSON-encoded strings because they travel as multipart form fields alongside the file.
@@ -184,6 +204,105 @@ type EmailTestResponse struct {
 type KubernetesPingResponse struct {
 	// ServerVersion Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version.
 	ServerVersion string `json:"server_version" yaml:"server_version"`
+}
+
+// MeshSyncResourceActivity A discrete lifecycle, discovery, drift, or configuration event in a Kubernetes resource timeline.
+type MeshSyncResourceActivity struct {
+	// Actor User, service account, or system component that initiated or observed the change.
+	Actor string `json:"actor" yaml:"actor"`
+
+	// ActorType Classification of the actor that initiated or observed the change.
+	ActorType MeshSyncResourceActivityActorType `json:"actorType" yaml:"actorType"`
+
+	// ChangeSummary Human-readable summary of modified fields or observed change details.
+	ChangeSummary *string `json:"changeSummary,omitempty" yaml:"changeSummary,omitempty"`
+
+	// ClusterId Meshery cluster or context ID where the resource resides.
+	ClusterId string `json:"clusterId" yaml:"clusterId"`
+
+	// CreatedAt Timestamp when the activity was recorded.
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// EventType Type of event recorded in the activity timeline.
+	EventType MeshSyncResourceActivityEventType `json:"eventType" yaml:"eventType"`
+
+	// Generation Kubernetes resource metadata generation counter.
+	Generation int64 `json:"generation" yaml:"generation"`
+
+	// Id Unique UUID identifier for the activity record.
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// IsInitialInventory Indicates whether this activity was recorded during initial inventory discovery.
+	IsInitialInventory bool `json:"isInitialInventory" yaml:"isInitialInventory"`
+
+	// PreviousSnapshotId Reference UUID to the preceding configuration snapshot for diff calculation.
+	PreviousSnapshotId *uuid.UUID `json:"previousSnapshotId,omitempty" yaml:"previousSnapshotId,omitempty"`
+
+	// ResourceId Standard Base64 encoded MeshSync resource identifier.
+	ResourceId string `json:"resourceId" yaml:"resourceId"`
+
+	// ResourceUid Kubernetes resource UID (metadata.uid).
+	ResourceUid string `json:"resourceUid" yaml:"resourceUid"`
+
+	// SnapshotId Reference UUID to the resource configuration snapshot associated with this activity.
+	SnapshotId *uuid.UUID `json:"snapshotId,omitempty" yaml:"snapshotId,omitempty"`
+}
+
+// MeshSyncResourceActivityActorType Classification of the actor that initiated or observed the change.
+type MeshSyncResourceActivityActorType string
+
+// MeshSyncResourceActivityEventType Type of event recorded in the activity timeline.
+type MeshSyncResourceActivityEventType string
+
+// MeshSyncResourceHistoryResponse Paginated response containing a resource's activity timeline.
+type MeshSyncResourceHistoryResponse struct {
+	// Activities List of activity timeline records for the resource.
+	Activities []MeshSyncResourceActivity `json:"activities" yaml:"activities"`
+
+	// Page Current zero-based page index.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of activity records per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of activity records matching the query filters.
+	TotalCount int64 `json:"totalCount" yaml:"totalCount"`
+}
+
+// MeshSyncResourceSnapshot An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.
+type MeshSyncResourceSnapshot struct {
+	// ClusterId Meshery cluster or context ID where the resource resides.
+	ClusterId string `json:"clusterId" yaml:"clusterId"`
+
+	// ConfigHash Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML.
+	ConfigHash string `json:"configHash" yaml:"configHash"`
+
+	// CreatedAt Timestamp when the snapshot was captured.
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Unique UUID identifier for the snapshot.
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// ManifestYaml Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted.
+	ManifestYaml string `json:"manifestYaml" yaml:"manifestYaml"`
+
+	// ResourceId Standard Base64 encoded MeshSync resource identifier.
+	ResourceId string `json:"resourceId" yaml:"resourceId"`
+}
+
+// MeshSyncResourceSnapshotDiff Unified diff and change metadata between two configuration snapshots of a Kubernetes resource.
+type MeshSyncResourceSnapshotDiff struct {
+	// BaseSnapshot An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.
+	BaseSnapshot MeshSyncResourceSnapshot `json:"baseSnapshot" yaml:"baseSnapshot"`
+
+	// Diff Unified diff output comparing baseSnapshot and targetSnapshot manifest YAML.
+	Diff string `json:"diff" yaml:"diff"`
+
+	// HasChanges True if there are textual differences between the base and target snapshot manifests.
+	HasChanges bool `json:"hasChanges" yaml:"hasChanges"`
+
+	// TargetSnapshot An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.
+	TargetSnapshot MeshSyncResourceSnapshot `json:"targetSnapshot" yaml:"targetSnapshot"`
 }
 
 // SystemDatabaseSummary Paginated summary of the Meshery server's embedded database.

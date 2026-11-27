@@ -264,6 +264,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/system/meshsync/resources/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Kubernetes resource activity history
+         * @description Returns the historical activity timeline for a Kubernetes resource identified by its standard Base64 encoded MeshSync resource identifier. The resourceId query parameter MUST be properly URL-encoded (e.g., slash '/' characters encoded as '%2F') to prevent path confusion. Access control and resource/context authorization are enforced server-side based on the authenticated session.
+         */
+        get: operations["getMeshSyncResourceHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/meshsync/snapshots/{snapshotId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Kubernetes resource snapshot by ID
+         * @description Retrieves an immutable sanitized configuration snapshot of a Kubernetes resource by its UUID. All sensitive data (e.g. Secret payload fields) are fail-closed redacted in the manifest. The server verifies that the authenticated user has access to the associated cluster context and resource.
+         */
+        get: operations["getMeshSyncResourceSnapshot"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/meshsync/snapshot-diffs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Compute unified diff between two Kubernetes resource snapshots
+         * @description Computes a unified diff between base and target configuration snapshots. Both snapshots MUST belong to the same underlying Kubernetes resource; attempts to compare snapshots from different resources are rejected with a 400 Bad Request error. The server verifies resource ownership and access permissions for the caller.
+         */
+        get: operations["getMeshSyncResourceSnapshotDiff"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -743,10 +803,219 @@ export interface components {
             /** @description Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version. */
             server_version: string;
         };
+        /** @description A discrete lifecycle, discovery, drift, or configuration event in a Kubernetes resource timeline. */
+        MeshSyncResourceActivity: {
+            /**
+             * Format: uuid
+             * @description Unique UUID identifier for the activity record.
+             */
+            id: string;
+            /** @description Standard Base64 encoded MeshSync resource identifier. */
+            resourceId: string;
+            /** @description Meshery cluster or context ID where the resource resides. */
+            clusterId: string;
+            /** @description Kubernetes resource UID (metadata.uid). */
+            resourceUid: string;
+            /**
+             * @description Type of event recorded in the activity timeline.
+             * @enum {string}
+             */
+            eventType: "CREATED" | "UPDATED" | "DELETED" | "DRIFT_DETECTED" | "INVENTORY_DISCOVERY" | "SECRET_UPDATE_OBSERVED";
+            /** @description User, service account, or system component that initiated or observed the change. */
+            actor: string;
+            /**
+             * @description Classification of the actor that initiated or observed the change.
+             * @enum {string}
+             */
+            actorType: "PROVISIONER" | "CONTROLLER" | "SYSTEM" | "UNKNOWN";
+            /** @description Human-readable summary of modified fields or observed change details. */
+            changeSummary?: string | null;
+            /**
+             * Format: uuid
+             * @description Reference UUID to the resource configuration snapshot associated with this activity.
+             */
+            snapshotId?: string | null;
+            /**
+             * Format: uuid
+             * @description Reference UUID to the preceding configuration snapshot for diff calculation.
+             */
+            previousSnapshotId?: string | null;
+            /**
+             * Format: int64
+             * @description Kubernetes resource metadata generation counter.
+             */
+            generation: number;
+            /** @description Indicates whether this activity was recorded during initial inventory discovery. */
+            isInitialInventory: boolean;
+            /**
+             * Format: date-time
+             * @description Timestamp when the activity was recorded.
+             */
+            createdAt: string;
+        };
+        /** @description An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted. */
+        MeshSyncResourceSnapshot: {
+            /**
+             * Format: uuid
+             * @description Unique UUID identifier for the snapshot.
+             */
+            id: string;
+            /** @description Standard Base64 encoded MeshSync resource identifier. */
+            resourceId: string;
+            /** @description Meshery cluster or context ID where the resource resides. */
+            clusterId: string;
+            /** @description Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+            configHash: string;
+            /** @description Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+            manifestYaml: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the snapshot was captured.
+             */
+            createdAt: string;
+        };
+        /** @description Unified diff and change metadata between two configuration snapshots of a Kubernetes resource. */
+        MeshSyncResourceSnapshotDiff: {
+            /** @description An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted. */
+            baseSnapshot: {
+                /**
+                 * Format: uuid
+                 * @description Unique UUID identifier for the snapshot.
+                 */
+                id: string;
+                /** @description Standard Base64 encoded MeshSync resource identifier. */
+                resourceId: string;
+                /** @description Meshery cluster or context ID where the resource resides. */
+                clusterId: string;
+                /** @description Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+                configHash: string;
+                /** @description Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+                manifestYaml: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the snapshot was captured.
+                 */
+                createdAt: string;
+            };
+            /** @description An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted. */
+            targetSnapshot: {
+                /**
+                 * Format: uuid
+                 * @description Unique UUID identifier for the snapshot.
+                 */
+                id: string;
+                /** @description Standard Base64 encoded MeshSync resource identifier. */
+                resourceId: string;
+                /** @description Meshery cluster or context ID where the resource resides. */
+                clusterId: string;
+                /** @description Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+                configHash: string;
+                /** @description Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+                manifestYaml: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the snapshot was captured.
+                 */
+                createdAt: string;
+            };
+            /** @description True if there are textual differences between the base and target snapshot manifests. */
+            hasChanges: boolean;
+            /** @description Unified diff output comparing baseSnapshot and targetSnapshot manifest YAML. */
+            diff: string;
+        };
+        /** @description Paginated response containing a resource's activity timeline. */
+        MeshSyncResourceHistoryResponse: {
+            /** @description Current zero-based page index. */
+            page: number;
+            /** @description Number of activity records per page. */
+            pageSize: number;
+            /**
+             * Format: int64
+             * @description Total number of activity records matching the query filters.
+             */
+            totalCount: number;
+            /** @description List of activity timeline records for the resource. */
+            activities: {
+                /**
+                 * Format: uuid
+                 * @description Unique UUID identifier for the activity record.
+                 */
+                id: string;
+                /** @description Standard Base64 encoded MeshSync resource identifier. */
+                resourceId: string;
+                /** @description Meshery cluster or context ID where the resource resides. */
+                clusterId: string;
+                /** @description Kubernetes resource UID (metadata.uid). */
+                resourceUid: string;
+                /**
+                 * @description Type of event recorded in the activity timeline.
+                 * @enum {string}
+                 */
+                eventType: "CREATED" | "UPDATED" | "DELETED" | "DRIFT_DETECTED" | "INVENTORY_DISCOVERY" | "SECRET_UPDATE_OBSERVED";
+                /** @description User, service account, or system component that initiated or observed the change. */
+                actor: string;
+                /**
+                 * @description Classification of the actor that initiated or observed the change.
+                 * @enum {string}
+                 */
+                actorType: "PROVISIONER" | "CONTROLLER" | "SYSTEM" | "UNKNOWN";
+                /** @description Human-readable summary of modified fields or observed change details. */
+                changeSummary?: string | null;
+                /**
+                 * Format: uuid
+                 * @description Reference UUID to the resource configuration snapshot associated with this activity.
+                 */
+                snapshotId?: string | null;
+                /**
+                 * Format: uuid
+                 * @description Reference UUID to the preceding configuration snapshot for diff calculation.
+                 */
+                previousSnapshotId?: string | null;
+                /**
+                 * Format: int64
+                 * @description Kubernetes resource metadata generation counter.
+                 */
+                generation: number;
+                /** @description Indicates whether this activity was recorded during initial inventory discovery. */
+                isInitialInventory: boolean;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the activity was recorded.
+                 */
+                createdAt: string;
+            }[];
+        };
     };
     responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Expired JWT token used or insufficient privilege */
         401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
             headers: {
                 [name: string]: unknown;
             };
@@ -1729,6 +1998,323 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getMeshSyncResourceHistory: {
+        parameters: {
+            query: {
+                /** @description Standard Base64 encoded MeshSync resource identifier. MUST be properly URL-encoded. */
+                resourceId: string;
+                /** @description Zero-based page index for activity timeline pagination. */
+                page?: number;
+                /** @description Number of activity records per page (maximum 100). */
+                pageSize?: number;
+                /** @description Filter activities by event type. */
+                eventType?: "CREATED" | "UPDATED" | "DELETED" | "DRIFT_DETECTED" | "INVENTORY_DISCOVERY" | "SECRET_UPDATE_OBSERVED";
+                /** @description Filter activities by actor identifier. */
+                actor?: string;
+                /** @description Filter activities by actor type. */
+                actorType?: "PROVISIONER" | "CONTROLLER" | "SYSTEM" | "UNKNOWN";
+                /** @description Sort direction for activities by creation timestamp (deterministic tie-breaking on id). */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Historical activities for the specified Kubernetes resource */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current zero-based page index. */
+                        page: number;
+                        /** @description Number of activity records per page. */
+                        pageSize: number;
+                        /**
+                         * Format: int64
+                         * @description Total number of activity records matching the query filters.
+                         */
+                        totalCount: number;
+                        /** @description List of activity timeline records for the resource. */
+                        activities: {
+                            /**
+                             * Format: uuid
+                             * @description Unique UUID identifier for the activity record.
+                             */
+                            id: string;
+                            /** @description Standard Base64 encoded MeshSync resource identifier. */
+                            resourceId: string;
+                            /** @description Meshery cluster or context ID where the resource resides. */
+                            clusterId: string;
+                            /** @description Kubernetes resource UID (metadata.uid). */
+                            resourceUid: string;
+                            /**
+                             * @description Type of event recorded in the activity timeline.
+                             * @enum {string}
+                             */
+                            eventType: "CREATED" | "UPDATED" | "DELETED" | "DRIFT_DETECTED" | "INVENTORY_DISCOVERY" | "SECRET_UPDATE_OBSERVED";
+                            /** @description User, service account, or system component that initiated or observed the change. */
+                            actor: string;
+                            /**
+                             * @description Classification of the actor that initiated or observed the change.
+                             * @enum {string}
+                             */
+                            actorType: "PROVISIONER" | "CONTROLLER" | "SYSTEM" | "UNKNOWN";
+                            /** @description Human-readable summary of modified fields or observed change details. */
+                            changeSummary?: string | null;
+                            /**
+                             * Format: uuid
+                             * @description Reference UUID to the resource configuration snapshot associated with this activity.
+                             */
+                            snapshotId?: string | null;
+                            /**
+                             * Format: uuid
+                             * @description Reference UUID to the preceding configuration snapshot for diff calculation.
+                             */
+                            previousSnapshotId?: string | null;
+                            /**
+                             * Format: int64
+                             * @description Kubernetes resource metadata generation counter.
+                             */
+                            generation: number;
+                            /** @description Indicates whether this activity was recorded during initial inventory discovery. */
+                            isInitialInventory: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the activity was recorded.
+                             */
+                            createdAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getMeshSyncResourceSnapshot: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Unique UUID of the snapshot to retrieve. */
+                snapshotId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sanitized Kubernetes resource snapshot */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique UUID identifier for the snapshot.
+                         */
+                        id: string;
+                        /** @description Standard Base64 encoded MeshSync resource identifier. */
+                        resourceId: string;
+                        /** @description Meshery cluster or context ID where the resource resides. */
+                        clusterId: string;
+                        /** @description Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+                        configHash: string;
+                        /** @description Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+                        manifestYaml: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the snapshot was captured.
+                         */
+                        createdAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getMeshSyncResourceSnapshotDiff: {
+        parameters: {
+            query: {
+                /** @description UUID of the base (older/reference) configuration snapshot. */
+                baseSnapshotId: string;
+                /** @description UUID of the target (newer/comparison) configuration snapshot. */
+                targetSnapshotId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Snapshot diff computation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted. */
+                        baseSnapshot: {
+                            /**
+                             * Format: uuid
+                             * @description Unique UUID identifier for the snapshot.
+                             */
+                            id: string;
+                            /** @description Standard Base64 encoded MeshSync resource identifier. */
+                            resourceId: string;
+                            /** @description Meshery cluster or context ID where the resource resides. */
+                            clusterId: string;
+                            /** @description Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+                            configHash: string;
+                            /** @description Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+                            manifestYaml: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the snapshot was captured.
+                             */
+                            createdAt: string;
+                        };
+                        /** @description An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted. */
+                        targetSnapshot: {
+                            /**
+                             * Format: uuid
+                             * @description Unique UUID identifier for the snapshot.
+                             */
+                            id: string;
+                            /** @description Standard Base64 encoded MeshSync resource identifier. */
+                            resourceId: string;
+                            /** @description Meshery cluster or context ID where the resource resides. */
+                            clusterId: string;
+                            /** @description Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+                            configHash: string;
+                            /** @description Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+                            manifestYaml: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the snapshot was captured.
+                             */
+                            createdAt: string;
+                        };
+                        /** @description True if there are textual differences between the base and target snapshot manifests. */
+                        hasChanges: boolean;
+                        /** @description Unified diff output comparing baseSnapshot and targetSnapshot manifest YAML. */
+                        diff: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };
