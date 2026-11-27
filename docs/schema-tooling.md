@@ -27,14 +27,24 @@ make baseline-consumer-graph  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-clou
 
 ## Advisory baseline
 
-`make audit-schemas` suppresses violations listed in `build/validate-schemas.advisory-baseline.txt` (one `file\tmessage` per line, `#` comments allowed). This file holds the *pre-canonical* backlog, so a `make audit-schemas` run reports only what is not in it. Advisory violations do not block CI: `--warn` runs exit 0, and the `advisory-audit` job runs `make audit-schemas-full`, which ignores the baseline.
+`make audit-schemas` suppresses violations listed in `build/validate-schemas.advisory-baseline.txt` (one `file\tmessage` per line, `#` comments allowed) and always exits 0. This file holds the *pre-canonical* backlog, so a `make audit-schemas` run reports only what is not in it. Advisory violations do not block the `advisory-audit` job, which runs `make audit-schemas-full` and ignores the baseline while Phases 2–3 migrate each resource.
+
+`make audit-schemas-gate` runs the same audit with `--warn-fail` and is the enforcing gate: it exits 1 on any blocking violation or any advisory not listed in the baseline. **New violations introduced after the baseline was last refreshed block CI** - the baseline is subtractive, not additive, and it is intentional that any new `json:"snake_case"` tag or missing `orgIdQuery` ref on a list endpoint fails the `advisory-gate` workflow.
 
 To resolve a baselined violation, migrate the affected resource to the canonical-casing contract and then refresh the baseline:
 
 ```bash
-make audit-schemas-style-full \
+set -o pipefail
+tmp=$(mktemp build/validate-schemas.advisory-baseline.txt.XXXXXX) || exit 1
+trap 'rm -f "$tmp"' EXIT
+make audit-schemas-style-full 2>&1 \
   | awk '/^  schemas\// { f=$1; next } /^    → / { sub(/^    → /, "", $0); if (f) print f "\t" $0 }' \
-  | sort -u > build/validate-schemas.advisory-baseline.txt
+  | sort -u > "$tmp"
+if [ $? -eq 0 ] && [ -s "$tmp" ]; then
+  mv "$tmp" build/validate-schemas.advisory-baseline.txt
+else
+  echo "Baseline refresh failed or produced no output; existing baseline unchanged."
+fi
 ```
 
 Do not add new entries to the baseline by hand - every entry must correspond to a real audit finding that is deferred to a Phase 3 migration.

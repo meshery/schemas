@@ -47,7 +47,7 @@ generate-site-index: site-data-generate
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts generate-enums-ts test-enums-ts test-generated-outputs publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk generate-python test-python generate-rust test-rust test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts generate-enums-ts test-enums-ts test-generated-outputs publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk generate-python test-python generate-rust test-rust test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full audit-schemas-gate
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -177,6 +177,10 @@ validate-schemas-strict:
 ## Report new advisory schema issues without failing the build (uses advisory baseline)
 audit-schemas:
 	go run ./cmd/validate-schemas --warn
+
+## Fail on any blocking violation or unbaselined advisory schema issue
+audit-schemas-gate:
+	go run ./cmd/validate-schemas --warn-fail
 
 ## Report the full actionable advisory schema backlog without failing the build
 audit-schemas-full:

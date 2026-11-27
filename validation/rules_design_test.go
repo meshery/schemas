@@ -892,3 +892,49 @@ func TestCheckRule47_Valid205(t *testing.T) {
 		t.Errorf("expected 0 violations for 205 response without content, got %d", len(vs))
 	}
 }
+
+// TestCreateResponseDescription_Deterministic guards the Rule 28 message
+// against map iteration order by comparing equivalent, independently
+// constructed operations without treating either matching description as
+// canonical.
+func TestCreateResponseDescription_Deterministic(t *testing.T) {
+	entries := []struct {
+		code        string
+		description string
+	}{
+		{
+			code:        "200",
+			description: "Claim renewed",
+		},
+		{
+			code:        "409",
+			description: "Conflict - another connection holds the resource's active claim, the claim is not active, or the caller may not renew or release it",
+		},
+	}
+
+	newOperation := func(reverse bool) *openapi3.Operation {
+		responses := openapi3.NewResponses()
+		for i := range entries {
+			index := i
+			if reverse {
+				index = len(entries) - 1 - i
+			}
+			entry := entries[index]
+			description := entry.description
+			responses.Set(entry.code, &openapi3.ResponseRef{
+				Value: &openapi3.Response{Description: &description},
+			})
+		}
+		return &openapi3.Operation{Responses: responses}
+	}
+
+	first := createResponseDescription(newOperation(false))
+	if first == "" {
+		t.Fatal("expected a matching response description")
+	}
+	for i := 0; i < 20; i++ {
+		if got := createResponseDescription(newOperation(i%2 == 1)); got != first {
+			t.Fatalf("run %d returned %q, want stable result %q", i, got, first)
+		}
+	}
+}

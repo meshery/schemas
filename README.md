@@ -920,6 +920,7 @@ The `validation/` Go package (invoked via `go run ./cmd/validate-schemas`) enfor
 | --- | --- | --- | --- | --- | --- |
 | Build default | `make validate-schemas` | Exit 1 | Silent | Silent | Silent |
 | Advisory audit | `make audit-schemas` | Exit 0 | Silent | Visible | Visible |
+| Advisory gate | `make audit-schemas-gate` | Exit 1 | Silent | Exit 1 | Exit 1 |
 | Full advisory backlog | `make audit-schemas-full` | Exit 0 | Silent | Visible | Visible |
 | Style debt report | `make audit-schemas-style-full` | Exit 0 | Visible | Visible | Visible |
 | Full debt report | `make audit-schemas-debt-full` | Exit 0 | Visible | Visible | Visible |
@@ -927,8 +928,8 @@ The `validation/` Go package (invoked via `go run ./cmd/validate-schemas`) enfor
 
 - **Blocking** (Rules 1-2, 5, 11-22, 27, 32-33): Always enforced. Break code generation or violate structural contracts.
 - **Style** (Rules 3-4, 6-10, 19): Naming conventions. Silent by default; visible with `--style-debt`; blocking with `--strict-consistency`.
-- **Design** (Rules 23-26, 30-31): API design patterns. Visible as advisories in `--warn` mode.
-- **Contract** (Rules 28-29): Published API contract checks (response codes, duplicate schemas). Visible as advisories in `--warn` mode.
+- **Design** (Rules 23-26, 30-31): API design patterns. Visible as advisories in `--warn` mode; `--warn-fail` fails on any advisory not covered by the baseline.
+- **Contract** (Rules 28-29): Published API contract checks (response codes, duplicate schemas). Visible as advisories in `--warn` mode; `--warn-fail` fails on any advisory not covered by the baseline.
 
 Run unit tests for the validation logic:
 

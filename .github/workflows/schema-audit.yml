@@ -148,6 +148,23 @@ jobs:
       - name: Run full schema audit
         run: make audit-schemas-full
 
+  advisory-gate:
+    name: Advisory schema gate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Fail on new advisory issues
+        run: make audit-schemas-gate
+
   # Read-only consumer audit: a non-zero exit from `make consumer-audit` fails
   # the build, while reported drift is surfaced in the PR comment/artifact for
   # review. This job does not pass Sheet credentials or call
