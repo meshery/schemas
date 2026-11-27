@@ -72,12 +72,18 @@ const python = {
   // Distribution identity for python/generated/pyproject.toml.
   distName: "meshery-schemas",
   packageName: "meshery_schemas",
-  // Generator warnings that are explicitly accepted. Empty during the
-  // pilot: the key construct generates warning-free. Entries are
+  // Generator warnings that are explicitly accepted. Entries are
   // normalized warning lines (see normalizePythonWarning in
   // build/generate-python.js); generation fails on any warning that is
   // not listed here.
-  warningAllowlist: [],
+  //
+  // Issue #1242: Raw binary/YAML download endpoints are out of scope for
+  // generated Python clients (openapi-python-client omits application/yaml
+  // and application/wasm responses). Recorded explicitly for Phase 2.
+  warningAllowlist: [
+    "WARNING parsing GET /api/content/patterns/download/{designId} within design_designs.",
+    "WARNING parsing GET /api/content/filters/download/{filterId} within filter_filters.",
+  ],
 };
 
 /**
