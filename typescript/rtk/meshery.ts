@@ -613,6 +613,41 @@ const injectedRtkApi = api
         }),
         providesTags: ["System_API_System"],
       }),
+      getMeshSyncResourceHistory: build.query<GetMeshSyncResourceHistoryApiResponse, GetMeshSyncResourceHistoryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/meshsync/resources/history`,
+          params: {
+            resourceId: queryArg?.resourceId,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            eventType: queryArg?.eventType,
+            actor: queryArg?.actor,
+            actorType: queryArg?.actorType,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      getMeshSyncResourceSnapshot: build.query<
+        GetMeshSyncResourceSnapshotApiResponse,
+        GetMeshSyncResourceSnapshotApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/system/meshsync/snapshots/${queryArg.snapshotId}` }),
+        providesTags: ["System_API_System"],
+      }),
+      getMeshSyncResourceSnapshotDiff: build.query<
+        GetMeshSyncResourceSnapshotDiffApiResponse,
+        GetMeshSyncResourceSnapshotDiffApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/system/meshsync/snapshot-diffs`,
+          params: {
+            baseSnapshotId: queryArg?.baseSnapshotId,
+            targetSnapshotId: queryArg?.targetSnapshotId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
       getUserCredentials: build.query<GetUserCredentialsApiResponse, GetUserCredentialsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/credentials`,
@@ -10793,6 +10828,126 @@ export type SubscribeControllersStatusApiArg = {
   /** Kubernetes connection IDs to watch. Repeatable (connectionIds=<id>&connectionIds=<id>). */
   connectionIds?: string[];
 };
+export type GetMeshSyncResourceHistoryApiResponse =
+  /** status 200 Historical activities for the specified Kubernetes resource */ {
+    /** Current zero-based page index. */
+    page: number;
+    /** Number of activity records per page. */
+    pageSize: number;
+    /** Total number of activity records matching the query filters. */
+    totalCount: number;
+    /** List of activity timeline records for the resource. */
+    activities: {
+      /** Unique UUID identifier for the activity record. */
+      id: string;
+      /** Standard Base64 encoded MeshSync resource identifier. */
+      resourceId: string;
+      /** Meshery cluster or context ID where the resource resides. */
+      clusterId: string;
+      /** Kubernetes resource UID (metadata.uid). */
+      resourceUid: string;
+      /** Type of event recorded in the activity timeline. */
+      eventType:
+        | "CREATED"
+        | "UPDATED"
+        | "DELETED"
+        | "DRIFT_DETECTED"
+        | "INVENTORY_DISCOVERY"
+        | "SECRET_UPDATE_OBSERVED";
+      /** User, service account, or system component that initiated or observed the change. */
+      actor: string;
+      /** Classification of the actor that initiated or observed the change. */
+      actorType: "PROVISIONER" | "CONTROLLER" | "SYSTEM" | "UNKNOWN";
+      /** Human-readable summary of modified fields or observed change details. */
+      changeSummary?: string | null;
+      /** Reference UUID to the resource configuration snapshot associated with this activity. */
+      snapshotId?: string | null;
+      /** Reference UUID to the preceding configuration snapshot for diff calculation. */
+      previousSnapshotId?: string | null;
+      /** Kubernetes resource metadata generation counter. */
+      generation: number;
+      /** Indicates whether this activity was recorded during initial inventory discovery. */
+      isInitialInventory: boolean;
+      /** Timestamp when the activity was recorded. */
+      createdAt: string;
+    }[];
+  };
+export type GetMeshSyncResourceHistoryApiArg = {
+  /** Standard Base64 encoded MeshSync resource identifier. MUST be properly URL-encoded. */
+  resourceId: string;
+  /** Zero-based page index for activity timeline pagination. */
+  page?: number;
+  /** Number of activity records per page (maximum 100). */
+  pageSize?: number;
+  /** Filter activities by event type. */
+  eventType?: "CREATED" | "UPDATED" | "DELETED" | "DRIFT_DETECTED" | "INVENTORY_DISCOVERY" | "SECRET_UPDATE_OBSERVED";
+  /** Filter activities by actor identifier. */
+  actor?: string;
+  /** Filter activities by actor type. */
+  actorType?: "PROVISIONER" | "CONTROLLER" | "SYSTEM" | "UNKNOWN";
+  /** Sort direction for activities by creation timestamp (deterministic tie-breaking on id). */
+  order?: "asc" | "desc";
+};
+export type GetMeshSyncResourceSnapshotApiResponse = /** status 200 Sanitized Kubernetes resource snapshot */ {
+  /** Unique UUID identifier for the snapshot. */
+  id: string;
+  /** Standard Base64 encoded MeshSync resource identifier. */
+  resourceId: string;
+  /** Meshery cluster or context ID where the resource resides. */
+  clusterId: string;
+  /** Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+  configHash: string;
+  /** Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+  manifestYaml: string;
+  /** Timestamp when the snapshot was captured. */
+  createdAt: string;
+};
+export type GetMeshSyncResourceSnapshotApiArg = {
+  /** Unique UUID of the snapshot to retrieve. */
+  snapshotId: string;
+};
+export type GetMeshSyncResourceSnapshotDiffApiResponse = /** status 200 Snapshot diff computation result */ {
+  /** An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted. */
+  baseSnapshot: {
+    /** Unique UUID identifier for the snapshot. */
+    id: string;
+    /** Standard Base64 encoded MeshSync resource identifier. */
+    resourceId: string;
+    /** Meshery cluster or context ID where the resource resides. */
+    clusterId: string;
+    /** Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+    configHash: string;
+    /** Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+    manifestYaml: string;
+    /** Timestamp when the snapshot was captured. */
+    createdAt: string;
+  };
+  /** An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted. */
+  targetSnapshot: {
+    /** Unique UUID identifier for the snapshot. */
+    id: string;
+    /** Standard Base64 encoded MeshSync resource identifier. */
+    resourceId: string;
+    /** Meshery cluster or context ID where the resource resides. */
+    clusterId: string;
+    /** Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML. */
+    configHash: string;
+    /** Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted. */
+    manifestYaml: string;
+    /** Timestamp when the snapshot was captured. */
+    createdAt: string;
+  };
+  /** True if there are textual differences between the base and target snapshot manifests. */
+  hasChanges: boolean;
+  /** Unified diff output comparing baseSnapshot and targetSnapshot manifest YAML. */
+  diff: string;
+};
+export type GetMeshSyncResourceSnapshotDiffApiArg = {
+  /** UUID of the base (older/reference) configuration snapshot. */
+  baseSnapshotId: string;
+  /** UUID of the target (newer/comparison) configuration snapshot. */
+  targetSnapshotId: string;
+};
 export type GetUserCredentialsApiResponse = /** status 200 Credentials response */ {
   /** The credentials returned on the current page. */
   credentials: {
@@ -18904,6 +19059,12 @@ export const {
   useLazyGetControllerDiagnosticsQuery,
   useSubscribeControllersStatusQuery,
   useLazySubscribeControllersStatusQuery,
+  useGetMeshSyncResourceHistoryQuery,
+  useLazyGetMeshSyncResourceHistoryQuery,
+  useGetMeshSyncResourceSnapshotQuery,
+  useLazyGetMeshSyncResourceSnapshotQuery,
+  useGetMeshSyncResourceSnapshotDiffQuery,
+  useLazyGetMeshSyncResourceSnapshotDiffQuery,
   useGetUserCredentialsQuery,
   useLazyGetUserCredentialsQuery,
   useSaveUserCredentialMutation,

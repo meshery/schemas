@@ -2054,12 +2054,661 @@ const SystemSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "/api/system/meshsync/resources/history": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Get Kubernetes resource activity history",
+        "description": "Returns the historical activity timeline for a Kubernetes resource identified by its standard Base64 encoded MeshSync resource identifier. The resourceId query parameter MUST be properly URL-encoded (e.g., slash '/' characters encoded as '%2F') to prevent path confusion. Access control and resource/context authorization are enforced server-side based on the authenticated session.",
+        "operationId": "getMeshSyncResourceHistory",
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "query",
+            "description": "Standard Base64 encoded MeshSync resource identifier. MUST be properly URL-encoded.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-id-format": "external",
+              "maxLength": 512
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index for activity timeline pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of activity records per page (maximum 100).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "eventType",
+            "in": "query",
+            "description": "Filter activities by event type.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CREATED",
+                "UPDATED",
+                "DELETED",
+                "DRIFT_DETECTED",
+                "INVENTORY_DISCOVERY",
+                "SECRET_UPDATE_OBSERVED"
+              ]
+            }
+          },
+          {
+            "name": "actor",
+            "in": "query",
+            "description": "Filter activities by actor identifier.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "actorType",
+            "in": "query",
+            "description": "Filter activities by actor type.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PROVISIONER",
+                "CONTROLLER",
+                "SYSTEM",
+                "UNKNOWN"
+              ]
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort direction for activities by creation timestamp (deterministic tie-breaking on id).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historical activities for the specified Kubernetes resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated response containing a resource's activity timeline.",
+                  "additionalProperties": false,
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "activities"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Current zero-based page index."
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100,
+                      "description": "Number of activity records per page."
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "format": "int64",
+                      "minimum": 0,
+                      "description": "Total number of activity records matching the query filters."
+                    },
+                    "activities": {
+                      "type": "array",
+                      "description": "List of activity timeline records for the resource.",
+                      "items": {
+                        "type": "object",
+                        "description": "A discrete lifecycle, discovery, drift, or configuration event in a Kubernetes resource timeline.",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "resourceId",
+                          "clusterId",
+                          "resourceUid",
+                          "eventType",
+                          "actor",
+                          "actorType",
+                          "generation",
+                          "isInitialInventory",
+                          "createdAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Unique UUID identifier for the activity record."
+                          },
+                          "resourceId": {
+                            "type": "string",
+                            "description": "Standard Base64 encoded MeshSync resource identifier.",
+                            "x-id-format": "external",
+                            "maxLength": 512
+                          },
+                          "clusterId": {
+                            "type": "string",
+                            "description": "Meshery cluster or context ID where the resource resides.",
+                            "x-id-format": "external",
+                            "maxLength": 255
+                          },
+                          "resourceUid": {
+                            "type": "string",
+                            "description": "Kubernetes resource UID (metadata.uid).",
+                            "maxLength": 255
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "description": "Type of event recorded in the activity timeline.",
+                            "enum": [
+                              "CREATED",
+                              "UPDATED",
+                              "DELETED",
+                              "DRIFT_DETECTED",
+                              "INVENTORY_DISCOVERY",
+                              "SECRET_UPDATE_OBSERVED"
+                            ]
+                          },
+                          "actor": {
+                            "type": "string",
+                            "description": "User, service account, or system component that initiated or observed the change.",
+                            "maxLength": 255
+                          },
+                          "actorType": {
+                            "type": "string",
+                            "description": "Classification of the actor that initiated or observed the change.",
+                            "enum": [
+                              "PROVISIONER",
+                              "CONTROLLER",
+                              "SYSTEM",
+                              "UNKNOWN"
+                            ]
+                          },
+                          "changeSummary": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Human-readable summary of modified fields or observed change details.",
+                            "maxLength": 65535,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "changeSummary,omitempty"
+                            }
+                          },
+                          "snapshotId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true,
+                            "description": "Reference UUID to the resource configuration snapshot associated with this activity.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "snapshotId,omitempty"
+                            }
+                          },
+                          "previousSnapshotId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "nullable": true,
+                            "description": "Reference UUID to the preceding configuration snapshot for diff calculation.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "previousSnapshotId,omitempty"
+                            }
+                          },
+                          "generation": {
+                            "type": "integer",
+                            "format": "int64",
+                            "minimum": 0,
+                            "description": "Kubernetes resource metadata generation counter."
+                          },
+                          "isInitialInventory": {
+                            "type": "boolean",
+                            "description": "Indicates whether this activity was recorded during initial inventory discovery."
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the activity was recorded."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/meshsync/snapshots/{snapshotId}": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Get Kubernetes resource snapshot by ID",
+        "description": "Retrieves an immutable sanitized configuration snapshot of a Kubernetes resource by its UUID. All sensitive data (e.g. Secret payload fields) are fail-closed redacted in the manifest. The server verifies that the authenticated user has access to the associated cluster context and resource.",
+        "operationId": "getMeshSyncResourceSnapshot",
+        "parameters": [
+          {
+            "name": "snapshotId",
+            "in": "path",
+            "description": "Unique UUID of the snapshot to retrieve.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sanitized Kubernetes resource snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "resourceId",
+                    "clusterId",
+                    "configHash",
+                    "manifestYaml",
+                    "createdAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "Unique UUID identifier for the snapshot."
+                    },
+                    "resourceId": {
+                      "type": "string",
+                      "description": "Standard Base64 encoded MeshSync resource identifier.",
+                      "x-id-format": "external",
+                      "maxLength": 512
+                    },
+                    "clusterId": {
+                      "type": "string",
+                      "description": "Meshery cluster or context ID where the resource resides.",
+                      "x-id-format": "external",
+                      "maxLength": 255
+                    },
+                    "configHash": {
+                      "type": "string",
+                      "description": "Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML.",
+                      "maxLength": 64
+                    },
+                    "manifestYaml": {
+                      "type": "string",
+                      "description": "Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted.",
+                      "maxLength": 10485760
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp when the snapshot was captured."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/meshsync/snapshot-diffs": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Compute unified diff between two Kubernetes resource snapshots",
+        "description": "Computes a unified diff between base and target configuration snapshots. Both snapshots MUST belong to the same underlying Kubernetes resource; attempts to compare snapshots from different resources are rejected with a 400 Bad Request error. The server verifies resource ownership and access permissions for the caller.",
+        "operationId": "getMeshSyncResourceSnapshotDiff",
+        "parameters": [
+          {
+            "name": "baseSnapshotId",
+            "in": "query",
+            "description": "UUID of the base (older/reference) configuration snapshot.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "targetSnapshotId",
+            "in": "query",
+            "description": "UUID of the target (newer/comparison) configuration snapshot.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Snapshot diff computation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Unified diff and change metadata between two configuration snapshots of a Kubernetes resource.",
+                  "additionalProperties": false,
+                  "required": [
+                    "baseSnapshot",
+                    "targetSnapshot",
+                    "hasChanges",
+                    "diff"
+                  ],
+                  "properties": {
+                    "baseSnapshot": {
+                      "type": "object",
+                      "description": "An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "resourceId",
+                        "clusterId",
+                        "configHash",
+                        "manifestYaml",
+                        "createdAt"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Unique UUID identifier for the snapshot."
+                        },
+                        "resourceId": {
+                          "type": "string",
+                          "description": "Standard Base64 encoded MeshSync resource identifier.",
+                          "x-id-format": "external",
+                          "maxLength": 512
+                        },
+                        "clusterId": {
+                          "type": "string",
+                          "description": "Meshery cluster or context ID where the resource resides.",
+                          "x-id-format": "external",
+                          "maxLength": 255
+                        },
+                        "configHash": {
+                          "type": "string",
+                          "description": "Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML.",
+                          "maxLength": 64
+                        },
+                        "manifestYaml": {
+                          "type": "string",
+                          "description": "Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted.",
+                          "maxLength": 10485760
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp when the snapshot was captured."
+                        }
+                      }
+                    },
+                    "targetSnapshot": {
+                      "type": "object",
+                      "description": "An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "resourceId",
+                        "clusterId",
+                        "configHash",
+                        "manifestYaml",
+                        "createdAt"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Unique UUID identifier for the snapshot."
+                        },
+                        "resourceId": {
+                          "type": "string",
+                          "description": "Standard Base64 encoded MeshSync resource identifier.",
+                          "x-id-format": "external",
+                          "maxLength": 512
+                        },
+                        "clusterId": {
+                          "type": "string",
+                          "description": "Meshery cluster or context ID where the resource resides.",
+                          "x-id-format": "external",
+                          "maxLength": 255
+                        },
+                        "configHash": {
+                          "type": "string",
+                          "description": "Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML.",
+                          "maxLength": 64
+                        },
+                        "manifestYaml": {
+                          "type": "string",
+                          "description": "Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted.",
+                          "maxLength": 10485760
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp when the snapshot was captured."
+                        }
+                      }
+                    },
+                    "hasChanges": {
+                      "type": "boolean",
+                      "description": "True if there are textual differences between the base and target snapshot manifests."
+                    },
+                    "diff": {
+                      "type": "string",
+                      "description": "Unified diff output comparing baseSnapshot and targetSnapshot manifest YAML.",
+                      "maxLength": 10485760
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "responses": {
+      "400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "401": {
         "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Result not found",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
         "content": {
           "text/plain": {
             "schema": {
@@ -3443,6 +4092,423 @@ const SystemSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version.",
             "maxLength": 128
+          }
+        }
+      },
+      "MeshSyncResourceActivity": {
+        "type": "object",
+        "description": "A discrete lifecycle, discovery, drift, or configuration event in a Kubernetes resource timeline.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "resourceId",
+          "clusterId",
+          "resourceUid",
+          "eventType",
+          "actor",
+          "actorType",
+          "generation",
+          "isInitialInventory",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique UUID identifier for the activity record."
+          },
+          "resourceId": {
+            "type": "string",
+            "description": "Standard Base64 encoded MeshSync resource identifier.",
+            "x-id-format": "external",
+            "maxLength": 512
+          },
+          "clusterId": {
+            "type": "string",
+            "description": "Meshery cluster or context ID where the resource resides.",
+            "x-id-format": "external",
+            "maxLength": 255
+          },
+          "resourceUid": {
+            "type": "string",
+            "description": "Kubernetes resource UID (metadata.uid).",
+            "maxLength": 255
+          },
+          "eventType": {
+            "type": "string",
+            "description": "Type of event recorded in the activity timeline.",
+            "enum": [
+              "CREATED",
+              "UPDATED",
+              "DELETED",
+              "DRIFT_DETECTED",
+              "INVENTORY_DISCOVERY",
+              "SECRET_UPDATE_OBSERVED"
+            ]
+          },
+          "actor": {
+            "type": "string",
+            "description": "User, service account, or system component that initiated or observed the change.",
+            "maxLength": 255
+          },
+          "actorType": {
+            "type": "string",
+            "description": "Classification of the actor that initiated or observed the change.",
+            "enum": [
+              "PROVISIONER",
+              "CONTROLLER",
+              "SYSTEM",
+              "UNKNOWN"
+            ]
+          },
+          "changeSummary": {
+            "type": "string",
+            "nullable": true,
+            "description": "Human-readable summary of modified fields or observed change details.",
+            "maxLength": 65535,
+            "x-oapi-codegen-extra-tags": {
+              "json": "changeSummary,omitempty"
+            }
+          },
+          "snapshotId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Reference UUID to the resource configuration snapshot associated with this activity.",
+            "x-oapi-codegen-extra-tags": {
+              "json": "snapshotId,omitempty"
+            }
+          },
+          "previousSnapshotId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Reference UUID to the preceding configuration snapshot for diff calculation.",
+            "x-oapi-codegen-extra-tags": {
+              "json": "previousSnapshotId,omitempty"
+            }
+          },
+          "generation": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Kubernetes resource metadata generation counter."
+          },
+          "isInitialInventory": {
+            "type": "boolean",
+            "description": "Indicates whether this activity was recorded during initial inventory discovery."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the activity was recorded."
+          }
+        }
+      },
+      "MeshSyncResourceSnapshot": {
+        "type": "object",
+        "description": "An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "resourceId",
+          "clusterId",
+          "configHash",
+          "manifestYaml",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique UUID identifier for the snapshot."
+          },
+          "resourceId": {
+            "type": "string",
+            "description": "Standard Base64 encoded MeshSync resource identifier.",
+            "x-id-format": "external",
+            "maxLength": 512
+          },
+          "clusterId": {
+            "type": "string",
+            "description": "Meshery cluster or context ID where the resource resides.",
+            "x-id-format": "external",
+            "maxLength": 255
+          },
+          "configHash": {
+            "type": "string",
+            "description": "Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML.",
+            "maxLength": 64
+          },
+          "manifestYaml": {
+            "type": "string",
+            "description": "Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted.",
+            "maxLength": 10485760
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the snapshot was captured."
+          }
+        }
+      },
+      "MeshSyncResourceSnapshotDiff": {
+        "type": "object",
+        "description": "Unified diff and change metadata between two configuration snapshots of a Kubernetes resource.",
+        "additionalProperties": false,
+        "required": [
+          "baseSnapshot",
+          "targetSnapshot",
+          "hasChanges",
+          "diff"
+        ],
+        "properties": {
+          "baseSnapshot": {
+            "type": "object",
+            "description": "An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "resourceId",
+              "clusterId",
+              "configHash",
+              "manifestYaml",
+              "createdAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique UUID identifier for the snapshot."
+              },
+              "resourceId": {
+                "type": "string",
+                "description": "Standard Base64 encoded MeshSync resource identifier.",
+                "x-id-format": "external",
+                "maxLength": 512
+              },
+              "clusterId": {
+                "type": "string",
+                "description": "Meshery cluster or context ID where the resource resides.",
+                "x-id-format": "external",
+                "maxLength": 255
+              },
+              "configHash": {
+                "type": "string",
+                "description": "Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML.",
+                "maxLength": 64
+              },
+              "manifestYaml": {
+                "type": "string",
+                "description": "Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted.",
+                "maxLength": 10485760
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when the snapshot was captured."
+              }
+            }
+          },
+          "targetSnapshot": {
+            "type": "object",
+            "description": "An immutable, content-addressable historical configuration snapshot of a Kubernetes resource with sensitive data fail-closed redacted.",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "resourceId",
+              "clusterId",
+              "configHash",
+              "manifestYaml",
+              "createdAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique UUID identifier for the snapshot."
+              },
+              "resourceId": {
+                "type": "string",
+                "description": "Standard Base64 encoded MeshSync resource identifier.",
+                "x-id-format": "external",
+                "maxLength": 512
+              },
+              "clusterId": {
+                "type": "string",
+                "description": "Meshery cluster or context ID where the resource resides.",
+                "x-id-format": "external",
+                "maxLength": 255
+              },
+              "configHash": {
+                "type": "string",
+                "description": "Cryptographic hash (SHA-256) of the canonicalized, sanitized manifest YAML.",
+                "maxLength": 64
+              },
+              "manifestYaml": {
+                "type": "string",
+                "description": "Canonical YAML manifest of the Kubernetes resource with sensitive fields fail-closed redacted.",
+                "maxLength": 10485760
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when the snapshot was captured."
+              }
+            }
+          },
+          "hasChanges": {
+            "type": "boolean",
+            "description": "True if there are textual differences between the base and target snapshot manifests."
+          },
+          "diff": {
+            "type": "string",
+            "description": "Unified diff output comparing baseSnapshot and targetSnapshot manifest YAML.",
+            "maxLength": 10485760
+          }
+        }
+      },
+      "MeshSyncResourceHistoryResponse": {
+        "type": "object",
+        "description": "Paginated response containing a resource's activity timeline.",
+        "additionalProperties": false,
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "activities"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Current zero-based page index."
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Number of activity records per page."
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Total number of activity records matching the query filters."
+          },
+          "activities": {
+            "type": "array",
+            "description": "List of activity timeline records for the resource.",
+            "items": {
+              "type": "object",
+              "description": "A discrete lifecycle, discovery, drift, or configuration event in a Kubernetes resource timeline.",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "resourceId",
+                "clusterId",
+                "resourceUid",
+                "eventType",
+                "actor",
+                "actorType",
+                "generation",
+                "isInitialInventory",
+                "createdAt"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Unique UUID identifier for the activity record."
+                },
+                "resourceId": {
+                  "type": "string",
+                  "description": "Standard Base64 encoded MeshSync resource identifier.",
+                  "x-id-format": "external",
+                  "maxLength": 512
+                },
+                "clusterId": {
+                  "type": "string",
+                  "description": "Meshery cluster or context ID where the resource resides.",
+                  "x-id-format": "external",
+                  "maxLength": 255
+                },
+                "resourceUid": {
+                  "type": "string",
+                  "description": "Kubernetes resource UID (metadata.uid).",
+                  "maxLength": 255
+                },
+                "eventType": {
+                  "type": "string",
+                  "description": "Type of event recorded in the activity timeline.",
+                  "enum": [
+                    "CREATED",
+                    "UPDATED",
+                    "DELETED",
+                    "DRIFT_DETECTED",
+                    "INVENTORY_DISCOVERY",
+                    "SECRET_UPDATE_OBSERVED"
+                  ]
+                },
+                "actor": {
+                  "type": "string",
+                  "description": "User, service account, or system component that initiated or observed the change.",
+                  "maxLength": 255
+                },
+                "actorType": {
+                  "type": "string",
+                  "description": "Classification of the actor that initiated or observed the change.",
+                  "enum": [
+                    "PROVISIONER",
+                    "CONTROLLER",
+                    "SYSTEM",
+                    "UNKNOWN"
+                  ]
+                },
+                "changeSummary": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Human-readable summary of modified fields or observed change details.",
+                  "maxLength": 65535,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "changeSummary,omitempty"
+                  }
+                },
+                "snapshotId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true,
+                  "description": "Reference UUID to the resource configuration snapshot associated with this activity.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "snapshotId,omitempty"
+                  }
+                },
+                "previousSnapshotId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true,
+                  "description": "Reference UUID to the preceding configuration snapshot for diff calculation.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "previousSnapshotId,omitempty"
+                  }
+                },
+                "generation": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0,
+                  "description": "Kubernetes resource metadata generation counter."
+                },
+                "isInitialInventory": {
+                  "type": "boolean",
+                  "description": "Indicates whether this activity was recorded during initial inventory discovery."
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp when the activity was recorded."
+                }
+              }
+            }
           }
         }
       }
