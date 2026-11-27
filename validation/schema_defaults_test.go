@@ -36,22 +36,7 @@ func TestSchemaDefaultsMatchDeclaredType(t *testing.T) {
 		if err != nil {
 			t.Fatalf("load %s: %v", rel, err)
 		}
-		if doc.Components == nil {
-			continue
-		}
-		seen := map[*openapi3.Schema]bool{}
-		for _, name := range sortedSchemaNames(doc.Components.Schemas) {
-			ref := doc.Components.Schemas[name]
-			walkSchemaDefaults(ref, rel+" "+name, seen, func(where string, schema *openapi3.Schema) {
-				if schema.Type == nil || len(*schema.Type) == 0 {
-					return
-				}
-				got := jsonTypeOf(schema.Default)
-				if !defaultTypeAllowed(*schema.Type, got) {
-					violations = append(violations, where+": default is "+got+", schema type is "+strings.Join(*schema.Type, "|"))
-				}
-			})
-		}
+		violations = append(violations, defaultTypeViolations(doc, rel)...)
 	}
 
 	if len(violations) > 0 {
@@ -59,6 +44,32 @@ func TestSchemaDefaultsMatchDeclaredType(t *testing.T) {
 		t.Errorf("%d schema default(s) do not match their schema's declared type:\n  %s",
 			len(violations), strings.Join(violations, "\n  "))
 	}
+}
+
+// defaultTypeViolations reports every schema reachable from doc's component
+// schemas whose default is of a JSON type the schema does not declare.
+//
+// Blind spots, by design: a schema that declares no `type` is skipped, since
+// there is nothing to compare against, and an explicit `default: null` is
+// indistinguishable from no default once loaded, so it is never checked.
+func defaultTypeViolations(doc *openapi3.T, label string) []string {
+	if doc.Components == nil {
+		return nil
+	}
+	var violations []string
+	seen := map[*openapi3.Schema]bool{}
+	for _, name := range sortedSchemaNames(doc.Components.Schemas) {
+		walkSchemaDefaults(doc.Components.Schemas[name], label+" "+name, seen, func(where string, schema *openapi3.Schema) {
+			if schema.Type == nil || len(*schema.Type) == 0 {
+				return
+			}
+			got := jsonTypeOf(schema.Default)
+			if !defaultTypeAllowed(*schema.Type, got) {
+				violations = append(violations, where+": default is "+got+", schema type is "+strings.Join(*schema.Type, "|"))
+			}
+		})
+	}
+	return violations
 }
 
 // jsonTypeOf names the JSON Schema type of a decoded YAML/JSON value.
