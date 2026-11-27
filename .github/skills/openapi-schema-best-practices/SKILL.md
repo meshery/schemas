@@ -722,7 +722,7 @@ make
 
 ### What the validator enforces
 
-The validator (`validation/` Go package, using kin-openapi for spec parsing) checks 41 rules covering every naming convention, structural requirement, code-generation annotation, template accuracy, and API design principle. By default, blocking violations fail the build (exit 1). Use `--warn` to report advisories without failing (exit 0). Deprecated constructs (`x-deprecated: true`) are skipped entirely.
+The validator (`validation/` Go package, using kin-openapi for spec parsing) checks 41 rules covering every naming convention, structural requirement, code-generation annotation, template accuracy, and API design principle. By default, blocking violations fail the build (exit 1). Use `--warn` to report advisories without failing (exit 0). Deprecated constructs (`x-deprecated: true`) are audited with blocking rules only; see `docs/schema-review-checklist.md` for the applicable rule set.
 
 **Naming rules (1-11):**
 - `additionalProperties: false` on entity schemas
