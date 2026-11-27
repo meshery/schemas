@@ -1358,65 +1358,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                         "additionalProperties": true
                                                       }
-                                                    },
-                                                    "default": [
-                                                      {
-                                                        "description": "Configure the visual styles for the component",
-                                                        "displayName": "Styling",
-                                                        "entityState": [
-                                                          "declaration"
-                                                        ],
-                                                        "key": "",
-                                                        "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                                        "status": "enabled",
-                                                        "subType": "",
-                                                        "type": "style",
-                                                        "version": "0.7.0"
-                                                      },
-                                                      {
-                                                        "description": "Change the shape of the component",
-                                                        "displayName": "Change Shape",
-                                                        "entityState": [
-                                                          "declaration"
-                                                        ],
-                                                        "key": "",
-                                                        "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                                        "status": "enabled",
-                                                        "subType": "shape",
-                                                        "type": "style",
-                                                        "version": "0.7.0"
-                                                      },
-                                                      {
-                                                        "description": "Drag and Drop a component into a parent component in graph view",
-                                                        "displayName": "Compound Drag And Drop",
-                                                        "entityState": [
-                                                          "declaration"
-                                                        ],
-                                                        "key": "",
-                                                        "kind": "interaction",
-                                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                                        "status": "enabled",
-                                                        "subType": "compoundDnd",
-                                                        "type": "graph",
-                                                        "version": "0.7.0"
-                                                      },
-                                                      {
-                                                        "description": "Add text to nodes body",
-                                                        "displayName": "Body Text",
-                                                        "entityState": [
-                                                          "declaration"
-                                                        ],
-                                                        "key": "",
-                                                        "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                                        "status": "enabled",
-                                                        "subType": "body-text",
-                                                        "type": "style",
-                                                        "version": "0.7.0"
-                                                      }
-                                                    ]
+                                                    }
                                                   },
                                                   "x-order": 1
                                                 },
@@ -2266,65 +2208,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                 "additionalProperties": true
                                               }
-                                            },
-                                            "default": [
-                                              {
-                                                "description": "Configure the visual styles for the component",
-                                                "displayName": "Styling",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Change the shape of the component",
-                                                "displayName": "Change Shape",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "shape",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Drag and Drop a component into a parent component in graph view",
-                                                "displayName": "Compound Drag And Drop",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "interaction",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "compoundDnd",
-                                                "type": "graph",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Add text to nodes body",
-                                                "displayName": "Body Text",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "body-text",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              }
-                                            ]
+                                            }
                                           },
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "type:bytes;serializer:json",
@@ -2874,65 +2758,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                 "additionalProperties": true
                                               }
-                                            },
-                                            "default": [
-                                              {
-                                                "description": "Configure the visual styles for the component",
-                                                "displayName": "Styling",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Change the shape of the component",
-                                                "displayName": "Change Shape",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "shape",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Drag and Drop a component into a parent component in graph view",
-                                                "displayName": "Compound Drag And Drop",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "interaction",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "compoundDnd",
-                                                "type": "graph",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Add text to nodes body",
-                                                "displayName": "Body Text",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "body-text",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              }
-                                            ]
+                                            }
                                           },
                                           "x-oapi-codegen-extra-tags": {
                                             "yaml": "capabilities",
@@ -6211,65 +6037,7 @@ const PatternSchema: Record<string, unknown> = {
                                                     "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                     "additionalProperties": true
                                                   }
-                                                },
-                                                "default": [
-                                                  {
-                                                    "description": "Configure the visual styles for the component",
-                                                    "displayName": "Styling",
-                                                    "entityState": [
-                                                      "declaration"
-                                                    ],
-                                                    "key": "",
-                                                    "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                                    "status": "enabled",
-                                                    "subType": "",
-                                                    "type": "style",
-                                                    "version": "0.7.0"
-                                                  },
-                                                  {
-                                                    "description": "Change the shape of the component",
-                                                    "displayName": "Change Shape",
-                                                    "entityState": [
-                                                      "declaration"
-                                                    ],
-                                                    "key": "",
-                                                    "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                                    "status": "enabled",
-                                                    "subType": "shape",
-                                                    "type": "style",
-                                                    "version": "0.7.0"
-                                                  },
-                                                  {
-                                                    "description": "Drag and Drop a component into a parent component in graph view",
-                                                    "displayName": "Compound Drag And Drop",
-                                                    "entityState": [
-                                                      "declaration"
-                                                    ],
-                                                    "key": "",
-                                                    "kind": "interaction",
-                                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                                    "status": "enabled",
-                                                    "subType": "compoundDnd",
-                                                    "type": "graph",
-                                                    "version": "0.7.0"
-                                                  },
-                                                  {
-                                                    "description": "Add text to nodes body",
-                                                    "displayName": "Body Text",
-                                                    "entityState": [
-                                                      "declaration"
-                                                    ],
-                                                    "key": "",
-                                                    "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                                    "status": "enabled",
-                                                    "subType": "body-text",
-                                                    "type": "style",
-                                                    "version": "0.7.0"
-                                                  }
-                                                ]
+                                                }
                                               },
                                               "x-order": 1
                                             },
@@ -7119,65 +6887,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "description": "Metadata contains additional information associated with the capability. Extension point.",
                                             "additionalProperties": true
                                           }
-                                        },
-                                        "default": [
-                                          {
-                                            "description": "Configure the visual styles for the component",
-                                            "displayName": "Styling",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Change the shape of the component",
-                                            "displayName": "Change Shape",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "shape",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Drag and Drop a component into a parent component in graph view",
-                                            "displayName": "Compound Drag And Drop",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "interaction",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "compoundDnd",
-                                            "type": "graph",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Add text to nodes body",
-                                            "displayName": "Body Text",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "body-text",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          }
-                                        ]
+                                        }
                                       },
                                       "x-oapi-codegen-extra-tags": {
                                         "gorm": "type:bytes;serializer:json",
@@ -7727,65 +7437,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "description": "Metadata contains additional information associated with the capability. Extension point.",
                                             "additionalProperties": true
                                           }
-                                        },
-                                        "default": [
-                                          {
-                                            "description": "Configure the visual styles for the component",
-                                            "displayName": "Styling",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Change the shape of the component",
-                                            "displayName": "Change Shape",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "shape",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Drag and Drop a component into a parent component in graph view",
-                                            "displayName": "Compound Drag And Drop",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "interaction",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "compoundDnd",
-                                            "type": "graph",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Add text to nodes body",
-                                            "displayName": "Body Text",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "body-text",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          }
-                                        ]
+                                        }
                                       },
                                       "x-oapi-codegen-extra-tags": {
                                         "yaml": "capabilities",
@@ -11031,65 +10683,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                   "additionalProperties": true
                                                 }
-                                              },
-                                              "default": [
-                                                {
-                                                  "description": "Configure the visual styles for the component",
-                                                  "displayName": "Styling",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Change the shape of the component",
-                                                  "displayName": "Change Shape",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "shape",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Drag and Drop a component into a parent component in graph view",
-                                                  "displayName": "Compound Drag And Drop",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "interaction",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "compoundDnd",
-                                                  "type": "graph",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Add text to nodes body",
-                                                  "displayName": "Body Text",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "body-text",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                }
-                                              ]
+                                              }
                                             },
                                             "x-order": 1
                                           },
@@ -11939,65 +11533,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "description": "Metadata contains additional information associated with the capability. Extension point.",
                                           "additionalProperties": true
                                         }
-                                      },
-                                      "default": [
-                                        {
-                                          "description": "Configure the visual styles for the component",
-                                          "displayName": "Styling",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Change the shape of the component",
-                                          "displayName": "Change Shape",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "shape",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Drag and Drop a component into a parent component in graph view",
-                                          "displayName": "Compound Drag And Drop",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "compoundDnd",
-                                          "type": "graph",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Add text to nodes body",
-                                          "displayName": "Body Text",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "body-text",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        }
-                                      ]
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "type:bytes;serializer:json",
@@ -12547,65 +12083,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "description": "Metadata contains additional information associated with the capability. Extension point.",
                                           "additionalProperties": true
                                         }
-                                      },
-                                      "default": [
-                                        {
-                                          "description": "Configure the visual styles for the component",
-                                          "displayName": "Styling",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Change the shape of the component",
-                                          "displayName": "Change Shape",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "shape",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Drag and Drop a component into a parent component in graph view",
-                                          "displayName": "Compound Drag And Drop",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "compoundDnd",
-                                          "type": "graph",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Add text to nodes body",
-                                          "displayName": "Body Text",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "body-text",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        }
-                                      ]
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "capabilities",
@@ -16222,65 +15700,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                   "additionalProperties": true
                                                 }
-                                              },
-                                              "default": [
-                                                {
-                                                  "description": "Configure the visual styles for the component",
-                                                  "displayName": "Styling",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Change the shape of the component",
-                                                  "displayName": "Change Shape",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "shape",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Drag and Drop a component into a parent component in graph view",
-                                                  "displayName": "Compound Drag And Drop",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "interaction",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "compoundDnd",
-                                                  "type": "graph",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Add text to nodes body",
-                                                  "displayName": "Body Text",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "body-text",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                }
-                                              ]
+                                              }
                                             },
                                             "x-order": 1
                                           },
@@ -17130,65 +16550,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "description": "Metadata contains additional information associated with the capability. Extension point.",
                                           "additionalProperties": true
                                         }
-                                      },
-                                      "default": [
-                                        {
-                                          "description": "Configure the visual styles for the component",
-                                          "displayName": "Styling",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Change the shape of the component",
-                                          "displayName": "Change Shape",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "shape",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Drag and Drop a component into a parent component in graph view",
-                                          "displayName": "Compound Drag And Drop",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "compoundDnd",
-                                          "type": "graph",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Add text to nodes body",
-                                          "displayName": "Body Text",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "body-text",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        }
-                                      ]
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "type:bytes;serializer:json",
@@ -17738,65 +17100,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "description": "Metadata contains additional information associated with the capability. Extension point.",
                                           "additionalProperties": true
                                         }
-                                      },
-                                      "default": [
-                                        {
-                                          "description": "Configure the visual styles for the component",
-                                          "displayName": "Styling",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Change the shape of the component",
-                                          "displayName": "Change Shape",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "shape",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Drag and Drop a component into a parent component in graph view",
-                                          "displayName": "Compound Drag And Drop",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "compoundDnd",
-                                          "type": "graph",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Add text to nodes body",
-                                          "displayName": "Body Text",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "body-text",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        }
-                                      ]
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "capabilities",
@@ -21150,65 +20454,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                   "additionalProperties": true
                                                 }
-                                              },
-                                              "default": [
-                                                {
-                                                  "description": "Configure the visual styles for the component",
-                                                  "displayName": "Styling",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Change the shape of the component",
-                                                  "displayName": "Change Shape",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "shape",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Drag and Drop a component into a parent component in graph view",
-                                                  "displayName": "Compound Drag And Drop",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "interaction",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "compoundDnd",
-                                                  "type": "graph",
-                                                  "version": "0.7.0"
-                                                },
-                                                {
-                                                  "description": "Add text to nodes body",
-                                                  "displayName": "Body Text",
-                                                  "entityState": [
-                                                    "declaration"
-                                                  ],
-                                                  "key": "",
-                                                  "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1beta1",
-                                                  "status": "enabled",
-                                                  "subType": "body-text",
-                                                  "type": "style",
-                                                  "version": "0.7.0"
-                                                }
-                                              ]
+                                              }
                                             },
                                             "x-order": 1
                                           },
@@ -22058,65 +21304,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "description": "Metadata contains additional information associated with the capability. Extension point.",
                                           "additionalProperties": true
                                         }
-                                      },
-                                      "default": [
-                                        {
-                                          "description": "Configure the visual styles for the component",
-                                          "displayName": "Styling",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Change the shape of the component",
-                                          "displayName": "Change Shape",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "shape",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Drag and Drop a component into a parent component in graph view",
-                                          "displayName": "Compound Drag And Drop",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "compoundDnd",
-                                          "type": "graph",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Add text to nodes body",
-                                          "displayName": "Body Text",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "body-text",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        }
-                                      ]
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "type:bytes;serializer:json",
@@ -22666,65 +21854,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "description": "Metadata contains additional information associated with the capability. Extension point.",
                                           "additionalProperties": true
                                         }
-                                      },
-                                      "default": [
-                                        {
-                                          "description": "Configure the visual styles for the component",
-                                          "displayName": "Styling",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Change the shape of the component",
-                                          "displayName": "Change Shape",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "shape",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Drag and Drop a component into a parent component in graph view",
-                                          "displayName": "Compound Drag And Drop",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "compoundDnd",
-                                          "type": "graph",
-                                          "version": "0.7.0"
-                                        },
-                                        {
-                                          "description": "Add text to nodes body",
-                                          "displayName": "Body Text",
-                                          "entityState": [
-                                            "declaration"
-                                          ],
-                                          "key": "",
-                                          "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1beta1",
-                                          "status": "enabled",
-                                          "subType": "body-text",
-                                          "type": "style",
-                                          "version": "0.7.0"
-                                        }
-                                      ]
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "capabilities",
@@ -26229,65 +25359,7 @@ const PatternSchema: Record<string, unknown> = {
                                                     "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                     "additionalProperties": true
                                                   }
-                                                },
-                                                "default": [
-                                                  {
-                                                    "description": "Configure the visual styles for the component",
-                                                    "displayName": "Styling",
-                                                    "entityState": [
-                                                      "declaration"
-                                                    ],
-                                                    "key": "",
-                                                    "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                                    "status": "enabled",
-                                                    "subType": "",
-                                                    "type": "style",
-                                                    "version": "0.7.0"
-                                                  },
-                                                  {
-                                                    "description": "Change the shape of the component",
-                                                    "displayName": "Change Shape",
-                                                    "entityState": [
-                                                      "declaration"
-                                                    ],
-                                                    "key": "",
-                                                    "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                                    "status": "enabled",
-                                                    "subType": "shape",
-                                                    "type": "style",
-                                                    "version": "0.7.0"
-                                                  },
-                                                  {
-                                                    "description": "Drag and Drop a component into a parent component in graph view",
-                                                    "displayName": "Compound Drag And Drop",
-                                                    "entityState": [
-                                                      "declaration"
-                                                    ],
-                                                    "key": "",
-                                                    "kind": "interaction",
-                                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                                    "status": "enabled",
-                                                    "subType": "compoundDnd",
-                                                    "type": "graph",
-                                                    "version": "0.7.0"
-                                                  },
-                                                  {
-                                                    "description": "Add text to nodes body",
-                                                    "displayName": "Body Text",
-                                                    "entityState": [
-                                                      "declaration"
-                                                    ],
-                                                    "key": "",
-                                                    "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                                    "status": "enabled",
-                                                    "subType": "body-text",
-                                                    "type": "style",
-                                                    "version": "0.7.0"
-                                                  }
-                                                ]
+                                                }
                                               },
                                               "x-order": 1
                                             },
@@ -27137,65 +26209,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "description": "Metadata contains additional information associated with the capability. Extension point.",
                                             "additionalProperties": true
                                           }
-                                        },
-                                        "default": [
-                                          {
-                                            "description": "Configure the visual styles for the component",
-                                            "displayName": "Styling",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Change the shape of the component",
-                                            "displayName": "Change Shape",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "shape",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Drag and Drop a component into a parent component in graph view",
-                                            "displayName": "Compound Drag And Drop",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "interaction",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "compoundDnd",
-                                            "type": "graph",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Add text to nodes body",
-                                            "displayName": "Body Text",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "body-text",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          }
-                                        ]
+                                        }
                                       },
                                       "x-oapi-codegen-extra-tags": {
                                         "gorm": "type:bytes;serializer:json",
@@ -27745,65 +26759,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "description": "Metadata contains additional information associated with the capability. Extension point.",
                                             "additionalProperties": true
                                           }
-                                        },
-                                        "default": [
-                                          {
-                                            "description": "Configure the visual styles for the component",
-                                            "displayName": "Styling",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Change the shape of the component",
-                                            "displayName": "Change Shape",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "shape",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Drag and Drop a component into a parent component in graph view",
-                                            "displayName": "Compound Drag And Drop",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "interaction",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "compoundDnd",
-                                            "type": "graph",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Add text to nodes body",
-                                            "displayName": "Body Text",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "body-text",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          }
-                                        ]
+                                        }
                                       },
                                       "x-oapi-codegen-extra-tags": {
                                         "yaml": "capabilities",
@@ -31193,65 +30149,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                         "additionalProperties": true
                                                       }
-                                                    },
-                                                    "default": [
-                                                      {
-                                                        "description": "Configure the visual styles for the component",
-                                                        "displayName": "Styling",
-                                                        "entityState": [
-                                                          "declaration"
-                                                        ],
-                                                        "key": "",
-                                                        "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                                        "status": "enabled",
-                                                        "subType": "",
-                                                        "type": "style",
-                                                        "version": "0.7.0"
-                                                      },
-                                                      {
-                                                        "description": "Change the shape of the component",
-                                                        "displayName": "Change Shape",
-                                                        "entityState": [
-                                                          "declaration"
-                                                        ],
-                                                        "key": "",
-                                                        "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                                        "status": "enabled",
-                                                        "subType": "shape",
-                                                        "type": "style",
-                                                        "version": "0.7.0"
-                                                      },
-                                                      {
-                                                        "description": "Drag and Drop a component into a parent component in graph view",
-                                                        "displayName": "Compound Drag And Drop",
-                                                        "entityState": [
-                                                          "declaration"
-                                                        ],
-                                                        "key": "",
-                                                        "kind": "interaction",
-                                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                                        "status": "enabled",
-                                                        "subType": "compoundDnd",
-                                                        "type": "graph",
-                                                        "version": "0.7.0"
-                                                      },
-                                                      {
-                                                        "description": "Add text to nodes body",
-                                                        "displayName": "Body Text",
-                                                        "entityState": [
-                                                          "declaration"
-                                                        ],
-                                                        "key": "",
-                                                        "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                                        "status": "enabled",
-                                                        "subType": "body-text",
-                                                        "type": "style",
-                                                        "version": "0.7.0"
-                                                      }
-                                                    ]
+                                                    }
                                                   },
                                                   "x-order": 1
                                                 },
@@ -32101,65 +30999,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                 "additionalProperties": true
                                               }
-                                            },
-                                            "default": [
-                                              {
-                                                "description": "Configure the visual styles for the component",
-                                                "displayName": "Styling",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Change the shape of the component",
-                                                "displayName": "Change Shape",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "shape",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Drag and Drop a component into a parent component in graph view",
-                                                "displayName": "Compound Drag And Drop",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "interaction",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "compoundDnd",
-                                                "type": "graph",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Add text to nodes body",
-                                                "displayName": "Body Text",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "body-text",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              }
-                                            ]
+                                            }
                                           },
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "type:bytes;serializer:json",
@@ -32709,65 +31549,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 "description": "Metadata contains additional information associated with the capability. Extension point.",
                                                 "additionalProperties": true
                                               }
-                                            },
-                                            "default": [
-                                              {
-                                                "description": "Configure the visual styles for the component",
-                                                "displayName": "Styling",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Change the shape of the component",
-                                                "displayName": "Change Shape",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "shape",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Drag and Drop a component into a parent component in graph view",
-                                                "displayName": "Compound Drag And Drop",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "interaction",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "compoundDnd",
-                                                "type": "graph",
-                                                "version": "0.7.0"
-                                              },
-                                              {
-                                                "description": "Add text to nodes body",
-                                                "displayName": "Body Text",
-                                                "entityState": [
-                                                  "declaration"
-                                                ],
-                                                "key": "",
-                                                "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                                "status": "enabled",
-                                                "subType": "body-text",
-                                                "type": "style",
-                                                "version": "0.7.0"
-                                              }
-                                            ]
+                                            }
                                           },
                                           "x-oapi-codegen-extra-tags": {
                                             "yaml": "capabilities",
@@ -36877,65 +35659,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "description": "Metadata contains additional information associated with the capability. Extension point.",
                                     "additionalProperties": true
                                   }
-                                },
-                                "default": [
-                                  {
-                                    "description": "Configure the visual styles for the component",
-                                    "displayName": "Styling",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Change the shape of the component",
-                                    "displayName": "Change Shape",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "shape",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Drag and Drop a component into a parent component in graph view",
-                                    "displayName": "Compound Drag And Drop",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "interaction",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "compoundDnd",
-                                    "type": "graph",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Add text to nodes body",
-                                    "displayName": "Body Text",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "body-text",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  }
-                                ]
+                                }
                               },
                               "x-order": 1
                             },
@@ -37785,65 +36509,7 @@ const PatternSchema: Record<string, unknown> = {
                             "description": "Metadata contains additional information associated with the capability. Extension point.",
                             "additionalProperties": true
                           }
-                        },
-                        "default": [
-                          {
-                            "description": "Configure the visual styles for the component",
-                            "displayName": "Styling",
-                            "entityState": [
-                              "declaration"
-                            ],
-                            "key": "",
-                            "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1beta1",
-                            "status": "enabled",
-                            "subType": "",
-                            "type": "style",
-                            "version": "0.7.0"
-                          },
-                          {
-                            "description": "Change the shape of the component",
-                            "displayName": "Change Shape",
-                            "entityState": [
-                              "declaration"
-                            ],
-                            "key": "",
-                            "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1beta1",
-                            "status": "enabled",
-                            "subType": "shape",
-                            "type": "style",
-                            "version": "0.7.0"
-                          },
-                          {
-                            "description": "Drag and Drop a component into a parent component in graph view",
-                            "displayName": "Compound Drag And Drop",
-                            "entityState": [
-                              "declaration"
-                            ],
-                            "key": "",
-                            "kind": "interaction",
-                            "schemaVersion": "capability.meshery.io/v1beta1",
-                            "status": "enabled",
-                            "subType": "compoundDnd",
-                            "type": "graph",
-                            "version": "0.7.0"
-                          },
-                          {
-                            "description": "Add text to nodes body",
-                            "displayName": "Body Text",
-                            "entityState": [
-                              "declaration"
-                            ],
-                            "key": "",
-                            "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1beta1",
-                            "status": "enabled",
-                            "subType": "body-text",
-                            "type": "style",
-                            "version": "0.7.0"
-                          }
-                        ]
+                        }
                       },
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "type:bytes;serializer:json",
@@ -38393,65 +37059,7 @@ const PatternSchema: Record<string, unknown> = {
                             "description": "Metadata contains additional information associated with the capability. Extension point.",
                             "additionalProperties": true
                           }
-                        },
-                        "default": [
-                          {
-                            "description": "Configure the visual styles for the component",
-                            "displayName": "Styling",
-                            "entityState": [
-                              "declaration"
-                            ],
-                            "key": "",
-                            "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1beta1",
-                            "status": "enabled",
-                            "subType": "",
-                            "type": "style",
-                            "version": "0.7.0"
-                          },
-                          {
-                            "description": "Change the shape of the component",
-                            "displayName": "Change Shape",
-                            "entityState": [
-                              "declaration"
-                            ],
-                            "key": "",
-                            "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1beta1",
-                            "status": "enabled",
-                            "subType": "shape",
-                            "type": "style",
-                            "version": "0.7.0"
-                          },
-                          {
-                            "description": "Drag and Drop a component into a parent component in graph view",
-                            "displayName": "Compound Drag And Drop",
-                            "entityState": [
-                              "declaration"
-                            ],
-                            "key": "",
-                            "kind": "interaction",
-                            "schemaVersion": "capability.meshery.io/v1beta1",
-                            "status": "enabled",
-                            "subType": "compoundDnd",
-                            "type": "graph",
-                            "version": "0.7.0"
-                          },
-                          {
-                            "description": "Add text to nodes body",
-                            "displayName": "Body Text",
-                            "entityState": [
-                              "declaration"
-                            ],
-                            "key": "",
-                            "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1beta1",
-                            "status": "enabled",
-                            "subType": "body-text",
-                            "type": "style",
-                            "version": "0.7.0"
-                          }
-                        ]
+                        }
                       },
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "capabilities",
@@ -41654,65 +40262,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "description": "Metadata contains additional information associated with the capability. Extension point.",
                                         "additionalProperties": true
                                       }
-                                    },
-                                    "default": [
-                                      {
-                                        "description": "Configure the visual styles for the component",
-                                        "displayName": "Styling",
-                                        "entityState": [
-                                          "declaration"
-                                        ],
-                                        "key": "",
-                                        "kind": "mutate",
-                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                        "status": "enabled",
-                                        "subType": "",
-                                        "type": "style",
-                                        "version": "0.7.0"
-                                      },
-                                      {
-                                        "description": "Change the shape of the component",
-                                        "displayName": "Change Shape",
-                                        "entityState": [
-                                          "declaration"
-                                        ],
-                                        "key": "",
-                                        "kind": "mutate",
-                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                        "status": "enabled",
-                                        "subType": "shape",
-                                        "type": "style",
-                                        "version": "0.7.0"
-                                      },
-                                      {
-                                        "description": "Drag and Drop a component into a parent component in graph view",
-                                        "displayName": "Compound Drag And Drop",
-                                        "entityState": [
-                                          "declaration"
-                                        ],
-                                        "key": "",
-                                        "kind": "interaction",
-                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                        "status": "enabled",
-                                        "subType": "compoundDnd",
-                                        "type": "graph",
-                                        "version": "0.7.0"
-                                      },
-                                      {
-                                        "description": "Add text to nodes body",
-                                        "displayName": "Body Text",
-                                        "entityState": [
-                                          "declaration"
-                                        ],
-                                        "key": "",
-                                        "kind": "mutate",
-                                        "schemaVersion": "capability.meshery.io/v1beta1",
-                                        "status": "enabled",
-                                        "subType": "body-text",
-                                        "type": "style",
-                                        "version": "0.7.0"
-                                      }
-                                    ]
+                                    }
                                   },
                                   "x-order": 1
                                 },
@@ -42562,65 +41112,7 @@ const PatternSchema: Record<string, unknown> = {
                                 "description": "Metadata contains additional information associated with the capability. Extension point.",
                                 "additionalProperties": true
                               }
-                            },
-                            "default": [
-                              {
-                                "description": "Configure the visual styles for the component",
-                                "displayName": "Styling",
-                                "entityState": [
-                                  "declaration"
-                                ],
-                                "key": "",
-                                "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                "status": "enabled",
-                                "subType": "",
-                                "type": "style",
-                                "version": "0.7.0"
-                              },
-                              {
-                                "description": "Change the shape of the component",
-                                "displayName": "Change Shape",
-                                "entityState": [
-                                  "declaration"
-                                ],
-                                "key": "",
-                                "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                "status": "enabled",
-                                "subType": "shape",
-                                "type": "style",
-                                "version": "0.7.0"
-                              },
-                              {
-                                "description": "Drag and Drop a component into a parent component in graph view",
-                                "displayName": "Compound Drag And Drop",
-                                "entityState": [
-                                  "declaration"
-                                ],
-                                "key": "",
-                                "kind": "interaction",
-                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                "status": "enabled",
-                                "subType": "compoundDnd",
-                                "type": "graph",
-                                "version": "0.7.0"
-                              },
-                              {
-                                "description": "Add text to nodes body",
-                                "displayName": "Body Text",
-                                "entityState": [
-                                  "declaration"
-                                ],
-                                "key": "",
-                                "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                "status": "enabled",
-                                "subType": "body-text",
-                                "type": "style",
-                                "version": "0.7.0"
-                              }
-                            ]
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json",
@@ -43170,65 +41662,7 @@ const PatternSchema: Record<string, unknown> = {
                                 "description": "Metadata contains additional information associated with the capability. Extension point.",
                                 "additionalProperties": true
                               }
-                            },
-                            "default": [
-                              {
-                                "description": "Configure the visual styles for the component",
-                                "displayName": "Styling",
-                                "entityState": [
-                                  "declaration"
-                                ],
-                                "key": "",
-                                "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                "status": "enabled",
-                                "subType": "",
-                                "type": "style",
-                                "version": "0.7.0"
-                              },
-                              {
-                                "description": "Change the shape of the component",
-                                "displayName": "Change Shape",
-                                "entityState": [
-                                  "declaration"
-                                ],
-                                "key": "",
-                                "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                "status": "enabled",
-                                "subType": "shape",
-                                "type": "style",
-                                "version": "0.7.0"
-                              },
-                              {
-                                "description": "Drag and Drop a component into a parent component in graph view",
-                                "displayName": "Compound Drag And Drop",
-                                "entityState": [
-                                  "declaration"
-                                ],
-                                "key": "",
-                                "kind": "interaction",
-                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                "status": "enabled",
-                                "subType": "compoundDnd",
-                                "type": "graph",
-                                "version": "0.7.0"
-                              },
-                              {
-                                "description": "Add text to nodes body",
-                                "displayName": "Body Text",
-                                "entityState": [
-                                  "declaration"
-                                ],
-                                "key": "",
-                                "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1beta1",
-                                "status": "enabled",
-                                "subType": "body-text",
-                                "type": "style",
-                                "version": "0.7.0"
-                              }
-                            ]
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "capabilities",
@@ -46463,65 +44897,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "description": "Metadata contains additional information associated with the capability. Extension point.",
                                               "additionalProperties": true
                                             }
-                                          },
-                                          "default": [
-                                            {
-                                              "description": "Configure the visual styles for the component",
-                                              "displayName": "Styling",
-                                              "entityState": [
-                                                "declaration"
-                                              ],
-                                              "key": "",
-                                              "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1beta1",
-                                              "status": "enabled",
-                                              "subType": "",
-                                              "type": "style",
-                                              "version": "0.7.0"
-                                            },
-                                            {
-                                              "description": "Change the shape of the component",
-                                              "displayName": "Change Shape",
-                                              "entityState": [
-                                                "declaration"
-                                              ],
-                                              "key": "",
-                                              "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1beta1",
-                                              "status": "enabled",
-                                              "subType": "shape",
-                                              "type": "style",
-                                              "version": "0.7.0"
-                                            },
-                                            {
-                                              "description": "Drag and Drop a component into a parent component in graph view",
-                                              "displayName": "Compound Drag And Drop",
-                                              "entityState": [
-                                                "declaration"
-                                              ],
-                                              "key": "",
-                                              "kind": "interaction",
-                                              "schemaVersion": "capability.meshery.io/v1beta1",
-                                              "status": "enabled",
-                                              "subType": "compoundDnd",
-                                              "type": "graph",
-                                              "version": "0.7.0"
-                                            },
-                                            {
-                                              "description": "Add text to nodes body",
-                                              "displayName": "Body Text",
-                                              "entityState": [
-                                                "declaration"
-                                              ],
-                                              "key": "",
-                                              "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1beta1",
-                                              "status": "enabled",
-                                              "subType": "body-text",
-                                              "type": "style",
-                                              "version": "0.7.0"
-                                            }
-                                          ]
+                                          }
                                         },
                                         "x-order": 1
                                       },
@@ -47371,65 +45747,7 @@ const PatternSchema: Record<string, unknown> = {
                                       "description": "Metadata contains additional information associated with the capability. Extension point.",
                                       "additionalProperties": true
                                     }
-                                  },
-                                  "default": [
-                                    {
-                                      "description": "Configure the visual styles for the component",
-                                      "displayName": "Styling",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Change the shape of the component",
-                                      "displayName": "Change Shape",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "shape",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Drag and Drop a component into a parent component in graph view",
-                                      "displayName": "Compound Drag And Drop",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "interaction",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "compoundDnd",
-                                      "type": "graph",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Add text to nodes body",
-                                      "displayName": "Body Text",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "body-text",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    }
-                                  ]
+                                  }
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "gorm": "type:bytes;serializer:json",
@@ -47979,65 +46297,7 @@ const PatternSchema: Record<string, unknown> = {
                                       "description": "Metadata contains additional information associated with the capability. Extension point.",
                                       "additionalProperties": true
                                     }
-                                  },
-                                  "default": [
-                                    {
-                                      "description": "Configure the visual styles for the component",
-                                      "displayName": "Styling",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Change the shape of the component",
-                                      "displayName": "Change Shape",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "shape",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Drag and Drop a component into a parent component in graph view",
-                                      "displayName": "Compound Drag And Drop",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "interaction",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "compoundDnd",
-                                      "type": "graph",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Add text to nodes body",
-                                      "displayName": "Body Text",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "body-text",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    }
-                                  ]
+                                  }
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "yaml": "capabilities",
@@ -51304,65 +49564,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "description": "Metadata contains additional information associated with the capability. Extension point.",
                                             "additionalProperties": true
                                           }
-                                        },
-                                        "default": [
-                                          {
-                                            "description": "Configure the visual styles for the component",
-                                            "displayName": "Styling",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Change the shape of the component",
-                                            "displayName": "Change Shape",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "shape",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Drag and Drop a component into a parent component in graph view",
-                                            "displayName": "Compound Drag And Drop",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "interaction",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "compoundDnd",
-                                            "type": "graph",
-                                            "version": "0.7.0"
-                                          },
-                                          {
-                                            "description": "Add text to nodes body",
-                                            "displayName": "Body Text",
-                                            "entityState": [
-                                              "declaration"
-                                            ],
-                                            "key": "",
-                                            "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1beta1",
-                                            "status": "enabled",
-                                            "subType": "body-text",
-                                            "type": "style",
-                                            "version": "0.7.0"
-                                          }
-                                        ]
+                                        }
                                       },
                                       "x-order": 1
                                     },
@@ -52212,65 +50414,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "description": "Metadata contains additional information associated with the capability. Extension point.",
                                     "additionalProperties": true
                                   }
-                                },
-                                "default": [
-                                  {
-                                    "description": "Configure the visual styles for the component",
-                                    "displayName": "Styling",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Change the shape of the component",
-                                    "displayName": "Change Shape",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "shape",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Drag and Drop a component into a parent component in graph view",
-                                    "displayName": "Compound Drag And Drop",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "interaction",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "compoundDnd",
-                                    "type": "graph",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Add text to nodes body",
-                                    "displayName": "Body Text",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "body-text",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  }
-                                ]
+                                }
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "type:bytes;serializer:json",
@@ -52820,65 +50964,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "description": "Metadata contains additional information associated with the capability. Extension point.",
                                     "additionalProperties": true
                                   }
-                                },
-                                "default": [
-                                  {
-                                    "description": "Configure the visual styles for the component",
-                                    "displayName": "Styling",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Change the shape of the component",
-                                    "displayName": "Change Shape",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "shape",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Drag and Drop a component into a parent component in graph view",
-                                    "displayName": "Compound Drag And Drop",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "interaction",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "compoundDnd",
-                                    "type": "graph",
-                                    "version": "0.7.0"
-                                  },
-                                  {
-                                    "description": "Add text to nodes body",
-                                    "displayName": "Body Text",
-                                    "entityState": [
-                                      "declaration"
-                                    ],
-                                    "key": "",
-                                    "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1beta1",
-                                    "status": "enabled",
-                                    "subType": "body-text",
-                                    "type": "style",
-                                    "version": "0.7.0"
-                                  }
-                                ]
+                                }
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "capabilities",
@@ -56243,65 +54329,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "description": "Metadata contains additional information associated with the capability. Extension point.",
                                               "additionalProperties": true
                                             }
-                                          },
-                                          "default": [
-                                            {
-                                              "description": "Configure the visual styles for the component",
-                                              "displayName": "Styling",
-                                              "entityState": [
-                                                "declaration"
-                                              ],
-                                              "key": "",
-                                              "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1beta1",
-                                              "status": "enabled",
-                                              "subType": "",
-                                              "type": "style",
-                                              "version": "0.7.0"
-                                            },
-                                            {
-                                              "description": "Change the shape of the component",
-                                              "displayName": "Change Shape",
-                                              "entityState": [
-                                                "declaration"
-                                              ],
-                                              "key": "",
-                                              "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1beta1",
-                                              "status": "enabled",
-                                              "subType": "shape",
-                                              "type": "style",
-                                              "version": "0.7.0"
-                                            },
-                                            {
-                                              "description": "Drag and Drop a component into a parent component in graph view",
-                                              "displayName": "Compound Drag And Drop",
-                                              "entityState": [
-                                                "declaration"
-                                              ],
-                                              "key": "",
-                                              "kind": "interaction",
-                                              "schemaVersion": "capability.meshery.io/v1beta1",
-                                              "status": "enabled",
-                                              "subType": "compoundDnd",
-                                              "type": "graph",
-                                              "version": "0.7.0"
-                                            },
-                                            {
-                                              "description": "Add text to nodes body",
-                                              "displayName": "Body Text",
-                                              "entityState": [
-                                                "declaration"
-                                              ],
-                                              "key": "",
-                                              "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1beta1",
-                                              "status": "enabled",
-                                              "subType": "body-text",
-                                              "type": "style",
-                                              "version": "0.7.0"
-                                            }
-                                          ]
+                                          }
                                         },
                                         "x-order": 1
                                       },
@@ -57151,65 +55179,7 @@ const PatternSchema: Record<string, unknown> = {
                                       "description": "Metadata contains additional information associated with the capability. Extension point.",
                                       "additionalProperties": true
                                     }
-                                  },
-                                  "default": [
-                                    {
-                                      "description": "Configure the visual styles for the component",
-                                      "displayName": "Styling",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Change the shape of the component",
-                                      "displayName": "Change Shape",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "shape",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Drag and Drop a component into a parent component in graph view",
-                                      "displayName": "Compound Drag And Drop",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "interaction",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "compoundDnd",
-                                      "type": "graph",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Add text to nodes body",
-                                      "displayName": "Body Text",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "body-text",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    }
-                                  ]
+                                  }
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "gorm": "type:bytes;serializer:json",
@@ -57759,65 +55729,7 @@ const PatternSchema: Record<string, unknown> = {
                                       "description": "Metadata contains additional information associated with the capability. Extension point.",
                                       "additionalProperties": true
                                     }
-                                  },
-                                  "default": [
-                                    {
-                                      "description": "Configure the visual styles for the component",
-                                      "displayName": "Styling",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Change the shape of the component",
-                                      "displayName": "Change Shape",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "shape",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Drag and Drop a component into a parent component in graph view",
-                                      "displayName": "Compound Drag And Drop",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "interaction",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "compoundDnd",
-                                      "type": "graph",
-                                      "version": "0.7.0"
-                                    },
-                                    {
-                                      "description": "Add text to nodes body",
-                                      "displayName": "Body Text",
-                                      "entityState": [
-                                        "declaration"
-                                      ],
-                                      "key": "",
-                                      "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1beta1",
-                                      "status": "enabled",
-                                      "subType": "body-text",
-                                      "type": "style",
-                                      "version": "0.7.0"
-                                    }
-                                  ]
+                                  }
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "yaml": "capabilities",
