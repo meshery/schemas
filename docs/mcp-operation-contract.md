@@ -87,8 +87,9 @@ An operation with `x-mcp` fails `make validate-schemas` unless:
 The rule scans every non-deprecated construct `api.yml` of every version, not
 only the newest version of each construct, because an operation can be served
 from an older version (`getUser` is in `v1beta2/user`). A spec that fails to
-load is reported as a blocking violation rather than skipped, so a broken spec
-cannot hide unchecked operations; only a spec that loads and carries
+load is reported as a blocking Rule 12 violation by the main audit and is
+excluded from this scan to avoid a duplicate Rule 48 finding, so a broken spec
+cannot silently hide unchecked operations; only a spec that loads and carries
 `x-deprecated` is skipped. The tests are in
 `validation/rules_mcp_test.go` (each failure case and the passing case) and
 `validation/mcp_operation_contract_test.go` (the real tree).

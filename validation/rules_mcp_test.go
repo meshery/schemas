@@ -522,7 +522,7 @@ func TestWalkBundledConstructDocs_ReportsLoadErrors(t *testing.T) {
 func TestAuditMcpOperations_ReportsLoadErrors(t *testing.T) {
 	root := mcpWalkFixture(t)
 	var result AuditResult
-	auditMcpOperations(AuditOptions{RootDir: root}, map[string]bool{}, &result)
+	auditMcpOperations(AuditOptions{RootDir: root}, map[string]bool{}, &result, nil)
 	if len(result.Blocking) != 1 {
 		t.Fatalf("blocking violations = %v, want exactly the load failure", result.Blocking)
 	}

@@ -13,9 +13,10 @@ import (
 // httpMethods are the HTTP methods checked in path-item operations.
 var httpMethods = []string{"get", "post", "put", "patch", "delete"}
 
-// constructSpec is the per-construct scratchpad passed to walkValidatedConstructSpecs
-// callbacks. It carries everything both the validator and the endpoint indexer need
-// about one <version>/<construct>/api.yml, resolved in one place.
+// constructSpec is the per-construct scratchpad passed to construct-walker
+// callbacks (walkValidatedConstructSpecs and walkAuditConstructSpecs). It
+// carries everything both the validator and the endpoint indexer need about
+// one <version>/<construct>/api.yml, resolved in one place.
 type constructSpec struct {
 	Version      string
 	Construct    string
@@ -25,13 +26,18 @@ type constructSpec struct {
 	APIExists    bool
 	Doc          *openapi3.T
 	LoadErr      error
+	// Deprecated marks construct specs whose api.yml declares info.x-deprecated: true.
+	// Deprecated constructs are validated with blocking rules only (see issue #730).
+	Deprecated bool
 }
 
 // walkValidatedConstructSpecs is the single, canonical walker for the
 // schemas/constructs tree. It visits every non-deprecated construct spec in
-// deterministic sorted order and invokes fn for each one. Both the schema
-// validator (Audit) and the consumer-audit endpoint indexer use this function
-// so the walk logic, filtering, and load behaviour stay in sync.
+// deterministic sorted order and invokes fn for each one: constructs whose
+// api.yml declares info.x-deprecated: true are skipped, and only the latest
+// valid version per construct is visited. The consumer-audit endpoint indexer
+// uses this function; the schema validator (Audit) uses walkAuditConstructSpecs,
+// which keeps a separate version selection for deprecated constructs (issue #730).
 func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
 	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
 
@@ -147,27 +153,46 @@ func Audit(opts AuditOptions) AuditResult {
 
 	// Cross-file sibling-endpoint parameter parity accumulator for Rule 46.
 	parity := &parityAccumulator{}
+	// Malformed API specs get a blocking Rule 12 finding here. Exclude those
+	// same paths from the separate MCP scan to avoid a duplicate, out-of-scope
+	// Rule 48 finding for a parse failure.
+	malformedAPIPaths := make(map[string]struct{})
 
-	// Walk validated construct specs. Errors are intentionally ignored:
+	// Walk audit construct specs (issue #730). Errors are intentionally ignored:
 	// Audit returns AuditResult, not error, and individual load failures
 	// are reported as blocking violations inside auditAPISpec.
-	_ = walkValidatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
+	_ = walkAuditConstructSpecs(opts.RootDir, func(spec constructSpec) error {
+		if spec.LoadErr != nil {
+			// A malformed API spec has unknown deprecation status. Keep its
+			// blocking load violation (Rule 12) without treating its construct
+			// files as active. Independently loadable entity files receive only
+			// the approved blocking entity rules; template rules are out of scope.
+			malformedAPIPaths[spec.RelativePath] = struct{}{}
+			auditEntitySchemas(spec.ConstructDir, opts, baseline, &result, true)
+			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
+				fingerprints, enumBaselineRef, nil, false)
+			return nil
+		}
+
 		// Validate entity schemas (*.yaml, not api.yml).
-		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result)
+		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result, spec.Deprecated)
 
 		// Validate template files (Rule 18, 34).
-		auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result)
+		auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result, spec.Deprecated)
 
 		// Validate api.yml if it exists. spec.Doc is nil when load failed;
 		// auditAPISpec handles nil docs by reporting a blocking violation.
 		if spec.APIExists {
 			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
-				fingerprints, enumBaselineRef, spec.Doc)
+				fingerprints, enumBaselineRef, spec.Doc, spec.Deprecated)
 			// Collect Rule 46 cross-file parity candidates from this
 			// api.yml. The file's version prefix (e.g. "v1beta1") defines
-			// the comparison group.
-			relPath := relativeToRoot(spec.APIYMLPath, opts.RootDir)
-			collectParityEndpoints(relPath, spec.Version, spec.Doc, parity)
+			// the comparison group. Skipped for deprecated constructs
+			// (Rule 46 is advisory, per issue #730).
+			if !spec.Deprecated && spec.Doc != nil {
+				relPath := relativeToRoot(spec.APIYMLPath, opts.RootDir)
+				collectParityEndpoints(relPath, spec.Version, spec.Doc, parity)
+			}
 		}
 		return nil
 	})
@@ -182,9 +207,10 @@ func Audit(opts AuditOptions) AuditResult {
 		addViolation(&result, v, baseline)
 	}
 
-	// Rule 48: x-mcp operations, in every published version that is bundled
-	// (the walk above keeps only the newest version of each construct).
-	auditMcpOperations(opts, baseline, &result)
+	// Rule 48: x-mcp operations, in every bundled version that loads. The
+	// walk above also visits malformed specs, but those are already reported
+	// as blocking Rule 12 findings and excluded here to avoid a duplicate.
+	auditMcpOperations(opts, baseline, &result, malformedAPIPaths)
 
 	// Rule 22: validate helper files in models/.
 	auditHelperFiles(modelsDir, opts, baseline, &result)
@@ -263,7 +289,7 @@ func isDeprecatedDoc(doc *openapi3.T) bool {
 
 // auditEntitySchemas validates all *.yaml entity files in a construct directory.
 func auditEntitySchemas(constructDir string, opts AuditOptions,
-	baseline map[string]bool, result *AuditResult) {
+	baseline map[string]bool, result *AuditResult, deprecated bool) {
 
 	entries, err := os.ReadDir(constructDir)
 	if err != nil {
@@ -288,6 +314,19 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 			continue
 		}
 		relPath := relativeToRoot(entityPath, opts.RootDir)
+
+		if deprecated {
+			// Deprecated constructs: blocking rules only (issue #730).
+			// Rule 1: additionalProperties: false.
+			for _, v := range checkRule1(relPath, entity, opts) {
+				addViolation(result, v, baseline)
+			}
+			// Rule 20: properties and required sections.
+			for _, v := range checkRule20(relPath, entity, opts) {
+				addViolation(result, v, baseline)
+			}
+			continue
+		}
 
 		// Rule 1: additionalProperties: false.
 		for _, v := range checkRule1(relPath, entity, opts) {
@@ -319,7 +358,13 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 
 // auditTemplateFiles validates template files in a construct directory.
 func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
-	baseline map[string]bool, result *AuditResult) {
+	baseline map[string]bool, result *AuditResult, deprecated bool) {
+
+	if deprecated {
+		// Deprecated constructs: Rules 18 and 34 are not in the blocking-only
+		// applicable scope for deprecated constructs (issue #730).
+		return
+	}
 
 	relDir := relativeToRoot(constructDir, opts.RootDir)
 
@@ -340,7 +385,7 @@ func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
 func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 	baseline map[string]bool, result *AuditResult,
 	fingerprints map[string][]schemaLocation, enumBaselineRef string,
-	doc *openapi3.T) {
+	doc *openapi3.T, deprecated bool) {
 
 	relPath := relativeToRoot(apiYmlPath, opts.RootDir)
 
@@ -358,6 +403,35 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 	// Load the raw YAML doc once for rules that need $ref sibling access
 	// (Rule 15/16). kin-openapi resolves $ref and discards siblings.
 	rawDoc, _ := loadAPISpecRaw(apiYmlPath)
+
+	if deprecated {
+		// Deprecated constructs: blocking-only dispatch (issue #730). Only the
+		// listed applicable API rules run, and only SeverityBlocking findings
+		// are kept; advisory/style findings are suppressed. Scope: Rules 1–2,
+		// 5, 11–17, 20, 22, 27. Rule 1 (entity) and Rule 20 (entity) are
+		// applied in auditEntitySchemas; Rule 22 (helper files) in
+		// auditHelperFiles. Rules 18, 21, 34, 35, 48 are not added for
+		// deprecated constructs. Rule 32 is retired under the canonical naming
+		// contract and is not called.
+		blockingOnly := func(vs []Violation) {
+			for _, v := range vs {
+				if v.Severity == SeverityBlocking {
+					addViolation(result, v, baseline)
+				}
+			}
+		}
+		blockingOnly(checkRule2(relPath, doc, opts))
+		blockingOnly(checkRule5(relPath, doc, opts))
+		blockingOnly(checkRule11(relPath, doc, opts))
+		blockingOnly(checkRule12(relPath, doc, opts))
+		blockingOnly(checkRule13(relPath, doc, opts))
+		blockingOnly(checkRule14(relPath, doc, opts))
+		// Rules 15–16: cross-construct $ref annotations.
+		blockingOnly(checkRule15(relPath, rawDoc, doc, opts, true))
+		blockingOnly(checkRule17(relPath, doc, opts))
+		blockingOnly(checkRule27(relPath, doc, opts))
+		return
+	}
 
 	// Run all API spec rules.
 	ruleChecks := []func(string, *openapi3.T, AuditOptions) []Violation{
@@ -379,7 +453,7 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 	}
 
 	// Rules 15-16: cross-construct refs (raw YAML needed for $ref siblings).
-	for _, v := range checkRule15(relPath, rawDoc, doc, opts) {
+	for _, v := range checkRule15(relPath, rawDoc, doc, opts, false) {
 		addViolation(result, v, baseline)
 	}
 
@@ -466,6 +540,148 @@ func relativeToRoot(absPath, rootDir string) string {
 		return absPath
 	}
 	return filepath.ToSlash(rel)
+}
+
+// walkAuditConstructSpecs walks through all construct specs, selecting the latest
+// active version per construct and every deprecated version. This is used for
+// audit-specific version selection (issue #730), where deprecated constructs receive
+// blocking-only rules and active constructs receive full validation.
+//
+// The walk order is:
+//   - Latest active version (with full validation rules)
+//   - Every deprecated version (with blocking-only rules)
+//   - Every malformed version (blocking Rule 12; excluded from active/deprecated selection)
+func walkAuditConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
+
+	info, err := os.Stat(constructsDir)
+	if err != nil || !info.IsDir() {
+		return nil
+	}
+
+	versionEntries, err := os.ReadDir(constructsDir)
+	if err != nil {
+		return err
+	}
+	sort.Slice(versionEntries, func(i, j int) bool {
+		return versionEntries[i].Name() < versionEntries[j].Name()
+	})
+
+	// Collect ALL versions per construct
+	allConstructs := make(map[string][]constructSpec)
+
+	for _, vEntry := range versionEntries {
+		if !vEntry.IsDir() {
+			continue
+		}
+		version := vEntry.Name()
+		if !shouldValidateVersion(version) {
+			continue
+		}
+
+		versionDir := filepath.Join(constructsDir, version)
+		constructEntries, err := os.ReadDir(versionDir)
+		if err != nil {
+			continue
+		}
+		sort.Slice(constructEntries, func(i, j int) bool {
+			return constructEntries[i].Name() < constructEntries[j].Name()
+		})
+
+		for _, cEntry := range constructEntries {
+			if !cEntry.IsDir() {
+				continue
+			}
+
+			constructDir := filepath.Join(versionDir, cEntry.Name())
+			apiYmlPath := filepath.Join(constructDir, "api.yml")
+			if _, err := os.Stat(apiYmlPath); err != nil {
+				continue
+			}
+
+			doc, loadErr := loadAPISpec(apiYmlPath)
+			deprecated := loadErr == nil && isDeprecatedDoc(doc)
+
+			spec := constructSpec{
+				Version:      version,
+				Construct:    cEntry.Name(),
+				ConstructDir: constructDir,
+				APIYMLPath:   apiYmlPath,
+				RelativePath: relativeToRoot(apiYmlPath, rootDir),
+				APIExists:    true,
+				Deprecated:   deprecated,
+				Doc:          doc,
+				LoadErr:      loadErr,
+			}
+
+			allConstructs[spec.Construct] = append(allConstructs[spec.Construct], spec)
+		}
+	}
+
+	// For each construct, determine which versions to visit:
+	//   - Latest active version (if any)
+	//   - Every deprecated version
+	// Sort construct names for deterministic output across runs.
+	constructNames := make([]string, 0, len(allConstructs))
+	for name := range allConstructs {
+		constructNames = append(constructNames, name)
+	}
+	sort.Slice(constructNames, func(i, j int) bool {
+		return constructNames[i] < constructNames[j]
+	})
+
+	for _, constructName := range constructNames {
+		versions := allConstructs[constructName]
+
+		// Sort by version descending so latest comes first
+		sort.Slice(versions, func(i, j int) bool {
+			return compareAPIVersions(versions[i].Version, versions[j].Version) > 0
+		})
+
+		latestActive := ""
+		var deprecatedVersions []constructSpec
+		var malformedVersions []constructSpec
+		for _, v := range versions {
+			if v.LoadErr != nil {
+				malformedVersions = append(malformedVersions, v)
+				continue
+			}
+			if !v.Deprecated && latestActive == "" {
+				latestActive = v.Version
+			}
+			if v.Deprecated {
+				deprecatedVersions = append(deprecatedVersions, v)
+			}
+		}
+
+		// Visit latest active version (with full rules)
+		if latestActive != "" {
+			for _, v := range versions {
+				if v.Version == latestActive {
+					if err := fn(v); err != nil {
+						return err
+					}
+				}
+			}
+		}
+
+		// Visit every deprecated version (with blocking-only rules)
+		for _, dv := range deprecatedVersions {
+			if err := fn(dv); err != nil {
+				return err
+			}
+		}
+
+		// Malformed specs are still visited so Audit can report Rule 12, but
+		// they do not participate in active/deprecated version selection.
+		for _, malformed := range malformedVersions {
+			if err := fn(malformed); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 // This file uses openapi3.T directly via the import above.

@@ -550,7 +550,7 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
-                          "user_id": {
+                          "userId": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
                               "json": "userId"
@@ -627,7 +627,7 @@ const EventSchema: Record<string, unknown> = {
                           }
                         },
                         "required": [
-                          "user_id",
+                          "userId",
                           "category",
                           "action"
                         ]
@@ -799,7 +799,7 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
-                          "user_id": {
+                          "userId": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
                               "json": "userId"
@@ -876,7 +876,7 @@ const EventSchema: Record<string, unknown> = {
                           }
                         },
                         "required": [
-                          "user_id",
+                          "userId",
                           "category",
                           "action"
                         ]
@@ -1267,7 +1267,7 @@ const EventSchema: Record<string, unknown> = {
         "additionalProperties": false,
         "description": "EventResult entity schema.",
         "properties": {
-          "user_id": {
+          "userId": {
             "x-oapi-codegen-extra-tags": {
               "db": "user_id",
               "json": "userId"
@@ -1344,7 +1344,7 @@ const EventSchema: Record<string, unknown> = {
           }
         },
         "required": [
-          "user_id",
+          "userId",
           "category",
           "action"
         ]
@@ -1371,7 +1371,7 @@ const EventSchema: Record<string, unknown> = {
               "additionalProperties": false,
               "description": "EventResult entity schema.",
               "properties": {
-                "user_id": {
+                "userId": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id",
                     "json": "userId"
@@ -1448,7 +1448,7 @@ const EventSchema: Record<string, unknown> = {
                 }
               },
               "required": [
-                "user_id",
+                "userId",
                 "category",
                 "action"
               ]

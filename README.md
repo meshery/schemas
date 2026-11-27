@@ -925,7 +925,7 @@ The `validation/` Go package (invoked via `go run ./cmd/validate-schemas`) enfor
 | Full debt report | `make audit-schemas-debt-full` | Exit 0 | Visible | Visible | Visible |
 | Strict CI gate | `make validate-schemas-strict` | Exit 1 | Error | Error | Error |
 
-- **Blocking** (Rules 1-2, 5, 11-22, 27, 32-33): Always enforced. Break code generation or violate structural contracts.
+- **Blocking** (Rules 1-2, 5, 11-22, 27, 33): Always enforced. Break code generation or violate structural contracts.
 - **Style** (Rules 3-4, 6-10, 19): Naming conventions. Silent by default; visible with `--style-debt`; blocking with `--strict-consistency`.
 - **Design** (Rules 23-26, 30-31): API design patterns. Visible as advisories in `--warn` mode.
 - **Contract** (Rules 28-29): Published API contract checks (response codes, duplicate schemas). Visible as advisories in `--warn` mode.
