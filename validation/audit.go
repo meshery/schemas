@@ -426,13 +426,9 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		blockingOnly(checkRule13(relPath, doc, opts))
 		blockingOnly(checkRule14(relPath, doc, opts))
 		// Rules 15–16: cross-construct $ref annotations.
-		blockingOnly(checkRule15(relPath, rawDoc, doc, opts))
+		blockingOnly(checkRule15(relPath, rawDoc, doc, opts, true))
 		blockingOnly(checkRule17(relPath, doc, opts))
-		// Rule 27: keep only genuine blocking findings; advisory findings
-		// (manual yaml tags) stay suppressed even under Strict.
-		rule27Opts := opts
-		rule27Opts.Strict = false
-		blockingOnly(checkRule27(relPath, doc, rule27Opts))
+		blockingOnly(checkRule27(relPath, doc, opts))
 		return
 	}
 
@@ -456,7 +452,7 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 	}
 
 	// Rules 15-16: cross-construct refs (raw YAML needed for $ref siblings).
-	for _, v := range checkRule15(relPath, rawDoc, doc, opts) {
+	for _, v := range checkRule15(relPath, rawDoc, doc, opts, false) {
 		addViolation(result, v, baseline)
 	}
 

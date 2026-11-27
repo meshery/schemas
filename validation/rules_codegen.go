@@ -105,7 +105,7 @@ var bundledBaseSchemas = map[string]bool{"core": true, "capability": true, "sele
 // In OpenAPI 3.0 sibling properties next to $ref are ignored by kin-openapi,
 // so this rule walks the raw YAML to access x-go-type alongside $ref. The
 // raw doc is passed in from auditAPISpec to avoid re-reading api.yml.
-func checkRule15(filePath string, raw map[string]any, _ *openapi3.T, _ AuditOptions) []Violation {
+func checkRule15(filePath string, raw map[string]any, _ *openapi3.T, _ AuditOptions, deprecated bool) []Violation {
 	if raw == nil {
 		return nil
 	}
@@ -120,14 +120,14 @@ func checkRule15(filePath string, raw map[string]any, _ *openapi3.T, _ AuditOpti
 		if !ok {
 			continue
 		}
-		out = append(out, checkCrossRefAnnotations(filePath, schemaName, defMap)...)
+		out = append(out, checkCrossRefAnnotations(filePath, schemaName, defMap, deprecated)...)
 	}
 	return out
 }
 
 // checkCrossRefAnnotations walks a schema's properties looking for cross-construct
 // $ref entries that are missing x-go-type / x-go-type-import annotations.
-func checkCrossRefAnnotations(filePath, schemaName string, schemaMap map[string]any) []Violation {
+func checkCrossRefAnnotations(filePath, schemaName string, schemaMap map[string]any, deprecated bool) []Violation {
 	props, ok := schemaMap["properties"].(map[string]any)
 	if !ok {
 		return nil
@@ -171,12 +171,14 @@ func checkCrossRefAnnotations(filePath, schemaName string, schemaMap map[string]
 
 		importName, _ := goImport["name"].(string)
 		if importName == "" {
-			out = append(out, Violation{
-				File:       filePath,
-				Message:    fmt.Sprintf(`Schema %q — property %q has x-go-type %q for cross-construct $ref but x-go-type-import.name must be a non-empty string.`, schemaName, propName, goType),
-				Severity:   SeverityBlocking,
-				RuleNumber: 16,
-			})
+			if deprecated {
+				out = append(out, Violation{
+					File:       filePath,
+					Message:    fmt.Sprintf(`Schema %q — property %q has x-go-type %q for cross-construct $ref but x-go-type-import.name must be a non-empty string.`, schemaName, propName, goType),
+					Severity:   SeverityBlocking,
+					RuleNumber: 16,
+				})
+			}
 			continue
 		}
 		typeStr := goTypePrefixRE.ReplaceAllString(goType, "")

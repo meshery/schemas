@@ -179,7 +179,7 @@ components:
 	}
 
 	raw, _ := loadYAMLDoc(apiPath)
-	vs := checkRule15("api.yml", raw, nil, AuditOptions{})
+	vs := checkRule15("api.yml", raw, nil, AuditOptions{}, false)
 	if len(vs) != 1 {
 		t.Fatalf("expected 1 violation for cross-construct $ref without x-go-type, got %d", len(vs))
 	}
@@ -216,7 +216,7 @@ components:
 	}
 
 	raw, _ := loadYAMLDoc(apiPath)
-	vs := checkRule15("api.yml", raw, nil, AuditOptions{})
+	vs := checkRule15("api.yml", raw, nil, AuditOptions{}, false)
 	if len(vs) != 0 {
 		t.Errorf("expected 0 violations when x-go-type is present, got %d", len(vs))
 	}
@@ -243,7 +243,7 @@ components:
 	}
 
 	raw, _ := loadYAMLDoc(apiPath)
-	vs := checkRule15("api.yml", raw, nil, AuditOptions{})
+	vs := checkRule15("api.yml", raw, nil, AuditOptions{}, false)
 	if len(vs) != 0 {
 		t.Errorf("expected 0 violations for internal $ref, got %d", len(vs))
 	}
@@ -270,7 +270,7 @@ components:
 	}
 
 	raw, _ := loadYAMLDoc(apiPath)
-	vs := checkRule15("api.yml", raw, nil, AuditOptions{})
+	vs := checkRule15("api.yml", raw, nil, AuditOptions{}, false)
 	if len(vs) != 0 {
 		t.Errorf("expected 0 violations for core $ref, got %d", len(vs))
 	}
@@ -298,7 +298,7 @@ components:
 	}
 
 	raw, _ := loadYAMLDoc(apiPath)
-	vs := checkRule15("api.yml", raw, nil, AuditOptions{})
+	vs := checkRule15("api.yml", raw, nil, AuditOptions{}, false)
 	if len(vs) != 1 {
 		t.Fatalf("expected 1 violation for missing x-go-type-import, got %d", len(vs))
 	}
@@ -332,7 +332,7 @@ components:
 	}
 
 	raw, _ := loadYAMLDoc(apiPath)
-	vs := checkRule15("api.yml", raw, nil, AuditOptions{})
+	vs := checkRule15("api.yml", raw, nil, AuditOptions{}, false)
 	if len(vs) != 1 {
 		t.Fatalf("expected 1 violation for alias mismatch, got %d", len(vs))
 	}
@@ -346,11 +346,12 @@ components:
 
 func TestCheckRule16_EmptyOrInvalidImportName(t *testing.T) {
 	for _, tc := range []struct {
-		name       string
-		importName string
+		name     string
+		nameLine string
 	}{
-		{name: "empty", importName: `""`},
-		{name: "non-string", importName: `42`},
+		{name: "empty", nameLine: `name: ""`},
+		{name: "non-string", nameLine: `name: 42`},
+		{name: "missing", nameLine: ``},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			tmpDir := t.TempDir()
@@ -367,7 +368,7 @@ components:
           $ref: "../connection/api.yml#/components/schemas/Connection"
           x-go-type: connectionv1beta1.Connection
           x-go-type-import:
-            name: ` + tc.importName + `
+            ` + tc.nameLine + `
             path: github.com/meshery/schemas/models/v1beta1/connection
 `
 			apiPath := filepath.Join(tmpDir, "api.yml")
@@ -387,6 +388,56 @@ components:
 			}
 			if !rule16 {
 				t.Errorf("expected deprecated API dispatch to report blocking Rule 16, got %+v", result.Blocking)
+			}
+		})
+	}
+}
+
+func TestCheckRule16_EmptyOrInvalidImportNameActiveUnaffected(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		nameLine string
+	}{
+		{name: "empty", nameLine: `name: ""`},
+		{name: "non-string", nameLine: `name: 42`},
+		{name: "missing", nameLine: ``},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			yamlContent := `openapi: "3.0.0"
+info:
+  title: Test
+  version: v1
+components:
+  schemas:
+    MySchema:
+      type: object
+      properties:
+        conn:
+          $ref: "../connection/api.yml#/components/schemas/Connection"
+          x-go-type: connectionv1beta1.Connection
+          x-go-type-import:
+            ` + tc.nameLine + `
+            path: github.com/meshery/schemas/models/v1beta1/connection
+`
+			apiPath := filepath.Join(tmpDir, "api.yml")
+			if err := os.WriteFile(apiPath, []byte(yamlContent), 0644); err != nil {
+				t.Fatal(err)
+			}
+
+			result := &AuditResult{}
+			doc := &openapi3.T{OpenAPI: "3.0.0", Info: &openapi3.Info{Title: "Test", Version: "v1"}}
+			auditAPISpec(apiPath, tmpDir, AuditOptions{RootDir: tmpDir}, make(map[string]bool), result,
+				make(map[string][]schemaLocation), "", doc, false)
+			for _, v := range result.Blocking {
+				if v.RuleNumber == 16 {
+					t.Errorf("active API dispatch must retain prior behavior for empty/missing import name, got blocking Rule 16 %+v", v)
+				}
+			}
+			for _, v := range result.Advisory {
+				if v.RuleNumber == 16 {
+					t.Errorf("active API dispatch must retain prior behavior for empty/missing import name, got advisory Rule 16 %+v", v)
+				}
 			}
 		})
 	}
@@ -414,7 +465,7 @@ components:
 	}
 
 	raw, _ := loadYAMLDoc(apiPath)
-	vs := checkRule15("api.yml", raw, nil, AuditOptions{})
+	vs := checkRule15("api.yml", raw, nil, AuditOptions{}, false)
 	if len(vs) != 1 {
 		t.Fatalf("expected 1 violation for cross-construct $ref inside allOf, got %d", len(vs))
 	}
@@ -437,7 +488,7 @@ info:
 	}
 
 	raw, _ := loadYAMLDoc(apiPath)
-	vs := checkRule15("api.yml", raw, nil, AuditOptions{})
+	vs := checkRule15("api.yml", raw, nil, AuditOptions{}, false)
 	if len(vs) != 0 {
 		t.Errorf("expected 0 violations when no schemas section, got %d", len(vs))
 	}

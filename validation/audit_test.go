@@ -339,9 +339,10 @@ components:
 
 // TestAuditAPISpec_DeprecatedRule27NormalAndStrict verifies deprecated Rule 27
 // blocking/advisory behavior in normal and Strict modes: a genuine blocking
-// Rule 27 finding (non-snake_case db tag) is always reported, while advisory
-// findings (manual yaml tag) are suppressed and are never elevated to blocking
-// under Strict for deprecated constructs.
+// Rule 27 finding (non-snake_case db tag) is always reported, no advisory
+// finding is emitted for deprecated constructs, and ordinary advisory Rule 27
+// findings (manual yaml tag) are promoted to blocking under Strict just as
+// they are for active constructs.
 func TestAuditAPISpec_DeprecatedRule27NormalAndStrict(t *testing.T) {
 	for _, strict := range []bool{false, true} {
 		t.Run(map[bool]string{false: "normal", true: "strict"}[strict], func(t *testing.T) {
@@ -400,8 +401,10 @@ components:
 }
 
 // TestAuditAPISpec_DeprecatedRule27AdvisoryOnlySuppressed verifies that a
-// deprecated construct with only advisory Rule 27 findings (manual yaml tag)
-// reports no Rule 27 in normal mode and is not elevated to blocking in Strict.
+// deprecated construct with only ordinary advisory Rule 27 findings (manual
+// yaml tag) emits no Rule 27 in normal mode, no advisory output in either
+// mode, and in Strict mode the ordinary advisory finding is promoted to
+// blocking exactly as for active constructs.
 func TestAuditAPISpec_DeprecatedRule27AdvisoryOnlySuppressed(t *testing.T) {
 	for _, strict := range []bool{false, true} {
 		t.Run(map[bool]string{false: "normal", true: "strict"}[strict], func(t *testing.T) {
@@ -436,10 +439,14 @@ components:
 			auditAPISpec(path, dir, AuditOptions{Strict: strict}, make(map[string]bool), result,
 				make(map[string][]schemaLocation), "", doc, true)
 
+			var rule27Blocking bool
 			for _, v := range result.Blocking {
 				if v.RuleNumber == 27 {
-					t.Errorf("strict=%t: expected no blocking Rule 27 for advisory-only manual yaml tag, got %+v", strict, v)
+					rule27Blocking = true
 				}
+			}
+			if rule27Blocking != strict {
+				t.Errorf("strict=%t: blocking Rule 27 for advisory-only manual yaml tag = %t, want %t; blocking=%+v", strict, rule27Blocking, strict, result.Blocking)
 			}
 			for _, v := range result.Advisory {
 				if v.RuleNumber == 27 {
