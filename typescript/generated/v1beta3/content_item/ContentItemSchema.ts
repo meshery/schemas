@@ -7,7 +7,7 @@ const ContentItemSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "ContentItem",
-    "description": "OpenAPI schema for content items - fingerprinted content\nvalues keyed by organization and row number, with conditional\nupdates.\nA content item may carry its own rules of engagement\n(`rulesOfEngagement`), which can only tighten the rules its profile and\nplatform run under, and may belong to a thread (`threadId`,\n`replyToId`, `threadIndex`): the parts of a split post, or the replies\nof a conversation between profiles.\nAn item's approval is resolved at insert and again at each content edit\nfrom its `approvalPolicy` (explicit `required` or `not_required` wins;\n`inherit` or absent inherits from higher-level settings, hierarchy defined\nin https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until\nthe upstream policies exist, `inherit` or absent resolves to `required`.\nA content edit that resolves to required resets an approved item to\nunapproved. Any content edit supersedes the item's open request, if any,\nand an item it leaves unapproved gets a fresh pending request for the\ncontent as it now is, so after the edit an unapproved item has an open\nrequest (see updateContentItem and the invariant in\ndocs/content-item-contract.md). A change to `approvalPolicy` alone whose\nresolved result is required resets an approved item the same way. Only a person\nholding Decide Content Item Approvals may write an `approvalPolicy` value\nthat changes the stored one.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it.\nAuthorization: each operation requires one permission key in that\norganization (Catalog Management / Content Items: View Content\nItems for the reads, Create Content Item, Edit Content Item and\nDelete Content Item for the writes); a caller without it receives a\n403 before any row is read. Past that check, an id that does not name\na live content item of the organization, and a caller who is not a\nlive member of it, receive the same 404, so the existence of another\norganization's rows is never disclosed.\n",
+    "description": "OpenAPI schema for content items - fingerprinted content\nvalues keyed by organization and row number, with conditional\nupdates.\nA content item may carry its own rules of engagement\n(`rulesOfEngagement`), which apply in place of the rules its profile and\nplatform resolve to, looser or stricter, and may belong to a thread (`threadId`,\n`replyToId`, `threadIndex`): the parts of a split post, or the replies\nof a conversation between profiles.\nAn item's approval is resolved at insert and again at each content edit\nfrom its `approvalPolicy` (explicit `required` or `not_required` wins;\n`inherit` or absent inherits from higher-level settings, hierarchy defined\nin https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until\nthe upstream policies exist, `inherit` or absent resolves to `required`.\nA content edit that resolves to required resets an approved item to\nunapproved. Any content edit supersedes the item's open request, if any,\nand an item it leaves unapproved gets a fresh pending request for the\ncontent as it now is, so after the edit an unapproved item has an open\nrequest (see updateContentItem and the invariant in\ndocs/content-item-contract.md). A change to `approvalPolicy` alone whose\nresolved result is required resets an approved item the same way. Only a person\nholding Decide Content Item Approvals may write an `approvalPolicy` value\nthat changes the stored one.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it.\nAuthorization: each operation requires one permission key in that\norganization (Catalog Management / Content Items: View Content\nItems for the reads, Create Content Item, Edit Content Item and\nDelete Content Item for the writes); a caller without it receives a\n403 before any row is read. Past that check, an id that does not name\na live content item of the organization, and a caller who is not a\nlive member of it, receive the same 404, so the existence of another\norganization's rows is never disclosed.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -160,7 +160,7 @@ const ContentItemSchema: Record<string, unknown> = {
                         "x-go-type": "ContentItem",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "title": "Content Item Schema",
-                        "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which can only tighten,\nand may belong to a thread through `threadId`, `replyToId` and\n`threadIndex`. See docs/content-item-contract.md.\n",
+                        "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which apply in place\nof the rules its profile and platform resolve to, and may belong to\na thread through `threadId`, `replyToId` and `threadIndex`. See\ndocs/content-item-contract.md.\n",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
@@ -295,7 +295,7 @@ const ContentItemSchema: Record<string, unknown> = {
                             "x-order": 10
                           },
                           "rulesOfEngagement": {
-                            "description": "The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
+                            "description": "The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
                             "x-oapi-codegen-extra-tags": {
                               "db": "rules_of_engagement",
                               "json": "rulesOfEngagement,omitempty"
@@ -314,7 +314,7 @@ const ContentItemSchema: Record<string, unknown> = {
                                   "path": "github.com/meshery/schemas/models/v1beta3/posture",
                                   "name": "posturev1beta3"
                                 },
-                                "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                                "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "title": "Posture Schema",
                                 "type": "string",
@@ -793,7 +793,7 @@ const ContentItemSchema: Record<string, unknown> = {
                         "type": "object",
                         "x-generate-db-helpers": true,
                         "additionalProperties": false,
-                        "description": "A content item's own rules of engagement: a Posture preset and,\noptionally, dials changed for this item only. Every value can only\ntighten. The client that runs the item resolves the effective rules\nas the stricter of these and the rules that apply to its profile and\nplatform without them (the more cautious preset wins, and each dial\napplies only where it is stricter than the resolved preset's own);\nthe warm-up and the pause after a sign-in challenge always apply.\nThe server validates the shape and stores the value as given; it\nnever resolves or loosens it.\n",
+                        "description": "A content item's own rules of engagement: a Posture preset and,\noptionally, dials changed for this item only. The client that runs the\nitem applies these in place of the rules its profile and platform\nresolve to, whether looser or stricter; the warm-up and the pause after\na sign-in challenge always apply, as does a limit the platform\npublishes. The server validates the shape and stores the value as given;\nit never resolves it.\n",
                         "required": [
                           "preset"
                         ],
@@ -804,7 +804,7 @@ const ContentItemSchema: Record<string, unknown> = {
                               "path": "github.com/meshery/schemas/models/v1beta3/posture",
                               "name": "posturev1beta3"
                             },
-                            "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                            "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "title": "Posture Schema",
                             "type": "string",
@@ -879,7 +879,7 @@ const ContentItemSchema: Record<string, unknown> = {
                         }
                       }
                     ],
-                    "description": "The item's own rules of engagement, which can only tighten the\nrules its profile and platform run under. Omitted on insert, the\nitem has none; omitted on update, the stored rules are kept;\n`null` on update clears them.\n",
+                    "description": "The item's own rules of engagement, which apply in place of the\nrules its profile and platform resolve to. Omitted on insert, the\nitem has none; omitted on update, the stored rules are kept;\n`null` on update clears them.\n",
                     "nullable": true,
                     "x-oapi-codegen-extra-tags": {
                       "json": "rulesOfEngagement,omitempty"
@@ -967,7 +967,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Content Item Schema",
-                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which can only tighten,\nand may belong to a thread through `threadId`, `replyToId` and\n`threadIndex`. See docs/content-item-contract.md.\n",
+                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which apply in place\nof the rules its profile and platform resolve to, and may belong to\na thread through `threadId`, `replyToId` and `threadIndex`. See\ndocs/content-item-contract.md.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -1102,7 +1102,7 @@ const ContentItemSchema: Record<string, unknown> = {
                       "x-order": 10
                     },
                     "rulesOfEngagement": {
-                      "description": "The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
+                      "description": "The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
                       "x-oapi-codegen-extra-tags": {
                         "db": "rules_of_engagement",
                         "json": "rulesOfEngagement,omitempty"
@@ -1121,7 +1121,7 @@ const ContentItemSchema: Record<string, unknown> = {
                             "path": "github.com/meshery/schemas/models/v1beta3/posture",
                             "name": "posturev1beta3"
                           },
-                          "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                          "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "title": "Posture Schema",
                           "type": "string",
@@ -1574,7 +1574,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Content Item Schema",
-                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which can only tighten,\nand may belong to a thread through `threadId`, `replyToId` and\n`threadIndex`. See docs/content-item-contract.md.\n",
+                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which apply in place\nof the rules its profile and platform resolve to, and may belong to\na thread through `threadId`, `replyToId` and `threadIndex`. See\ndocs/content-item-contract.md.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -1709,7 +1709,7 @@ const ContentItemSchema: Record<string, unknown> = {
                       "x-order": 10
                     },
                     "rulesOfEngagement": {
-                      "description": "The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
+                      "description": "The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
                       "x-oapi-codegen-extra-tags": {
                         "db": "rules_of_engagement",
                         "json": "rulesOfEngagement,omitempty"
@@ -1728,7 +1728,7 @@ const ContentItemSchema: Record<string, unknown> = {
                             "path": "github.com/meshery/schemas/models/v1beta3/posture",
                             "name": "posturev1beta3"
                           },
-                          "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                          "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "title": "Posture Schema",
                           "type": "string",
@@ -2207,7 +2207,7 @@ const ContentItemSchema: Record<string, unknown> = {
                         "type": "object",
                         "x-generate-db-helpers": true,
                         "additionalProperties": false,
-                        "description": "A content item's own rules of engagement: a Posture preset and,\noptionally, dials changed for this item only. Every value can only\ntighten. The client that runs the item resolves the effective rules\nas the stricter of these and the rules that apply to its profile and\nplatform without them (the more cautious preset wins, and each dial\napplies only where it is stricter than the resolved preset's own);\nthe warm-up and the pause after a sign-in challenge always apply.\nThe server validates the shape and stores the value as given; it\nnever resolves or loosens it.\n",
+                        "description": "A content item's own rules of engagement: a Posture preset and,\noptionally, dials changed for this item only. The client that runs the\nitem applies these in place of the rules its profile and platform\nresolve to, whether looser or stricter; the warm-up and the pause after\na sign-in challenge always apply, as does a limit the platform\npublishes. The server validates the shape and stores the value as given;\nit never resolves it.\n",
                         "required": [
                           "preset"
                         ],
@@ -2218,7 +2218,7 @@ const ContentItemSchema: Record<string, unknown> = {
                               "path": "github.com/meshery/schemas/models/v1beta3/posture",
                               "name": "posturev1beta3"
                             },
-                            "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                            "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "title": "Posture Schema",
                             "type": "string",
@@ -2293,7 +2293,7 @@ const ContentItemSchema: Record<string, unknown> = {
                         }
                       }
                     ],
-                    "description": "The item's own rules of engagement, which can only tighten the\nrules its profile and platform run under. Omitted on insert, the\nitem has none; omitted on update, the stored rules are kept;\n`null` on update clears them.\n",
+                    "description": "The item's own rules of engagement, which apply in place of the\nrules its profile and platform resolve to. Omitted on insert, the\nitem has none; omitted on update, the stored rules are kept;\n`null` on update clears them.\n",
                     "nullable": true,
                     "x-oapi-codegen-extra-tags": {
                       "json": "rulesOfEngagement,omitempty"
@@ -2381,7 +2381,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Content Item Schema",
-                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which can only tighten,\nand may belong to a thread through `threadId`, `replyToId` and\n`threadIndex`. See docs/content-item-contract.md.\n",
+                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which apply in place\nof the rules its profile and platform resolve to, and may belong to\na thread through `threadId`, `replyToId` and `threadIndex`. See\ndocs/content-item-contract.md.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -2516,7 +2516,7 @@ const ContentItemSchema: Record<string, unknown> = {
                       "x-order": 10
                     },
                     "rulesOfEngagement": {
-                      "description": "The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
+                      "description": "The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
                       "x-oapi-codegen-extra-tags": {
                         "db": "rules_of_engagement",
                         "json": "rulesOfEngagement,omitempty"
@@ -2535,7 +2535,7 @@ const ContentItemSchema: Record<string, unknown> = {
                             "path": "github.com/meshery/schemas/models/v1beta3/posture",
                             "name": "posturev1beta3"
                           },
-                          "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                          "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "title": "Posture Schema",
                           "type": "string",
@@ -3420,7 +3420,7 @@ const ContentItemSchema: Record<string, unknown> = {
       "ContentItem": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Content Item Schema",
-        "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which can only tighten,\nand may belong to a thread through `threadId`, `replyToId` and\n`threadIndex`. See docs/content-item-contract.md.\n",
+        "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which apply in place\nof the rules its profile and platform resolve to, and may belong to\na thread through `threadId`, `replyToId` and `threadIndex`. See\ndocs/content-item-contract.md.\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -3555,7 +3555,7 @@ const ContentItemSchema: Record<string, unknown> = {
             "x-order": 10
           },
           "rulesOfEngagement": {
-            "description": "The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
+            "description": "The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
             "x-oapi-codegen-extra-tags": {
               "db": "rules_of_engagement",
               "json": "rulesOfEngagement,omitempty"
@@ -3574,7 +3574,7 @@ const ContentItemSchema: Record<string, unknown> = {
                   "path": "github.com/meshery/schemas/models/v1beta3/posture",
                   "name": "posturev1beta3"
                 },
-                "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                 "$schema": "http://json-schema.org/draft-07/schema#",
                 "title": "Posture Schema",
                 "type": "string",
@@ -3840,7 +3840,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 "type": "object",
                 "x-generate-db-helpers": true,
                 "additionalProperties": false,
-                "description": "A content item's own rules of engagement: a Posture preset and,\noptionally, dials changed for this item only. Every value can only\ntighten. The client that runs the item resolves the effective rules\nas the stricter of these and the rules that apply to its profile and\nplatform without them (the more cautious preset wins, and each dial\napplies only where it is stricter than the resolved preset's own);\nthe warm-up and the pause after a sign-in challenge always apply.\nThe server validates the shape and stores the value as given; it\nnever resolves or loosens it.\n",
+                "description": "A content item's own rules of engagement: a Posture preset and,\noptionally, dials changed for this item only. The client that runs the\nitem applies these in place of the rules its profile and platform\nresolve to, whether looser or stricter; the warm-up and the pause after\na sign-in challenge always apply, as does a limit the platform\npublishes. The server validates the shape and stores the value as given;\nit never resolves it.\n",
                 "required": [
                   "preset"
                 ],
@@ -3851,7 +3851,7 @@ const ContentItemSchema: Record<string, unknown> = {
                       "path": "github.com/meshery/schemas/models/v1beta3/posture",
                       "name": "posturev1beta3"
                     },
-                    "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                    "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                     "$schema": "http://json-schema.org/draft-07/schema#",
                     "title": "Posture Schema",
                     "type": "string",
@@ -3926,7 +3926,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 }
               }
             ],
-            "description": "The item's own rules of engagement, which can only tighten the\nrules its profile and platform run under. Omitted on insert, the\nitem has none; omitted on update, the stored rules are kept;\n`null` on update clears them.\n",
+            "description": "The item's own rules of engagement, which apply in place of the\nrules its profile and platform resolve to. Omitted on insert, the\nitem has none; omitted on update, the stored rules are kept;\n`null` on update clears them.\n",
             "nullable": true,
             "x-oapi-codegen-extra-tags": {
               "json": "rulesOfEngagement,omitempty"
@@ -4045,7 +4045,7 @@ const ContentItemSchema: Record<string, unknown> = {
         "type": "object",
         "x-generate-db-helpers": true,
         "additionalProperties": false,
-        "description": "A content item's own rules of engagement: a Posture preset and,\noptionally, dials changed for this item only. Every value can only\ntighten. The client that runs the item resolves the effective rules\nas the stricter of these and the rules that apply to its profile and\nplatform without them (the more cautious preset wins, and each dial\napplies only where it is stricter than the resolved preset's own);\nthe warm-up and the pause after a sign-in challenge always apply.\nThe server validates the shape and stores the value as given; it\nnever resolves or loosens it.\n",
+        "description": "A content item's own rules of engagement: a Posture preset and,\noptionally, dials changed for this item only. The client that runs the\nitem applies these in place of the rules its profile and platform\nresolve to, whether looser or stricter; the warm-up and the pause after\na sign-in challenge always apply, as does a limit the platform\npublishes. The server validates the shape and stores the value as given;\nit never resolves it.\n",
         "required": [
           "preset"
         ],
@@ -4056,7 +4056,7 @@ const ContentItemSchema: Record<string, unknown> = {
               "path": "github.com/meshery/schemas/models/v1beta3/posture",
               "name": "posturev1beta3"
             },
-            "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+            "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
             "$schema": "http://json-schema.org/draft-07/schema#",
             "title": "Posture Schema",
             "type": "string",
@@ -4133,7 +4133,7 @@ const ContentItemSchema: Record<string, unknown> = {
       "ContentItemRulesOfEngagementDials": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Dials of a content item's rules of engagement. Each is optional and\napplies only where it is stricter than the resolved preset's own\nvalue; a dial that would loosen is ignored by the client that runs\nthe item.\n",
+        "description": "Dials of a content item's rules of engagement. Each is optional and\napplies on top of the item's own preset, as set.\n",
         "properties": {
           "pace": {
             "type": "string",
@@ -4240,7 +4240,7 @@ const ContentItemSchema: Record<string, unknown> = {
               "x-go-type": "ContentItem",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "title": "Content Item Schema",
-              "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which can only tighten,\nand may belong to a thread through `threadId`, `replyToId` and\n`threadIndex`. See docs/content-item-contract.md.\n",
+              "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\nAn item may carry its own rules of engagement, which apply in place\nof the rules its profile and platform resolve to, and may belong to\na thread through `threadId`, `replyToId` and `threadIndex`. See\ndocs/content-item-contract.md.\n",
               "type": "object",
               "additionalProperties": false,
               "required": [
@@ -4375,7 +4375,7 @@ const ContentItemSchema: Record<string, unknown> = {
                   "x-order": 10
                 },
                 "rulesOfEngagement": {
-                  "description": "The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
+                  "description": "The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.\n",
                   "x-oapi-codegen-extra-tags": {
                     "db": "rules_of_engagement",
                     "json": "rulesOfEngagement,omitempty"
@@ -4394,7 +4394,7 @@ const ContentItemSchema: Record<string, unknown> = {
                         "path": "github.com/meshery/schemas/models/v1beta3/posture",
                         "name": "posturev1beta3"
                       },
-                      "description": "The preset the item asks for. It applies only when it is at\nleast as cautious as the preset its profile and platform\nresolve to.\n",
+                      "description": "The preset the item asks for. It applies in place of the preset\nits profile and platform resolve to.\n",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "title": "Posture Schema",
                       "type": "string",

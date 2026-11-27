@@ -205,9 +205,10 @@ export interface components {
          *     Content items carry a row number and a server-computed fingerprint over
          *     their canonical values; updates are conditional on the fingerprint the
          *     writer read, so stale writes are refused rather than silently applied.
-         *     An item may carry its own rules of engagement, which can only tighten,
-         *     and may belong to a thread through `threadId`, `replyToId` and
-         *     `threadIndex`. See docs/content-item-contract.md.
+         *     An item may carry its own rules of engagement, which apply in place
+         *     of the rules its profile and platform resolve to, and may belong to
+         *     a thread through `threadId`, `replyToId` and `threadIndex`. See
+         *     docs/content-item-contract.md.
          */
         ContentItem: {
             /**
@@ -248,13 +249,12 @@ export interface components {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             createdBy?: string;
-            /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+            /** @description The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
             rulesOfEngagement?: {
                 /**
                  * Posture Schema
-                 * @description The preset the item asks for. It applies only when it is at
-                 *     least as cautious as the preset its profile and platform
-                 *     resolve to.
+                 * @description The preset the item asks for. It applies in place of the preset
+                 *     its profile and platform resolve to.
                  * @enum {string}
                  */
                 preset: "cautious" | "standard" | "brisk";
@@ -358,17 +358,16 @@ export interface components {
              */
             expectedFingerprint?: string;
             /**
-             * @description The item's own rules of engagement, which can only tighten the
-             *     rules its profile and platform run under. Omitted on insert, the
+             * @description The item's own rules of engagement, which apply in place of the
+             *     rules its profile and platform resolve to. Omitted on insert, the
              *     item has none; omitted on update, the stored rules are kept;
              *     `null` on update clears them.
              */
             rulesOfEngagement?: {
                 /**
                  * Posture Schema
-                 * @description The preset the item asks for. It applies only when it is at
-                 *     least as cautious as the preset its profile and platform
-                 *     resolve to.
+                 * @description The preset the item asks for. It applies in place of the preset
+                 *     its profile and platform resolve to.
                  * @enum {string}
                  */
                 preset: "cautious" | "standard" | "brisk";
@@ -476,21 +475,18 @@ export interface components {
         };
         /**
          * @description A content item's own rules of engagement: a Posture preset and,
-         *     optionally, dials changed for this item only. Every value can only
-         *     tighten. The client that runs the item resolves the effective rules
-         *     as the stricter of these and the rules that apply to its profile and
-         *     platform without them (the more cautious preset wins, and each dial
-         *     applies only where it is stricter than the resolved preset's own);
-         *     the warm-up and the pause after a sign-in challenge always apply.
-         *     The server validates the shape and stores the value as given; it
-         *     never resolves or loosens it.
+         *     optionally, dials changed for this item only. The client that runs the
+         *     item applies these in place of the rules its profile and platform
+         *     resolve to, whether looser or stricter; the warm-up and the pause after
+         *     a sign-in challenge always apply, as does a limit the platform
+         *     publishes. The server validates the shape and stores the value as given;
+         *     it never resolves it.
          */
         ContentItemRulesOfEngagement: {
             /**
              * Posture Schema
-             * @description The preset the item asks for. It applies only when it is at
-             *     least as cautious as the preset its profile and platform
-             *     resolve to.
+             * @description The preset the item asks for. It applies in place of the preset
+             *     its profile and platform resolve to.
              * @enum {string}
              */
             preset: "cautious" | "standard" | "brisk";
@@ -524,9 +520,7 @@ export interface components {
         };
         /**
          * @description Dials of a content item's rules of engagement. Each is optional and
-         *     applies only where it is stricter than the resolved preset's own
-         *     value; a dial that would loosen is ignored by the client that runs
-         *     the item.
+         *     applies on top of the item's own preset, as set.
          */
         ContentItemRulesOfEngagementDials: {
             /**
@@ -609,13 +603,12 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 createdBy?: string;
-                /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                /** @description The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
                 rulesOfEngagement?: {
                     /**
                      * Posture Schema
-                     * @description The preset the item asks for. It applies only when it is at
-                     *     least as cautious as the preset its profile and platform
-                     *     resolve to.
+                     * @description The preset the item asks for. It applies in place of the preset
+                     *     its profile and platform resolve to.
                      * @enum {string}
                      */
                     preset: "cautious" | "standard" | "brisk";
@@ -952,13 +945,12 @@ export interface operations {
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             createdBy?: string;
-                            /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                            /** @description The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
                             rulesOfEngagement?: {
                                 /**
                                  * Posture Schema
-                                 * @description The preset the item asks for. It applies only when it is at
-                                 *     least as cautious as the preset its profile and platform
-                                 *     resolve to.
+                                 * @description The preset the item asks for. It applies in place of the preset
+                                 *     its profile and platform resolve to.
                                  * @enum {string}
                                  */
                                 preset: "cautious" | "standard" | "brisk";
@@ -1165,17 +1157,16 @@ export interface operations {
                      */
                     expectedFingerprint?: string;
                     /**
-                     * @description The item's own rules of engagement, which can only tighten the
-                     *     rules its profile and platform run under. Omitted on insert, the
+                     * @description The item's own rules of engagement, which apply in place of the
+                     *     rules its profile and platform resolve to. Omitted on insert, the
                      *     item has none; omitted on update, the stored rules are kept;
                      *     `null` on update clears them.
                      */
                     rulesOfEngagement?: {
                         /**
                          * Posture Schema
-                         * @description The preset the item asks for. It applies only when it is at
-                         *     least as cautious as the preset its profile and platform
-                         *     resolve to.
+                         * @description The preset the item asks for. It applies in place of the preset
+                         *     its profile and platform resolve to.
                          * @enum {string}
                          */
                         preset: "cautious" | "standard" | "brisk";
@@ -1301,13 +1292,12 @@ export interface operations {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         createdBy?: string;
-                        /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                        /** @description The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
                         rulesOfEngagement?: {
                             /**
                              * Posture Schema
-                             * @description The preset the item asks for. It applies only when it is at
-                             *     least as cautious as the preset its profile and platform
-                             *     resolve to.
+                             * @description The preset the item asks for. It applies in place of the preset
+                             *     its profile and platform resolve to.
                              * @enum {string}
                              */
                             preset: "cautious" | "standard" | "brisk";
@@ -1541,13 +1531,12 @@ export interface operations {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         createdBy?: string;
-                        /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                        /** @description The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
                         rulesOfEngagement?: {
                             /**
                              * Posture Schema
-                             * @description The preset the item asks for. It applies only when it is at
-                             *     least as cautious as the preset its profile and platform
-                             *     resolve to.
+                             * @description The preset the item asks for. It applies in place of the preset
+                             *     its profile and platform resolve to.
                              * @enum {string}
                              */
                             preset: "cautious" | "standard" | "brisk";
@@ -1753,17 +1742,16 @@ export interface operations {
                      */
                     expectedFingerprint?: string;
                     /**
-                     * @description The item's own rules of engagement, which can only tighten the
-                     *     rules its profile and platform run under. Omitted on insert, the
+                     * @description The item's own rules of engagement, which apply in place of the
+                     *     rules its profile and platform resolve to. Omitted on insert, the
                      *     item has none; omitted on update, the stored rules are kept;
                      *     `null` on update clears them.
                      */
                     rulesOfEngagement?: {
                         /**
                          * Posture Schema
-                         * @description The preset the item asks for. It applies only when it is at
-                         *     least as cautious as the preset its profile and platform
-                         *     resolve to.
+                         * @description The preset the item asks for. It applies in place of the preset
+                         *     its profile and platform resolve to.
                          * @enum {string}
                          */
                         preset: "cautious" | "standard" | "brisk";
@@ -1889,13 +1877,12 @@ export interface operations {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         createdBy?: string;
-                        /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                        /** @description The item's own rules of engagement, set by the order that wrote it. The client that runs the item applies them in place of the rules that apply to the item's profile and platform, looser or stricter; the warm-up and the pause after a sign-in challenge always apply, as does a limit the platform publishes. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
                         rulesOfEngagement?: {
                             /**
                              * Posture Schema
-                             * @description The preset the item asks for. It applies only when it is at
-                             *     least as cautious as the preset its profile and platform
-                             *     resolve to.
+                             * @description The preset the item asks for. It applies in place of the preset
+                             *     its profile and platform resolve to.
                              * @enum {string}
                              */
                             preset: "cautious" | "standard" | "brisk";

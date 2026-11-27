@@ -62,9 +62,10 @@ type ApprovalPolicy string
 // Content items carry a row number and a server-computed fingerprint over
 // their canonical values; updates are conditional on the fingerprint the
 // writer read, so stale writes are refused rather than silently applied.
-// An item may carry its own rules of engagement, which can only tighten,
-// and may belong to a thread through `threadId`, `replyToId` and
-// `threadIndex`. See docs/content-item-contract.md.
+// An item may carry its own rules of engagement, which apply in place
+// of the rules its profile and platform resolve to, and may belong to
+// a thread through `threadId`, `replyToId` and `threadIndex`. See
+// docs/content-item-contract.md.
 type ContentItem struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID core.Uuid `db:"id" json:"id" yaml:"id"`
@@ -92,15 +93,14 @@ type ContentItem struct {
 	// CreatedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	CreatedBy *core.Uuid `db:"created_by" json:"createdBy,omitempty" yaml:"createdBy,omitempty"`
 
-	// RulesOfEngagement A content item's own rules of engagement: a Posture preset and,
-	// optionally, dials changed for this item only. Every value can only
-	// tighten. The client that runs the item resolves the effective rules
-	// as the stricter of these and the rules that apply to its profile and
-	// platform without them (the more cautious preset wins, and each dial
-	// applies only where it is stricter than the resolved preset's own);
-	// the warm-up and the pause after a sign-in challenge always apply.
-	// The server validates the shape and stores the value as given; it
-	// never resolves or loosens it.
+	// RulesOfEngagement The item's own rules of engagement, set by the order that wrote it.
+	// The client that runs the item applies them in place of the rules
+	// that apply to the item's profile and platform, looser or stricter;
+	// the warm-up and the pause after a sign-in challenge always apply,
+	// as does a limit the platform publishes. The server validates the shape
+	// and stores the value; it does not resolve it. Omitted when the item
+	// has none, in which case the item runs under the rules that apply
+	// without them.
 	RulesOfEngagement *ContentItemRulesOfEngagement `db:"rules_of_engagement" json:"rulesOfEngagement,omitempty" yaml:"rulesOfEngagement,omitempty"`
 
 	// ThreadID ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
@@ -234,8 +234,8 @@ type ContentItemPayload struct {
 	// on update, the stored row number is kept.
 	RowNumber *int `json:"rowNumber,omitempty" yaml:"rowNumber,omitempty"`
 
-	// RulesOfEngagement The item's own rules of engagement, which can only tighten the
-	// rules its profile and platform run under. Omitted on insert, the
+	// RulesOfEngagement The item's own rules of engagement, which apply in place of the
+	// rules its profile and platform resolve to. Omitted on insert, the
 	// item has none; omitted on update, the stored rules are kept;
 	// `null` on update clears them.
 	RulesOfEngagement *ContentItemRulesOfEngagement `json:"rulesOfEngagement,omitempty" yaml:"rulesOfEngagement,omitempty"`
@@ -261,19 +261,15 @@ type ContentItemQuietHours struct {
 }
 
 // ContentItemRulesOfEngagement A content item's own rules of engagement: a Posture preset and,
-// optionally, dials changed for this item only. Every value can only
-// tighten. The client that runs the item resolves the effective rules
-// as the stricter of these and the rules that apply to its profile and
-// platform without them (the more cautious preset wins, and each dial
-// applies only where it is stricter than the resolved preset's own);
-// the warm-up and the pause after a sign-in challenge always apply.
-// The server validates the shape and stores the value as given; it
-// never resolves or loosens it.
+// optionally, dials changed for this item only. The client that runs the
+// item applies these in place of the rules its profile and platform
+// resolve to, whether looser or stricter; the warm-up and the pause after
+// a sign-in challenge always apply, as does a limit the platform
+// publishes. The server validates the shape and stores the value as given;
+// it never resolves it.
 type ContentItemRulesOfEngagement struct {
 	// Dials Dials of a content item's rules of engagement. Each is optional and
-	// applies only where it is stricter than the resolved preset's own
-	// value; a dial that would loosen is ignored by the client that runs
-	// the item.
+	// applies on top of the item's own preset, as set.
 	Dials *ContentItemRulesOfEngagementDials `json:"dials,omitempty" yaml:"dials,omitempty"`
 
 	// Preset The Posture preset value. Wherever the value is carried, the workload
@@ -292,9 +288,7 @@ type ContentItemRulesOfEngagement struct {
 }
 
 // ContentItemRulesOfEngagementDials Dials of a content item's rules of engagement. Each is optional and
-// applies only where it is stricter than the resolved preset's own
-// value; a dial that would loosen is ignored by the client that runs
-// the item.
+// applies on top of the item's own preset, as set.
 type ContentItemRulesOfEngagementDials struct {
 	// CapFraction Share of each built-in daily cap the item may use, above 0 and at most 1.
 	CapFraction *float64 `json:"capFraction,omitempty" yaml:"capFraction,omitempty"`

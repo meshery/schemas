@@ -30,12 +30,11 @@ generated type carries.
 `dials` is present only when the order changed a dial for this item. Its
 presence is what marks the item's rules "adjusted".
 
-**The rules only tighten.** The client that runs the item applies the more
-cautious of `preset` and the preset its profile and platform resolve to.
-Each dial applies only where it is stricter than that preset's own value.
-The warm-up and the pause after a sign-in challenge apply regardless. The
-schedule's `posture` is a different carrier: there, the preset replaces
-the resolution (see the schedule construct's `posture`).
+**The item's rules replace the resolution.** The client that runs the item
+applies these in place of the rules its profile and platform resolve to,
+whether looser or stricter; the warm-up and the pause after a sign-in challenge
+always apply, as does a limit the platform publishes. The schedule's `posture`
+shares the same behavior (see the schedule construct's `posture`).
 
 **The server stores and validates; it does not resolve.** The resolution
 needs the profile and platform settings, the warm-up and the challenge
@@ -495,5 +494,5 @@ backfill is the only time `Approved?` sets `approved`.
   `threadId` filter, and answer `409` with `code` `idempotency_key_in_flight`
   to an `Idempotency-Key` still in flight.
 - **The posting client** vendors the release, adds the fields to its `ContentItem`
-  reads and `ContentItemPayload` sends, and implements the tightening and
+  reads and `ContentItemPayload` sends, and implements the resolution and
   the reply hold in the engine.
