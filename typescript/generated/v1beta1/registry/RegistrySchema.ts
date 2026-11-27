@@ -49977,7 +49977,14 @@ const RegistrySchema: Record<string, unknown> = {
                           "type": "array",
                           "items": {
                             "type": "object",
-                            "additionalProperties": true
+                            "additionalProperties": true,
+                            "properties": {
+                              "apiVersion": {
+                                "type": "string",
+                                "description": "Resource API version of the registered component, for example `secrets.infisical.com/v1alpha1`, sourced from the component definition's nested `component.version` field. There is no separate `component.apiVersion` field. Distinct from `Version`, which carries the model definition version. Optional: rows produced before this field was introduced omit it.",
+                                "maxLength": 500
+                              }
+                            }
                           },
                           "description": "Components successfully imported."
                         },
@@ -68965,7 +68972,14 @@ const RegistrySchema: Record<string, unknown> = {
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": true
+                  "additionalProperties": true,
+                  "properties": {
+                    "apiVersion": {
+                      "type": "string",
+                      "description": "Resource API version of the registered component, for example `secrets.infisical.com/v1alpha1`, sourced from the component definition's nested `component.version` field. There is no separate `component.apiVersion` field. Distinct from `Version`, which carries the model definition version. Optional: rows produced before this field was introduced omit it.",
+                      "maxLength": 500
+                    }
+                  }
                 },
                 "description": "Components successfully imported."
               },
@@ -69051,7 +69065,14 @@ const RegistrySchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "additionalProperties": true
+              "additionalProperties": true,
+              "properties": {
+                "apiVersion": {
+                  "type": "string",
+                  "description": "Resource API version of the registered component, for example `secrets.infisical.com/v1alpha1`, sourced from the component definition's nested `component.version` field. There is no separate `component.apiVersion` field. Distinct from `Version`, which carries the model definition version. Optional: rows produced before this field was introduced omit it.",
+                  "maxLength": 500
+                }
+              }
             },
             "description": "Components successfully imported."
           },

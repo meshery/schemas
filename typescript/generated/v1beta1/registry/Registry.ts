@@ -3431,9 +3431,12 @@ export interface components {
             /** @description Per-type summaries of imported entities and failures. */
             entityTypeSummary?: {
                 /** @description Components successfully imported. */
-                successfulComponents?: {
+                successfulComponents?: ({
+                    /** @description Resource API version of the registered component, for example `secrets.infisical.com/v1alpha1`, sourced from the component definition's nested `component.version` field. There is no separate `component.apiVersion` field. Distinct from `Version`, which carries the model definition version. Optional: rows produced before this field was introduced omit it. */
+                    apiVersion?: string;
+                } & {
                     [key: string]: unknown;
-                }[];
+                })[];
                 /** @description Relationships successfully imported. */
                 successfulRelationships?: {
                     [key: string]: unknown;
@@ -3468,9 +3471,12 @@ export interface components {
         /** @description Per-type summaries of imported entities and failures. */
         RegistryImportEntitySummary: {
             /** @description Components successfully imported. */
-            successfulComponents?: {
+            successfulComponents?: ({
+                /** @description Resource API version of the registered component, for example `secrets.infisical.com/v1alpha1`, sourced from the component definition's nested `component.version` field. There is no separate `component.apiVersion` field. Distinct from `Version`, which carries the model definition version. Optional: rows produced before this field was introduced omit it. */
+                apiVersion?: string;
+            } & {
                 [key: string]: unknown;
-            }[];
+            })[];
             /** @description Relationships successfully imported. */
             successfulRelationships?: {
                 [key: string]: unknown;
@@ -14151,9 +14157,12 @@ export interface operations {
                         /** @description Per-type summaries of imported entities and failures. */
                         entityTypeSummary?: {
                             /** @description Components successfully imported. */
-                            successfulComponents?: {
+                            successfulComponents?: ({
+                                /** @description Resource API version of the registered component, for example `secrets.infisical.com/v1alpha1`, sourced from the component definition's nested `component.version` field. There is no separate `component.apiVersion` field. Distinct from `Version`, which carries the model definition version. Optional: rows produced before this field was introduced omit it. */
+                                apiVersion?: string;
+                            } & {
                                 [key: string]: unknown;
-                            }[];
+                            })[];
                             /** @description Relationships successfully imported. */
                             successfulRelationships?: {
                                 [key: string]: unknown;
