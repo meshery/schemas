@@ -147,12 +147,16 @@ func fileExists(path string) bool {
 }
 
 // auditMcpOperations applies Rule 48 across every bundled construct api.yml.
-// A spec that fails to load is a blocking Rule 48 violation of its own: its
-// x-mcp operations were not checked, so the audit must say so rather than
-// pass over a gap in its coverage.
-func auditMcpOperations(opts AuditOptions, baseline map[string]bool, result *AuditResult) {
+// malformedAlreadyReported contains paths for which Audit has already emitted
+// the blocking Rule 12 load failure; those paths are excluded to avoid a
+// duplicate, out-of-scope Rule 48 finding.
+func auditMcpOperations(opts AuditOptions, baseline map[string]bool, result *AuditResult,
+	malformedAlreadyReported map[string]struct{}) {
 	walkBundledConstructDocs(opts.RootDir, func(relPath string, doc *openapi3.T, loadErr error) {
 		if loadErr != nil {
+			if _, reported := malformedAlreadyReported[relPath]; reported {
+				return
+			}
 			addViolation(result, Violation{File: relPath,
 				Message:  fmt.Sprintf("the spec could not be loaded, so its x-mcp operations were not checked: %v", loadErr),
 				Severity: SeverityBlocking, RuleNumber: 48}, baseline)

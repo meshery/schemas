@@ -876,69 +876,77 @@ components:
 	}
 }
 
-// TestAuditMalformedAPIStillAuditsEntityAndTemplates verifies that an existing
-// but malformed api.yml keeps its blocking Rule 12 violation while entity
-// schemas and template files in the same construct are still independently
-// audited (Rule 1/20 entity checks and template checks are not suppressed).
-func TestAuditMalformedAPIStillAuditsEntityAndTemplates(t *testing.T) {
-	root := t.TempDir()
-	constructDir := filepath.Join(root, "schemas", "constructs", "v1beta1", "malformed-construct")
-	templatesDir := filepath.Join(constructDir, "templates")
-	if err := os.MkdirAll(templatesDir, 0o755); err != nil {
-		t.Fatalf("mkdir %s: %v", templatesDir, err)
-	}
+// TestAuditMalformedAPIAppliesOnlyScopedBlockingRules verifies malformed
+// constructs retain Rule 12 and independently loadable entity Rules 1/20,
+// while advisory entity rules and out-of-scope template/MCP rules are omitted.
+func TestAuditMalformedAPIAppliesOnlyScopedBlockingRules(t *testing.T) {
+	for _, tc := range []struct {
+		name             string
+		withTemplate     bool
+		templateContents string
+		forbiddenRule    int
+	}{
+		{name: "template absence does not run Rule 18", forbiddenRule: 18},
+		{name: "template mismatch does not run Rule 34", withTemplate: true, templateContents: `{"name": {}}`, forbiddenRule: 34},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			construct := "malformed-construct"
+			constructDir := filepath.Join(root, "schemas", "constructs", "v1beta1", construct)
+			if err := os.MkdirAll(constructDir, 0o755); err != nil {
+				t.Fatalf("mkdir construct directory: %v", err)
+			}
+			apiPath := filepath.Join(constructDir, "api.yml")
+			if err := os.WriteFile(apiPath, []byte("openapi: [invalid\n"), 0o644); err != nil {
+				t.Fatalf("write malformed api.yml: %v", err)
+			}
 
-	// Malformed api.yml: unclosed bracket.
-	if err := os.WriteFile(filepath.Join(constructDir, "api.yml"), []byte("openapi: [invalid\n"), 0o644); err != nil {
-		t.Fatalf("write malformed api.yml: %v", err)
-	}
+			// This entity independently loads, has blocking Rule 1/20 defects,
+			// and would produce style/design advisories in the active profile.
+			entityPath := filepath.Join(constructDir, construct+".yaml")
+			entity := "type: object\nproperties:\n  name:\n    type: string\n  snake_case:\n    type: string\n"
+			if err := os.WriteFile(entityPath, []byte(entity), 0o644); err != nil {
+				t.Fatalf("write entity schema: %v", err)
+			}
 
-	// Independently loadable entity schema: missing additionalProperties: false
-	// (Rule 1) and missing required (Rule 20).
-	entityPath := filepath.Join(constructDir, "malformed-construct.yaml")
-	entity := "type: object\nproperties:\n  name:\n    type: string\n"
-	if err := os.WriteFile(entityPath, []byte(entity), 0o644); err != nil {
-		t.Fatalf("write entity schema: %v", err)
-	}
+			if tc.withTemplate {
+				templatesDir := filepath.Join(constructDir, "templates")
+				if err := os.MkdirAll(templatesDir, 0o755); err != nil {
+					t.Fatalf("mkdir templates directory: %v", err)
+				}
+				templatePath := filepath.Join(templatesDir, construct+"_template.json")
+				if err := os.WriteFile(templatePath, []byte(tc.templateContents), 0o644); err != nil {
+					t.Fatalf("write template: %v", err)
+				}
+			}
 
-	// Independently loadable template file: name is an object but schema
-	// declares type: string (Rule 34).
-	templatePath := filepath.Join(templatesDir, "malformed-construct_template.json")
-	if err := os.WriteFile(templatePath, []byte(`{"name": {}}`), 0o644); err != nil {
-		t.Fatalf("write template: %v", err)
-	}
-
-	result := Audit(AuditOptions{RootDir: root, NoBaseline: true})
-
-	entityFile := relativeToRoot(entityPath, root)
-	apiFile := relativeToRoot(filepath.Join(constructDir, "api.yml"), root)
-	templateFile := relativeToRoot(templatePath, root)
-
-	var rule12, rule1, rule20, rule34 bool
-	for _, v := range result.Blocking {
-		switch {
-		case v.File == apiFile && v.RuleNumber == 12:
-			rule12 = true
-		case v.File == entityFile && v.RuleNumber == 1:
-			rule1 = true
-		case v.File == entityFile && v.RuleNumber == 20:
-			rule20 = true
-		case v.File == templateFile && v.RuleNumber == 34:
-			rule34 = true
-		}
-	}
-
-	if !rule12 {
-		t.Error("expected blocking Rule 12 for malformed api.yml")
-	}
-	if !rule1 {
-		t.Errorf("expected blocking Rule 1 for independently loadable entity %s", entityFile)
-	}
-	if !rule20 {
-		t.Errorf("expected blocking Rule 20 for independently loadable entity %s", entityFile)
-	}
-	if !rule34 {
-		t.Errorf("expected blocking Rule 34 for independently loadable template %s", templateFile)
+			result := Audit(AuditOptions{RootDir: root, NoBaseline: true, StyleDebt: true})
+			apiFile := relativeToRoot(apiPath, root)
+			entityFile := relativeToRoot(entityPath, root)
+			var rule12, rule1, rule20 bool
+			for _, v := range result.Blocking {
+				if v.File == apiFile && v.RuleNumber == 12 && v.Message == "Failed to load api.yml" {
+					rule12 = true
+				}
+				if v.File == entityFile && v.RuleNumber == 1 {
+					rule1 = true
+				}
+				if v.File == entityFile && v.RuleNumber == 20 {
+					rule20 = true
+				}
+				if v.RuleNumber == tc.forbiddenRule || v.RuleNumber == 35 || v.RuleNumber == 48 {
+					t.Errorf("unexpected out-of-scope blocking Rule %d for %s: %+v", v.RuleNumber, v.File, v)
+				}
+			}
+			if !rule12 || !rule1 || !rule20 {
+				t.Errorf("want blocking Rules 12, 1, and 20; got blocking violations: %+v", result.Blocking)
+			}
+			for _, v := range result.Advisory {
+				if v.File == entityFile || v.File == apiFile {
+					t.Errorf("unexpected advisory finding for malformed construct: %+v", v)
+				}
+			}
+		})
 	}
 }
 

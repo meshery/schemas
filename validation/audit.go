@@ -153,6 +153,10 @@ func Audit(opts AuditOptions) AuditResult {
 
 	// Cross-file sibling-endpoint parameter parity accumulator for Rule 46.
 	parity := &parityAccumulator{}
+	// Malformed API specs get a blocking Rule 12 finding here. Exclude those
+	// same paths from the separate MCP scan to avoid a duplicate, out-of-scope
+	// Rule 48 finding for a parse failure.
+	malformedAPIPaths := make(map[string]struct{})
 
 	// Walk audit construct specs (issue #730). Errors are intentionally ignored:
 	// Audit returns AuditResult, not error, and individual load failures
@@ -161,10 +165,10 @@ func Audit(opts AuditOptions) AuditResult {
 		if spec.LoadErr != nil {
 			// A malformed API spec has unknown deprecation status. Keep its
 			// blocking load violation (Rule 12) without treating its construct
-			// files as active, but still independently audit entity schemas and
-			// template files in the construct directory.
-			auditEntitySchemas(spec.ConstructDir, opts, baseline, &result, false)
-			auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result, false)
+			// files as active. Independently loadable entity files receive only
+			// the approved blocking entity rules; template rules are out of scope.
+			malformedAPIPaths[spec.RelativePath] = struct{}{}
+			auditEntitySchemas(spec.ConstructDir, opts, baseline, &result, true)
 			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
 				fingerprints, enumBaselineRef, nil, false)
 			return nil
@@ -205,7 +209,7 @@ func Audit(opts AuditOptions) AuditResult {
 
 	// Rule 48: x-mcp operations, in every published version that is bundled
 	// (the walk above keeps only the newest version of each construct).
-	auditMcpOperations(opts, baseline, &result)
+	auditMcpOperations(opts, baseline, &result, malformedAPIPaths)
 
 	// Rule 22: validate helper files in models/.
 	auditHelperFiles(modelsDir, opts, baseline, &result)
