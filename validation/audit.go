@@ -207,8 +207,9 @@ func Audit(opts AuditOptions) AuditResult {
 		addViolation(&result, v, baseline)
 	}
 
-	// Rule 48: x-mcp operations, in every published version that is bundled
-	// (the walk above keeps only the newest version of each construct).
+	// Rule 48: x-mcp operations, in every bundled version that loads. The
+	// walk above also visits malformed specs, but those are already reported
+	// as blocking Rule 12 findings and excluded here to avoid a duplicate.
 	auditMcpOperations(opts, baseline, &result, malformedAPIPaths)
 
 	// Rule 22: validate helper files in models/.
