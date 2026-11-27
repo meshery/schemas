@@ -20,7 +20,8 @@ model:
     subType: ''
     kind: artifacthub
     status: ''
-    userId: 00000000-0000-0000-0000-000000000000
+    owner: 00000000-0000-0000-0000-000000000000
+    organizationId: 00000000-0000-0000-0000-000000000000
     createdAt: '0001-01-01T00:00:00Z'
     updatedAt: '0001-01-01T00:00:00Z'
     deletedAt: 
