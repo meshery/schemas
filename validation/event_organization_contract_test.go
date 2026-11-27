@@ -176,6 +176,66 @@ func TestMarkAllEventsReadContract(t *testing.T) {
 	}
 }
 
+// getEvents accepts a JSON-encoded EventsFilter with createdAt bounds, so a
+// client can page one time window instead of the organization's whole run
+// history (meshery/schemas#1397, blowhorn-ai/blowhorn#2222). The field set
+// mirrors meshkit models/events.EventsFilter plus the two bounds.
+func TestGetEventsFilter(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), "schemas/constructs/v1beta3/event/api.yml"))
+
+	op := mustLookup(t, doc, "paths", "/api/events/list", "get")
+	if !operationReferencesParameter(op, "#/components/parameters/getEventsFilter") {
+		t.Errorf("getEvents must reference getEventsFilter")
+	}
+
+	param := mustLookup(t, doc, "components", "parameters", "getEventsFilter")
+	if got := mustValue(param, "name"); got != "filter" {
+		t.Errorf("getEventsFilter name = %v, want filter", got)
+	}
+	if got := mustValue(param, "in"); got != "query" {
+		t.Errorf("getEventsFilter in = %v, want query", got)
+	}
+	if got := mustValue(param, "required"); got != false {
+		t.Errorf("getEventsFilter required = %v, want false", got)
+	}
+	if got := mustLookup(t, param, "schema", "type"); got != "string" {
+		t.Errorf("getEventsFilter schema type = %v, want string: the filter travels as a JSON-encoded string", got)
+	}
+	desc, _ := mustValue(param, "description").(string)
+	for _, phrase := range []string{"EventsFilter", "createdAfter", "createdBefore", "meshery/schemas#1397"} {
+		if !strings.Contains(desc, phrase) {
+			t.Errorf("getEventsFilter description = %q, want it to mention %q", desc, phrase)
+		}
+	}
+
+	filter := mustLookup(t, doc, "components", "schemas", "EventsFilter")
+	if got := mustValue(filter, "additionalProperties"); got != true {
+		t.Errorf("EventsFilter additionalProperties = %v, want true", got)
+	}
+	props := mustLookup(t, filter, "properties")
+	gotFields := mappingKeys(props)
+	sort.Strings(gotFields)
+	wantFields := []string{"actedUpon", "action", "category", "createdAfter", "createdBefore", "limit", "offset", "order", "owner", "provider", "search", "severity", "sortOn", "status", "systemId"}
+	if !reflect.DeepEqual(gotFields, wantFields) {
+		t.Errorf("EventsFilter properties = %v, want %v", gotFields, wantFields)
+	}
+	for _, bound := range []string{"createdAfter", "createdBefore"} {
+		prop := mustLookup(t, props, bound)
+		if got := mustValue(prop, "type"); got != "string" {
+			t.Errorf("EventsFilter.%s type = %v, want string", bound, got)
+		}
+		if got := mustValue(prop, "format"); got != "date-time" {
+			t.Errorf("EventsFilter.%s format = %v, want date-time", bound, got)
+		}
+		boundDesc, _ := mustValue(prop, "description").(string)
+		for _, phrase := range []string{"createdAt", "meshery/schemas#1397"} {
+			if !strings.Contains(boundDesc, phrase) {
+				t.Errorf("EventsFilter.%s description = %q, want it to mention %q", bound, boundDesc, phrase)
+			}
+		}
+	}
+}
+
 func asInt(v any) (int, bool) {
 	switch n := v.(type) {
 	case int:

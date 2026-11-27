@@ -54,6 +54,28 @@ without them still validates. (#1353)
 The `403` uses `MeshkitError403`, the same response `getEventsAggregate`
 uses. Omitting `scope` is `user`.
 
+## `getEvents` filter
+
+`GET /api/events/list` (`getEvents`) takes the `filter` query parameter as a
+JSON-encoded string. Its shape is `EventsFilter` in
+`schemas/constructs/v1beta3/event/api.yml` (`components/schemas`), mirroring
+the fields meshkit `models/events.EventsFilter` accepts today (`action`,
+`category`, `limit`, `offset`, `order`, `provider`, `search`, `status`,
+`severity`, `sortOn`, `actedUpon`, `owner`, `systemId`) plus two time bounds:
+
+| Field | Meaning |
+| --- | --- |
+| `createdAfter` | RFC 3339 timestamp; only events recorded at or after it are returned. Inclusive. Omit for no lower bound. |
+| `createdBefore` | RFC 3339 timestamp; only events recorded at or before it are returned. Inclusive. Omit for no upper bound. |
+
+Every field is optional and unknown fields are ignored. The bounds let a
+client page one time window instead of the organization's whole run history
+(blowhorn-ai/blowhorn#2222). The server applies them once meshkit adds the
+fields and Cloud applies them in `EventTrackerDao.GetAllEvents`
+(`created_at >= ?` / `created_at <= ?`); until then a filter carrying the
+bounds is accepted and the bounds are ignored
+(meshery/schemas#1397).
+
 ## Mark all events as read
 
 `POST /api/events/mark-all-read` (`markAllEventsRead`) marks every unread event

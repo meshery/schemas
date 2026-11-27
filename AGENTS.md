@@ -224,7 +224,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/mcp-operation-contract.md`](docs/mcp-operation-contract.md)** - the `x-mcp` operation extension for the hosted MCP server, the OAuth scopes (each one a keychain), the Rule 48 lint, `X-Current-Orgid` and `Idempotency-Key`.
 - **[`docs/request-contract.md`](docs/request-contract.md)** - the generic request construct: kinds, the permission key that decides each, and why approve and deny are never tools.
 - **[`docs/schedule-pause-contract.md`](docs/schedule-pause-contract.md)** - the narrow `updateOrgSchedulePause` operation and its key, beside the broad organization updates.
-- **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
+- **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId`, the `getEvents` `scope` query, and the `getEvents` filter shape with its `createdAt` bounds.
 - **[`docs/design-event-metadata-contract.md`](docs/design-event-metadata-contract.md)** - the named shapes of design event metadata, its banned keys and 16 KB guard, the `status` `error` rule for an operation that did not complete, and why they have no `*Payload` twins.
 - **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.

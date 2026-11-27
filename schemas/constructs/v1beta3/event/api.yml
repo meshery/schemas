@@ -414,7 +414,7 @@ paths:
       - $ref: '#/components/parameters/pagesize'
       - $ref: '#/components/parameters/search'
       - $ref: '#/components/parameters/order'
-      - $ref: '#/components/parameters/eventsFilter'
+      - $ref: '#/components/parameters/getEventsFilter'
       - $ref: '#/components/parameters/eventsScope'
       - $ref: '#/components/parameters/currentOrgId'
       responses:
@@ -652,8 +652,18 @@ components:
         type: boolean
     filter:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/filter
-    eventsFilter:
-      $ref: ../../v1beta2/core/api.yml#/components/parameters/filter
+    getEventsFilter:
+      name: filter
+      in: query
+      required: false
+      description: >-
+        JSON-encoded filter string for getEvents; see EventsFilter for the
+        shape. `createdAfter` and `createdBefore` bound `createdAt`, so a
+        client can page one time window instead of the whole history, once
+        the server applies them (meshery/schemas#1397). Until then the bounds
+        are accepted and ignored. Unknown fields are ignored.
+      schema:
+        type: string
     eventsScope:
       name: scope
       in: query
@@ -1318,6 +1328,104 @@ components:
           items:
             $ref: '#/components/schemas/EventResult'
           description: The events returned on the current page.
+    EventsFilter:
+      type: object
+      description: >-
+        JSON shape of the `filter` query parameter on getEvents, sent as a
+        JSON-encoded string. Every field is optional; an omitted field does
+        not filter on it. Unknown fields are ignored. `createdAfter` and
+        `createdBefore` bound `createdAt` so a client can page one time
+        window instead of the whole history; the server applies the bounds
+        once meshkit and Cloud add the fields (meshery/schemas#1397), and
+        until then they are accepted and ignored. The other fields mirror
+        meshkit `models/events.EventsFilter` as it exists today.
+      additionalProperties: true
+      properties:
+        action:
+          type: array
+          description: Actions to include; an event matches when its action is one of these.
+          items:
+            type: string
+            maxLength: 500
+        category:
+          type: array
+          description: Categories to include; an event matches when its category is one of these.
+          items:
+            type: string
+            maxLength: 500
+        limit:
+          type: integer
+          description: Maximum number of events to return.
+          minimum: 0
+        offset:
+          type: integer
+          description: Number of matching events to skip.
+          minimum: 0
+        order:
+          type: string
+          description: Sort direction, `asc` or `desc`.
+          maxLength: 4
+        provider:
+          type: array
+          description: Providers to include; an event matches when its provider is one of these.
+          items:
+            type: string
+            maxLength: 500
+        search:
+          type: string
+          description: Free-text search over event fields.
+          maxLength: 500
+        status:
+          type: string
+          description: Read state to include, `read` or `unread`.
+          maxLength: 255
+        severity:
+          type: array
+          description: Severities to include; an event matches when its severity is one of these.
+          items:
+            type: string
+            maxLength: 255
+        sortOn:
+          type: string
+          description: Field the results are sorted on.
+          maxLength: 255
+        actedUpon:
+          type: array
+          description: UUIDs of entities the events were performed on.
+          items:
+            type: string
+            format: uuid
+        owner:
+          type: array
+          description: UUIDs of owners to filter events by.
+          items:
+            type: string
+            format: uuid
+        systemId:
+          type: array
+          description: UUIDs of systems to filter events by.
+          items:
+            type: string
+            format: uuid
+          x-go-name: SystemID
+        createdAfter:
+          type: string
+          format: date-time
+          description: >-
+            Lower bound on `createdAt` (inclusive): only events recorded at
+            or after this RFC 3339 timestamp are returned. Omit for no lower
+            bound. Planned: the server applies this bound once meshkit and
+            Cloud add the field (meshery/schemas#1397); until then it is
+            accepted and ignored.
+        createdBefore:
+          type: string
+          format: date-time
+          description: >-
+            Upper bound on `createdAt` (inclusive): only events recorded at
+            or before this RFC 3339 timestamp are returned. Omit for no upper
+            bound. Planned: the server applies this bound once meshkit and
+            Cloud add the field (meshery/schemas#1397); until then it is
+            accepted and ignored.
     EventSpecVersion:
       type: string
       description: >
