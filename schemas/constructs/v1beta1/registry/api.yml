@@ -1148,7 +1148,7 @@ components:
             relationships:
               type: array
               items:
-                $ref: "../../v1alpha3/relationship/relationship.yaml"
+                $ref: "../../v1alpha3/relationship/relationship.yaml#/components/schemas/RelationshipDefinition"
               description: The relationships matching the query.
 
     RegistryCategoriesPage:
