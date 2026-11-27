@@ -32,7 +32,7 @@ const FollowerMetricsSchema: Record<string, unknown> = {
       "FollowerMetrics": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Follower Metrics Schema",
-        "description": "Server-returned daily new-follower figures for one page, as recorded in\nthe `metadata` of an event on the events service (category `blowhorn`,\naction `follower_metrics`); the event construct carries the envelope and\nthis construct names the metadata's own shape, which Event leaves open.\nOne row is one page on one day, keyed by (organizationId, platform,\nsubject, readingDate): the day's NEW followers split by the source that\nproduced them. The source export's \"Total followers\" column is a day's\ntotal of new followers, not a lifetime count. Every figure is nullable:\na blank figure in the source export is not a zero.\n",
+        "description": "Server-returned daily new-follower figures for one page, as recorded in\nthe `metadata` of an event on the events service (category `blowhorn`,\naction `follower_metrics`); the event construct carries the envelope and\nthis construct names the metadata's own shape, which Event leaves open.\nOne row is one page on one day, keyed by (organizationId, platform,\nsubject, readingDate): the day's NEW followers split by the source that\nproduced them. The source export's \"Total followers\" column is a day's\ntotal of new followers, not a lifetime count. Every figure is nullable:\na blank figure in the source export is not a zero.\nThe organic and total figures are net, follows minus unfollows, and can\nbe negative: LinkedIn counts every unfollow as organic, including one of\na follow that sponsored content produced. The sponsored and auto-invited\nfigures count follows only and are never negative.\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -94,8 +94,7 @@ const FollowerMetricsSchema: Record<string, unknown> = {
           "newOrganic": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "New followers that day from organic content; null when the export's cell is blank.",
+            "description": "Net new followers that day from organic content: follows minus unfollows. LinkedIn counts every unfollow as organic, including one of a follow that sponsored content produced, so the figure is negative on a day the page lost more followers than it gained this way. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "new_organic"
             },
@@ -114,8 +113,7 @@ const FollowerMetricsSchema: Record<string, unknown> = {
           "newTotal": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "All new followers that day; null when the export's cell is blank.",
+            "description": "Net new followers that day from every source: negative on a day the unfollows the organic figure carries outweigh the day's follows. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "new_total"
             },
@@ -174,8 +172,7 @@ const FollowerMetricsSchema: Record<string, unknown> = {
           "newOrganic": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "New followers that day from organic content; null when the export's cell is blank."
+            "description": "Net new followers that day from organic content: follows minus unfollows. LinkedIn counts every unfollow as organic, including one of a follow that sponsored content produced, so the figure is negative on a day the page lost more followers than it gained this way. Null when the export's cell is blank."
           },
           "newAutoInvited": {
             "type": "integer",
@@ -186,8 +183,7 @@ const FollowerMetricsSchema: Record<string, unknown> = {
           "newTotal": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "All new followers that day; null when the export's cell is blank."
+            "description": "Net new followers that day from every source: negative on a day the unfollows the organic figure carries outweigh the day's follows. Null when the export's cell is blank."
           },
           "sourceFile": {
             "type": "string",

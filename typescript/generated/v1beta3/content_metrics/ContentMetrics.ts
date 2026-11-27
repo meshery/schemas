@@ -20,6 +20,14 @@ export interface components {
          *     exists only when the export carries its column — an export without a
          *     sponsored breakdown records no sponsored figures — and every figure is
          *     nullable: a blank cell is not a zero.
+         *     Reactions, comments and reposts are net of the ones withdrawn, deleted
+         *     or undone that day, and LinkedIn counts each such reversal as organic,
+         *     even for an engagement with sponsored content (its share-statistics
+         *     documentation says so of likes). So the organic and total figures of
+         *     those three, and the organic and total engagement rates built from them,
+         *     can be negative. Impressions, unique impressions and clicks cannot be
+         *     taken back, and the sponsored figures count engagements only, so those
+         *     are never negative.
          */
         ContentMetrics: {
             /**
@@ -50,29 +58,29 @@ export interface components {
             clicksSponsored?: number | null;
             /** @description All clicks that day; null when the export's cell is blank. */
             clicks?: number | null;
-            /** @description Organic reactions that day; null when the export's cell is blank. */
+            /** @description Organic reactions that day, net of reactions withdrawn. LinkedIn counts a withdrawn reaction as organic even when it was given to sponsored content, so the figure is negative on a day more reactions were withdrawn than given. Null when the export's cell is blank. */
             reactionsOrganic?: number | null;
             /** @description Sponsored reactions that day; null when the export's cell is blank. */
             reactionsSponsored?: number | null;
-            /** @description All reactions that day; null when the export's cell is blank. */
+            /** @description All reactions that day, net of the withdrawals the organic figure carries, so it can be negative. Null when the export's cell is blank. */
             reactions?: number | null;
-            /** @description Organic comments that day; null when the export's cell is blank. */
+            /** @description Organic comments that day, net of comments deleted. LinkedIn counts a deleted comment as organic even when it was made on sponsored content, so the figure is negative on a day more comments were deleted than made. Null when the export's cell is blank. */
             commentsOrganic?: number | null;
             /** @description Sponsored comments that day; null when the export's cell is blank. */
             commentsSponsored?: number | null;
-            /** @description All comments that day; null when the export's cell is blank. */
+            /** @description All comments that day, net of the deletions the organic figure carries, so it can be negative. Null when the export's cell is blank. */
             comments?: number | null;
-            /** @description Organic reposts that day; null when the export's cell is blank. */
+            /** @description Organic reposts that day, net of reposts undone. LinkedIn counts an undone repost as organic even when it was of sponsored content, so the figure is negative on a day more reposts were undone than made. Null when the export's cell is blank. */
             repostsOrganic?: number | null;
             /** @description Sponsored reposts that day; null when the export's cell is blank. */
             repostsSponsored?: number | null;
-            /** @description All reposts that day; null when the export's cell is blank. */
+            /** @description All reposts that day, net of the undone reposts the organic figure carries, so it can be negative. Null when the export's cell is blank. */
             reposts?: number | null;
-            /** @description Organic engagement rate that day, as the export reports it; null when the export's cell is blank. */
+            /** @description Organic engagement rate that day, as the export reports it: the day's net organic engagements over its impressions, so it is negative when those engagements are. Null when the export's cell is blank. */
             engagementRateOrganic?: number | null;
             /** @description Sponsored engagement rate that day, as the export reports it; null when the export's cell is blank. */
             engagementRateSponsored?: number | null;
-            /** @description Overall engagement rate that day, as the export reports it; null when the export's cell is blank. */
+            /** @description Overall engagement rate that day, as the export reports it: negative when the day's net engagements are. Null when the export's cell is blank. */
             engagementRate?: number | null;
             /** @description The export file the row was read from; empty when the row did not come from a file export. */
             sourceFile?: string;
@@ -113,29 +121,29 @@ export interface components {
             clicksSponsored?: number | null;
             /** @description All clicks that day; null when the export's cell is blank. */
             clicks?: number | null;
-            /** @description Organic reactions that day; null when the export's cell is blank. */
+            /** @description Organic reactions that day, net of reactions withdrawn. LinkedIn counts a withdrawn reaction as organic even when it was given to sponsored content, so the figure is negative on a day more reactions were withdrawn than given. Null when the export's cell is blank. */
             reactionsOrganic?: number | null;
             /** @description Sponsored reactions that day; null when the export's cell is blank. */
             reactionsSponsored?: number | null;
-            /** @description All reactions that day; null when the export's cell is blank. */
+            /** @description All reactions that day, net of the withdrawals the organic figure carries, so it can be negative. Null when the export's cell is blank. */
             reactions?: number | null;
-            /** @description Organic comments that day; null when the export's cell is blank. */
+            /** @description Organic comments that day, net of comments deleted. LinkedIn counts a deleted comment as organic even when it was made on sponsored content, so the figure is negative on a day more comments were deleted than made. Null when the export's cell is blank. */
             commentsOrganic?: number | null;
             /** @description Sponsored comments that day; null when the export's cell is blank. */
             commentsSponsored?: number | null;
-            /** @description All comments that day; null when the export's cell is blank. */
+            /** @description All comments that day, net of the deletions the organic figure carries, so it can be negative. Null when the export's cell is blank. */
             comments?: number | null;
-            /** @description Organic reposts that day; null when the export's cell is blank. */
+            /** @description Organic reposts that day, net of reposts undone. LinkedIn counts an undone repost as organic even when it was of sponsored content, so the figure is negative on a day more reposts were undone than made. Null when the export's cell is blank. */
             repostsOrganic?: number | null;
             /** @description Sponsored reposts that day; null when the export's cell is blank. */
             repostsSponsored?: number | null;
-            /** @description All reposts that day; null when the export's cell is blank. */
+            /** @description All reposts that day, net of the undone reposts the organic figure carries, so it can be negative. Null when the export's cell is blank. */
             reposts?: number | null;
-            /** @description Organic engagement rate that day, as the export reports it; null when the export's cell is blank. */
+            /** @description Organic engagement rate that day, as the export reports it: the day's net organic engagements over its impressions, so it is negative when those engagements are. Null when the export's cell is blank. */
             engagementRateOrganic?: number | null;
             /** @description Sponsored engagement rate that day, as the export reports it; null when the export's cell is blank. */
             engagementRateSponsored?: number | null;
-            /** @description Overall engagement rate that day, as the export reports it; null when the export's cell is blank. */
+            /** @description Overall engagement rate that day, as the export reports it: negative when the day's net engagements are. Null when the export's cell is blank. */
             engagementRate?: number | null;
             /** @description The export file the row was read from; empty when the row did not come from a file export. */
             sourceFile?: string;
