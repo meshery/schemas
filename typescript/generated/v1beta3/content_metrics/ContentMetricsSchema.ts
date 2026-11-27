@@ -32,7 +32,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
       "ContentMetrics": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Content Metrics Schema",
-        "description": "Server-returned daily content figures for one page, as recorded in the\n`metadata` of an event on the events service (category `blowhorn`,\naction `content_metrics`); the event construct carries the envelope and\nthis construct names the metadata's own shape, which Event leaves open.\nOne row is one page on one day, keyed by (organizationId, platform,\nsubject, readingDate): the day's impressions, clicks, reactions,\ncomments and reposts, each split organic / sponsored alongside its\ntotal, plus the engagement rates the source export reports. A figure\nexists only when the export carries its column — an export without a\nsponsored breakdown records no sponsored figures — and every figure is\nnullable: a blank cell is not a zero.\n",
+        "description": "Server-returned daily content figures for one page, as recorded in the\n`metadata` of an event on the events service (category `blowhorn`,\naction `content_metrics`); the event construct carries the envelope and\nthis construct names the metadata's own shape, which Event leaves open.\nOne row is one page on one day, keyed by (organizationId, platform,\nsubject, readingDate): the day's impressions, clicks, reactions,\ncomments and reposts, each split organic / sponsored alongside its\ntotal, plus the engagement rates the source export reports. A figure\nexists only when the export carries its column — an export without a\nsponsored breakdown records no sponsored figures — and every figure is\nnullable: a blank cell is not a zero.\nReactions, comments and reposts are net of the ones withdrawn, deleted\nor undone that day, and LinkedIn counts each such reversal as organic,\neven for an engagement with sponsored content (its share-statistics\ndocumentation says so of likes). So the organic and total figures of\nthose three, and the organic and total engagement rates built from them,\ncan be negative. Impressions, unique impressions and clicks cannot be\ntaken back, and the sponsored figures count engagements only, so those\nare never negative.\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -154,8 +154,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "reactionsOrganic": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "Organic reactions that day; null when the export's cell is blank.",
+            "description": "Organic reactions that day, net of reactions withdrawn. LinkedIn counts a withdrawn reaction as organic even when it was given to sponsored content, so the figure is negative on a day more reactions were withdrawn than given. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "reactions_organic"
             },
@@ -174,8 +173,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "reactions": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "All reactions that day; null when the export's cell is blank.",
+            "description": "All reactions that day, net of the withdrawals the organic figure carries, so it can be negative. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "reactions"
             },
@@ -184,8 +182,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "commentsOrganic": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "Organic comments that day; null when the export's cell is blank.",
+            "description": "Organic comments that day, net of comments deleted. LinkedIn counts a deleted comment as organic even when it was made on sponsored content, so the figure is negative on a day more comments were deleted than made. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "comments_organic"
             },
@@ -204,8 +201,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "comments": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "All comments that day; null when the export's cell is blank.",
+            "description": "All comments that day, net of the deletions the organic figure carries, so it can be negative. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "comments"
             },
@@ -214,8 +210,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "repostsOrganic": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "Organic reposts that day; null when the export's cell is blank.",
+            "description": "Organic reposts that day, net of reposts undone. LinkedIn counts an undone repost as organic even when it was of sponsored content, so the figure is negative on a day more reposts were undone than made. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "reposts_organic"
             },
@@ -234,8 +229,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "reposts": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "All reposts that day; null when the export's cell is blank.",
+            "description": "All reposts that day, net of the undone reposts the organic figure carries, so it can be negative. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "reposts"
             },
@@ -244,8 +238,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "engagementRateOrganic": {
             "type": "number",
             "nullable": true,
-            "minimum": 0,
-            "description": "Organic engagement rate that day, as the export reports it; null when the export's cell is blank.",
+            "description": "Organic engagement rate that day, as the export reports it: the day's net organic engagements over its impressions, so it is negative when those engagements are. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "engagement_rate_organic"
             },
@@ -264,8 +257,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "engagementRate": {
             "type": "number",
             "nullable": true,
-            "minimum": 0,
-            "description": "Overall engagement rate that day, as the export reports it; null when the export's cell is blank.",
+            "description": "Overall engagement rate that day, as the export reports it: negative when the day's net engagements are. Null when the export's cell is blank.",
             "x-oapi-codegen-extra-tags": {
               "db": "engagement_rate"
             },
@@ -360,8 +352,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "reactionsOrganic": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "Organic reactions that day; null when the export's cell is blank."
+            "description": "Organic reactions that day, net of reactions withdrawn. LinkedIn counts a withdrawn reaction as organic even when it was given to sponsored content, so the figure is negative on a day more reactions were withdrawn than given. Null when the export's cell is blank."
           },
           "reactionsSponsored": {
             "type": "integer",
@@ -372,14 +363,12 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "reactions": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "All reactions that day; null when the export's cell is blank."
+            "description": "All reactions that day, net of the withdrawals the organic figure carries, so it can be negative. Null when the export's cell is blank."
           },
           "commentsOrganic": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "Organic comments that day; null when the export's cell is blank."
+            "description": "Organic comments that day, net of comments deleted. LinkedIn counts a deleted comment as organic even when it was made on sponsored content, so the figure is negative on a day more comments were deleted than made. Null when the export's cell is blank."
           },
           "commentsSponsored": {
             "type": "integer",
@@ -390,14 +379,12 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "comments": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "All comments that day; null when the export's cell is blank."
+            "description": "All comments that day, net of the deletions the organic figure carries, so it can be negative. Null when the export's cell is blank."
           },
           "repostsOrganic": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "Organic reposts that day; null when the export's cell is blank."
+            "description": "Organic reposts that day, net of reposts undone. LinkedIn counts an undone repost as organic even when it was of sponsored content, so the figure is negative on a day more reposts were undone than made. Null when the export's cell is blank."
           },
           "repostsSponsored": {
             "type": "integer",
@@ -408,14 +395,12 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "reposts": {
             "type": "integer",
             "nullable": true,
-            "minimum": 0,
-            "description": "All reposts that day; null when the export's cell is blank."
+            "description": "All reposts that day, net of the undone reposts the organic figure carries, so it can be negative. Null when the export's cell is blank."
           },
           "engagementRateOrganic": {
             "type": "number",
             "nullable": true,
-            "minimum": 0,
-            "description": "Organic engagement rate that day, as the export reports it; null when the export's cell is blank."
+            "description": "Organic engagement rate that day, as the export reports it: the day's net organic engagements over its impressions, so it is negative when those engagements are. Null when the export's cell is blank."
           },
           "engagementRateSponsored": {
             "type": "number",
@@ -426,8 +411,7 @@ const ContentMetricsSchema: Record<string, unknown> = {
           "engagementRate": {
             "type": "number",
             "nullable": true,
-            "minimum": 0,
-            "description": "Overall engagement rate that day, as the export reports it; null when the export's cell is blank."
+            "description": "Overall engagement rate that day, as the export reports it: negative when the day's net engagements are. Null when the export's cell is blank."
           },
           "sourceFile": {
             "type": "string",

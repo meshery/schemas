@@ -19,6 +19,14 @@ import (
 // exists only when the export carries its column — an export without a
 // sponsored breakdown records no sponsored figures — and every figure is
 // nullable: a blank cell is not a zero.
+// Reactions, comments and reposts are net of the ones withdrawn, deleted
+// or undone that day, and LinkedIn counts each such reversal as organic,
+// even for an engagement with sponsored content (its share-statistics
+// documentation says so of likes). So the organic and total figures of
+// those three, and the organic and total engagement rates built from them,
+// can be negative. Impressions, unique impressions and clicks cannot be
+// taken back, and the sponsored figures count engagements only, so those
+// are never negative.
 type ContentMetrics struct {
 	// OrganizationID Owning organization ID.
 	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId" yaml:"organizationId"`
@@ -53,40 +61,40 @@ type ContentMetrics struct {
 	// Clicks All clicks that day; null when the export's cell is blank.
 	Clicks *int `db:"clicks" json:"clicks" yaml:"clicks"`
 
-	// ReactionsOrganic Organic reactions that day; null when the export's cell is blank.
+	// ReactionsOrganic Organic reactions that day, net of reactions withdrawn. LinkedIn counts a withdrawn reaction as organic even when it was given to sponsored content, so the figure is negative on a day more reactions were withdrawn than given. Null when the export's cell is blank.
 	ReactionsOrganic *int `db:"reactions_organic" json:"reactionsOrganic" yaml:"reactionsOrganic"`
 
 	// ReactionsSponsored Sponsored reactions that day; null when the export's cell is blank.
 	ReactionsSponsored *int `db:"reactions_sponsored" json:"reactionsSponsored" yaml:"reactionsSponsored"`
 
-	// Reactions All reactions that day; null when the export's cell is blank.
+	// Reactions All reactions that day, net of the withdrawals the organic figure carries, so it can be negative. Null when the export's cell is blank.
 	Reactions *int `db:"reactions" json:"reactions" yaml:"reactions"`
 
-	// CommentsOrganic Organic comments that day; null when the export's cell is blank.
+	// CommentsOrganic Organic comments that day, net of comments deleted. LinkedIn counts a deleted comment as organic even when it was made on sponsored content, so the figure is negative on a day more comments were deleted than made. Null when the export's cell is blank.
 	CommentsOrganic *int `db:"comments_organic" json:"commentsOrganic" yaml:"commentsOrganic"`
 
 	// CommentsSponsored Sponsored comments that day; null when the export's cell is blank.
 	CommentsSponsored *int `db:"comments_sponsored" json:"commentsSponsored" yaml:"commentsSponsored"`
 
-	// Comments All comments that day; null when the export's cell is blank.
+	// Comments All comments that day, net of the deletions the organic figure carries, so it can be negative. Null when the export's cell is blank.
 	Comments *int `db:"comments" json:"comments" yaml:"comments"`
 
-	// RepostsOrganic Organic reposts that day; null when the export's cell is blank.
+	// RepostsOrganic Organic reposts that day, net of reposts undone. LinkedIn counts an undone repost as organic even when it was of sponsored content, so the figure is negative on a day more reposts were undone than made. Null when the export's cell is blank.
 	RepostsOrganic *int `db:"reposts_organic" json:"repostsOrganic" yaml:"repostsOrganic"`
 
 	// RepostsSponsored Sponsored reposts that day; null when the export's cell is blank.
 	RepostsSponsored *int `db:"reposts_sponsored" json:"repostsSponsored" yaml:"repostsSponsored"`
 
-	// Reposts All reposts that day; null when the export's cell is blank.
+	// Reposts All reposts that day, net of the undone reposts the organic figure carries, so it can be negative. Null when the export's cell is blank.
 	Reposts *int `db:"reposts" json:"reposts" yaml:"reposts"`
 
-	// EngagementRateOrganic Organic engagement rate that day, as the export reports it; null when the export's cell is blank.
+	// EngagementRateOrganic Organic engagement rate that day, as the export reports it: the day's net organic engagements over its impressions, so it is negative when those engagements are. Null when the export's cell is blank.
 	EngagementRateOrganic *float32 `db:"engagement_rate_organic" json:"engagementRateOrganic" yaml:"engagementRateOrganic"`
 
 	// EngagementRateSponsored Sponsored engagement rate that day, as the export reports it; null when the export's cell is blank.
 	EngagementRateSponsored *float32 `db:"engagement_rate_sponsored" json:"engagementRateSponsored" yaml:"engagementRateSponsored"`
 
-	// EngagementRate Overall engagement rate that day, as the export reports it; null when the export's cell is blank.
+	// EngagementRate Overall engagement rate that day, as the export reports it: negative when the day's net engagements are. Null when the export's cell is blank.
 	EngagementRate *float32 `db:"engagement_rate" json:"engagementRate" yaml:"engagementRate"`
 
 	// SourceFile The export file the row was read from; empty when the row did not come from a file export.
@@ -108,19 +116,19 @@ type ContentMetricsPayload struct {
 	// ClicksSponsored Sponsored clicks that day; null when the export's cell is blank.
 	ClicksSponsored *int `json:"clicksSponsored" yaml:"clicksSponsored"`
 
-	// Comments All comments that day; null when the export's cell is blank.
+	// Comments All comments that day, net of the deletions the organic figure carries, so it can be negative. Null when the export's cell is blank.
 	Comments *int `json:"comments" yaml:"comments"`
 
-	// CommentsOrganic Organic comments that day; null when the export's cell is blank.
+	// CommentsOrganic Organic comments that day, net of comments deleted. LinkedIn counts a deleted comment as organic even when it was made on sponsored content, so the figure is negative on a day more comments were deleted than made. Null when the export's cell is blank.
 	CommentsOrganic *int `json:"commentsOrganic" yaml:"commentsOrganic"`
 
 	// CommentsSponsored Sponsored comments that day; null when the export's cell is blank.
 	CommentsSponsored *int `json:"commentsSponsored" yaml:"commentsSponsored"`
 
-	// EngagementRate Overall engagement rate that day, as the export reports it; null when the export's cell is blank.
+	// EngagementRate Overall engagement rate that day, as the export reports it: negative when the day's net engagements are. Null when the export's cell is blank.
 	EngagementRate *float32 `json:"engagementRate" yaml:"engagementRate"`
 
-	// EngagementRateOrganic Organic engagement rate that day, as the export reports it; null when the export's cell is blank.
+	// EngagementRateOrganic Organic engagement rate that day, as the export reports it: the day's net organic engagements over its impressions, so it is negative when those engagements are. Null when the export's cell is blank.
 	EngagementRateOrganic *float32 `json:"engagementRateOrganic" yaml:"engagementRateOrganic"`
 
 	// EngagementRateSponsored Sponsored engagement rate that day, as the export reports it; null when the export's cell is blank.
@@ -141,10 +149,10 @@ type ContentMetricsPayload struct {
 	// Platform The platform the page belongs to (today only `linkedin` produces these exports).
 	Platform string `json:"platform" yaml:"platform"`
 
-	// Reactions All reactions that day; null when the export's cell is blank.
+	// Reactions All reactions that day, net of the withdrawals the organic figure carries, so it can be negative. Null when the export's cell is blank.
 	Reactions *int `json:"reactions" yaml:"reactions"`
 
-	// ReactionsOrganic Organic reactions that day; null when the export's cell is blank.
+	// ReactionsOrganic Organic reactions that day, net of reactions withdrawn. LinkedIn counts a withdrawn reaction as organic even when it was given to sponsored content, so the figure is negative on a day more reactions were withdrawn than given. Null when the export's cell is blank.
 	ReactionsOrganic *int `json:"reactionsOrganic" yaml:"reactionsOrganic"`
 
 	// ReactionsSponsored Sponsored reactions that day; null when the export's cell is blank.
@@ -153,10 +161,10 @@ type ContentMetricsPayload struct {
 	// ReadingDate The day the figures describe, as an ISO calendar date.
 	ReadingDate openapi_types.Date `json:"readingDate" yaml:"readingDate"`
 
-	// Reposts All reposts that day; null when the export's cell is blank.
+	// Reposts All reposts that day, net of the undone reposts the organic figure carries, so it can be negative. Null when the export's cell is blank.
 	Reposts *int `json:"reposts" yaml:"reposts"`
 
-	// RepostsOrganic Organic reposts that day; null when the export's cell is blank.
+	// RepostsOrganic Organic reposts that day, net of reposts undone. LinkedIn counts an undone repost as organic even when it was of sponsored content, so the figure is negative on a day more reposts were undone than made. Null when the export's cell is blank.
 	RepostsOrganic *int `json:"repostsOrganic" yaml:"repostsOrganic"`
 
 	// RepostsSponsored Sponsored reposts that day; null when the export's cell is blank.
