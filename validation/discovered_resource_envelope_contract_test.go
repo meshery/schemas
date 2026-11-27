@@ -7,66 +7,66 @@ import (
 	"testing"
 )
 
-// The resource construct (meshery/meshsync#582): the platform-agnostic
+// The discovered_resource construct (meshery/meshsync#582): the platform-agnostic
 // envelope every MeshSync discoverer emits. MeshSync carries a hand-written
-// mirror of it (pkg/model/resource.go) until it imports the generated type,
+// mirror of it (pkg/model/discovered_resource.go) until it imports the generated type,
 // so the wire names below are a cross-repo contract. The prose form is
-// docs/resource-envelope-contract.md.
+// docs/discovered-resource-envelope-contract.md.
 
 const (
-	resourceSpec      = "schemas/constructs/v1beta1/resource/api.yml"
-	resourceEntity    = "schemas/constructs/v1beta1/resource/resource.yaml"
-	resourceTemplates = "schemas/constructs/v1beta1/resource/templates"
+	discoveredResourceSpec      = "schemas/constructs/v1beta3/discovered_resource/api.yml"
+	discoveredResourceEntity    = "schemas/constructs/v1beta3/discovered_resource/discovered_resource.yaml"
+	discoveredResourceTemplates = "schemas/constructs/v1beta3/discovered_resource/templates"
 )
 
-// resourceWireNames are the JSON names of MeshSync's Resource mirror, minus
+// discoveredResourceWireNames are the JSON names of MeshSync's DiscoveredResource mirror, minus
 // its MeshSync-local `kubernetes` payload, which is not part of the schema.
-var resourceWireNames = []string{
+var discoveredResourceWireNames = []string{
 	"connectionId", "id", "kind", "labels", "metadata", "name", "platform", "schemaVersion", "scopeId",
 }
 
-func TestResourceConstructHasNoEndpointsOrServerFields(t *testing.T) {
-	spec := loadYAMLMap(t, resourceSpec)
+func TestDiscoveredResourceConstructHasNoEndpointsOrServerFields(t *testing.T) {
+	spec := loadYAMLMap(t, discoveredResourceSpec)
 	if paths, _ := spec["paths"].(map[string]any); len(paths) != 0 {
-		t.Errorf("resource construct declares paths %v; the envelope has no endpoints", sortedKeys(paths))
+		t.Errorf("discovered_resource construct declares paths %v; the envelope has no endpoints", sortedKeys(paths))
 	}
-	if ref := mustLookup(t, spec, "components", "schemas", "Resource", "$ref"); ref != "./resource.yaml" {
-		t.Errorf("Resource $ref = %v, want ./resource.yaml", ref)
+	if ref := mustLookup(t, spec, "components", "schemas", "DiscoveredResource", "$ref"); ref != "./discovered_resource.yaml" {
+		t.Errorf("DiscoveredResource $ref = %v, want ./discovered_resource.yaml", ref)
 	}
-	entity := loadYAMLMap(t, resourceEntity)
+	entity := loadYAMLMap(t, discoveredResourceEntity)
 	if entity["additionalProperties"] != false {
-		t.Errorf("resource.yaml additionalProperties = %v, want false", entity["additionalProperties"])
+		t.Errorf("discovered_resource.yaml additionalProperties = %v, want false", entity["additionalProperties"])
 	}
-	props := eventMetadataProperties(t, "Resource", entity)
+	props := eventMetadataProperties(t, "DiscoveredResource", entity)
 	for _, field := range []string{"createdAt", "updatedAt", "deletedAt", "created_at", "updated_at", "deleted_at"} {
 		if _, ok := props[field]; ok {
-			t.Errorf("Resource declares server-generated %q; no server stores the envelope", field)
+			t.Errorf("DiscoveredResource declares server-generated %q; no server stores the envelope", field)
 		}
 	}
 }
 
-func TestResourceWireNamesMatchMeshSyncMirror(t *testing.T) {
-	entity := loadYAMLMap(t, resourceEntity)
-	if got := sortedKeys(eventMetadataProperties(t, "Resource", entity)); !reflect.DeepEqual(got, resourceWireNames) {
-		t.Errorf("Resource properties = %v, want %v", got, resourceWireNames)
+func TestDiscoveredResourceWireNamesMatchMeshSyncMirror(t *testing.T) {
+	entity := loadYAMLMap(t, discoveredResourceEntity)
+	if got := sortedKeys(eventMetadataProperties(t, "DiscoveredResource", entity)); !reflect.DeepEqual(got, discoveredResourceWireNames) {
+		t.Errorf("DiscoveredResource properties = %v, want %v", got, discoveredResourceWireNames)
 	}
-	if got, want := eventMetadataRequired(t, "Resource", entity), []string{"kind", "platform", "schemaVersion"}; !reflect.DeepEqual(got, want) {
-		t.Errorf("Resource required = %v, want %v", got, want)
+	if got, want := eventMetadataRequired(t, "DiscoveredResource", entity), []string{"kind", "platform", "schemaVersion"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("DiscoveredResource required = %v, want %v", got, want)
 	}
-	if got := mustLookup(t, entity, "properties", "schemaVersion", "default"); got != "resources.meshery.io/v1beta1" {
-		t.Errorf("schemaVersion default = %v, want resources.meshery.io/v1beta1", got)
-	}
-}
-
-func TestResourceTemplateValidates(t *testing.T) {
-	template := constructTemplate(t, resourceTemplates, "resource")
-	if err := schemaOf(t, loadSpec(t, resourceSpec), "Resource").VisitJSON(template); err != nil {
-		t.Fatalf("resource template does not validate: %v", err)
+	if got := mustLookup(t, entity, "properties", "schemaVersion", "default"); got != "discoveredresources.meshery.io/v1beta3" {
+		t.Errorf("schemaVersion default = %v, want discoveredresources.meshery.io/v1beta3", got)
 	}
 }
 
-func TestResourceAcceptsAndRejects(t *testing.T) {
-	schema := schemaOf(t, loadSpec(t, resourceSpec), "Resource")
+func TestDiscoveredResourceTemplateValidates(t *testing.T) {
+	template := constructTemplate(t, discoveredResourceTemplates, "discovered_resource")
+	if err := schemaOf(t, loadSpec(t, discoveredResourceSpec), "DiscoveredResource").VisitJSON(template); err != nil {
+		t.Fatalf("discovered_resource template does not validate: %v", err)
+	}
+}
+
+func TestDiscoveredResourceAcceptsAndRejects(t *testing.T) {
+	schema := schemaOf(t, loadSpec(t, discoveredResourceSpec), "DiscoveredResource")
 
 	// The id MeshSync's Kubernetes discoverer assigns on persist: base64 of
 	// cluster, kind, API version, namespace and name. Not a UUID.
@@ -80,7 +80,7 @@ func TestResourceAcceptsAndRejects(t *testing.T) {
 			"scopeId":       "8a7c2d3e-0f1b-4c5d-9e6f-7a8b9c0d1e2f",
 			"kind":          "Pod",
 			"name":          "web-0",
-			"schemaVersion": "resources.meshery.io/v1beta1",
+			"schemaVersion": "discoveredresources.meshery.io/v1beta3",
 		}
 	}
 	with := func(key string, value any) map[string]any {

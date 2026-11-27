@@ -1,4 +1,4 @@
-$id: https://schemas.meshery.io/resource.yaml
+$id: https://schemas.meshery.io/discovered_resource.yaml
 $schema: http://json-schema.org/draft-07/schema#
 description: >
   A resource a discoverer observed on a platform, in a shape that is the same
@@ -11,7 +11,7 @@ description: >
   stored row, so it declares no `createdAt`, `updatedAt` or `deletedAt`.
   A producer may carry a platform's full native payload beside the envelope
   in its own wrapper type; that payload is not part of this schema. See
-  docs/resource-envelope-contract.md.
+  docs/discovered-resource-envelope-contract.md.
 additionalProperties: false
 type: object
 required:
@@ -99,6 +99,6 @@ properties:
     x-go-type-skip-optional-pointer: true
   schemaVersion:
     description: Specifies the version of the schema the envelope conforms to.
-    $ref: ../core/api.yml#/components/schemas/versionString
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/VersionString
     x-order: 9
-    default: resources.meshery.io/v1beta1
+    default: discoveredresources.meshery.io/v1beta3

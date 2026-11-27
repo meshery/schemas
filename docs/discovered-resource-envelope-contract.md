@@ -1,6 +1,6 @@
-# Resource Envelope Contract
+# Discovered Resource Envelope Contract
 
-The `resource` construct (`schemas/constructs/v1beta1/resource/`) is the
+The `discovered_resource` construct (`schemas/constructs/v1beta3/discovered_resource/`) is the
 platform-agnostic envelope for one resource a discoverer observed on a
 platform: a Kubernetes object, a Docker container, a cloud resource. MeshSync's
 discoverers emit it (meshery/meshsync#582). This document states what the
@@ -21,7 +21,7 @@ envelope promises and how producers carry what it does not model.
   `metadata`. `platform` and `kind` are open sets: a new platform or kind needs
   no schema change.
 - **Required:** `platform`, `kind` and `schemaVersion`. Every other field may be
-  omitted. `schemaVersion` defaults to `resources.meshery.io/v1beta1`.
+  omitted. `schemaVersion` defaults to `discoveredresources.meshery.io/v1beta3`.
 
 ## Field notes
 
@@ -38,20 +38,20 @@ envelope promises and how producers carry what it does not model.
 A producer that needs a platform's full native payload carries it next to the
 envelope in its own wrapper type. The payload is not an envelope field, and
 `additionalProperties: false` rejects it in a document validated against this
-schema. MeshSync keeps its legacy Kubernetes payload this way: its `Resource`
+schema. MeshSync keeps its legacy Kubernetes payload this way: its `DiscoveredResource`
 type adds `Kubernetes *KubernetesResource` (`json:"kubernetes,omitempty"`)
 beside the envelope fields.
 
 ## The MeshSync mirror
 
 Until MeshSync imports the generated type, it keeps a hand-written mirror in
-`pkg/model/resource.go`. The generated Go struct
-(`models/v1beta1/resource.Resource`) has the mirror's field names, Go types and
+`pkg/model/discovered_resource.go`. The generated Go struct
+(`models/v1beta3/discovered_resource.DiscoveredResource`) has the mirror's field names, Go types and
 JSON tags. Two tests keep it that way:
 
-- `models/v1beta1/resource/resource_test.go` pins the generated struct's field
+- `models/v1beta3/discovered_resource/discovered_resource_test.go` pins the generated struct's field
   names, types, tags and wire form.
-- `validation/resource_envelope_contract_test.go` pins the schema's property
+- `validation/discovered_resource_envelope_contract_test.go` pins the schema's property
   set, required list and `schemaVersion` default. It also checks that the
   templates validate, and that the schema accepts and rejects the expected
   envelopes.

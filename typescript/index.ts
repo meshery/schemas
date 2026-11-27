@@ -21,7 +21,6 @@ import { components as FeatureComponents } from "./generated/v1beta1/feature/Fea
 import { components as KeyComponents } from "./generated/v1beta1/key/Key";
 import { components as KeychainComponents } from "./generated/v1beta1/keychain/Keychain";
 import { components as OrganizationComponents } from "./generated/v1beta1/organization/Organization";
-import { components as ResourceComponents } from "./generated/v1beta1/resource/Resource";
 import { components as RoleComponents } from "./generated/v1beta1/role/Role";
 import { components as ScheduleComponents } from "./generated/v1beta1/schedule/Schedule";
 import { components as SystemComponents } from "./generated/v1beta1/system/System";
@@ -45,6 +44,7 @@ import { components as V1Beta2SubscriptionComponents } from "./generated/v1beta2
 import { components as V1Beta2TokenComponents } from "./generated/v1beta2/token/Token";
 
 // v1beta3
+import { components as V1Beta3DiscoveredResourceComponents } from "./generated/v1beta3/discovered_resource/DiscoveredResource";
 import { components as V1Beta3ErrorComponents } from "./generated/v1beta3/errorcode/Errorcode";
 import { components as V1Beta3EventComponents } from "./generated/v1beta3/event/Event";
 import { components as V1Beta3UserComponents } from "./generated/v1beta3/user/User";
@@ -171,7 +171,6 @@ export namespace v1beta1 {
   export type Model = ModelComponents["schemas"]["ModelDefinition"];
   export type Organization =
     OrganizationComponents["schemas"]["Organization"];
-  export type Resource = ResourceComponents["schemas"]["Resource"];
   export type Role = RoleComponents["schemas"]["Role"];
   export type Schedule = ScheduleComponents["schemas"]["Schedule"];
   export type Subcategory =
@@ -243,6 +242,10 @@ export namespace v1beta2 {
 }
 
 export namespace v1beta3 {
+  // The platform-agnostic envelope MeshSync's discoverers emit
+  // (docs/discovered-resource-envelope-contract.md).
+  export type DiscoveredResource =
+    V1Beta3DiscoveredResourceComponents["schemas"]["DiscoveredResource"];
   // Error definitions and an error event's metadata.error
   // (docs/error-definition-contract.md).
   export type ErrorDefinition =

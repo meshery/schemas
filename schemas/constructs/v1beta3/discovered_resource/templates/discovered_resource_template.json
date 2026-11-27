@@ -7,5 +7,5 @@
   "labels": {},
   "metadata": {},
   "connectionId": "",
-  "schemaVersion": "resources.meshery.io/v1beta1"
+  "schemaVersion": "discoveredresources.meshery.io/v1beta3"
 }
