@@ -44,6 +44,7 @@ import { components as V1Beta2SubscriptionComponents } from "./generated/v1beta2
 import { components as V1Beta2TokenComponents } from "./generated/v1beta2/token/Token";
 
 // v1beta3
+import { components as V1Beta3DiscoveredResourceComponents } from "./generated/v1beta3/discovered_resource/DiscoveredResource";
 import { components as V1Beta3ErrorComponents } from "./generated/v1beta3/errorcode/Errorcode";
 import { components as V1Beta3EventComponents } from "./generated/v1beta3/event/Event";
 import { components as V1Beta3UserComponents } from "./generated/v1beta3/user/User";
@@ -279,6 +280,10 @@ export namespace v1beta2 {
 }
 
 export namespace v1beta3 {
+  // The platform-agnostic envelope MeshSync's discoverers emit
+  // (docs/discovered-resource-envelope-contract.md).
+  export type DiscoveredResource =
+    V1Beta3DiscoveredResourceComponents["schemas"]["DiscoveredResource"];
   // Error definitions and an error event's metadata.error
   // (docs/error-definition-contract.md).
   export type ErrorDefinition =
