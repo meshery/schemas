@@ -1,0 +1,42 @@
+schemaVersion: modelsources.meshery.io/v1alpha1
+name: cert-manager
+displayName: Cert Manager
+registrant: artifacthub
+version: v1.13.0
+category: Security & Compliance
+subCategory: Key Management
+description: Cloud native certificate management for Kubernetes.
+source:
+  url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+  kind: artifacthub
+  version: v1.13.0
+  group: cert-manager.io
+metadata:
+  shape: round-rectangle
+  primaryColor: "#00B39F"
+  secondaryColor: "#00D3A9"
+  svgColor: ./svg/color.svg
+  svgWhite: ./svg/white.svg
+  svgComplete: ./svg/complete.svg
+  isAnnotation: false
+  capabilities:
+    - mutation
+    - validation
+publish:
+  registry: true
+  sites: true
+website:
+  aboutProject: cert-manager adds certificates and certificate issuers as resource types in Kubernetes clusters.
+  pageSubtitle: Cloud-native certificate management
+  docsURL: https://cert-manager.io/docs/
+  standardBlurb: Automate the management and issuance of TLS certificates from various issuing sources.
+  features:
+    - Automated certificate issuance and renewal
+    - Support for ACME, HashiCorp Vault, and internal CAs
+  howItWorks: Meshery discovers cert-manager CRDs and manages lifecycle and configuration.
+  howItWorksDetails: Components and relationships are generated and validated automatically.
+  screenshots:
+    - https://raw.githubusercontent.com/meshery/meshery/master/docs/assets/img/integrations/cert-manager.png
+  fullPage: true
+  layer5Site: true
+  mesheryDocs: true
