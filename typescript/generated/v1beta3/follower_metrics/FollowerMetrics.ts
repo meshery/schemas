@@ -18,6 +18,10 @@ export interface components {
          *     produced them. The source export's "Total followers" column is a day's
          *     total of new followers, not a lifetime count. Every figure is nullable:
          *     a blank figure in the source export is not a zero.
+         *     The organic and total figures are net, follows minus unfollows, and can
+         *     be negative: LinkedIn counts every unfollow as organic, including one of
+         *     a follow that sponsored content produced. The sponsored and auto-invited
+         *     figures count follows only and are never negative.
          */
         FollowerMetrics: {
             /**
@@ -36,11 +40,11 @@ export interface components {
             readingDate: string;
             /** @description New followers that day from sponsored content; null when the export's cell is blank. */
             newSponsored?: number | null;
-            /** @description New followers that day from organic content; null when the export's cell is blank. */
+            /** @description Net new followers that day from organic content: follows minus unfollows. LinkedIn counts every unfollow as organic, including one of a follow that sponsored content produced, so the figure is negative on a day the page lost more followers than it gained this way. Null when the export's cell is blank. */
             newOrganic?: number | null;
             /** @description New followers that day from auto-invites; null when the export's cell is blank. */
             newAutoInvited?: number | null;
-            /** @description All new followers that day; null when the export's cell is blank. */
+            /** @description Net new followers that day from every source: negative on a day the unfollows the organic figure carries outweigh the day's follows. Null when the export's cell is blank. */
             newTotal?: number | null;
             /** @description The export file the row was read from; empty when the row did not come from a file export. */
             sourceFile?: string;
@@ -70,11 +74,11 @@ export interface components {
             readingDate: string;
             /** @description New followers that day from sponsored content; null when the export's cell is blank. */
             newSponsored?: number | null;
-            /** @description New followers that day from organic content; null when the export's cell is blank. */
+            /** @description Net new followers that day from organic content: follows minus unfollows. LinkedIn counts every unfollow as organic, including one of a follow that sponsored content produced, so the figure is negative on a day the page lost more followers than it gained this way. Null when the export's cell is blank. */
             newOrganic?: number | null;
             /** @description New followers that day from auto-invites; null when the export's cell is blank. */
             newAutoInvited?: number | null;
-            /** @description All new followers that day; null when the export's cell is blank. */
+            /** @description Net new followers that day from every source: negative on a day the unfollows the organic figure carries outweigh the day's follows. Null when the export's cell is blank. */
             newTotal?: number | null;
             /** @description The export file the row was read from; empty when the row did not come from a file export. */
             sourceFile?: string;

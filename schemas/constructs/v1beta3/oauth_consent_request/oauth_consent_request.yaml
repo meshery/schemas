@@ -8,10 +8,14 @@ description: |
 
   The request belongs to the one signed-in user it was issued for. Only that
   user may read it or decide it, and a challenge is single use: once accepted
-  or rejected it can no longer be read or decided. `client.verified` is
-  derived only from the client's redirect targets, never from its name or ID.
-  It marks trust and never blocks: an unverified client is shown as such, and
-  the user may still allow it.
+  or rejected it can no longer be read or decided. `client.verified` marks
+  trust and never blocks. For a dynamically registered client it is true only
+  when every redirect URI matches one operator-listed known-client entry; for
+  an operator-managed client it is true when the operator set the verified
+  mark in the client's identity-provider metadata (admin-only; a client can
+  never set or clear it). It is never derived from a self-asserted name or
+  from the client ID. An unverified client is shown as such, and the user may
+  still allow it.
 type: object
 additionalProperties: false
 required:

@@ -7,67 +7,7 @@ export type paths = Record<string, never>;
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /**
-         * @description Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
-         * @default [
-         *       {
-         *         "description": "Configure the visual styles for the component",
-         *         "displayName": "Styling",
-         *         "entityState": [
-         *           "declaration"
-         *         ],
-         *         "key": "",
-         *         "kind": "mutate",
-         *         "schemaVersion": "capability.meshery.io/v1alpha1",
-         *         "status": "enabled",
-         *         "subType": "",
-         *         "type": "style",
-         *         "version": "0.7.0"
-         *       },
-         *       {
-         *         "description": "Change the shape of the component",
-         *         "displayName": "Change Shape",
-         *         "entityState": [
-         *           "declaration"
-         *         ],
-         *         "key": "",
-         *         "kind": "mutate",
-         *         "schemaVersion": "capability.meshery.io/v1alpha1",
-         *         "status": "enabled",
-         *         "subType": "shape",
-         *         "type": "style",
-         *         "version": "0.7.0"
-         *       },
-         *       {
-         *         "description": "Drag and Drop a component into a parent component in graph view",
-         *         "displayName": "Compound Drag And Drop",
-         *         "entityState": [
-         *           "declaration"
-         *         ],
-         *         "key": "",
-         *         "kind": "interaction",
-         *         "schemaVersion": "capability.meshery.io/v1alpha1",
-         *         "status": "enabled",
-         *         "subType": "compoundDnd",
-         *         "type": "graph",
-         *         "version": "0.7.0"
-         *       },
-         *       {
-         *         "description": "Add text to nodes body",
-         *         "displayName": "Body Text",
-         *         "entityState": [
-         *           "declaration"
-         *         ],
-         *         "key": "",
-         *         "kind": "mutate",
-         *         "schemaVersion": "capability.meshery.io/v1alpha1",
-         *         "status": "enabled",
-         *         "subType": "body-text",
-         *         "type": "style",
-         *         "version": "0.7.0"
-         *       }
-         *     ]
-         */
+        /** @description Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
         Capability: {
             /**
              * @description Specifies the version of the schema to which the capability definition conforms.

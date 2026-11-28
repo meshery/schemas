@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get all connections
-         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, the `orgId` query must name the organization the call acts in (the session's selected organization); a mismatch is refused with a 403.
+         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support. When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 400 (the organization selector in docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, a sent `orgId` query names the acting organization (subject to the live-membership rule) and does not have to equal a selected organization.
          */
         get: operations["getConnections"];
         put?: never;
@@ -23,7 +23,7 @@ export interface paths {
          *
          *     Every connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body. When the session names none, the server may use the caller's only organization (Meshery Cloud: the only live organization the caller belongs to, else the only one of those the caller owns); it must not guess between several, and answers 400 instead.
          *
-         *     Desktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.
+         *     Desktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A repeat registration carries the stored `metadata.platformSessions` and `metadata.platformSessionsReportedAt` forward from the stored row: it can neither set nor erase them. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.
          *
          *     A `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. One sign-in can back one install's connections in several organizations, so a token is revoked only once no live connection of the same owner still links it: removing or superseding one organization's connection must not sign the install out of another. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.
          */
@@ -88,7 +88,7 @@ export interface paths {
         get: operations["getConnectionById"];
         /**
          * Update a connection
-         * @description Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct. `organizationId` is not in the body. The server keeps the organization assigned at registration.
+         * @description Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct. On a `desktop` connection the server-written metadata keys `tokenId`, `lastSeenAt`, `platformSessions` and `platformSessionsReportedAt` are likewise carried forward from the stored row: an edit can neither set nor erase them, so a report can only be written through `reportDesktopPlatformSessions`. `organizationId` is not in the body. The server keeps the organization assigned at registration.
          */
         put: operations["updateConnection"];
         post?: never;
@@ -177,6 +177,48 @@ export interface paths {
          * @description Delete the caller's `desktop` connection whose `metadata.installationId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. An install registers one connection per organization, so with `X-Current-Orgid` naming an organization the server must delete only the install's connection in that organization and leave its connections in other organizations live; this is how an install releases the organization it is leaving when it switches to another. Without the header (or with the all-organizations value `all`) the server deletes the install's connections in every organization. When nothing matches, the server answers 404 and revokes nothing. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`) unless a live connection of the same owner still links it: the token still authenticates that connection.
          */
         delete: operations["deregisterDesktopConnection"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/connections/desktop/{installationId}/platform-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Report which social accounts a desktop install is signed in to
+         * @description A desktop app install reports, for the computer it runs on, each browser sign-in it has checked: the platform, the account handle, the Blowhorn profile and Chrome profile that hold it, and when the sign-in was last verified. Servers implementing this contract must store the report as `metadata.platformSessions` of the caller's `desktop` connection whose `metadata.installationId` matches, replace any earlier report in full (an empty `sessions` array clears it), and set `metadata.platformSessionsReportedAt` to the current time. The report is the only writer of those two fields: a `desktop` registration ignores a value for either, as it ignores `tokenId`. Servers must scope the write to the caller: a connection registered by another user is not found. An install registers one connection per organization, so the report applies to the install's connection in the session organization (`X-Current-Orgid`, then the caller's selected organization), and the caller must be a live member of it: a caller who is not, or who has no such connection there, receives `404` and nothing is stored. A token bound only to the hosted MCP resource (scope `connections:read`) is refused with `403`: no tool writes. The report carries no cookie, token, credential or Google account email, and servers must refuse a body that carries any key the schema does not name. Servers must also refuse with `400` a report that lists two sessions with the same `platform` and `handle`, handles compared case-insensitively (or two without a `handle` on one platform), and a `socialConnectionId` that does not name a connection of the session organization the caller may see. When nothing matches, the server answers 404 and stores nothing.
+         */
+        put: operations["reportDesktopPlatformSessions"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/platform-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Find where a social account is signed in
+         * @description Answers "where is this social account signed in?": for each desktop install that reported a browser sign-in matching the filters, returns the computer (connection id, install id, host name, status and last heartbeat) and the session it reported (platform, handle, state, when it was last verified, the Blowhorn profile and the Chrome profile that hold it, and the connection of the account itself). Servers implementing this contract read `metadata.platformSessions` of the session organization's live `desktop` connections and return of their metadata only those sessions, `platformSessionsReportedAt`, `hostname`, `os` and `lastSeenAt`, never any other part of it, a credential, a cookie, a token or a Google account email. The `status` and `lastSeenAt` of the computer follow the heartbeat rule of `recordConnectionHeartbeat`, so a client can tell a session reported by a computer that is offline now. A caller sees the connections it owns and, when it is an organization admin, every connection in the organization: the visibility rule of `DesktopConnectionMetadata`. Rows are ordered by `lastVerifiedAt` (a time the install reported, by its own clock), newest first, then by `connectionId`, `platform` and `handle`, so pages are stable.
+         *
+         *     Tenancy is enforced by the server that implements this contract (Blowhorn Cloud), never by a client, a gateway or an MCP tool, which pass the caller's identity and the organization selector through unchanged. The server runs the same organization membership and permission checks as `getConnections`, keyed by the permission `View Connections` (Workspace Management), the one behind the `connections:read` scope, for the organization named by `X-Current-Orgid` (for the hosted MCP tool, the optional `organizationId` argument), else the caller's selected organization: a caller who is not a live member of that organization receives `404`, the same answer as for an unknown organization, and a member without that permission is refused with `403`. It returns only sessions reported by `desktop` connections of that organization that the caller may see, and never one of another user's installs unless the caller administers the organization. A filter never widens the scope: `installationId` naming an install the caller may not see matches nothing. `totalCount` counts only rows the caller may see, after that scoping and every filter, so it never reveals another user's installs.
+         */
+        get: operations["getPlatformSessions"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1411,6 +1453,391 @@ export interface components {
              * @description Server time of the last registration or heartbeat.
              */
             lastSeenAt?: string;
+            /** @description Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+            platformSessions?: {
+                /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+                platform: string;
+                /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+                handle?: string;
+                /**
+                 * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+                 * @enum {string}
+                 */
+                state: "signed_in" | "signed_out" | "unknown";
+                /**
+                 * Format: date-time
+                 * @description When the install last checked this sign-in, as the install read it.
+                 */
+                lastVerifiedAt: string;
+                /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+                blowhornProfile?: string;
+                /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+                chromeProfile?: {
+                    /** @description Chrome's profile directory name, for example `Profile 1`. */
+                    directory: string;
+                    /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                    displayName?: string;
+                };
+                /**
+                 * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+                 * @enum {string}
+                 */
+                identity?: "ok" | "drift" | "missing" | "unknown";
+                /**
+                 * Format: uuid
+                 * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+                 */
+                socialConnectionId?: string;
+            }[];
+            /**
+             * Format: date-time
+             * @description Server time of the report in `platformSessions`. A value sent in a registration or an update is ignored, and the stored value is carried forward.
+             */
+            platformSessionsReportedAt?: string;
+        };
+        /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+        PlatformSessionPlatform: string;
+        /**
+         * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+         * @enum {string}
+         */
+        PlatformSessionState: "signed_in" | "signed_out" | "unknown";
+        /**
+         * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+         * @enum {string}
+         */
+        PlatformSessionIdentity: "ok" | "drift" | "missing" | "unknown";
+        /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+        PlatformSessionChromeProfile: {
+            /** @description Chrome's profile directory name, for example `Profile 1`. */
+            directory: string;
+            /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+            displayName?: string;
+        };
+        /** @description One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email. */
+        PlatformSession: {
+            /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+            platform: string;
+            /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+            handle?: string;
+            /**
+             * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+             * @enum {string}
+             */
+            state: "signed_in" | "signed_out" | "unknown";
+            /**
+             * Format: date-time
+             * @description When the install last checked this sign-in, as the install read it.
+             */
+            lastVerifiedAt: string;
+            /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+            blowhornProfile?: string;
+            /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+            chromeProfile?: {
+                /** @description Chrome's profile directory name, for example `Profile 1`. */
+                directory: string;
+                /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                displayName?: string;
+            };
+            /**
+             * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+             * @enum {string}
+             */
+            identity?: "ok" | "drift" | "missing" | "unknown";
+            /**
+             * Format: uuid
+             * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+             */
+            socialConnectionId?: string;
+        };
+        /** @description Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+        PlatformSessionList: {
+            /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+            platform: string;
+            /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+            handle?: string;
+            /**
+             * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+             * @enum {string}
+             */
+            state: "signed_in" | "signed_out" | "unknown";
+            /**
+             * Format: date-time
+             * @description When the install last checked this sign-in, as the install read it.
+             */
+            lastVerifiedAt: string;
+            /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+            blowhornProfile?: string;
+            /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+            chromeProfile?: {
+                /** @description Chrome's profile directory name, for example `Profile 1`. */
+                directory: string;
+                /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                displayName?: string;
+            };
+            /**
+             * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+             * @enum {string}
+             */
+            identity?: "ok" | "drift" | "missing" | "unknown";
+            /**
+             * Format: uuid
+             * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+             */
+            socialConnectionId?: string;
+        }[];
+        /** @description The body a desktop install sends to report its browser sign-ins. It replaces the earlier report in full. */
+        PlatformSessionsReport: {
+            /** @description Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+            sessions: {
+                /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+                platform: string;
+                /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+                handle?: string;
+                /**
+                 * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+                 * @enum {string}
+                 */
+                state: "signed_in" | "signed_out" | "unknown";
+                /**
+                 * Format: date-time
+                 * @description When the install last checked this sign-in, as the install read it.
+                 */
+                lastVerifiedAt: string;
+                /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+                blowhornProfile?: string;
+                /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+                chromeProfile?: {
+                    /** @description Chrome's profile directory name, for example `Profile 1`. */
+                    directory: string;
+                    /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                    displayName?: string;
+                };
+                /**
+                 * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+                 * @enum {string}
+                 */
+                identity?: "ok" | "drift" | "missing" | "unknown";
+                /**
+                 * Format: uuid
+                 * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+                 */
+                socialConnectionId?: string;
+            }[];
+        };
+        /** @description The report stored for one desktop install. */
+        DesktopPlatformSessions: {
+            /** @description Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+            installationId: string;
+            /**
+             * Format: date-time
+             * @description Server time the report was stored.
+             */
+            reportedAt: string;
+            /** @description Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+            sessions: {
+                /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+                platform: string;
+                /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+                handle?: string;
+                /**
+                 * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+                 * @enum {string}
+                 */
+                state: "signed_in" | "signed_out" | "unknown";
+                /**
+                 * Format: date-time
+                 * @description When the install last checked this sign-in, as the install read it.
+                 */
+                lastVerifiedAt: string;
+                /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+                blowhornProfile?: string;
+                /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+                chromeProfile?: {
+                    /** @description Chrome's profile directory name, for example `Profile 1`. */
+                    directory: string;
+                    /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                    displayName?: string;
+                };
+                /**
+                 * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+                 * @enum {string}
+                 */
+                identity?: "ok" | "drift" | "missing" | "unknown";
+                /**
+                 * Format: uuid
+                 * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+                 */
+                socialConnectionId?: string;
+            }[];
+        };
+        /** @description The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here. */
+        PlatformSessionHost: {
+            /**
+             * Format: uuid
+             * @description The `desktop` connection of the install.
+             */
+            connectionId: string;
+            /** @description Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+            installationId: string;
+            hostname?: string;
+            os?: string;
+            /**
+             * @description Connection Status Value
+             * @enum {string}
+             */
+            status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+            /**
+             * Format: date-time
+             * @description Server time of the connection's last registration or heartbeat.
+             */
+            lastSeenAt?: string;
+            /**
+             * Format: date-time
+             * @description Server time the install's report was stored.
+             */
+            reportedAt?: string;
+        };
+        /** @description One account signed in on one computer. */
+        PlatformSessionLocation: {
+            /** @description The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here. */
+            desktop: {
+                /**
+                 * Format: uuid
+                 * @description The `desktop` connection of the install.
+                 */
+                connectionId: string;
+                /** @description Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+                installationId: string;
+                hostname?: string;
+                os?: string;
+                /**
+                 * @description Connection Status Value
+                 * @enum {string}
+                 */
+                status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                /**
+                 * Format: date-time
+                 * @description Server time of the connection's last registration or heartbeat.
+                 */
+                lastSeenAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Server time the install's report was stored.
+                 */
+                reportedAt?: string;
+            };
+            /** @description One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email. */
+            session: {
+                /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+                platform: string;
+                /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+                handle?: string;
+                /**
+                 * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+                 * @enum {string}
+                 */
+                state: "signed_in" | "signed_out" | "unknown";
+                /**
+                 * Format: date-time
+                 * @description When the install last checked this sign-in, as the install read it.
+                 */
+                lastVerifiedAt: string;
+                /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+                blowhornProfile?: string;
+                /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+                chromeProfile?: {
+                    /** @description Chrome's profile directory name, for example `Profile 1`. */
+                    directory: string;
+                    /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                    displayName?: string;
+                };
+                /**
+                 * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+                 * @enum {string}
+                 */
+                identity?: "ok" | "drift" | "missing" | "unknown";
+                /**
+                 * Format: uuid
+                 * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+                 */
+                socialConnectionId?: string;
+            };
+        };
+        /** @description Page of the places matching accounts are signed in. */
+        PlatformSessionLocationPage: {
+            /** @description Matches on this page. */
+            locations: {
+                /** @description The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here. */
+                desktop: {
+                    /**
+                     * Format: uuid
+                     * @description The `desktop` connection of the install.
+                     */
+                    connectionId: string;
+                    /** @description Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+                    installationId: string;
+                    hostname?: string;
+                    os?: string;
+                    /**
+                     * @description Connection Status Value
+                     * @enum {string}
+                     */
+                    status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                    /**
+                     * Format: date-time
+                     * @description Server time of the connection's last registration or heartbeat.
+                     */
+                    lastSeenAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Server time the install's report was stored.
+                     */
+                    reportedAt?: string;
+                };
+                /** @description One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email. */
+                session: {
+                    /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+                    platform: string;
+                    /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+                    handle?: string;
+                    /**
+                     * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+                     * @enum {string}
+                     */
+                    state: "signed_in" | "signed_out" | "unknown";
+                    /**
+                     * Format: date-time
+                     * @description When the install last checked this sign-in, as the install read it.
+                     */
+                    lastVerifiedAt: string;
+                    /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+                    blowhornProfile?: string;
+                    /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+                    chromeProfile?: {
+                        /** @description Chrome's profile directory name, for example `Profile 1`. */
+                        directory: string;
+                        /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                        displayName?: string;
+                    };
+                    /**
+                     * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+                     * @enum {string}
+                     */
+                    identity?: "ok" | "drift" | "missing" | "unknown";
+                    /**
+                     * Format: uuid
+                     * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+                     */
+                    socialConnectionId?: string;
+                };
+            }[];
+            /** @description Total number of matches on all pages. */
+            totalCount: number;
+            /** @description Current page number. */
+            page: number;
+            /** @description Number of elements per page. */
+            pageSize: number;
         };
         /**
          * @description Connection Status Value
@@ -1955,6 +2382,35 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+        OrganizationSelectionRequired: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /**
+                     * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                     * @enum {string}
+                     */
+                    code: "organization_selection_required";
+                    /** @description The sentence the caller is shown. */
+                    message: string;
+                    /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                    choices: {
+                        /**
+                         * Format: uuid
+                         * @description Organization ID.
+                         */
+                        id: string;
+                        /** @description Name of the organization. */
+                        name: string;
+                        /** @description Description of the organization. */
+                        description: string;
+                    }[];
+                };
+            };
+        };
         /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
         MeshkitError429: {
             headers: {
@@ -2005,7 +2461,7 @@ export interface components {
         };
     };
     parameters: {
-        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+        /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
         currentOrgId: string;
         /** @description Connection ID */
         connectionId: string;
@@ -2061,7 +2517,7 @@ export interface operations {
                 name?: string;
             };
             header?: {
-                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, the caller's selected organization applies. */
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
                 "X-Current-Orgid"?: string;
             };
             path?: never;
@@ -2480,6 +2936,35 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                         * @enum {string}
+                         */
+                        code: "organization_selection_required";
+                        /** @description The sentence the caller is shown. */
+                        message: string;
+                        /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                        choices: {
+                            /**
+                             * Format: uuid
+                             * @description Organization ID.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Description of the organization. */
+                            description: string;
+                        }[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -5424,6 +5909,370 @@ export interface operations {
                         probableCause?: string[];
                         /** @description MeshKit's suggested remediations for the error. */
                         suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    reportDesktopPlatformSessions: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+                "X-Current-Orgid"?: string;
+            };
+            path: {
+                /** @description Installation identifier from `metadata.installationId`. */
+                installationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+                    sessions: {
+                        /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+                        platform: string;
+                        /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+                        handle?: string;
+                        /**
+                         * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+                         * @enum {string}
+                         */
+                        state: "signed_in" | "signed_out" | "unknown";
+                        /**
+                         * Format: date-time
+                         * @description When the install last checked this sign-in, as the install read it.
+                         */
+                        lastVerifiedAt: string;
+                        /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+                        blowhornProfile?: string;
+                        /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+                        chromeProfile?: {
+                            /** @description Chrome's profile directory name, for example `Profile 1`. */
+                            directory: string;
+                            /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                            displayName?: string;
+                        };
+                        /**
+                         * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+                         * @enum {string}
+                         */
+                        identity?: "ok" | "drift" | "missing" | "unknown";
+                        /**
+                         * Format: uuid
+                         * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+                         */
+                        socialConnectionId?: string;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description The stored report */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+                        installationId: string;
+                        /**
+                         * Format: date-time
+                         * @description Server time the report was stored.
+                         */
+                        reportedAt: string;
+                        /** @description Browser sign-ins of one install, at most one per platform and handle, handles compared case-insensitively. */
+                        sessions: {
+                            /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+                            platform: string;
+                            /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+                            handle?: string;
+                            /**
+                             * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+                             * @enum {string}
+                             */
+                            state: "signed_in" | "signed_out" | "unknown";
+                            /**
+                             * Format: date-time
+                             * @description When the install last checked this sign-in, as the install read it.
+                             */
+                            lastVerifiedAt: string;
+                            /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+                            blowhornProfile?: string;
+                            /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+                            chromeProfile?: {
+                                /** @description Chrome's profile directory name, for example `Profile 1`. */
+                                directory: string;
+                                /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                                displayName?: string;
+                            };
+                            /**
+                             * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+                             * @enum {string}
+                             */
+                            identity?: "ok" | "drift" | "missing" | "unknown";
+                            /**
+                             * Format: uuid
+                             * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+                             */
+                            socialConnectionId?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getPlatformSessions: {
+        parameters: {
+            query?: {
+                /** @description Page number */
+                page?: number;
+                /** @description Number of items per page */
+                pageSize?: number;
+                /** @description Only sessions on this platform, for example `x`, `linkedin` or `reddit`. */
+                platform?: string;
+                /** @description Only sessions of this account handle, compared case-insensitively and without a leading `@`, for example `blowhorn_ai`. */
+                handle?: string;
+                /** @description Only sessions in this state, for example `signed_in`. */
+                state?: "signed_in" | "signed_out" | "unknown";
+                /** @description Only sessions reported by this desktop install. */
+                installationId?: string;
+            };
+            header?: {
+                /** @description Organization the call acts in, by ID (a UUID). When present, the server resolves the session organization from it instead of the caller's selected organization, and runs its membership and permission checks there. A caller who is not a live member of the named organization receives the same 404 as an unknown resource. Omitted, a path or query `orgId` the operation takes names the organization when sent; otherwise the caller's selected organization applies when it is not nil; otherwise the server defaults among the caller's live organizations, using the only one when exactly one qualifies. When the call needs an acting organization and several qualify, an operation that declares the OrganizationSelectionRequired response answers 409 `organization_selection_required`. The resolution order is in docs/mcp-operation-contract.md, the organization selector. */
+                "X-Current-Orgid"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Where the matching accounts are signed in */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Matches on this page. */
+                        locations: {
+                            /** @description The computer a session was reported from. Nothing else of the desktop connection's metadata is shown here. */
+                            desktop: {
+                                /**
+                                 * Format: uuid
+                                 * @description The `desktop` connection of the install.
+                                 */
+                                connectionId: string;
+                                /** @description Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter. */
+                                installationId: string;
+                                hostname?: string;
+                                os?: string;
+                                /**
+                                 * @description Connection Status Value
+                                 * @enum {string}
+                                 */
+                                status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                                /**
+                                 * Format: date-time
+                                 * @description Server time of the connection's last registration or heartbeat.
+                                 */
+                                lastSeenAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Server time the install's report was stored.
+                                 */
+                                reportedAt?: string;
+                            };
+                            /** @description One browser sign-in a desktop install checked: an account on a platform, whether it is signed in, when that was last verified, and where on the computer it lives. Carries no cookie, token, credential or Google account email. */
+                            session: {
+                                /** @description A social platform whose sign-in lives in a browser session, lowercase, for example `x`, `linkedin` or `reddit`. */
+                                platform: string;
+                                /** @description The account handle on the platform, without a leading `@`. Never an email address. Absent when the check could not read it. */
+                                handle?: string;
+                                /**
+                                 * @description What the last session check read: `signed_in`, `signed_out`, or `unknown` when the check could not tell (the browser was busy, or the page did not answer).
+                                 * @enum {string}
+                                 */
+                                state: "signed_in" | "signed_out" | "unknown";
+                                /**
+                                 * Format: date-time
+                                 * @description When the install last checked this sign-in, as the install read it.
+                                 */
+                                lastVerifiedAt: string;
+                                /** @description The name of the Blowhorn profile the account is mapped to on this computer. Never an email address. */
+                                blowhornProfile?: string;
+                                /** @description The Chrome profile on the computer that holds the sign-in. The Google account email is never part of it. */
+                                chromeProfile?: {
+                                    /** @description Chrome's profile directory name, for example `Profile 1`. */
+                                    directory: string;
+                                    /** @description The name Chrome shows for the profile. Never an email address, so a name that holds an `@` is not reported. */
+                                    displayName?: string;
+                                };
+                                /**
+                                 * @description Whether the Chrome profile still shows the account the mapping expects: `ok`, `drift` (a different account), `missing` (nobody is signed in), or `unknown`.
+                                 * @enum {string}
+                                 */
+                                identity?: "ok" | "drift" | "missing" | "unknown";
+                                /**
+                                 * Format: uuid
+                                 * @description The id of the connection that is the account itself (kind is the platform), when the account is mapped to a connection.
+                                 */
+                                socialConnectionId?: string;
+                            };
+                        }[];
+                        /** @description Total number of matches on all pages. */
+                        totalCount: number;
+                        /** @description Current page number. */
+                        page: number;
+                        /** @description Number of elements per page. */
+                        pageSize: number;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict - the call needs an organization, none was named, and more than one of the caller's organizations qualifies. Pass one of `choices[].id` as `X-Current-Orgid` (the `organizationId` tool argument). The body's `code` is `organization_selection_required`. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Machine-readable reason. Always `organization_selection_required` for this body.
+                         * @enum {string}
+                         */
+                        code: "organization_selection_required";
+                        /** @description The sentence the caller is shown. */
+                        message: string;
+                        /** @description The caller's own live organizations the call could act in. Pass one `id` as `X-Current-Orgid`. */
+                        choices: {
+                            /**
+                             * Format: uuid
+                             * @description Organization ID.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Description of the organization. */
+                            description: string;
+                        }[];
                     };
                 };
             };

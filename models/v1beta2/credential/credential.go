@@ -81,6 +81,9 @@ type CredentialId = core.Uuid
 // CredentialIdQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type CredentialIdQuery = core.Uuid
 
+// CurrentOrgId defines model for currentOrgId.
+type CurrentOrgId = string
+
 // Order defines model for order.
 type Order = string
 
@@ -95,3 +98,6 @@ type Pagesize = int
 
 // Search defines model for search.
 type Search = string
+
+// CoreOrganizationSelectionRequired The call needs an acting organization, the caller named none, and more than one of the caller's live organizations qualifies. Nothing was done by this request. Repeat it naming one of `choices` as `X-Current-Orgid` (the `organizationId` tool argument).
+type CoreOrganizationSelectionRequired = core.OrganizationSelectionRequiredError

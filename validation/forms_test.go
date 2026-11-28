@@ -83,6 +83,96 @@ var formCases = []formCase{
 		form:      "schemas/constructs/v1beta1/credential/forms/prometheus.json",
 	},
 	{
+		name:      "v1beta1/credential/github",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/github.json",
+	},
+	{
+		name:      "v1beta1/credential/x",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/x.json",
+	},
+	{
+		name:      "v1beta1/credential/reddit",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/reddit.json",
+	},
+	{
+		name:      "v1beta1/credential/linkedin",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/linkedin.json",
+	},
+	{
+		name:      "v1beta1/credential/bluesky",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/bluesky.json",
+	},
+	{
+		name:      "v1beta1/credential/hn",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/hn.json",
+	},
+	{
+		name:      "v1beta1/credential/slack",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/slack.json",
+	},
+	{
+		name:      "v1beta1/credential/youtube",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/youtube.json",
+	},
+	{
+		name:      "v1beta1/credential/monitoring",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/monitoring.json",
+	},
+	{
+		name:      "v1beta1/credential/observability-and-analysis",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/observability-and-analysis.json",
+	},
+	{
+		name:      "v1beta1/credential/blog",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/blog.json",
+	},
+	{
+		name:      "v1beta1/credential/tiktok",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/tiktok.json",
+	},
+	{
+		name:      "v1beta1/credential/instagram",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/instagram.json",
+	},
+	{
+		name:      "v1beta1/credential/facebook",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/facebook.json",
+	},
+	{
+		name:      "v1beta1/credential/smtp",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/smtp.json",
+	},
+	{
+		name:      "v1beta1/credential/github-oauth",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/github-oauth.json",
+	},
+	{
+		name:      "v1beta1/credential/google-oauth",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/google-oauth.json",
+	},
+	{
+		name:      "v1beta1/credential/oidc-oauth",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/oidc-oauth.json",
+	},
+	{
 		name:      "v1beta3/design/import",
 		canonical: "schemas/constructs/v1beta3/design/api.yml#/components/schemas/MesheryPatternImportFormPayload",
 		form:      "schemas/constructs/v1beta3/design/forms/import.json",

@@ -97,8 +97,7 @@ components:
         reactionsOrganic:
           type: integer
           nullable: true
-          minimum: 0
-          description: Organic reactions that day; null when the export's cell is blank.
+          description: "Organic reactions that day, net of reactions withdrawn. LinkedIn counts a withdrawn reaction as organic even when it was given to sponsored content, so the figure is negative on a day more reactions were withdrawn than given. Null when the export's cell is blank."
         reactionsSponsored:
           type: integer
           nullable: true
@@ -107,13 +106,11 @@ components:
         reactions:
           type: integer
           nullable: true
-          minimum: 0
-          description: All reactions that day; null when the export's cell is blank.
+          description: "All reactions that day, net of the withdrawals the organic figure carries, so it can be negative. Null when the export's cell is blank."
         commentsOrganic:
           type: integer
           nullable: true
-          minimum: 0
-          description: Organic comments that day; null when the export's cell is blank.
+          description: "Organic comments that day, net of comments deleted. LinkedIn counts a deleted comment as organic even when it was made on sponsored content, so the figure is negative on a day more comments were deleted than made. Null when the export's cell is blank."
         commentsSponsored:
           type: integer
           nullable: true
@@ -122,13 +119,11 @@ components:
         comments:
           type: integer
           nullable: true
-          minimum: 0
-          description: All comments that day; null when the export's cell is blank.
+          description: "All comments that day, net of the deletions the organic figure carries, so it can be negative. Null when the export's cell is blank."
         repostsOrganic:
           type: integer
           nullable: true
-          minimum: 0
-          description: Organic reposts that day; null when the export's cell is blank.
+          description: "Organic reposts that day, net of reposts undone. LinkedIn counts an undone repost as organic even when it was of sponsored content, so the figure is negative on a day more reposts were undone than made. Null when the export's cell is blank."
         repostsSponsored:
           type: integer
           nullable: true
@@ -137,13 +132,11 @@ components:
         reposts:
           type: integer
           nullable: true
-          minimum: 0
-          description: All reposts that day; null when the export's cell is blank.
+          description: "All reposts that day, net of the undone reposts the organic figure carries, so it can be negative. Null when the export's cell is blank."
         engagementRateOrganic:
           type: number
           nullable: true
-          minimum: 0
-          description: Organic engagement rate that day, as the export reports it; null when the export's cell is blank.
+          description: "Organic engagement rate that day, as the export reports it: the day's net organic engagements over its impressions, so it is negative when those engagements are. Null when the export's cell is blank."
         engagementRateSponsored:
           type: number
           nullable: true
@@ -152,8 +145,7 @@ components:
         engagementRate:
           type: number
           nullable: true
-          minimum: 0
-          description: Overall engagement rate that day, as the export reports it; null when the export's cell is blank.
+          description: "Overall engagement rate that day, as the export reports it: negative when the day's net engagements are. Null when the export's cell is blank."
         sourceFile:
           type: string
           description: The export file the row was read from; empty when the row did not come from a file export.

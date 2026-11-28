@@ -36,6 +36,8 @@ get:
     expose: true
     title: List content items
     scope: content:read
+    description: >-
+      Read-only. Returns a paginated list of the live content items ...
   parameters:
     - $ref: "#/components/parameters/currentOrgId"
 ```
@@ -44,14 +46,25 @@ get:
 | --- | --- | --- |
 | `expose` | boolean, required | The hosted server lists and serves the operation as a tool. `false` keeps it annotated and hidden. Same name as the local MCP server's `x-mcp.expose`. |
 | `title` | string, optional | Tool title shown to the person connecting an AI app. Defaults to the operation's `summary`. |
+| `description` | string, optional, 1-2000 characters | The tool description shown to the connecting app. When present it replaces the operation's OpenAPI `description` (or `summary` when there is none); when absent the tool falls back to those. |
 | `scope` | enum, required | The OAuth scope a token needs to call the operation. |
 
-The value is closed. There is no `readOnly` or `destructive` flag, and the
+The value is closed: `expose`, `title`, `scope` and `description` are the only
+keys. There is no `readOnly` or `destructive` flag, and the
 lint refuses one.
 
 **The tool name is the `operationId`.** **Hints derive from the HTTP method**:
 GET is read-only, POST and PUT are not destructive, and a create that declares
 the `Idempotency-Key` header is idempotent. Nothing is written by hand.
+
+**Descriptions.** MCP clients never see HTTP response headers; the hosted
+server maps only the JSON body into the tool result. A shared OpenAPI
+description may therefore say things that are true of the HTTP API and wrong
+for a tool (`getScheduleById` names the `ETag` header). `x-mcp.description`
+is the MCP-facing text, so the shared description stays accurate for HTTP
+clients. Every GET tool's MCP description starts with "Read-only." (Rule 48
+enforces it), and must not advertise an HTTP-only header such as `ETag` unless the tool
+result actually includes it. Every operation annotated today sets one.
 
 ## What the lint enforces (Rule 48)
 
@@ -67,7 +80,9 @@ An operation with `x-mcp` fails `make validate-schemas` unless:
 5. It is not a DELETE. The hosted server exposes no delete tool.
 6. It accepts the optional `X-Current-Orgid` header (below).
 7. Its value matches the extension schema: `expose` is a boolean, `title` is a
-   non-empty string when present, and no other key appears.
+   non-empty string when present, `description` is a non-empty string of at
+   most 2000 characters that, on a GET, starts with "Read-only." when present, and no
+   other key appears.
 
 The rule scans every non-deprecated construct `api.yml` of every version, not
 only the newest version of each construct, because an operation can be served
@@ -78,7 +93,7 @@ cannot hide unchecked operations; only a spec that loads and carries
 `validation/rules_mcp_test.go` (each failure case and the passing case) and
 `validation/mcp_operation_contract_test.go` (the real tree).
 
-## The six operations that carry it
+## The nine operations that carry it
 
 | `operationId` | Version | Route | Scope |
 | --- | --- | --- | --- |
@@ -86,8 +101,14 @@ cannot hide unchecked operations; only a spec that loads and carries
 | `getContentItem` | v1beta3/content_item | `GET /api/content-items/{contentItemId}` | `content:read` |
 | `getConnections` | v1beta3/connection | `GET /api/integrations/connections` | `connections:read` |
 | `getEvents` | v1beta3/event | `GET /api/events/list` | `events:read` |
+| `listSchedules` | v1beta3/schedule | `GET /api/schedules` | `schedule:read` |
+| `getScheduleById` | v1beta3/schedule | `GET /api/schedules/{scheduleId}` | `schedule:read` |
 | `getUser` | v1beta2/user | `GET /api/identity/users/profile` | `account:read` |
 | `getFeaturesByOrganization` | v1beta1/feature | `GET /api/entitlement/subscriptions/organizations/{orgId}/features` | `account:read` |
+| `getPlatformSessions` | v1beta3/connection | `GET /api/integrations/platform-sessions` | `connections:read` |
+
+`getPlatformSessions` answers "where is this social account signed in?"; its
+contract is [platform-session-contract.md](platform-session-contract.md).
 
 `getUser` is the account profile read. Its published `operationId` is
 `getUser`, and renaming a published operation changes generated client names,
@@ -143,20 +164,71 @@ organization the call acts in (decision 5). It is defined once, as
 construct aliases it with a `$ref`. Cloud's membership and permission checks
 run in that organization exactly as for any other call.
 
+**How the acting organization is resolved.** A server resolves it per request,
+in this order:
+
+1. the `X-Current-Orgid` header (the `organizationId` tool argument), when sent;
+2. otherwise the path or query `orgId`, on an operation that takes one, when sent;
+3. otherwise the caller's selected organization, when it is not nil;
+4. otherwise server-side defaulting among the caller's live memberships.
+
+When exactly one live organization qualifies, it is used. A server never uses
+an organization the caller is not a live member of. When the call needs an
+acting organization, the caller named none and several qualify, an operation
+that declares the `OrganizationSelectionRequired` response answers `409` with
+the body
+`OrganizationSelectionRequiredError` in `v1beta2/core`: `code` is always
+`organization_selection_required`, `message` is the sentence the caller is
+shown, and `choices` lists at least two of the caller's own live organizations,
+each with its `id`, `name` and `description` (the fields of the
+`AvailableOrganization` row of `GET /api/identity/orgs`). The caller repeats
+the call with one `choices[].id` as `X-Current-Orgid`. Like the in-flight body
+it is not a `MeshkitError`, because a MeshKit `code` is an unstable
+component-scoped identifier. Each `choices` item is an
+`OrganizationSelectionChoice`, a named schema in `v1beta2/core` mirrored
+identically in `v1alpha1/core`, so generated Go carries a named struct and
+`choices` is a slice of it. Generated TypeScript exports the standalone
+`OrganizationSelectionChoice` type, but its generator dereferences every `$ref`,
+so `OrganizationSelectionRequiredError.choices` there is still the inline
+`{id, name, description}` shape, structurally identical to the named type.
+`OrganizationSelectionChoice` copies the `id`, `name` and `description` fields
+of `AvailableOrganization` rather than referring to it, since the organization
+construct refers to core and a reference back would be a cycle.
+
+A missing organization is never answered `401`: `401` stays reserved for token
+and audience failures. Every hosted read that accepts `X-Current-Orgid` declares
+the `409` through the shared `OrganizationSelectionRequired` response in
+`v1beta2/core`, aliased in each construct. `getFeaturesByOrganization` does not,
+because its path `orgId` always names the acting organization. Declaring the
+`409` does not oblige an operation to demand an organization: a call that can
+run without one, such as `getUser`, runs without one. `TestOrganizationSelectionRequiredIsDeclared`
+pins the body, the named `OrganizationSelectionChoice` item and its
+`v1alpha1/core` mirror, and the declaration.
+
+`getUserCredentials` (`GET /api/integrations/credentials`, `v1beta2/credential`)
+is not a hosted MCP read but follows the same selector. It lists the caller's own
+credentials in the acting organization (designated for it via `orgOwner`, or used
+by the owner's own live connection in it) plus credentials linked to no
+organization. It takes `X-Current-Orgid` and declares `403` (no organization
+qualifies), `404` (the named organization is not one the caller is a live member
+of, the same answer as an unknown one) and the shared `409`.
+`TestGetUserCredentialsDeclaresOrganizationSelection` pins it.
+
 An operation that also takes an organization in its path or query (`orgId`:
 `getFeaturesByOrganization` in its path, `getConnections` in its query) must
 name the same organization as `X-Current-Orgid` when both are sent. A mismatch
 answers `400` and returns nothing; neither value wins, so the header never
-overrides the path or query `orgId`. When the header is omitted, the path or
-query `orgId` must equal the organization the call acts in (the session's
-selected organization); a mismatch answers `403` and returns nothing. The
-comparison is on the parsed UUID and is case-insensitive, so the same
-organization written in upper or lower case matches; the raw strings are never
-compared. Both operation descriptions reference this section and declare the
-`400` and the `403`.
+overrides the path or query `orgId`. When the header is omitted, a path or
+query `orgId` that is sent names the acting organization: it is still subject
+to the live-membership rule and does not have to equal a selected organization.
+The comparison, when both are sent, is on the parsed UUID and is
+case-insensitive, so the same organization written in upper or lower case
+matches; the raw strings are never compared. Both operation descriptions
+reference this section and declare the `400`. A `403` on these operations is a
+membership or permission refusal, not a mismatch against a selected organization.
 
 A UUID-constrained parameter that is not a UUID answers `400` on every hosted
-read: `X-Current-Orgid` on all six, `threadId` on `listContentItems`. Each
+read: `X-Current-Orgid` on every x-mcp read, `threadId` on `listContentItems`. Each
 hosted read declares the `400`, as does `getRequest` for `requestId`.
 
 This rule covers the operations that declare `X-Current-Orgid`. An operation

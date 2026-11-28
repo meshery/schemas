@@ -403,6 +403,8 @@ paths:
         expose: true
         title: Get events
         scope: events:read
+        description: >-
+          Read-only. Returns a page of events. An `X-Current-Orgid` that is not a UUID answers 400.
       summary: Get events list
       description: >
         Returns a page of events. An `X-Current-Orgid` that is not a UUID
@@ -430,6 +432,8 @@ paths:
           $ref: '#/components/responses/MeshkitError403'
         '404':
           description: Not found
+        '409':
+          $ref: '#/components/responses/OrganizationSelectionRequired'
         '429':
           $ref: '#/components/responses/MeshkitError429'
         '500':
@@ -536,6 +540,8 @@ paths:
           description: Server error
 components:
   responses:
+    OrganizationSelectionRequired:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/OrganizationSelectionRequired"
     400:
       $ref: ../../v1beta2/core/api.yml#/components/responses/400
     401:
