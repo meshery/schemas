@@ -2,16 +2,26 @@
 package relationship
 
 import (
+	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
+	"github.com/meshery/schemas/models/core"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
+
+// relationshipCreationLock serializes the exists-check-then-insert in Create so
+// concurrent registrations of the same definition cannot race into a duplicate
+// primary-key insert. Mirrors modelCreationLock in v1beta1/model.
+var relationshipCreationLock sync.Mutex
 
 // Deprecated: use RelationshipDefinitionSelectorsPatch.
 type RelationshipDefinition_Selectors_Patch = RelationshipDefinitionSelectorsPatch
@@ -39,8 +49,48 @@ func (r RelationshipDefinition) Type() entity.EntityType {
 	return entity.RelationshipDefinition
 }
 
+// relationshipIdentity is the canonical set of fields hashed by GenerateID.
+// It is a dedicated struct with its own JSON tags rather than a
+// RelationshipDefinition so the identity cannot silently drift with the
+// entity's wire representation: ModelId is json:"-" on the entity, which
+// would drop it from a Marshal of the entity and let equivalent relationships
+// from different models collide on one ID. Every field here is always
+// serialized, so field order and presence are fixed by this struct alone.
+type relationshipIdentity struct {
+	SchemaVersion    core.VersionString         `json:"schemaVersion"`
+	Version          core.SemverString          `json:"version"`
+	Kind             RelationshipDefinitionKind `json:"kind"`
+	RelationshipType string                     `json:"type"`
+	SubType          string                     `json:"subType"`
+	ModelId          *core.Uuid                 `json:"modelId"`
+	EvaluationQuery  *string                    `json:"evaluationQuery"`
+	Selectors        *SelectorSet               `json:"selectors"`
+}
+
+// GenerateID content-addresses the definition from its semantic coordinates,
+// mirroring ModelDefinition.GenerateID. Registering the same definition twice
+// (server re-seeding on restart, re-importing a model package) therefore
+// resolves to the same ID instead of minting a fresh random UUID per
+// registration, which is what let duplicate rows accumulate unboundedly.
+// Volatile and cosmetic fields (ID, Status, Metadata, Capabilities) are
+// deliberately excluded, matching the model identifier's philosophy.
 func (r *RelationshipDefinition) GenerateID() (uuid.UUID, error) {
-	return uuid.NewV4()
+	byt, err := json.Marshal(relationshipIdentity{
+		SchemaVersion:    r.SchemaVersion,
+		Version:          r.Version,
+		Kind:             r.Kind,
+		RelationshipType: r.RelationshipType,
+		SubType:          r.SubType,
+		ModelId:          r.ModelId,
+		EvaluationQuery:  r.EvaluationQuery,
+		Selectors:        r.Selectors,
+	})
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+
+	hash := md5.Sum(byt)
+	return uuid.UUID(hash), nil
 }
 
 func (r RelationshipDefinition) GetID() uuid.UUID {
@@ -58,11 +108,38 @@ func (r *RelationshipDefinition) Create(db *database.Handler, hostID uuid.UUID) 
 	}
 	r.ID = id
 
-	err = db.Omit(clause.Associations).Create(&r).Error
-	if err != nil {
+	relationshipCreationLock.Lock()
+	defer relationshipCreationLock.Unlock()
+
+	var existing RelationshipDefinition
+	err = db.First(&existing, "id = ?", id).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return uuid.UUID{}, err
 	}
-	return id, err
+	if err == nil {
+		// The definition is already registered; re-registration is a no-op,
+		// the same way ModelDefinition.Create treats an existing model.
+		return existing.ID, nil
+	}
+
+	// The mutex above only serializes callers within one process. Concurrent
+	// registrations from separate processes sharing a database can both pass
+	// the exists check, so the insert itself must tolerate losing that race:
+	// ON CONFLICT DO NOTHING turns the loser's duplicate-key error into a
+	// no-op, and because the ID is content-addressed the existing row is the
+	// same definition, so returning the computed ID is correct either way.
+	if err := r.insertIgnoringConflict(db); err != nil {
+		return uuid.UUID{}, err
+	}
+	return id, nil
+}
+
+// insertIgnoringConflict persists the definition, treating a primary-key
+// collision as a successful no-op. It is the single seam Create relies on to
+// survive the cross-process race described above, and is unexported so tests
+// can drive the conflict path directly without racing two connections.
+func (r *RelationshipDefinition) insertIgnoringConflict(db *database.Handler) error {
+	return db.Omit(clause.Associations).Clauses(clause.OnConflict{DoNothing: true}).Create(r).Error
 }
 
 func (r *RelationshipDefinition) UpdateStatus(db *database.Handler, status entity.EntityStatus) error {
